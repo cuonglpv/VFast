@@ -10,9 +10,9 @@ Requirements are derived top-down: business problem → goals → scope → feat
 
 ![VFast ELMS mind map](docs/mindmap.png)
 
-The three key branches — **License Management**, **Budget Management**, and **Optimization** — are drawn in bold. License Management merges the license groups F01 (Management), F02 (Allocation), and F04 (Lifecycle).
+The map has five branches: **License Management** (catalog & entitlement, allocation, lifecycle & compliance), **Budget Management**, **Optimization**, **Analytics**, and **User & Organization**.
 
-Editable source: [`docs/mindmap/vfast-elms.xmind`](docs/mindmap/vfast-elms.xmind) (same structure, open with XMind; branches labelled `key` are drawn bold). After editing it, regenerate the image with `python docs/mindmap/render_mindmap.py`.
+Editable source: [`docs/mindmap/vfast-elms.xmind`](docs/mindmap/vfast-elms.xmind) (open with XMind). `docs/mindmap.png` is exported from it.
 
 The system manages two license models:
 
