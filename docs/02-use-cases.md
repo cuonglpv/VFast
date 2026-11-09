@@ -13,7 +13,7 @@ classDiagram
     class HumanActors {
         <<Tác nhân Con người>>
         +Manager (Quản trị Toàn diện & Phê duyệt)
-        +Editor (Nạp Dữ liệu Usage & Expense)
+        +Staff (Nạp Dữ liệu Usage & Expense)
         +Employee (Tra cứu & Gửi yêu cầu)
     }
     class SystemActors {
@@ -27,7 +27,7 @@ classDiagram
    - Chịu trách nhiệm quản lý danh mục phần mềm, nhà cung cấp, hợp đồng, quyền sở hữu bản quyền (`Entitlement`).
    - Phê duyệt / từ chối các yêu cầu cấp license (`License Request`), trực tiếp thực hiện cấp phát (`Assign`) và thu hồi (`Revoke`).
    - Thiết lập ngân sách (`Budget`), duyệt chi phí (`Expense`), theo dõi tuân thủ (`Compliance`), rà soát đề xuất tối ưu hóa (`Optimization`) và quản lý phân quyền 3 role.
-2. **Editor (Quản trị viên dữ liệu đầu vào):**
+2. **Staff (Quản trị viên dữ liệu đầu vào):**
    - Sở hữu mức truy cập nạp liệu (`Data Management`).
    - Chịu trách nhiệm nhập liệu mức độ sử dụng license (`Usage Data`) và chi phí thực tế (`Expense`), nhập lẻ hoặc import qua file CSV/Excel, tải lên hóa đơn chứng từ.
    - Không được phép sửa đổi Entitlement, không thể cấp phát/thu hồi license, và không có quyền can thiệp vào hạn mức ngân sách.
@@ -58,7 +58,7 @@ Theo chuẩn hóa tại **Mục 5 của bản SRS v1.0**, toàn bộ 39 Use Case
 | **UC10** | **Revoke License** | Manager | F02 – License Allocation | **P0** |
 | **UC11** | **Track License Allocation** | Manager / Employee | F02 – License Allocation | **P0** |
 | **UC12** | **Manage Budget** | Manager | F03 – Budget Management | **P0** |
-| **UC13** | **Manage Expense** | Manager / Editor | F03 – Budget Management | **P0** |
+| **UC13** | **Manage Expense** | Manager / Staff | F03 – Budget Management | **P0** |
 | **UC14** | **Monitor Budget Utilization** | Manager | F03 – Budget Management | **P0** |
 | **UC15** | **Track License Expiration** | Manager | F04 – Lifecycle Management | **P0** |
 | **UC16** | **Manage Renewal** | Manager | F04 – Lifecycle Management | P1 |
@@ -71,17 +71,17 @@ Theo chuẩn hóa tại **Mục 5 của bản SRS v1.0**, toàn bộ 39 Use Case
 | **UC23** | **View License Dashboard** | Manager | F06 – Analytics & Reporting | **P0** |
 | **UC24** | **View Financial Dashboard** | Manager | F06 – Analytics & Reporting | **P0** |
 | **UC25** | **View Compliance Dashboard** | Manager | F06 – Analytics & Reporting | P1 |
-| **UC26** | **Export Reports** | Manager / Editor | F06 – Analytics & Reporting | P1 |
+| **UC26** | **Export Reports** | Manager / Staff | F06 – Analytics & Reporting | P1 |
 | **UC27** | **Manage Users** | Manager | F07 – User & Role Management | **P0** |
 | **UC28** | **Manage Roles** | Manager | F07 – User & Role Management | **P0** |
 | **UC29** | **Login / Logout** | All Roles | F08 – System Administration | **P0** |
 | **UC30** | **View Audit Logs** | Manager | F08 – System Administration | **P0** |
-| **UC31** | **Input License Usage** | Editor | F01 / F05 – Usage & Optimization | **P0** |
-| **UC32** | **Import License Usage** (CSV/Excel) | Editor | F01 / F05 – Usage & Optimization | P1 |
-| **UC33** | **Input Expense Data** | Editor | F03 – Budget & Expense | **P0** |
-| **UC34** | **Import Expense Data** (CSV/Excel) | Editor | F03 – Budget & Expense | P1 |
-| **UC35** | **Upload Supporting Documents** (Invoices) | Editor | F03 – Budget & Expense | P1 |
-| **UC36** | **View Submitted Data** | Editor | F08 – Data Administration | **P0** |
+| **UC31** | **Input License Usage** | Staff | F01 / F05 – Usage & Optimization | **P0** |
+| **UC32** | **Import License Usage** (CSV/Excel) | Staff | F01 / F05 – Usage & Optimization | P1 |
+| **UC33** | **Input Expense Data** | Staff | F03 – Budget & Expense | **P0** |
+| **UC34** | **Import Expense Data** (CSV/Excel) | Staff | F03 – Budget & Expense | P1 |
+| **UC35** | **Upload Supporting Documents** (Invoices) | Staff | F03 – Budget & Expense | P1 |
+| **UC36** | **View Submitted Data** | Staff | F08 – Data Administration | **P0** |
 | **UC37** | **View Available Software** | Employee | F01 – Software Catalog | **P0** |
 | **UC38** | **View Own Request Status** | Employee | F02 – License Allocation | **P0** |
 | **UC39** | **View Own Assigned Licenses** | Employee | F02 – License Allocation | **P0** |
@@ -106,11 +106,11 @@ Sơ đồ theo chuẩn UML: tác nhân là hình người, một khung ranh gi�
 
 ![Manager use cases, budget and analytics](diagrams/out/uc_manager_finance.png)
 
-### 3.2. Editor & Employee
+### 3.2. Staff & Employee
 
-#### Editor (Nạp dữ liệu)
+#### Staff (Nạp dữ liệu)
 
-![Editor use cases](diagrams/out/uc_editor.png)
+![Staff use cases](diagrams/out/uc_staff.png)
 
 #### Employee (Tự phục vụ)
 
@@ -178,30 +178,30 @@ sequenceDiagram
 ---
 
 ### 4.2. Luồng 2: Quản lý Mức dùng & Chi phí Thực tế (Usage & Expense Management)
-1. **Editor** thu thập số liệu tiêu thụ phần mềm thực tế và nhập trực tiếp (`UC31`) hoặc import hàng loạt từ file Excel (`UC32`).
-2. **Editor** nhập chi phí thực tế (`UC33`), import dữ liệu chi phí (`UC34`) và tải lên file hóa đơn, chứng từ thanh toán đính kèm (`UC35`).
-3. **Editor** xem lại toàn bộ dữ liệu do mình đã nạp để đảm bảo tính chính xác (`UC36`).
-4. **Manager** kiểm tra dữ liệu do Editor nạp (`UC13`).
+1. **Staff** thu thập số liệu tiêu thụ phần mềm thực tế và nhập trực tiếp (`UC31`) hoặc import hàng loạt từ file Excel (`UC32`).
+2. **Staff** nhập chi phí thực tế (`UC33`), import dữ liệu chi phí (`UC34`) và tải lên file hóa đơn, chứng từ thanh toán đính kèm (`UC35`).
+3. **Staff** xem lại toàn bộ dữ liệu do mình đã nạp để đảm bảo tính chính xác (`UC36`).
+4. **Manager** kiểm tra dữ liệu do Staff nạp (`UC13`).
 5. Hệ thống tự động tính toán và cập nhật các chỉ số tài chính, tỷ lệ giải ngân và mức độ tiêu thụ.
 6. **Manager** theo dõi bức tranh tuân thủ (`UC05`), chi phí thực tế (`UC14`) và các cơ hội tối ưu hóa (`UC22`).
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Edt as Editor
+    actor Stf as Staff
     participant UI as Web Portal
     participant API as Backend Service
     actor Mgr as Manager
     participant DB as PostgreSQL Database
 
-    Edt->>UI: Nhập bản ghi chi phí hoặc Import file CSV (UC33, UC34)
-    Edt->>UI: Tải lên tệp đính kèm hóa đơn VAT (PDF) (UC35)
+    Stf->>UI: Nhập bản ghi chi phí hoặc Import file CSV (UC33, UC34)
+    Stf->>UI: Tải lên tệp đính kèm hóa đơn VAT (PDF) (UC35)
     UI->>API: POST /api/expenses (Dữ liệu chi phí + Tệp đính kèm)
     API->>DB: Lưu file vào Storage & INSERT into expenses
-    API->>DB: Ghi log tạo bởi Editor (created_by)
+    API->>DB: Ghi log tạo bởi Staff (created_by)
     API-->>UI: Nạp dữ liệu thành công!
 
-    Edt->>UI: Nạp dữ liệu mức độ sử dụng License Usage (UC31, UC32)
+    Stf->>UI: Nạp dữ liệu mức độ sử dụng License Usage (UC31, UC32)
     UI->>API: POST /api/license-usage
     API->>DB: INSERT into license_usage
     API-->>UI: Cập nhật usage thành công!
@@ -362,14 +362,14 @@ sequenceDiagram
 ---
 
 ### UC31 & UC33 – Nhập Dữ liệu Usage & Chi phí Thực tế (Input Usage & Expense Data)
-- **Tác nhân chính:** Editor
+- **Tác nhân chính:** Staff
 - **Độ ưu tiên:** P0
 - **Luồng sự kiện chính cho Nhập Usage (UC31):**
-  1. Editor chọn phần mềm và nhân viên cần cập nhật mức dùng.
+  1. Staff chọn phần mềm và nhân viên cần cập nhật mức dùng.
   2. Nhập các trường: Ngày hoạt động gần nhất (`Last Active Date`), Số ngày sử dụng trong kỳ, Mức độ sử dụng (`Active` / `Inactive`).
-  3. Nhấn Lưu. Bản ghi được gắn tự động `created_by = Editor_ID` và dấu thời gian.
+  3. Nhấn Lưu. Bản ghi được gắn tự động `created_by = Staff_ID` và dấu thời gian.
 - **Luồng sự kiện chính cho Nhập Expense (UC33):**
-  1. Editor chọn phần mềm/hợp đồng phát sinh chi phí.
+  1. Staff chọn phần mềm/hợp đồng phát sinh chi phí.
   2. Nhập Số tiền, Loại tiền tệ (VND/USD), Ngày thanh toán, Số hóa đơn và Phòng ban chịu chi phí.
   3. Đính kèm file hóa đơn VAT dạng PDF/ảnh (`UC35`).
   4. Nhấn Lưu. Hệ thống xác thực số tiền hợp lệ và lưu vào cơ sở dữ liệu.

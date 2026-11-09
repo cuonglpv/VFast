@@ -14,7 +14,7 @@ def overview():
     """One diagram for the README: use cases grouped by capability; UC29 Login / Logout is shared by all roles."""
     u = sd.UseCase('VFast ELMS — Use case overview')
     u.actor('mgr', 'Manager')
-    u.actor('edt', 'Editor')
+    u.actor('stf', 'Staff')
     u.actor('emp', 'Employee')
     u.actor('sys', 'Lifecycle Scheduler', 'right')
     for key, name in [
@@ -36,7 +36,7 @@ def overview():
     ]:
         u.uc(key, name)
     u.link('mgr', 'g_lic', 'g_cmp', 'g_alc', 'g_bud', 'g_exp', 'g_lfc', 'g_opt', 'g_dsh', 'g_adm')
-    u.link('edt', 'g_exp', 'g_use', 'g_sub')
+    u.link('stf', 'g_exp', 'g_use', 'g_sub')
     u.link('emp', 'g_cat', 'g_req', 'g_my')
     u.link('sys', 'g_ntf')
     return u.build()
@@ -94,9 +94,9 @@ def manager_finance():
     return u.build()
 
 
-def editor():
-    u = sd.UseCase('Editor')
-    u.actor('edt', 'Editor')
+def staff():
+    u = sd.UseCase('Staff')
+    u.actor('stf', 'Staff')
     for key, name in [
         ('uc29', 'UC29 Login / Logout'),
         ('uc31', 'UC31 Input License Usage'),
@@ -109,7 +109,7 @@ def editor():
         ('uc26', 'UC26 Export Reports'),
     ]:
         u.uc(key, name)
-    u.link('edt', *[k for k, _ in u.ucs])
+    u.link('stf', *[k for k, _ in u.ucs])
     return u.build()
 
 
@@ -134,7 +134,7 @@ if __name__ == '__main__':
         'uc_overview': (overview(), 'Use case overview'),
         'uc_manager_license': (manager_license(), 'Manager: licenses'),
         'uc_manager_finance': (manager_finance(), 'Manager: budget and analytics'),
-        'uc_editor': (editor(), 'Editor'),
+        'uc_staff': (staff(), 'Staff'),
         'uc_employee': (employee(), 'Employee'),
     }, os.path.join(HERE, 'out'))
     print('\n'.join(paths))

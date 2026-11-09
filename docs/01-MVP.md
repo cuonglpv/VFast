@@ -12,7 +12,7 @@ Hệ thống **VFast – Enterprise License Management System (ELMS)** là giả
 Mục tiêu cốt lõi của phiên bản MVP:
 1. **Thiết lập Sổ cái Bản quyền Tập trung:** Gom toàn bộ dữ liệu phần mềm, nhà cung cấp, quyền sở hữu (SaaS và Perpetual) về một nguồn dữ liệu duy nhất (`Single Source of Truth`).
 2. **Kiểm soát Vòng đời Phân bổ:** Vận hành trơn tru quy trình xin cấp, phê duyệt, cấp phát và thu hồi license giữa Employee và Manager.
-3. **Theo dõi Ngân sách & Chi phí:** Cung cấp cho Editor công cụ nạp dữ liệu tiêu thụ (`Usage`) và chi phí thực tế (`Expense`), giúp Manager giám sát tỷ lệ giải ngân (`Budget Utilization`).
+3. **Theo dõi Ngân sách & Chi phí:** Cung cấp cho Staff công cụ nạp dữ liệu tiêu thụ (`Usage`) và chi phí thực tế (`Expense`), giúp Manager giám sát tỷ lệ giải ngân (`Budget Utilization`).
 4. **Giảm thiểu Rủi ro Tuân thủ:** Tự động cảnh báo khi xảy ra tình trạng cấp phát vượt quyền (`Over-allocation`) hoặc sử dụng vượt mức (`Overuse`), cảnh báo hợp đồng sắp hết hạn.
 
 ---
@@ -26,7 +26,7 @@ Mục tiêu cốt lõi của phiên bản MVP:
 - **F04. Lifecycle Management:** Theo dõi hạn dùng SaaS, hạn bảo trì Perpetual và cảnh báo tự động.
 - **F05. License Optimization:** Phát hiện license chưa gán, license không dùng và đề xuất tối ưu hóa.
 - **F06. Analytics & Reporting:** Dashboard điều hành tổng quan (License, Finance, Compliance).
-- **F07. User & Role Management:** Quản lý tài khoản và phân quyền 3 role tập trung (Manager, Editor, Employee).
+- **F07. User & Role Management:** Quản lý tài khoản và phân quyền 3 role tập trung (Manager, Staff, Employee).
 - **F08. System Administration:** Xác thực đăng nhập/đăng xuất, lưu vết Audit Log và import dữ liệu.
 
 ### 2.2. Ngoài Phạm vi Ban đầu (Out-of-Scope for Initial Pilot)
@@ -50,7 +50,7 @@ pie title Phân bổ Mức độ Ưu tiên cho Phiên bản 14 Ngày
 ```
 
 - **P0 – Must Have (Bắt buộc cho Pilot 14 ngày):**
-  - Xác thực đăng nhập và phân quyền 3 role RBAC (`Manager, Editor, Employee`).
+  - Xác thực đăng nhập và phân quyền 3 role RBAC (`Manager, Staff, Employee`).
   - Quản lý danh mục phần mềm chuẩn (`Software Catalog`).
   - Đăng ký và quản lý Entitlement cho cả **SaaS Subscription** và **Perpetual License**.
   - Quy trình gửi yêu cầu (`License Request`) và phê duyệt/từ chối của Manager.
@@ -81,7 +81,7 @@ Hệ thống tuân thủ nghiêm ngặt 20 quy tắc từ **Mục 7 của bản 
 - **BR-06:** Chỉ duy nhất vai trò Manager có quyền phê duyệt hoặc từ chối các yêu cầu cấp license.
 - **BR-07:** Chỉ duy nhất vai trò Manager có quyền thực hiện cấp phát (Assign) hoặc thu hồi (Revoke) license.
 - **BR-08:** Employee chỉ được phép xem thông tin yêu cầu và license thuộc sở hữu của chính bản thân mình.
-- **BR-09:** Editor được quyền nhập dữ liệu usage và expense, nhưng tuyệt đối không được sửa đổi Entitlement hoặc Budget.
+- **BR-09:** Staff được quyền nhập dữ liệu usage và expense, nhưng tuyệt đối không được sửa đổi Entitlement hoặc Budget.
 - **BR-10:** Bản ghi Expense hợp lệ bắt buộc phải có Số tiền hợp lệ, Tiền tệ và Ngày thanh toán.
 - **BR-11:** Các khoản chi phí khác loại tiền tệ không được cộng gộp trừ khi có chính sách quy đổi tỷ giá rõ ràng.
 - **BR-12:** Thời hạn bản quyền vĩnh viễn và thời hạn thỏa thuận bảo trì (Maintenance) phải được quản lý ở hai trường độc lập.
@@ -149,7 +149,7 @@ erDiagram
 | Tên Thực thể (Table) | Mục đích Quản lý Nghiệp vụ |
 | :--- | :--- |
 | `users` | Lưu trữ tài khoản người dùng, email, họ tên, phòng ban và trạng thái hoạt động. |
-| `roles` | Lưu trữ 3 vai trò hệ thống: `MANAGER`, `EDITOR`, `EMPLOYEE`. |
+| `roles` | Lưu trữ 3 vai trò hệ thống: `MANAGER`, `STAFF`, `EMPLOYEE`. |
 | `software_products` | Danh mục sản phẩm phần mềm chuẩn hóa (tên, hãng, phiên bản, danh mục, trạng thái). |
 | `vendors` | Danh bạ các nhà cung cấp, đại lý phân phối và thông tin liên hệ. |
 | `contracts` | Hợp đồng mua sắm pháp lý, ngày ký kết, giá trị và tệp tài liệu đính kèm. |
@@ -166,13 +166,13 @@ erDiagram
 ## 7. Tiêu chí Nghiệm thu & Chuyển giao Pilot (14 Criteria)
 
 Theo chuẩn hóa tại **Mục 13 của bản SRS v1.0**, phiên bản MVP được nghiệm thu đạt chuẩn khi thỏa mãn đồng thời 14 tiêu chí:
-1. Cả 3 vai trò (`Manager, Editor, Employee`) đăng nhập thành công và chỉ nhìn thấy các chức năng được cấp phép.
+1. Cả 3 vai trò (`Manager, Staff, Employee`) đăng nhập thành công và chỉ nhìn thấy các chức năng được cấp phép.
 2. Manager có thể tạo, chỉnh sửa và quản lý danh mục phần mềm cùng các khoản Entitlement.
 3. Cả hai mô hình **SaaS Subscription** và **Perpetual License** được đăng ký và theo dõi chuẩn xác.
 4. Employee có thể gửi yêu cầu cấp license và theo dõi trạng thái yêu cầu cá nhân.
 5. Manager có thể phê duyệt, từ chối yêu cầu; thực hiện cấp phát và thu hồi license thành công.
 6. Số lượng cấp phát được tính toán tự động và không bao giờ vượt quá dung lượng khả dụng ($\text{Allocated} \le \text{Purchased}$).
-7. Editor có thể nạp dữ liệu sử dụng (`Usage`) và ghi nhận các khoản chi phí (`Expense`) kèm chứng từ hóa đơn.
+7. Staff có thể nạp dữ liệu sử dụng (`Usage`) và ghi nhận các khoản chi phí (`Expense`) kèm chứng từ hóa đơn.
 8. Manager có thể giám sát hạn mức ngân sách và chi phí giải ngân thực tế theo từng bộ phận.
 9. Hệ thống nhận diện và phát sinh cảnh báo trước các mốc hết hạn hợp đồng hoặc bảo trì.
 10. Dashboard hiển thị đầy đủ và trực quan các chỉ số về bản quyền, tài chính và tuân thủ.

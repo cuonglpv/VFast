@@ -79,11 +79,11 @@ Detailed MVP scope, the 20 business rules (BR-01 to BR-20), non-functional requi
 
 ### 1.2 INVEST requirements
 
-The backlog has **25 user stories** (19 P0, 6 P1) grouped by role: Manager 14, Editor 6, Employee 5. Every story passes the INVEST review and has Given/When/Then scenarios.
+The backlog has **25 user stories** (19 P0, 6 P1) grouped by role: Manager 14, Staff 6, Employee 5. Every story passes the INVEST review and has Given/When/Then scenarios.
 
 | Criterion | Meaning in VFast ELMS |
 |---|---|
-| **Independent** | Each story produces a demonstrable outcome; the Editor's data entry and the Employee's requests run independently through intermediate status tables. |
+| **Independent** | Each story produces a demonstrable outcome; the Staff's data entry and the Employee's requests run independently through intermediate status tables. |
 | **Negotiable** | Layout and implementation may change while outcome, permissions, and business rules stay fixed. |
 | **Valuable** | Each story serves one of three pillars: license control, budget control, or cost optimization. |
 | **Estimable** | Required fields, business constraints, and acceptance scenarios are explicit. |
@@ -98,9 +98,9 @@ US-M10–M11   Manager: compliance and overuse, expiry and renewal
 US-M12       Manager: optimization recommendations (P1)
 US-M13       Manager: management dashboard
 US-M14       Manager: users and role assignment
-US-E01–E02   Editor: enter usage, import usage CSV/Excel (P1)
-US-E03–E05   Editor: enter expense, import expense (P1), upload invoices (P1)
-US-E06       Editor: review submitted data
+US-S01–S02   Staff: enter usage, import usage CSV/Excel (P1)
+US-S03–S05   Staff: enter expense, import expense (P1), upload invoices (P1)
+US-S06       Staff: review submitted data
 US-U01–U03   Employee: view catalog, submit request, track request status
 US-U04–U05   Employee: view assigned licenses, view expiry (P1)
 ```
@@ -118,7 +118,7 @@ Diagram source: [`docs/diagrams/ve_elms.py`](docs/diagrams/ve_elms.py), drawn wi
 There are **39 use cases** (25 P0, 14 P1). Three main business flows:
 
 1. **Request and allocation:** Employee views the catalog (UC37) → submits a request (UC06) → Manager reviews (UC07) → Approve/Reject (UC08) → checks the entitlement has free seats → Assign (UC09) → Employee sees the license (UC39).
-2. **Usage and expense:** Editor enters or imports Usage (UC31, UC32) and Expense with invoices (UC33–35) → reviews submitted data (UC36) → Manager reconciles (UC13) → the system computes financial and compliance figures.
+2. **Usage and expense:** Staff enters or imports Usage (UC31, UC32) and Expense with invoices (UC33–35) → reviews submitted data (UC36) → Manager reconciles (UC13) → the system computes financial and compliance figures.
 3. **Budget and lifecycle:** Manager sets a Budget (UC12) → Expenses are entered → the system computes `Actual Spending`, `Remaining Budget`, and `Budget Utilization` (UC14) → a cron job scans expiry dates (UC18) → Manager decides to Renew, Downsize, or Cancel (UC16).
 
 Full list of 39 use cases, diagrams per role, sequence diagrams, and specifications of the P0 use cases: [Use cases](docs/02-use-cases.md).
@@ -127,7 +127,7 @@ Full list of 39 use cases, diagrams per role, sequence diagrams, and specificati
 
 There are three user roles. The Lifecycle Notification System is a system actor with no account.
 
-| Capability | Manager | Editor | Employee |
+| Capability | Manager | Staff | Employee |
 |---|---|---|---|
 | Software Catalog | CRUD | Read | Read (no price, no key) |
 | Vendor | CRUD | Read | No access |
@@ -149,7 +149,7 @@ There are three user roles. The Lifecycle Notification System is a system actor 
 
 **System actor:** the Lifecycle Notification System scans SaaS expiry dates and Perpetual maintenance dates daily and sends alerts to Managers.
 
-The backend must enforce RBAC, the Employee's access to personal data only (BR-08), and the rule that an Editor cannot change an Entitlement or Budget (BR-09); hiding frontend controls serves UI/UX only.
+The backend must enforce RBAC, the Employee's access to personal data only (BR-08), and the rule that a Staff member cannot change an Entitlement or Budget (BR-09); hiding frontend controls serves UI/UX only.
 
 ## Documentation
 
