@@ -8,6 +8,12 @@ Requirements are derived top-down: business problem → goals → scope → feat
 
 ### 1.1 Top-down problem analysis
 
+![VFast ELMS mind map](docs/mindmap.png)
+
+The three key branches — **License Management**, **Budget Management**, and **Optimization** — are drawn in bold. License Management merges the license groups F01 (Management), F02 (Allocation), and F04 (Lifecycle).
+
+Editable source: [`docs/mindmap/vfast-elms.xmind`](docs/mindmap/vfast-elms.xmind) (same structure, open with XMind; branches labelled `key` are drawn bold). After editing it, regenerate the image with `python docs/mindmap/render_mindmap.py`.
+
 The system manages two license models:
 
 - **SaaS Subscription:** cloud subscriptions with a term and recurring cost (Microsoft 365, Google Workspace, Adobe CC, Zoom, Slack, Figma, …).
@@ -71,15 +77,7 @@ What makes this project different:
 
 Detailed MVP scope, the 20 business rules (BR-01 to BR-20), non-functional requirements, the 12-entity data model, and the 14 acceptance criteria: [MVP specification](docs/01-MVP.md).
 
-### 1.2 Product mind map
-
-![VFast ELMS mind map](docs/mindmap.png)
-
-The three key branches — **License Management**, **Budget Management**, and **Optimization** — are drawn in bold. License Management merges the license groups F01 (Management), F02 (Allocation), and F04 (Lifecycle).
-
-Editable source: [`docs/mindmap/vfast-elms.xmind`](docs/mindmap/vfast-elms.xmind) (same structure, open with XMind; branches labelled `key` are drawn bold). After editing it, regenerate the image with `python docs/mindmap/render_mindmap.py`.
-
-### 1.3 INVEST requirements
+### 1.2 INVEST requirements
 
 The backlog has **25 user stories** (19 P0, 6 P1) grouped by role: Manager 14, Editor 6, Employee 5. Every story passes the INVEST review and has Given/When/Then scenarios.
 
@@ -109,7 +107,7 @@ US-U04–U05   Employee: view assigned licenses, view expiry (P1)
 
 Backlog, story ↔ use case traceability matrix, and acceptance criteria: [User stories](docs/03-user-stories.md).
 
-### 1.4 Use cases
+### 1.3 Use cases
 
 Use case diagrams follow UML: actors as stick figures, one system boundary, and one ellipse per use case. The 39 use cases are split by actor so every line stays readable. The Lifecycle Scheduler is the system actor (Lifecycle Notification System) that runs UC18.
 
@@ -139,7 +137,7 @@ There are **39 use cases** (25 P0, 14 P1). Three main business flows:
 
 Full list of 39 use cases, diagrams per role, sequence diagrams, and specifications of the P0 use cases: [Use cases](docs/02-use-cases.md).
 
-### 1.5 Roles and permissions
+### 1.4 Roles and permissions
 
 There are three user roles. The Lifecycle Notification System is a system actor with no account.
 
