@@ -1,306 +1,159 @@
 # VFast – Enterprise License Management System (ELMS)
-### Tài liệu Đặc tả Yêu cầu Phần mềm (Software Requirements Specification - SRS v1.0)
 
-[![Branch: docs/requirements-mvp](https://img.shields.io/badge/branch-docs%2Frequirements--mvp-blue.svg)](file:///home/datnguyen-nuoa/VFast)
-[![Architecture: Modular Monolith](https://img.shields.io/badge/architecture-Modular%20Monolith-indigo.svg)](file:///home/datnguyen-nuoa/VFast/docs/01-MVP.md)
-[![Roles: 3 Roles (Manager | Editor | Employee)](https://img.shields.io/badge/roles-3%20Roles%20RBAC-purple.svg)](file:///home/datnguyen-nuoa/VFast/docs/01-MVP.md)
-[![Scope: SaaS %2B Perpetual](https://img.shields.io/badge/licenses-SaaS%20%2B%20Perpetual-orange.svg)](file:///home/datnguyen-nuoa/VFast/docs/01-MVP.md)
-[![Use Cases: 39 UCs](https://img.shields.io/badge/use%20cases-39%20UCs-success.svg)](file:///home/datnguyen-nuoa/VFast/docs/02-use-cases.md)
-[![User Stories: 25 USs](https://img.shields.io/badge/user%20stories-25%20USs-blue.svg)](file:///home/datnguyen-nuoa/VFast/docs/03-user-stories.md)
+VFast ELMS is a system for managing software licenses centrally inside a company. It brings the software catalog, license entitlements, the request → approval → assignment → revocation flow, actual usage data, budgets and expenses, expiry alerts, compliance checks, and an audit log into one place — **the number of assigned seats can never exceed the number purchased, every important action is recorded, and every cost-optimization recommendation needs Manager approval before it is carried out**.
 
----
+## 1. Requirements — Research, INVEST, Use Cases, and Permissions
 
-## 1. Giới thiệu & Đề bài Dự án (Introduction & Purpose)
+Requirements are derived top-down: business problem → goals → scope → feature groups → use cases → user stories. Each story is reviewed with INVEST and has Given/When/Then acceptance criteria.
 
-### 1.1. Mục đích Hệ thống (System Purpose)
-**Enterprise License Management System (ELMS)** là hệ thống quản lý tập trung tài sản phần mềm, quyền sở hữu bản quyền (`License Entitlement`), dữ liệu tiêu thụ thực tế (`Usage Data`) và chi phí ngân sách (`Budget & Expense`) trong nội bộ doanh nghiệp.
+### 1.1 Top-down problem analysis
 
-Hệ thống được thiết kế nhằm giúp doanh nghiệp kiểm soát toàn diện và xuyên suốt vòng đời của license:
-- Ghi nhận và thẩm định các khoản quyền sử dụng phần mềm đã mua.
-- Quản lý quy trình phân bổ (Yêu cầu $\to$ Phê duyệt $\to$ Cấp phát $\to$ Thu hồi).
-- Theo dõi mức độ sử dụng thực tế của người dùng và phòng ban.
-- Quản lý ngân sách, kiểm soát chi phí và đối chiếu chứng từ hóa đơn.
-- Phát hiện rủi ro vi phạm bản quyền (Overuse / Over-allocation) và tìm kiếm cơ hội cắt giảm chi phí lãng phí.
+![VFast ELMS mind map](docs/mindmap.png)
 
-Hệ thống quản lý đồng thời hai mô hình bản quyền:
-1. **SaaS Subscription:** License sử dụng theo hình thức thuê bao đám mây, có thời hạn và chi phí định kỳ (Microsoft 365, Google Workspace, Adobe CC, Zoom, Slack, Figma,...).
-2. **Perpetual License:** License mua đứt quyền sử dụng lâu dài (On-premise/OEM), có thể phát sinh chi phí thỏa thuận bảo trì hoặc hỗ trợ nâng cấp định kỳ (AutoCAD, Windows Pro, VMware,...).
+The map has five branches: **License Management** (catalog & entitlement, allocation, lifecycle & compliance), **Budget Management**, **Optimization**, **Analytics**, and **User & Organization**.
 
----
+Editable source: [`docs/mindmap/vfast-elms.xmind`](docs/mindmap/vfast-elms.xmind) (open with XMind). `docs/mindmap.png` is exported from it.
 
-## 2. Phân tích Vấn đề Thực tế (Problem Statement)
+The system manages two license models:
 
-Trong thực tế vận hành tại các doanh nghiệp, việc quản lý license phần mềm và chi phí liên quan thường diễn ra phân tán qua nhiều nguồn dữ liệu rời rạc như file Excel, hợp đồng giấy, hóa đơn kế toán và cổng quản trị riêng của từng nhà cung cấp. Thực trạng này dẫn đến **7 vấn đề cốt lõi**:
+- **SaaS Subscription:** cloud subscriptions with a term and recurring cost (Microsoft 365, Google Workspace, Adobe CC, Zoom, Slack, Figma, …).
+- **Perpetual License:** a one-time purchase of long-term usage rights (AutoCAD, Windows Pro, VMware, …), possibly with a maintenance or upgrade-support agreement.
 
-```mermaid
-flowchart TD
-    subgraph Problems["7 VẤN ĐỀ CỐT LÕI TRONG QUẢN TRỊ BẢN QUYỀN DOANH NGHIỆP"]
-        P1["1. Phân tán dữ liệu<br/>Software, license, contract, expense nằm rải rác"]
-        P2["2. Thiếu kiểm soát license<br/>Khó biết số lượng đã mua, đã cấp và còn trống"]
-        P3["3. Thiếu theo dõi usage<br/>Không rõ ai đang dùng, ai không hoạt động, ai dùng vượt quyền"]
-        P4["4. Khó kiểm soát ngân sách<br/>Chi phí subscription, perpetual & maintenance không tổng hợp"]
-        P5["5. Rủi ro hết hạn<br/>Thiếu cơ chế cảnh báo hợp đồng và bảo trì sắp hết hạn"]
-        P6["6. Thiếu quy trình phê duyệt<br/>Cấp phát tự phát, không có chuẩn mực và lịch sử lưu vết"]
-        P7["7. Khó tối ưu chi phí<br/>Không đủ dữ liệu để phát hiện license lãng phí hoặc thừa thãi"]
-    end
+In practice, license information is scattered across Excel files, paper contracts, accounting invoices, and each vendor's own admin portal. This produces seven core problems:
+
+| # | Problem | Symptom |
+|---|---|---|
+| P1 | Fragmented data | Software, license, contract, and expense data live in different places, with no single source of truth |
+| P2 | Weak license control | It is hard to know exactly how many licenses are purchased (`Purchased`), assigned (`Allocated`), and free (`Available`) |
+| P3 | No usage monitoring | Nobody knows who is using what, which licenses are forgotten, or who uses more than they are entitled to |
+| P4 | Hard to control budget | Subscription, perpetual, and maintenance costs are not consolidated against the plan |
+| P5 | Expiry risk | No early warning before contracts and maintenance agreements end, so service can stop suddenly |
+| P6 | No approval process | Software is requested by email or word of mouth, with no review and no history |
+| P7 | Hard to optimize cost | Not enough data to find unassigned licenses or "zombie seats" held by people who left or changed role |
+
+| Goal | Measured by |
+|---|---|
+| G1 Centralize licenses | SaaS and Perpetual licenses both registered and tracked in one system |
+| G2 Control allocation | Closed loop Request → Approve → Assign → Revoke; `Purchased`, `Allocated`, and `Available` 100% accurate per license metric |
+| G3 Monitor usage | `Usage` data recorded and aggregated completely |
+| G4 Manage budget | `Expense` recorded completely; `Budget Utilization` computed per year, period, and department |
+| G5 Manage lifecycle | Alerts for contracts and maintenance expiring within 30, 15, and 7 days |
+| G6 License compliance | `Over-allocation` ($Allocated > Purchased$) and `Overuse` detected correctly |
+| G7 Optimize cost | Unassigned and inactive licenses found, with saving recommendations |
+| G8 Management analytics | License, Financial, and Compliance dashboards and reports |
+
+In addition, every important business action must reach an immutable Audit Log, and the three-role permissions must be enforced on the backend.
+
+What makes this project different:
+
+1. **Never over-assign** — assignment runs in a transaction with row locking; $\text{Allocated} \le \text{Purchased}$ holds even when several Managers act at once (BR-05).
+2. **One source for two license models** — the SaaS term and the Perpetual maintenance term are two independent fields (BR-12).
+3. **Missing data is not guessed** — missing usage is never read as zero; compliance checks need valid usage (BR-14, BR-15).
+4. **Decisions have an owner** — only a Manager approves requests, assigns, and revokes; optimization recommendations need data evidence and Manager approval (BR-06, BR-07, BR-16).
+5. **History is kept** — revoked assignments stay for audit; the Audit Log records Actor, Action, and Timestamp and cannot be edited (BR-13, BR-17).
+6. **Currencies are not mixed carelessly** — costs in different currencies are summed only with an explicit conversion policy (BR-10, BR-11).
+
+### Scope
+
+- **Delivery goal.** The MVP is a Production Pilot delivered in 2 weeks (14 days) for one company's internal use.
+- **Eight feature groups.**
+
+| Code | Group | Main content |
+|:---:|---|---|
+| F01 | License Management | Software Catalog, Vendor, Entitlement, Contract, Compliance |
+| F02 | License Allocation | Request, approval, Assign, Revoke, allocation tracking |
+| F03 | Budget Management | Budget per year or period, Expense, invoices, Budget Utilization |
+| F04 | Lifecycle Management | Contract and maintenance dates, Renewal, expiry notifications |
+| F05 | License Optimization | Unassigned and inactive licenses, Overuse, saving recommendations |
+| F06 | Analytics & Reporting | License, Financial, Compliance dashboards; report export |
+| F07 | User & Role Management | Accounts, departments, three-role permissions |
+| F08 | System Administration | Login/logout, sessions, Audit Log, data import |
+
+- **Priority.**
+  - **P0 — required for the pilot:** login and RBAC; Catalog; SaaS/Perpetual Entitlement; Request – Approve/Reject; Assign/Revoke with quantity control; Budget and Expense; Usage entry; expiry tracking; core Dashboard; Audit Log.
+  - **P1 — right after the core flow:** Vendor and Contract; CSV/Excel import; invoice upload; detection of unassigned licenses and licenses inactive for 60 days or more; Compliance Dashboard; report export.
+  - **P2 — future:** automatic vendor integration, advanced SSO, AI optimization.
+- **Out of scope for the first release:** synchronizing with vendor APIs, auto-provisioning or revoking accounts on the vendor's system, ERP or accounting integration, automatic payment, AI/ML optimization, multi-level approval, auto-revoking inactive licenses without a Manager, and multi-tenancy.
+
+Detailed MVP scope, the 20 business rules (BR-01 to BR-20), non-functional requirements, the 12-entity data model, and the 14 acceptance criteria: [MVP specification](docs/01-MVP.md).
+
+### 1.2 INVEST requirements
+
+The backlog has **25 user stories** (19 P0, 6 P1) grouped by role: Manager 14, Staff 6, Employee 5. Every story passes the INVEST review and has Given/When/Then scenarios.
+
+| Criterion | Meaning in VFast ELMS |
+|---|---|
+| **Independent** | Each story produces a demonstrable outcome; the Staff's data entry and the Employee's requests run independently through intermediate status tables. |
+| **Negotiable** | Layout and implementation may change while outcome, permissions, and business rules stay fixed. |
+| **Valuable** | Each story serves one of three pillars: license control, budget control, or cost optimization. |
+| **Estimable** | Required fields, business constraints, and acceptance scenarios are explicit. |
+| **Small** | Fits in 1–2 working days; manual entry of single records (P0) is separate from bulk CSV/Excel import (P1). |
+| **Testable** | 100% of stories have Given/When/Then criteria, including authorization and error cases. |
+
+```text
+US-M01–M03   Manager: software catalog, entitlements, contracts
+US-M04–M07   Manager: view requests, approve/reject, assign, revoke
+US-M08–M09   Manager: budgets, review expense records
+US-M10–M11   Manager: compliance and overuse, expiry and renewal
+US-M12       Manager: optimization recommendations (P1)
+US-M13       Manager: management dashboard
+US-M14       Manager: users and role assignment
+US-S01–S02   Staff: enter usage, import usage CSV/Excel (P1)
+US-S03–S05   Staff: enter expense, import expense (P1), upload invoices (P1)
+US-S06       Staff: review submitted data
+US-U01–U03   Employee: view catalog, submit request, track request status
+US-U04–U05   Employee: view assigned licenses, view expiry (P1)
 ```
 
-1. **Phân tán dữ liệu (Fragmented Data):** Thông tin về phần mềm, quyền sở hữu, hợp đồng pháp lý, dữ liệu sử dụng và chi phí tài chính không được quản lý tập trung trên cùng một hệ thống.
-2. **Thiếu kiểm soát license (Lack of License Inventory Control):** Nhà quản lý gặp khó khăn khi cần xác định chính xác số lượng license đã mua (`Purchased`), số lượng đã phân bổ (`Allocated`) và số lượng còn khả dụng trong kho (`Available`).
-3. **Thiếu khả năng theo dõi mức độ sử dụng (Lack of Usage Monitoring):** Doanh nghiệp không nắm được license nào đang được sử dụng tích cực, license nào bị "bỏ quên" (inactive) hoặc có dấu hiệu dùng vượt quá hạn ngạch.
-4. **Khó kiểm soát ngân sách (Budget Control Challenges):** Các khoản chi phí thuê bao định kỳ, chi phí mua đứt và chi phí bảo trì hằng năm không được tổng hợp theo thời gian thực để đối soát với ngân sách kế hoạch.
-5. **Rủi ro hết hạn hợp đồng (Expiration & Maintenance Risks):** Thiếu cơ chế tự động theo dõi và cảnh báo trước các mốc hết hạn của hợp đồng thuê bao và gói bảo trì, gây nguy cơ gián đoạn dịch vụ đột ngột.
-6. **Thiếu quy trình phê duyệt minh bạch (Lack of Unified Request & Approval):** Việc xin cấp phần mềm diễn ra qua email hoặc trao đổi miệng, thiếu sự kiểm duyệt ngân sách và thiếu lưu vết lịch sử.
-7. **Khó tối ưu chi phí (Unidentified Cost Optimization Opportunities):** Doanh nghiệp thiếu dữ liệu định lượng để phát hiện các license chưa phân bổ (unallocated) hoặc nhân viên nghỉ việc/chuyển vị trí nhưng vẫn giữ license (zombie seats).
+Backlog, story ↔ use case traceability matrix, and acceptance criteria: [User stories](docs/03-user-stories.md).
 
----
+### 1.3 Use cases
 
-## 3. Mục tiêu Hệ thống & Tiêu chí Thành công (Objectives & Success Criteria)
+The use case diagram follows UML: actors as stick figures, one system boundary, and one ellipse per capability. Each ellipse groups related use cases and names them (for example UC07–11), so the 39 use cases fit in one picture. All roles log in and out with UC29. The Lifecycle Scheduler is the system actor (Lifecycle Notification System) that runs UC18.
 
-### 3.1. Mục tiêu Sản phẩm (Product Objectives)
-Hệ thống **VFast ELMS** hướng đến 8 mục tiêu chiến lược:
-- **Centralized License Management:** Quản lý tập trung toàn bộ danh mục và hồ sơ bản quyền của doanh nghiệp.
-- **License Allocation Control:** Kiểm soát chặt chẽ quy trình yêu cầu, phê duyệt, cấp phát và thu hồi license.
-- **Usage Monitoring:** Ghi nhận và theo dõi dữ liệu tiêu thụ phần mềm thực tế của người dùng.
-- **Budget Management:** Thiết lập ngân sách, theo dõi chi phí thực tế và tỷ lệ giải ngân (`Budget Utilization`).
-- **Lifecycle Management:** Quản lý thời hạn, tự động cảnh báo mốc hết hạn hợp đồng và kế hoạch gia hạn/bảo trì.
-- **License Compliance:** Tự động phát hiện tình trạng cấp phát vượt quyền (`Over-allocation`) hoặc sử dụng vượt mức (`Overuse`).
-- **License Optimization:** Xác định các cơ hội cắt giảm lãng phí thông qua khuyến nghị tối ưu hóa chi phí.
-- **Management Analytics:** Cung cấp Dashboard điều hành và hệ thống báo cáo phục vụ việc ra quyết định.
+![VFast ELMS use case overview](docs/diagrams/out/uc_overview.png)
 
-### 3.2. Tiêu chí Đánh giá Thành công (Success Criteria)
-Hệ thống được đánh giá là thành công khi đáp ứng các tiêu chuẩn định lượng:
-- Quản lý tập trung thành công cả **SaaS Subscription** và **Perpetual License**.
-- Xác định tức thì số lượng `Purchased`, `Allocated` và `Available` theo từng license metric với độ chính xác 100%.
-- Vận hành thông suốt quy trình khép kín: Gửi yêu cầu $\to$ Phê duyệt $\to$ Cấp phát $\to$ Thu hồi.
-- Ghi nhận và tổng hợp đầy đủ dữ liệu sử dụng (`Usage`) và chi phí thực tế (`Expense`).
-- Cảnh báo sớm các hợp đồng sắp đến hạn (trước 30, 15, 7 ngày).
-- Phát hiện chính xác các trường hợp `Over-allocation` ($Allocated > Purchased$) và `Overuse`.
-- Thực thi phân quyền nghiêm ngặt cho 3 role tại backend.
-- 100% thao tác nghiệp vụ quan trọng được ghi nhận vào nhật ký kiểm toán bất biến (`Audit Log`).
+Diagram source: [`docs/diagrams/ve_elms.py`](docs/diagrams/ve_elms.py), drawn with [`srsdiagram.py`](docs/diagrams/srsdiagram.py); also available as SVG and an editable draw.io file in [`docs/diagrams/out/`](docs/diagrams/out/). Regenerate with `python ve_elms.py` from `docs/diagrams` (needs Pillow, Playwright with Chromium, and the Liberation Sans font). Detailed diagrams with one ellipse per use case, per actor: [Use cases](docs/02-use-cases.md).
 
----
+There are **39 use cases** (25 P0, 14 P1). Three main business flows:
 
-## 4. Phạm vi Sản phẩm (Product Scope)
+1. **Request and allocation:** Employee views the catalog (UC37) → submits a request (UC06) → Manager reviews (UC07) → Approve/Reject (UC08) → checks the entitlement has free seats → Assign (UC09) → Employee sees the license (UC39).
+2. **Usage and expense:** Staff enters or imports Usage (UC31, UC32) and Expense with invoices (UC33–35) → reviews submitted data (UC36) → Manager reconciles (UC13) → the system computes financial and compliance figures.
+3. **Budget and lifecycle:** Manager sets a Budget (UC12) → Expenses are entered → the system computes `Actual Spending`, `Remaining Budget`, and `Budget Utilization` (UC14) → a cron job scans expiry dates (UC18) → Manager decides to Renew, Downsize, or Cancel (UC16).
 
-### 4.1. 8 Nhóm Tính năng trong Phạm vi (In-Scope Feature Groups)
-Theo đặc tả SRS v1.0, hệ thống được cấu thành từ 8 nhóm chức năng:
+Full list of 39 use cases, diagrams per role, sequence diagrams, and specifications of the P0 use cases: [Use cases](docs/02-use-cases.md).
 
-| Mã | Nhóm Chức năng | Mô tả Nghiệp vụ Chính |
-| :---: | :--- | :--- |
-| **F01** | **License Management** | Quản lý danh mục phần mềm chuẩn (`Software Catalog`), nhà cung cấp (`Vendor`), hồ sơ quyền sử dụng (`Entitlement`), hợp đồng mua sắm (`Contract`) và trạng thái tuân thủ (`Compliance`). |
-| **F02** | **License Allocation** | Quản lý quy trình gửi yêu cầu cấp license (`Request`), phê duyệt phân cấp, thực hiện cấp phát (`Assign`), thu hồi (`Revoke`) và theo dõi phân bổ (`Allocation Tracking`). |
-| **F03** | **Budget Management** | Thiết lập ngân sách theo năm/kỳ tài chính, ghi nhận chi phí thực tế (`Expense`), đính kèm hóa đơn và tính toán tỷ lệ sử dụng ngân sách (`Budget Utilization`). |
-| **F04** | **Lifecycle Management** | Theo dõi ngày hết hạn hợp đồng thuê bao và gói bảo trì, quản lý kế hoạch gia hạn (`Renewal`) và phát sinh thông báo nhắc hạn tự động (`Lifecycle Notification`). |
-| **F05** | **License Optimization** | Thuật toán nhận diện license chưa gán (`Unallocated`), license không hoạt động (`Inactive`), phát hiện vượt quyền (`Overuse`) và cung cấp đề xuất tiết kiệm ngân sách. |
-| **F06** | **Analytics & Reporting** | Bảng điều khiển tổng quan (`License Dashboard`, `Financial Dashboard`, `Compliance Dashboard`) và chức năng xuất báo cáo. |
-| **F07** | **User & Role Management**| Quản lý tài khoản người dùng, danh bạ nhân sự, phòng ban và phân quyền theo mô hình 3 role. |
-| **F08** | **System Administration** | Quản lý xác thực đăng nhập/đăng xuất, quản trị phiên, lưu trữ nhật ký kiểm toán (`Audit Log`) và công cụ import dữ liệu. |
+### 1.4 Roles and permissions
 
-### 4.2. Ngoài phạm vi Ban đầu (Out-of-Scope for Initial Release)
-Để đảm bảo tiến độ triển khai tập trung và chất lượng vận hành cao nhất, các hạng mục sau được hoãn lại cho các phiên bản tiếp theo:
-- Tự động kết nối API đồng bộ trực tiếp với tất cả các nhà cung cấp phần mềm (SaaS Vendor APIs).
-- Tự động kích hoạt (Auto-provisioning) hoặc thu hồi tài khoản trực tiếp trên hệ thống của vendor.
-- Tích hợp sâu vào hệ thống ERP hoặc phần mềm kế toán bên ngoài.
-- Tự động thanh toán thẻ tín dụng hoặc thanh toán hóa đơn trực tuyến.
-- Tối ưu hóa license bằng mô hình Trí tuệ Nhân tạo / Học máy nâng cao (AI/ML Optimization).
-- Luồng phê duyệt đa cấp phức tạp (Multi-level approval).
-- Tự động thu hồi license ngay khi phát hiện inactivity mà không cần sự xác nhận của Manager.
-- Kiến trúc đa người thuê (Multi-tenancy) phục vụ nhiều doanh nghiệp độc lập trên cùng hạ tầng.
+There are three user roles. The Lifecycle Notification System is a system actor with no account.
 
----
+| Capability | Manager | Staff | Employee |
+|---|---|---|---|
+| Software Catalog | CRUD | Read | Read (no price, no key) |
+| Vendor | CRUD | Read | No access |
+| License Entitlement | CRUD | Read | No access |
+| Contract | CRUD | Read | No access |
+| License Compliance | Manage / read | Read | No access |
+| License Request | Review / approve | No access | Create / own |
+| License Assignment | CRUD | No access | Read own |
+| License Revocation | Manage | No access | No access |
+| Budget | CRUD | Read | No access |
+| Expense | CRUD | Enter / update | No access |
+| License Usage | Read / manage | Enter / update | No access |
+| Lifecycle | Manage | Read | Read own expiry |
+| Optimization Insights | Manage / review | Read | No access |
+| Dashboard and reports | Full | Related data only | Personal only |
+| User and Role admin | CRUD | No access | No access |
+| Audit Log | Read | Own actions | No access |
+| Data Import | Manage | Execute | No access |
 
-## 5. Mô hình 3 Role & Ma trận Phân quyền (RBAC Matrix)
+**System actor:** the Lifecycle Notification System scans SaaS expiry dates and Perpetual maintenance dates daily and sends alerts to Managers.
 
-Hệ thống ELMS chuẩn hóa quyền hạn dựa trên **3 Roles cốt lõi**:
+The backend must enforce RBAC, the Employee's access to personal data only (BR-08), and the rule that a Staff member cannot change an Entitlement or Budget (BR-09); hiding frontend controls serves UI/UX only.
 
-```mermaid
-classDiagram
-    class Manager {
-        <<Full Management>>
-        +Quản lý Software Catalog, Vendor, Contract, Entitlement
-        +Xem xét, Phê duyệt / Từ chối License Request
-        +Thực hiện Cấp phát (Assign) & Thu hồi (Revoke) License
-        +Thiết lập Budget & Phân bổ chi phí
-        +Giám sát Tuân thủ (Compliance), Overuse & Hết hạn
-        +Xem Dashboard, Báo cáo & Đề xuất Tối ưu hóa
-        +Quản lý User, Phân quyền 3 Role & Xem Audit Logs
-    }
-    class Editor {
-        <<Data Management>>
-        +Nhập dữ liệu mức độ sử dụng (Usage Data)
-        +Import dữ liệu Usage từ CSV/Excel
-        +Nhập và cập nhật chi phí thực tế (Expense)
-        +Import dữ liệu Expense từ CSV/Excel
-        +Upload hóa đơn & tài liệu chứng từ đính kèm
-        +Xem & Kiểm tra lại dữ liệu do mình đã nạp
-    }
-    class Employee {
-        <<Personal Access>>
-        +Xem danh mục phần mềm khả dụng
-        +Gửi yêu cầu xin cấp phát License (Request)
-        +Xem trạng thái yêu cầu cá nhân (Pending/Approved/Rejected)
-        +Xem danh sách License được cấp cho bản thân
-        +Xem thời hạn bản quyền cá nhân
-    }
-```
+## Documentation
 
-### Ma trận Quyền hạn Chi tiết (Role Permission Matrix)
-| Phân hệ / Chức năng | Manager | Editor | Employee | Nguyên tắc kiểm soát |
-| :--- | :---: | :---: | :---: | :--- |
-| **Software Catalog** | **CRUD** | Read | Read | Employee chỉ xem phần mềm khả dụng; không thấy giá mua/key. |
-| **Vendor Management** | **CRUD** | Read | No Access | Quản trị thông tin liên hệ nhà cung cấp và đại lý. |
-| **License Entitlement** | **CRUD** | Read | No Access | Chỉ Manager có quyền tạo và chỉnh sửa gói quyền sử dụng. |
-| **Contract Management** | **CRUD** | Read | No Access | Lưu trữ hợp đồng mua sắm và thời hạn pháp lý. |
-| **License Compliance** | **Manage / Read** | Read | No Access | Đánh giá trạng thái tuân thủ và phát hiện Overuse. |
-| **License Request** | **Review / Approve**| No Access | **Create / Own** | Employee tạo request; Manager duyệt; Editor không can thiệp. |
-| **License Assignment** | **CRUD** | No Access | **Own / Read** | Chỉ Manager có quyền gán seat; Employee xem seat cá nhân. |
-| **License Revocation** | **Manage** | No Access | No Access | Chỉ Manager có quyền thu hồi seat về kho. |
-| **Budget Management** | **CRUD** | Read | No Access | Thiết lập hạn mức ngân sách theo năm/kỳ/bộ phận. |
-| **Expense Management** | **CRUD** | **Input / Update** | No Access | Editor nạp chi phí và upload hóa đơn; Manager đối soát. |
-| **License Usage Data** | **Read / Manage** | **Input / Update** | No Access | Editor nạp dữ liệu tiêu thụ; Manager giám sát. |
-| **Lifecycle Management** | **Manage** | Read | **Own / Read** | Manager nhận cảnh báo hết hạn; Employee xem hạn dùng cá nhân. |
-| **Optimization Insights**| **Manage / Review**| Read | No Access | Quản lý các đề xuất cắt giảm chi phí lãng phí. |
-| **Dashboard & Reports** | **Full** | Data-related | Personal only | Bảng điều khiển phân tích chi phí và hiệu suất sử dụng. |
-| **User & Role Admin** | **CRUD** | No Access | No Access | Quản trị tài khoản và phân quyền 3 role cho tổ chức. |
-| **Audit Logs** | **Read** | Own actions | No Access | Tra cứu nhật ký kiểm toán hệ thống. |
-| **Data Import** | **Manage** | **Execute** | No Access | Editor thực thi nạp file; Manager quản lý cấu trúc. |
-
-> **Quy tắc bảo mật bắt buộc:** Toàn bộ phân quyền phải được kiểm tra và thực thi nghiêm ngặt tại **Backend API (Server-side Enforcement)**; không phụ thuộc vào việc ẩn/hiện nút trên giao diện Frontend.
-
----
-
-## 6. Quy tắc Nghiệp vụ Cốt lõi (20 Business Rules)
-
-Hệ thống tuân thủ 20 quy tắc kinh doanh bất biến:
-- **BR-01:** Hệ thống hỗ trợ song song hai loại hình: SaaS Subscription và Perpetual License.
-- **BR-02:** Mọi Entitlement bắt buộc phải liên kết với một Sản phẩm phần mềm và một Nhà cung cấp xác định.
-- **BR-03:** Các số lượng license chỉ được phép so sánh hoặc cộng trừ khi sử dụng cùng metric đo lường và phạm vi dữ liệu tương thích.
-- **BR-04:** Công thức tính toán dung lượng: $\text{Available Quantity} = \text{Purchased Quantity} - \text{Allocated Quantity}$.
-- **BR-05:** Tuyệt đối không cho phép cấp phát vượt quá số lượng bản quyền khả dụng ($\text{Allocated} \le \text{Purchased}$).
-- **BR-06:** Chỉ duy nhất vai trò Manager có quyền phê duyệt hoặc từ chối các yêu cầu cấp license.
-- **BR-07:** Chỉ duy nhất vai trò Manager có quyền thực hiện cấp phát (Assign) hoặc thu hồi (Revoke) license.
-- **BR-08:** Employee chỉ được phép xem thông tin yêu cầu và license thuộc sở hữu của chính bản thân mình.
-- **BR-09:** Editor được quyền nhập dữ liệu usage và expense, nhưng tuyệt đối không được sửa đổi Entitlement hoặc Budget.
-- **BR-10:** Bản ghi Expense hợp lệ bắt buộc phải có Số tiền hợp lệ, Tiền tệ và Ngày thanh toán.
-- **BR-11:** Các khoản chi phí khác loại tiền tệ không được cộng gộp trừ khi có chính sách quy đổi tỷ giá rõ ràng.
-- **BR-12:** Thời hạn bản quyền vĩnh viễn và thời hạn thỏa thuận bảo trì (Maintenance) phải được quản lý ở hai trường độc lập.
-- **BR-13:** Các lượt gán đã bị thu hồi (`Revoked Assignments`) phải được giữ lại trong lịch sử để đối soát kiểm toán.
-- **BR-14:** Việc đánh giá tuân thủ dựa trên mức dùng thực tế bắt buộc phải có dữ liệu usage hợp lệ và tương thích.
-- **BR-15:** Dữ liệu usage bị thiếu không được tự động hiểu là mức sử dụng bằng không ($Usage \ne 0$).
-- **BR-16:** Mọi đề xuất tối ưu hóa chi phí bắt buộc phải có căn cứ dữ liệu và phải qua sự phê duyệt của Manager trước khi thực thi.
-- **BR-17:** Mọi thao tác nghiệp vụ quan trọng bắt buộc phải lưu vết vào Audit Log bất biến kèm Actor, Action và Timestamp.
-- **BR-18:** Người dùng ở trạng thái vô hiệu hóa (`Deactivated`) lập tức bị khóa quyền truy cập hệ thống.
-- **BR-19:** Một License Request đã xử lý (`Approved` hoặc `Rejected`) không được phép xử lý lại lần thứ hai.
-- **BR-20:** Các dữ liệu lưu trữ lịch sử được bảo lưu theo chính sách lưu trữ dữ liệu của doanh nghiệp.
-
----
-
-## 7. Định hướng Kiến trúc & Công nghệ Đề xuất (Architecture & Tech Stack)
-
-Hệ thống được thiết kế theo kiến trúc **Modular Monolith** nhằm tối ưu hóa sự đơn giản trong triển khai, dễ kiểm thử và đảm bảo ranh giới module rõ ràng:
-
-```mermaid
-flowchart TD
-    subgraph UI["TẦNG GIAO DIỆN (Presentation Layer)"]
-        FE["React + TypeScript<br/>Material UI / Ant Design"]
-    end
-
-    subgraph API["TẦNG ĐIỀU KHIỂN & BẢO MẬT"]
-        SEC["Spring Security (RBAC 3 Roles)"]
-        DOC["Springdoc OpenAPI"]
-    end
-
-    subgraph CoreModules["TẦNG NGHIỆP VỤ (Modular Monolith)"]
-        direction TB
-        M_IAM["1. Identity & Access"]
-        M_ORG["2. Org & User"]
-        M_CAT["3. Catalog & Vendor"]
-        M_ENT["4. License Entitlement"]
-        M_ALC["5. Allocation & Compliance"]
-        M_FIN["6. Budget & Expense"]
-        M_LFC["7. Lifecycle & Renewal"]
-        M_OPT["8. Optimization Engine"]
-        M_RPT["9. Analytics & Reporting"]
-        M_AUD["10. Notification & Audit"]
-    end
-
-    subgraph Persistence["TẦNG DỮ LIỆU & HẠ TẦNG"]
-        DB[("PostgreSQL (Relational DB)")]
-        FLY["Flyway (DB Migration)"]
-        S3["S3-compatible File Storage<br/>(Contracts & Invoices)"]
-        SCHED["Spring Scheduler (Cron Jobs)"]
-    end
-
-    FE -->|HTTPS REST API| SEC
-    SEC --> CoreModules
-    CoreModules --> DB
-    CoreModules --> S3
-    SCHED --> M_LFC
-```
-
-### Bảng Công nghệ Khuyến nghị (Recommended Stack)
-| Tầng hệ thống | Công nghệ đề xuất | Lý do lựa chọn |
-| :--- | :--- | :--- |
-| **Frontend** | **React + TypeScript** | Hệ sinh thái mạnh, type-safe, linh hoạt xây dựng giao diện quản trị. |
-| **UI Framework** | **Material UI (MUI)** | Cung cấp sẵn hệ thống component chuẩn cho bảng dữ liệu, biểu mẫu và dashboard. |
-| **Backend Engine** | **Java + Spring Boot** | Mạnh mẽ, bảo mật cao, hỗ trợ hoàn hảo cấu trúc Modular Monolith và kiểm soát giao dịch ACID. |
-| **Security** | **Spring Security** | Thực thi phân quyền RBAC 3 role chặt chẽ tại tầng service và controller. |
-| **Database** | **PostgreSQL** | Cơ sở dữ liệu quan hệ mạnh mẽ, đảm bảo toàn vẹn dữ liệu giao dịch tài chính và cấp phát license. |
-| **Migration** | **Flyway** | Quản lý phiên bản cấu trúc cơ sở dữ liệu có tính lặp lại và kiểm soát lịch sử schema. |
-| **API Specs** | **Springdoc OpenAPI (Swagger)** | Tự động sinh tài liệu API chuẩn hóa hỗ trợ kết nối frontend-backend. |
-| **Background Jobs** | **Spring Scheduler** | Quét tự động hằng ngày các mốc hết hạn hợp đồng để gửi thông báo cảnh báo. |
-| **Containerization** | **Docker & Docker Compose** | Đóng gói nhất quán môi trường từ phát triển đến chạy thử nghiệm production pilot. |
-
----
-
-## 8. Tiêu chí Nghiệm thu & Chuyển giao (Acceptance & Release Criteria)
-
-Hệ thống được coi là hoàn thiện và sẵn sàng chuyển giao khi vượt qua **14 tiêu chí nghiệm thu cốt lõi**:
-1. Cả 3 role (`Manager, Editor, Employee`) đăng nhập thành công và chỉ truy cập được các chức năng được phân quyền.
-2. Manager có thể tạo và quản lý toàn bộ thông tin phần mềm và quyền sở hữu bản quyền.
-3. Cả hai loại hình **SaaS Subscription** và **Perpetual License** được đăng ký và theo dõi chính xác.
-4. Employee có thể gửi và theo dõi tiến độ các yêu cầu xin cấp license cá nhân.
-5. Manager có thể phê duyệt, từ chối yêu cầu; thực hiện cấp phát và thu hồi license thành công.
-6. Số lượng cấp phát được tính toán tự động và không bao giờ vượt quá dung lượng đã mua ($Allocated \le Purchased$).
-7. Editor có thể nhập dữ liệu sử dụng (`Usage`) và ghi nhận các khoản chi phí (`Expense`) kèm hóa đơn.
-8. Manager có thể theo dõi hạn mức ngân sách và chi phí giải ngân thực tế theo từng bộ phận.
-9. Hệ thống nhận diện và phát sinh cảnh báo đối với các hợp đồng sắp đến hạn hết hạn hoặc hạn bảo trì.
-10. Dashboard cung cấp đầy đủ các chỉ số trực quan về tình hình bản quyền, tài chính và tuân thủ.
-11. Các thao tác nghiệp vụ trọng yếu được ghi nhận đầy đủ vào hệ thống Audit Log bất biến.
-12. Toàn bộ các luồng nghiệp vụ kinh doanh chính vượt qua kiểm thử tích hợp (Integration Tests).
-13. Quy trình sao lưu và phục hồi dữ liệu cơ sở dữ liệu được kiểm nghiệm thành công.
-14. Hệ thống được triển khai ổn định trên môi trường thử nghiệm pilot và vượt qua kiểm thử chấp nhận người dùng (UAT).
-
----
-
-## 9. Bản đồ Điều hướng Tài liệu Kỹ thuật (`/docs`)
-
-Toàn bộ tài liệu chi tiết được tổ chức quy chuẩn trong thư mục [`/docs`](file:///home/datnguyen-nuoa/VFast/docs):
-
-```
-VFast/
-├── README.md                      # Báo cáo Tổng quan SRS v1.0, 7 Vấn đề, 8 Mục tiêu, 6 Modules & Kiến trúc
-└── docs/
-    ├── 01-MVP.md                  # Đặc tả Phạm vi MVP, 19 Stories P0, 20 Business Rules & Tiêu chí Nghiệm thu
-    ├── 02-use-cases.md            # Đặc tả ĐẦY ĐỦ 39 Use Cases (UC01-UC39) theo 3 Role & 3 Luồng Sequence Diagrams
-    ├── 03-user-stories.md         # Đặc tả 25 User Stories chuẩn INVEST (P0/P1) với Given-When-Then & Traceability Matrix
-    └── 04-information-architecture-manager.md # Kiến trúc Thông tin & Đặc tả Thiết kế Giao diện Phân hệ Manager (M1, M2 & M3)
-```
-
-- 📘 [**Tài liệu Đặc tả Phạm vi MVP (01-MVP.md)**](file:///home/datnguyen-nuoa/VFast/docs/01-MVP.md):
-  Đặc tả chi tiết phạm vi In-Scope vs Out-of-Scope, 19 User Stories P0 bắt buộc cho pilot, ma trận RBAC 3 role, 20 quy tắc kinh doanh bất biến (BR-01 đến BR-20), 7 yêu cầu phi chức năng (NFRs), mô hình 12 thực thể dữ liệu và 14 tiêu chí nghiệm thu.
-- 📗 [**Tài liệu Đặc tả Use Case (02-use-cases.md)**](file:///home/datnguyen-nuoa/VFast/docs/02-use-cases.md):
-  Đặc tả chuẩn hóa **39 Use Cases (UC01 đến UC39)** theo bảng phân loại SRS v1.0, mô tả chi tiết 3 luồng nghiệp vụ trọng yếu (License Allocation, Expense Management, Budget Monitoring) và các biểu đồ Sequence Diagram tương tác.
-- 📙 [**Tài liệu Đặc tả User Stories (03-user-stories.md)**](file:///home/datnguyen-nuoa/VFast/docs/03-user-stories.md):
-  Đặc tả chi tiết **25 User Stories** chuẩn hóa theo tiêu chí INVEST phân bổ cho 3 Role (Manager US-M01 đến US-M14, Editor US-E01 đến US-E06, Employee US-U01 đến US-U05), cung cấp 100% kịch bản kiểm thử chấp nhận định dạng Gherkin (**Given - When - Then**) và Ma trận ánh xạ Traceability Matrix với 39 Use Cases.
-- 📕 [**Kiến trúc Thông tin & Thiết kế View Manager (04-information-architecture-manager.md)**](file:///home/datnguyen-nuoa/VFast/docs/04-information-architecture-manager.md):
-  Đặc tả toàn diện Kiến trúc Thông tin (IA), Sitemap phân tầng và Thiết kế chi tiết từng View/Modal/Drawer cho **Manager**, bao trọn **Module 1 (License Management)**, **Module 2 (License Assignment Management)** và **Module 3 (Budget Management: Planning, Expense Tracking, Monitoring, Financial Reporting)** kèm sơ đồ luồng, state machines và wireframes trực quan.
-
----
-
-## 10. Thông tin Cấu hình Git & Nhánh Dự án
-
-- **Kho lưu trữ từ xa (Remote):** `git@github.com-personal:cuonglpv/VFast.git`
-- **Nhánh triển khai (Branch):** `docs/requirements-mvp`
-- **Tác giả commit (Author):** `DatTienNguyenn <dn841746@gmail.com>`
+- [MVP specification](docs/01-MVP.md) — scope, 20 business rules, NFRs, 12 entities, 14 acceptance criteria
+- [Use cases](docs/02-use-cases.md) — 39 use cases, three business flows, sequence diagrams
+- [User stories](docs/03-user-stories.md) — 25 user stories, Given/When/Then, traceability matrix
+- [Manager information architecture](docs/04-information-architecture-manager.md) — sitemap, views, modals and wireframes for Manager (Modules 1–3)

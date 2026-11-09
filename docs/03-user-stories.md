@@ -10,7 +10,7 @@ Toàn bộ 25 User Stories của hệ thống VFast ELMS được xây dựng v�
 
 | Tiêu chuẩn INVEST | Ý nghĩa kiểm định chất lượng | Cách thức hiện thực hóa trong VFast ELMS |
 | :--- | :--- | :--- |
-| **I – Independent** *(Độc lập)* | Mỗi story có thể được lập trình, kiểm thử và chuyển giao riêng lẻ mà không bị phụ thuộc cứng vào story khác. | Các luồng nạp dữ liệu của Editor (nhập expense) và Employee (gửi request) được xử lý độc lập qua bảng trạng thái trung gian. |
+| **I – Independent** *(Độc lập)* | Mỗi story có thể được lập trình, kiểm thử và chuyển giao riêng lẻ mà không bị phụ thuộc cứng vào story khác. | Các luồng nạp dữ liệu của Staff (nhập expense) và Employee (gửi request) được xử lý độc lập qua bảng trạng thái trung gian. |
 | **N – Negotiable** *(Có thể thương lượng)* | Nắm bắt bản chất mục tiêu nghiệp vụ, không trói buộc cứng vào giải pháp kỹ thuật chi tiết. | Tập trung vào quy tắc kinh doanh và kết quả cần đạt, cho phép đội ngũ kỹ thuật lựa chọn công nghệ phù hợp trong sprint. |
 | **V – Valuable** *(Có giá trị rõ ràng)* | Mang lại giá trị trực tiếp cho người dùng hoặc giúp tổ chức tiết kiệm chi phí, kiểm soát tuân thủ. | Mỗi story đều phục vụ trực tiếp một trong 3 trụ cột: Quản lý bản quyền, Kiểm soát ngân sách hoặc Tối ưu hóa chi phí. |
 | **E – Estimable** *(Có thể ước lượng)* | Đủ rõ ràng để đội ngũ phát triển ước tính độ phức tạp và thời gian thực hiện. | Đi kèm các trường dữ liệu bắt buộc, ràng buộc nghiệp vụ và kịch bản nghiệm thu cụ thể. |
@@ -26,7 +26,7 @@ Theo chuẩn hóa tại **Mục 6 của bản SRS v1.0**, toàn bộ 25 User Sto
 ```mermaid
 pie title Phân bổ 25 User Stories theo Vai trò
     "Manager (14 Stories)" : 14
-    "Editor (6 Stories)" : 6
+    "Staff (6 Stories)" : 6
     "Employee (5 Stories)" : 5
 ```
 
@@ -46,12 +46,12 @@ pie title Phân bổ 25 User Stories theo Vai trò
 | | **US-M12** | Đánh giá các đề xuất tối ưu hóa chi phí | P1 | UC19, UC20, UC22 |
 | | **US-M13** | Xem Dashboard tổng quan về tài sản và tài chính | **P0** | UC23, UC24, UC25 |
 | | **US-M14** | Quản trị tài khoản người dùng và phân quyền 3 role | **P0** | UC27, UC28, UC30 |
-| **Editor** | **US-E01** | Nhập dữ liệu mức độ sử dụng license thực tế | **P0** | UC31 |
-| | **US-E02** | Import dữ liệu License Usage từ file CSV/Excel | P1 | UC32 |
-| | **US-E03** | Ghi nhận các khoản chi phí phát sinh thực tế | **P0** | UC33, UC13 |
-| | **US-E04** | Import dữ liệu Expense từ file CSV/Excel | P1 | UC34 |
-| | **US-E05** | Tải lên hóa đơn và chứng từ thanh toán đính kèm | P1 | UC35 |
-| | **US-E06** | Xem và kiểm tra lại toàn bộ dữ liệu đã nạp | **P0** | UC36 |
+| **Staff** | **US-S01** | Nhập dữ liệu mức độ sử dụng license thực tế | **P0** | UC31 |
+| | **US-S02** | Import dữ liệu License Usage từ file CSV/Excel | P1 | UC32 |
+| | **US-S03** | Ghi nhận các khoản chi phí phát sinh thực tế | **P0** | UC33, UC13 |
+| | **US-S04** | Import dữ liệu Expense từ file CSV/Excel | P1 | UC34 |
+| | **US-S05** | Tải lên hóa đơn và chứng từ thanh toán đính kèm | P1 | UC35 |
+| | **US-S06** | Xem và kiểm tra lại toàn bộ dữ liệu đã nạp | **P0** | UC36 |
 | **Employee** | **US-U01** | Xem danh mục các phần mềm khả dụng | **P0** | UC37 |
 | | **US-U02** | Gửi yêu cầu xin cấp phát license mới | **P0** | UC06 |
 | | **US-U03** | Theo dõi trạng thái tiến độ xử lý yêu cầu cá nhân | **P0** | UC38 |
@@ -179,7 +179,7 @@ pie title Phân bổ 25 User Stories theo Vai trò
   > *As a Manager, I want to review expense records, so that I can monitor software costs.*
   > *(Là một Manager, tôi muốn rà soát các bản ghi chi phí, để theo dõi sát sao tình hình chi tiêu phần mềm).*
 - **Tiêu chí chấp nhận:**
-  - *Given:* Editor đã nạp các khoản chi phí mua sắm và gia hạn phần mềm.
+  - *Given:* Staff đã nạp các khoản chi phí mua sắm và gia hạn phần mềm.
   - *When:* Manager mở danh sách chi phí (`UC13`).
   - *Then:* Hiển thị chi tiết số tiền, ngày thanh toán, mã hóa đơn và phòng ban thụ hưởng; hỗ trợ lọc theo phần mềm hoặc vendor.
 
@@ -230,66 +230,66 @@ pie title Phân bổ 25 User Stories theo Vai trò
   > *(Là một Manager, tôi muốn quản lý người dùng và phân quyền, để việc truy cập hệ thống tuân thủ chính sách bảo mật).*
 - **Tiêu chí chấp nhận:**
   - *Given:* Manager đang ở màn hình Quản trị Người dùng (`UC27`, `UC28`).
-  - *When:* Gán vai trò `Editor` cho nhân viên IT mới.
+  - *When:* Gán vai trò `Staff` cho nhân viên IT mới.
   - *Then:* Tài khoản đó được cấp quyền nạp Usage và Expense, không có quyền duyệt request hay chỉnh sửa Entitlement.
 
 ---
 
-### Nhóm 2: User Stories cho vai trò EDITOR (6 Stories)
+### Nhóm 2: User Stories cho vai trò STAFF (6 Stories)
 
-#### US-E01: Nhập Dữ liệu Mức độ Sử dụng License Thực tế
-- **Mã:** `US-E01` | **Độ ưu tiên:** `P0`
+#### US-S01: Nhập Dữ liệu Mức độ Sử dụng License Thực tế
+- **Mã:** `US-S01` | **Độ ưu tiên:** `P0`
 - **User Story:**
-  > *As an Editor, I want to input license usage data, so that actual software consumption can be monitored.*
-  > *(Là một Editor, tôi muốn nhập dữ liệu sử dụng license, để mức độ tiêu thụ phần mềm thực tế được theo dõi chính xác).*
+  > *As a Staff member, I want to input license usage data, so that actual software consumption can be monitored.*
+  > *(Là một Staff, tôi muốn nhập dữ liệu sử dụng license, để mức độ tiêu thụ phần mềm thực tế được theo dõi chính xác).*
 - **Tiêu chí chấp nhận:**
-  - *Given:* Editor đang ở màn hình Nhập liệu Usage (`UC31`).
+  - *Given:* Staff đang ở màn hình Nhập liệu Usage (`UC31`).
   - *When:* Chọn nhân viên, phần mềm, nhập Ngày hoạt động gần nhất, Mức độ sử dụng và nhấn Lưu.
-  - *Then:* Bản ghi usage được tạo thành công, gắn tự động `created_by = Editor_ID` và dấu thời gian hệ thống.
+  - *Then:* Bản ghi usage được tạo thành công, gắn tự động `created_by = Staff_ID` và dấu thời gian hệ thống.
 
-#### US-E02: Import Dữ liệu Usage từ File CSV/Excel
-- **Mã:** `US-E02` | **Độ ưu tiên:** `P1`
+#### US-S02: Import Dữ liệu Usage từ File CSV/Excel
+- **Mã:** `US-S02` | **Độ ưu tiên:** `P1`
 - **User Story:**
-  > *As an Editor, I want to import usage data from CSV/Excel, so that large amounts of usage information can be updated efficiently.*
-  > *(Là một Editor, tôi muốn nạp dữ liệu usage từ file CSV/Excel, để cập nhật nhanh chóng khối lượng lớn thông tin sử dụng).*
+  > *As a Staff member, I want to import usage data from CSV/Excel, so that large amounts of usage information can be updated efficiently.*
+  > *(Là một Staff, tôi muốn nạp dữ liệu usage từ file CSV/Excel, để cập nhật nhanh chóng khối lượng lớn thông tin sử dụng).*
 - **Tiêu chí chấp nhận:**
   - *Given:* File Excel chứa dữ liệu hoạt động hàng tháng kết xuất từ cổng quản trị SSO.
-  - *When:* Editor tải file lên hệ thống (`UC32`).
+  - *When:* Staff tải file lên hệ thống (`UC32`).
   - *Then:* Hệ thống xác thực từng dòng, báo cáo số dòng hợp lệ và nạp toàn bộ vào cơ sở dữ liệu.
 
-#### US-E03: Ghi nhận Bản ghi Chi phí Thực tế (Expense)
-- **Mã:** `US-E03` | **Độ ưu tiên:** `P0`
+#### US-S03: Ghi nhận Bản ghi Chi phí Thực tế (Expense)
+- **Mã:** `US-S03` | **Độ ưu tiên:** `P0`
 - **User Story:**
-  > *As an Editor, I want to input expense records, so that software-related costs are recorded.*
-  > *(Là một Editor, tôi muốn ghi nhận các bản ghi chi phí, để các khoản chi tiêu phần mềm được ghi nhận đầy đủ).*
+  > *As a Staff member, I want to input expense records, so that software-related costs are recorded.*
+  > *(Là một Staff, tôi muốn ghi nhận các bản ghi chi phí, để các khoản chi tiêu phần mềm được ghi nhận đầy đủ).*
 - **Tiêu chí chấp nhận:**
   - *Given:* Doanh nghiệp vừa thanh toán chi phí gia hạn phần mềm GitHub Enterprise.
-  - *When:* Editor nhập Số tiền = 20.000.000 VNĐ, Ngày thanh toán = 05/03/2026, Mã hóa đơn = "HD-8812" và nhấn Lưu (`UC33`).
+  - *When:* Staff nhập Số tiền = 20.000.000 VNĐ, Ngày thanh toán = 05/03/2026, Mã hóa đơn = "HD-8812" và nhấn Lưu (`UC33`).
   - *Then:* Bản ghi chi phí được lưu thành công và tự động tính vào chi phí thực tế (`Actual Spending`) của kỳ.
 
-#### US-E04: Import Dữ liệu Expense từ File CSV/Excel
-- **Mã:** `US-E04` | **Độ ưu tiên:** `P1`
+#### US-S04: Import Dữ liệu Expense từ File CSV/Excel
+- **Mã:** `US-S04` | **Độ ưu tiên:** `P1`
 - **User Story:**
-  > *As an Editor, I want to import expense data from CSV/Excel, so that financial records can be updated efficiently.*
-  > *(Là một Editor, tôi muốn import dữ liệu chi phí từ bảng tính, để cập nhật nhanh các chứng từ tài chính).*
+  > *As a Staff member, I want to import expense data from CSV/Excel, so that financial records can be updated efficiently.*
+  > *(Là một Staff, tôi muốn import dữ liệu chi phí từ bảng tính, để cập nhật nhanh các chứng từ tài chính).*
 
-#### US-E05: Tải lên Hóa đơn và Tài liệu Chứng minh Đính kèm
-- **Mã:** `US-E05` | **Độ ưu tiên:** `P1`
+#### US-S05: Tải lên Hóa đơn và Tài liệu Chứng minh Đính kèm
+- **Mã:** `US-S05` | **Độ ưu tiên:** `P1`
 - **User Story:**
-  > *As an Editor, I want to upload invoices and supporting documents, so that expense records have corresponding evidence.*
-  > *(Là một Editor, tôi muốn tải lên hóa đơn và chứng từ hỗ trợ, để các khoản chi phí đều có bằng chứng đối soát pháp lý).*
+  > *As a Staff member, I want to upload invoices and supporting documents, so that expense records have corresponding evidence.*
+  > *(Là một Staff, tôi muốn tải lên hóa đơn và chứng từ hỗ trợ, để các khoản chi phí đều có bằng chứng đối soát pháp lý).*
 - **Tiêu chí chấp nhận:**
-  - *Given:* Editor đang tạo bản ghi chi phí phần mềm AWS.
-  - *When:* Editor tải lên tệp PDF hóa đơn điện tử VAT (`UC35`).
+  - *Given:* Staff đang tạo bản ghi chi phí phần mềm AWS.
+  - *When:* Staff tải lên tệp PDF hóa đơn điện tử VAT (`UC35`).
   - *Then:* Tệp được lưu trữ an toàn trong hệ thống và liên kết chặt chẽ với bản ghi chi phí tương ứng.
 
-#### US-E06: Xem lại Toàn bộ Dữ liệu Đã nạp vào Hệ thống
-- **Mã:** `US-E06` | **Độ ưu tiên:** `P0`
+#### US-S06: Xem lại Toàn bộ Dữ liệu Đã nạp vào Hệ thống
+- **Mã:** `US-S06` | **Độ ưu tiên:** `P0`
 - **User Story:**
-  > *As an Editor, I want to view submitted data, so that I can verify information I have entered.*
-  > *(Là một Editor, tôi muốn xem lại các dữ liệu đã nạp, để kiểm tra và xác nhận tính chính xác của thông tin do mình đưa vào).*
+  > *As a Staff member, I want to view submitted data, so that I can verify information I have entered.*
+  > *(Là một Staff, tôi muốn xem lại các dữ liệu đã nạp, để kiểm tra và xác nhận tính chính xác của thông tin do mình đưa vào).*
 - **Tiêu chí chấp nhận:**
-  - *Given:* Editor đã nạp nhiều bản ghi usage và expense trong ngày.
+  - *Given:* Staff đã nạp nhiều bản ghi usage và expense trong ngày.
   - *When:* Mở màn hình "Dữ liệu đã nạp (Submitted Data)" (`UC36`).
   - *Then:* Hiển thị danh sách các bản ghi do chính mình tạo ra kèm trạng thái và thời gian nạp.
 
@@ -367,7 +367,7 @@ Bảng ma trận truy xuất nguồn gốc đảm bảo **100% Use Cases (UC01 �
 | **UC10** | Revoke License | **US-M07** | Manager | P0 |
 | **UC11** | Track License Allocation | **US-M06, US-U04** | Manager / Employee | P0 |
 | **UC12** | Manage Budget | **US-M08** | Manager | P0 |
-| **UC13** | Manage Expense | **US-M09, US-E03** | Manager / Editor | P0 |
+| **UC13** | Manage Expense | **US-M09, US-S03** | Manager / Staff | P0 |
 | **UC14** | Monitor Budget Utilization | **US-M08, US-M09** | Manager | P0 |
 | **UC15** | Track License Expiration | **US-M11** | Manager | P0 |
 | **UC16** | Manage Renewal | **US-M11** | Manager | P1 |
@@ -380,17 +380,17 @@ Bảng ma trận truy xuất nguồn gốc đảm bảo **100% Use Cases (UC01 �
 | **UC23** | View License Dashboard | **US-M13** | Manager | P0 |
 | **UC24** | View Financial Dashboard | **US-M13** | Manager | P0 |
 | **UC25** | View Compliance Dashboard | **US-M10, US-M13** | Manager | P1 |
-| **UC26** | Export Reports | **US-M13, US-E06** | Manager / Editor | P1 |
+| **UC26** | Export Reports | **US-M13, US-S06** | Manager / Staff | P1 |
 | **UC27** | Manage Users | **US-M14** | Manager | P0 |
 | **UC28** | Manage Roles | **US-M14** | Manager | P0 |
-| **UC29** | Login / Logout | **US-M14, US-E01, US-U01** | All Roles | P0 |
+| **UC29** | Login / Logout | **US-M14, US-S01, US-U01** | All Roles | P0 |
 | **UC30** | View Audit Logs | **US-M14** | Manager | P0 |
-| **UC31** | Input License Usage | **US-E01** | Editor | P0 |
-| **UC32** | Import License Usage (CSV/Excel) | **US-E02** | Editor | P1 |
-| **UC33** | Input Expense Data | **US-E03** | Editor | P0 |
-| **UC34** | Import Expense Data (CSV/Excel) | **US-E04** | Editor | P1 |
-| **UC35** | Upload Supporting Documents (Invoices) | **US-E05** | Editor | P1 |
-| **UC36** | View Submitted Data | **US-E06** | Editor | P0 |
+| **UC31** | Input License Usage | **US-S01** | Staff | P0 |
+| **UC32** | Import License Usage (CSV/Excel) | **US-S02** | Staff | P1 |
+| **UC33** | Input Expense Data | **US-S03** | Staff | P0 |
+| **UC34** | Import Expense Data (CSV/Excel) | **US-S04** | Staff | P1 |
+| **UC35** | Upload Supporting Documents (Invoices) | **US-S05** | Staff | P1 |
+| **UC36** | View Submitted Data | **US-S06** | Staff | P0 |
 | **UC37** | View Available Software | **US-U01** | Employee | P0 |
 | **UC38** | View Own Request Status | **US-U03** | Employee | P0 |
 | **UC39** | View Own Assigned Licenses | **US-U04, US-U05** | Employee | P0 |
