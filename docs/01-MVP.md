@@ -45,9 +45,11 @@ Mục tiêu cốt lõi của phiên bản MVP:
 
 ```mermaid
 pie title Phân bổ Mức độ Ưu tiên cho Phiên bản 14 Ngày
-    "P0 - Bắt buộc cho Pilot (19 Stories / 25 Use Cases)" : 75
-    "P1 - Nên có tiếp theo (6 Stories / 14 Use Cases)" : 25
+    "P0 - Bắt buộc cho Pilot (19 Stories / 27 Use Cases)" : 19
+    "P1 - Nên có tiếp theo (6 Stories / 12 Use Cases)" : 6
 ```
+
+Biểu đồ thể hiện số lượng User Stories (19 P0, 6 P1), không phải tỷ lệ công sức. Số Use Cases được đếm theo từng dòng trong bảng UC01–UC39; mức ưu tiên của từng Use Case không thay đổi. Các điểm chưa thống nhất giữa tài liệu được tổng hợp tại [README — các điểm cần thống nhất](../README.md#specification-alignment).
 
 - **P0 – Must Have (Bắt buộc cho Pilot 14 ngày):**
   - Xác thực đăng nhập và phân quyền 3 role RBAC (`Manager, Staff, Employee`).

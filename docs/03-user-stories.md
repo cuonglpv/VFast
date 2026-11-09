@@ -6,7 +6,7 @@
 
 ## 1. Phương pháp luận & Tiêu chí Chuẩn hóa INVEST
 
-Toàn bộ 25 User Stories của hệ thống VFast ELMS được xây dựng và thẩm định dựa trên bộ nguyên lý **INVEST** của kỹ nghệ phát triển phần mềm linh hoạt:
+Toàn bộ 25 User Stories của hệ thống VFast ELMS sử dụng **INVEST** làm khung rà soát chất lượng. Các tiêu chí dưới đây là mục tiêu kiểm định, không phải xác nhận tất cả stories đã đạt; phạm vi, mã story và mức ưu tiên được giữ nguyên.
 
 | Tiêu chuẩn INVEST | Ý nghĩa kiểm định chất lượng | Cách thức hiện thực hóa trong VFast ELMS |
 | :--- | :--- | :--- |
@@ -15,7 +15,9 @@ Toàn bộ 25 User Stories của hệ thống VFast ELMS được xây dựng v�
 | **V – Valuable** *(Có giá trị rõ ràng)* | Mang lại giá trị trực tiếp cho người dùng hoặc giúp tổ chức tiết kiệm chi phí, kiểm soát tuân thủ. | Mỗi story đều phục vụ trực tiếp một trong 3 trụ cột: Quản lý bản quyền, Kiểm soát ngân sách hoặc Tối ưu hóa chi phí. |
 | **E – Estimable** *(Có thể ước lượng)* | Đủ rõ ràng để đội ngũ phát triển ước tính độ phức tạp và thời gian thực hiện. | Đi kèm các trường dữ liệu bắt buộc, ràng buộc nghiệp vụ và kịch bản nghiệm thu cụ thể. |
 | **S – Small** *(Kích thước phù hợp)* | Đủ nhỏ gọn để hoàn thành trong 1 đến 2 ngày làm việc của lập trình viên. | Tách biệt giữa các thao tác nhập tay đơn lẻ (P0) và tính năng import hàng loạt từ file Excel/CSV (P1). |
-| **T – Testable** *(Có thể kiểm thử)* | Có tiêu chuẩn nghiệm thu rõ ràng để QA/QC và người dùng cuối xác nhận tính đúng đắn. | 100% User Stories có kịch bản nghiệm thu chuẩn **Given - When - Then** (Gherkin format). |
+| **T – Testable** *(Có thể kiểm thử)* | Có tiêu chuẩn nghiệm thu rõ ràng để QA/QC và người dùng cuối xác nhận tính đúng đắn. | Mục tiêu: mỗi User Story có kịch bản **Given - When - Then**, bao gồm các trường hợp phân quyền, dữ liệu không hợp lệ và lỗi phù hợp. |
+
+**Nội dung cần hoàn thiện:** US-S04 hiện chưa có acceptance criteria; các stories còn lại cần rà soát độ bao phủ của kịch bản lỗi và phân quyền. Mục tiêu hoàn thành trong 1–2 ngày/story cần được nhóm ước lượng. Các điểm chưa thống nhất được tổng hợp tại [README — các điểm cần thống nhất](../README.md#specification-alignment).
 
 ---
 
@@ -351,7 +353,7 @@ pie title Phân bổ 25 User Stories theo Vai trò
 
 ## 4. Ma trận Ánh xạ Use Cases và User Stories (Traceability Matrix)
 
-Bảng ma trận truy xuất nguồn gốc đảm bảo **100% Use Cases (UC01 đến UC39)** được bao phủ hoàn chỉnh bởi **25 User Stories**:
+Bảng ma trận ánh xạ **39 Use Cases (UC01 đến UC39)** với **25 User Stories**. Việc có ánh xạ không đồng nghĩa acceptance criteria đã bao phủ đầy đủ hoặc chức năng đã được triển khai; mức ưu tiên được đọc theo từng Use Case:
 
 | Use Case ID | Tên Use Case trong SRS v1.0 | User Stories liên kết | Tác nhân chính | Độ ưu tiên |
 | :---: | :--- | :--- | :---: | :---: |

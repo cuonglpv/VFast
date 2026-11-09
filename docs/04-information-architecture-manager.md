@@ -2,7 +2,7 @@
 ## Project: VFast – Enterprise License Management System (ELMS)
 ### Subsystem: Executive Management Portal for Manager Role (Module 1, Module 2, Module 3)
 
-> **Document Baselines:** [README.md](../README.md), [docs/01-MVP.md](01-MVP.md), [docs/02-use-cases.md](02-use-cases.md), [docs/03-user-stories.md](03-use-stories.md)  
+> **Document Baselines:** [README.md](../README.md), [docs/01-MVP.md](01-MVP.md), [docs/02-use-cases.md](02-use-cases.md), [docs/03-user-stories.md](03-user-stories.md)<br>
 > **Structural Reference:** [PMDC-BATCH4-DATNT250 / 09-information-architecture.md](https://github.com/DatTienNguyenn/PMDC-BATCH4-DATNT250/blob/main/docs/09-information-architecture.md)  
 > **Version:** 3.0 (Comprehensive Standardization of Screen IDs, Routes, Hierarchy, UI/UX State Contract, Screen-to-API Mapping Matrix, View Specifications, and RBAC Matrix)  
 > **Development Branch:** `docs/manager-information-architecture`
@@ -102,7 +102,7 @@ flowchart TD
 | Level | Concept & Architecture Responsibility | Screen / Component Catalog | Display & Navigation Constraints |
 |:---:|---|---|---|
 | **Level 0** | **Global Layout & Context Shell** | Root App Context, Auth State Provider, Role Guard Provider, Toast & Modal Provider | Maintains active JWT session, enforces `Manager` role authentication before DOM render. |
-| **Level 1** | **Root Layout Shells** | 1. `AuthShell`: Minimalist centered authentication card.<br>2. `ManagerShell`: Left navigation sidebar, top executive header, breadcrumbs, user profile.<br>3. `ErrorShell`: Full-page boundary view without administrative navigation. | Strict security isolation between Manager, Editor, and Employee portals; blocks unauthorized roles at shell level. |
+| **Level 1** | **Root Layout Shells** | 1. `AuthShell`: Minimalist centered authentication card.<br>2. `ManagerShell`: Left navigation sidebar, top executive header, breadcrumbs, user profile.<br>3. `ErrorShell`: Full-page boundary view without administrative navigation. | Strict security isolation between Manager, Staff, and Employee portals; blocks unauthorized roles at shell level. |
 | **Level 2** | **Primary Pages** | `SCR-LIC-01`, `SCR-LIC-DETAIL-01`, `SCR-ASGN-01`, `SCR-BDG-MONITOR-01`, `SCR-BDG-PLAN-01`, `SCR-BDG-EXP-01`, `SCR-BDG-REPORT-01`. | Direct routing destinations linked to primary sidebar navigation; preserves full browser history. |
 | **Level 3** | **Nested Sub-Views & Tabs** | - 4 Tabs in `SCR-LIC-DETAIL-01`: General Info, Active Assignments, History, Audit Logs.<br>- 4 Views in `SCR-ASGN-01`: By Employee, By Software, Availability Monitor, Global History.<br>- 4 Reports in `SCR-BDG-REPORT-01`: Monthly Trends, By Vendor, Variance, Renewal Forecast. | Tab selection state persisted in URL query parameters (e.g., `?tab=active-users` or `?view=availability`). |
 | **Level 4** | **Overlay Modals & Side Drawers** | `SCR-LIC-ADD-01`, `SCR-LIC-EDIT-01`, `SCR-LIC-DEL-01`, `SCR-ASGN-ADD-01`, `SCR-ASGN-REVOKE-01`, `SCR-ASGN-CHANGE-01`. | Backdrop blur overlay; background scroll-locked (`overflow: hidden`); supports `Esc` key dismiss and top-right close `X`. |
@@ -432,7 +432,7 @@ flowchart TD
 
 Comprehensive access permission matrix for all 18 Manager Portal Screens & Dialogs:
 
-| Screen ID | Screen Name / Modal | Public | Manager (Full Admin) | Editor (Data Ingestion) | Employee (End User) |
+| Screen ID | Screen Name / Modal | Public | Manager (Full Admin) | Staff (Data Ingestion) | Employee (End User) |
 |:---|---|:---:|:---:|:---:|:---:|
 | **SCR-AUTH-01** | Enterprise Authentication | ✅ | ✅ | ✅ | ✅ |
 | **SCR-LIC-01** | License Inventory & KPIs | ❌ | ✅ (Full Access) | ❌ (Blocked 403) | ❌ (Blocked 403) |
@@ -455,4 +455,4 @@ Comprehensive access permission matrix for all 18 Manager Portal Screens & Dialo
 
 ---
 
-*This Information Architecture & View Specifications document is 100% aligned with [README.md](../README.md), [docs/01-MVP.md](01-MVP.md), [docs/02-use-cases.md](02-use-cases.md), and [docs/03-user-stories.md](03-user-stories.md).*
+*This document references the MVP, Use Cases, and User Stories specifications. Financial formulas, invoice requirements, and screen-level P0/P1 scope still require cross-document agreement; see [README — specification alignment](../README.md#specification-alignment). Existing rules and priorities are not changed by this note.*
