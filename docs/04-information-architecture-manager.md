@@ -35,13 +35,13 @@ The Manager Portal is standardized into **18 Screens & Interactive Views** (comp
 | **SCR-ASGN-01** | License Assignment Hub (4 Views) | Full Page (4 Views) | `/manager/assignments` | `US-M06`, `US-M07` | MVP P0 |
 | **SCR-ASGN-ADD-01** | Assign License Drawer (Seat Validation) | Side Drawer | `/manager/assignments?action=assign` | `US-M06` | MVP P0 |
 | **SCR-ASGN-REVOKE-01**| Revoke License Modal (Mandatory Reason) | Modal Overlay | `/manager/assignments?action=revoke` | `US-M07` | MVP P0 |
-| **SCR-ASGN-CHANGE-01**| Change License Tier Modal (Atomic Swap) | Modal Overlay | `/manager/assignments?action=change-tier`| `US-M06`, `US-M07` | MVP P0 |
+| **SCR-ASGN-CHANGE-01**| Change License Tier Modal (Atomic Swap) | Modal Overlay | `/manager/assignments?action=change-tier`| `US-M06`, `US-M07` | Deferred post-MVP (D10) |
 | **SCR-ASGN-AVAIL-01** | Real-time Seat Availability Monitor | Sub-view / Table | `/manager/assignments?view=availability`| `US-M06`, `US-M10` | MVP P0 |
 | **SCR-ASGN-HIST-01** | Global Assignment Audit History View | Sub-view / Table | `/manager/assignments?view=history` | `US-M06`, `US-M07` | MVP P0 |
-| **SCR-BDG-MONITOR-01**| Budget Monitoring Cockpit (5 Metrics) | Full Page | `/manager/budget` | `US-M08`, `US-M13` | MVP P0 |
-| **SCR-BDG-PLAN-01** | Multi-dimensional Budget Planning Matrix | Full Page | `/manager/budget/planning` | `US-M08` | MVP P0 |
-| **SCR-BDG-EXP-01** | Comprehensive License Expense Ledger | Full Page | `/manager/budget/expenses` | `US-M09` | MVP P0 |
-| **SCR-BDG-REPORT-01** | Financial Reporting & Renewal Forecast | Full Page | `/manager/budget/reports` | `US-M13` | MVP P0 |
+| **SCR-BDG-MONITOR-01**| Budget Monitoring Cockpit (4 P0 Metrics, Committed in P1) | Full Page | `/manager/budget` | `US-M08`, `US-M13` | MVP P0 |
+| **SCR-BDG-PLAN-01** | Multi-dimensional Budget Planning Matrix | Full Page | `/manager/budget/planning` | `US-M08` | MVP P0 (annual per department); P1 (12-month matrix) |
+| **SCR-BDG-EXP-01** | Comprehensive License Expense Ledger | Full Page | `/manager/budget/expenses` | `US-M09` | MVP P0 (paid expenses); P1 (other statuses) |
+| **SCR-BDG-REPORT-01** | Financial Reporting & Renewal Forecast | Full Page | `/manager/budget/reports` | `US-M13` | P1 (UC16, UC22, UC26) |
 | **SCR-ERR-403** | 403 Forbidden Access (RBAC Guard) | Full Page | `/403` | `US-M14` | MVP P0 |
 | **SCR-ERR-404** | 404 Page Not Found (Resource Error) | Full Page | `/404` | System | MVP P0 |
 
@@ -166,10 +166,11 @@ flowchart TD
 5. **Rule 5: Multi-currency Separation & Administrative Normalization (BR-10, BR-11):**
    - `VND` and `USD` expenditure figures are never summed directly across raw tables.
    - The system applies an administrative exchange rate table (e.g., $1 \text{ USD} = 25,400 \text{ VND}$) to standardize reporting into the fiscal base currency.
-6. **Rule 6: Automated 3-Tier Budget Threshold Alerting (UC14, BR-16):**
+6. **Rule 6: Automated 3-Tier Budget Threshold Alerting (UC14):**
    - Below 80%: Safe Zone (Green). Normal disbursement pace.
    - 80% to 99%: Warning Zone (Amber). Alerts Manager to review upcoming renewals and audit inactive users.
-   - 100% or Above: Critical Zone (Red). Flags over-budget status and triggers soft-stop approval workflows for new expenses.
+   - 100% or Above: Critical Zone (Red). Flags over-budget status and alerts the Manager. New expenses are not blocked and no additional approval tier is added (D11).
+   - Zones use `Budget Utilization` $= Actual / Total$ (D4).
 
 ---
 
@@ -179,12 +180,12 @@ Comprehensive matrix mapping all 18 Manager Portal screens to backend REST API e
 
 | Screen ID | UI Action / Trigger | API Endpoint & Method | Business Purpose & Data Payload | RBAC Role |
 |:---|---|---|---|:---:|
-| **SCR-AUTH-01** | Login Form Submit | `POST /api/v1/auth/login` | Authenticates credentials, returns JWT Token and `Manager` role context. | Public |
-| **SCR-LIC-01** | Fetch Inventory & KPIs | `GET /api/v1/licenses?status={}&vendor={}` | Retrieves paginated entitlements list and 5 executive KPI summary cards. | Manager Only |
-| **SCR-LIC-01** | Export Inventory Data | `GET /api/v1/licenses/export?format=csv` | Exports full company-wide license register as CSV/Excel for auditing. | Manager Only |
+| **SCR-AUTH-01** | Login Form Submit | `POST /api/v1/auth/login` | Authenticates credentials, issues a server-revocable session per UC29 and returns the role context. Applies lockout and rate limiting. | Public |
+| **SCR-LIC-01** | Fetch Inventory & KPIs | `GET /api/v1/licenses?status={}&vendor={}` | Retrieves paginated entitlements list and 5 executive KPI summary cards. Never returns license keys in clear. | Manager; Staff (read-only, D9) |
+| **SCR-LIC-01** | Export Inventory Data | `GET /api/v1/licenses/export?format=csv` | P1 (UC26). Exports the company-wide license register as CSV/Excel for auditing, excluding license keys and neutralizing spreadsheet formulas. | Manager Only |
 | **SCR-LIC-ADD-01** | Submit New License Form | `POST /api/v1/licenses` | Registers new entitlement (SaaS / Perpetual), initializes $Available = Purchased$. | Manager Only |
-| **SCR-LIC-DETAIL-01**| Load License Details | `GET /api/v1/licenses/{id}` | Fetches license metadata, contract profile, attachments, and capacity gauge. | Manager Only |
-| **SCR-LIC-DETAIL-01**| Click "Reveal License Key" | `POST /api/v1/licenses/{id}/reveal-key` | Decrypts serial key; writes security audit log `VIEW_LICENSE_KEY`. | Manager Only |
+| **SCR-LIC-DETAIL-01**| Load License Details | `GET /api/v1/licenses/{id}` | Fetches license metadata, contract profile, attachments, and capacity gauge, with the key masked. | Manager; Staff (read-only, D9) |
+| **SCR-LIC-DETAIL-01**| Click "Reveal License Key" | `POST /api/v1/licenses/{id}/reveal-key` | Decrypts serial key for one response with `Cache-Control: no-store` and rate limiting; writes security audit log `VIEW_LICENSE_KEY`. The key never appears in URLs or logs (NFR-01). | Manager Only |
 | **SCR-LIC-DETAIL-01**| Tab 2: Active Assigned Users | `GET /api/v1/licenses/{id}/assignments?status=Active` | Retrieves list of employees currently holding a seat with usage status. | Manager Only |
 | **SCR-LIC-DETAIL-01**| Tab 3: Allocation History | `GET /api/v1/licenses/{id}/assignments/history` | Retrieves complete chronological assignment/revocation log (BR-13). | Manager Only |
 | **SCR-LIC-DETAIL-01**| Tab 4: Configuration Audit | `GET /api/v1/licenses/{id}/audit-logs` | Retrieves audit trail of quantity changes, renewals, and price edits (BR-17). | Manager Only |
@@ -195,17 +196,47 @@ Comprehensive matrix mapping all 18 Manager Portal screens to backend REST API e
 | **SCR-ASGN-01** | View B: By Software | `GET /api/v1/assignments/by-software` | Displays discrete seat-level allocations per software catalog item. | Manager Only |
 | **SCR-ASGN-AVAIL-01**| Load Seat Monitor | `GET /api/v1/licenses/availability-monitor` | Fetches real-time capacity percentages and alert flags (Red/Yellow/Green/Blue). | Manager Only |
 | **SCR-ASGN-HIST-01** | Load Global Audit Log | `GET /api/v1/assignments/global-history` | Fetches company-wide chronological assignment event register. | Manager Only |
-| **SCR-ASGN-ADD-01** | Confirm Seat Allocation | `POST /api/v1/assignments` | Assigns seat to employee; verifies $Available > 0$ with row-level locking. | Manager Only |
-| **SCR-ASGN-REVOKE-01**| Confirm Seat Revocation | `POST /api/v1/assignments/{id}/revoke` | Revokes seat to pool ($Available += 1$); logs mandatory reason (BR-13). | Manager Only |
-| **SCR-ASGN-CHANGE-01**| Confirm Tier Transition | `POST /api/v1/assignments/{id}/change-tier` | Atomic swap transaction: Revokes current tier and assigns target tier. | Manager Only |
-| **SCR-BDG-MONITOR-01**| Load Budget Cockpit | `GET /api/v1/budgets/monitoring?fiscalYear={year}` | Retrieves 5 core financial metrics, burn-down trajectory, and alerts. | Manager Only |
-| **SCR-BDG-PLAN-01** | Load Budget Matrix | `GET /api/v1/budgets/planning?fiscalYear={year}` | Fetches 12-month departmental and vendor allocation matrix grid. | Manager Only |
+| **SCR-ASGN-ADD-01** | Confirm Seat Allocation | `POST /api/v1/assignments` | Assigns seat to employee; verifies $Available > 0$ with row-level locking, rejects duplicates (D7) and marks any linked request `Fulfilled` (D6). | Manager Only |
+| **SCR-ASGN-REVOKE-01**| Confirm Seat Revocation | `POST /api/v1/assignments/{id}/revoke` | Locks the assignment and entitlement, rejects an assignment that is no longer `Active`, revokes seat to pool ($Available += 1$); logs mandatory reason (BR-13). | Manager Only |
+| **SCR-ASGN-CHANGE-01**| Confirm Tier Transition | `POST /api/v1/assignments/{id}/change-tier` | Deferred post-MVP (D10). Atomic swap transaction: Revokes current tier and assigns target tier. | Manager Only |
+| **SCR-BDG-MONITOR-01**| Load Budget Cockpit | `GET /api/v1/budgets/monitoring?fiscalYear={year}` | Retrieves core financial metrics per D4, burn-down trajectory, and alerts. | Manager; Staff (read-only, D9) |
+| **SCR-BDG-PLAN-01** | Load Budget Matrix | `GET /api/v1/budgets/planning?fiscalYear={year}` | Fetches annual departmental budgets; the 12-month allocation matrix is P1. | Manager; Staff (read-only, D9) |
 | **SCR-BDG-PLAN-01** | Save Budget Allocations | `POST /api/v1/budgets/planning` | Establishes fiscal budget ceiling or saves departmental revisions. | Manager Only |
-| **SCR-BDG-EXP-01** | Load Expense Ledger | `GET /api/v1/expenses?fiscalYear={year}&status={}` | Retrieves expense outlays: Monthly, Annual, Paid, Pending, Projected. | Manager Only |
-| **SCR-BDG-EXP-01** | Mark Expense as Paid | `PATCH /api/v1/expenses/{id}/mark-paid` | Transitions expense to `PAID`, verifies attached VAT invoice PDF. | Manager Only |
-| **SCR-BDG-REPORT-01** | Load Variance Report | `GET /api/v1/budgets/reports/variance?fiscalYear={year}`| Computes budget vs. actuals variance across departments and vendors. | Manager Only |
-| **SCR-BDG-REPORT-01** | Load Renewal Forecast | `GET /api/v1/budgets/reports/renewal-forecast?days=90` | Forecasts forward cash outlays and integrates inactive seat reductions. | Manager Only |
-| **SCR-BDG-REPORT-01** | Export Executive PDF | `GET /api/v1/budgets/reports/export-pdf?type={}` | Generates board-ready graphical PDF financial report. | Manager Only |
+| **SCR-BDG-EXP-01** | Load Expense Ledger | `GET /api/v1/expenses?fiscalYear={year}&status={}` | Retrieves paid expenses; other statuses are P1 (D5). Staff see only records they created (UC36). | Manager; Staff (own records) |
+| **SCR-BDG-EXP-01** | Create Expense | `POST /api/v1/expenses` | Records a paid expense: amount, currency, payment date (BR-10), invoice number. Sets `created_by` on the server. | Manager, Staff |
+| **SCR-BDG-EXP-01** | Update Expense | `PUT /api/v1/expenses/{id}` | Corrects an expense; Staff may update only records they created. Writes an audit log. | Manager; Staff (own records) |
+| **SCR-BDG-EXP-01** | Mark Expense as Paid | `PATCH /api/v1/expenses/{id}/mark-paid` | P1 (D5). Transitions a payable to `PAID` and records the payment date; a VAT invoice attachment (UC35) is optional. | Manager Only |
+| **SCR-BDG-REPORT-01** | Load Variance Report | `GET /api/v1/budgets/reports/variance?fiscalYear={year}`| P1. Computes budget vs. actuals variance across departments and vendors. | Manager Only |
+| **SCR-BDG-REPORT-01** | Load Renewal Forecast | `GET /api/v1/budgets/reports/renewal-forecast?days=90` | P1. Forecasts forward cash outlays and integrates inactive seat reductions. | Manager Only |
+| **SCR-BDG-REPORT-01** | Export Executive PDF | `GET /api/v1/budgets/reports/export-pdf?type={}` | P1 (UC26). Generates board-ready graphical PDF financial report. | Manager Only |
+
+---
+
+### 4.1. Supporting API Contract for Other P0 Flows
+
+These P0 endpoints serve use cases that have no screen in this document yet. All APIs use the `/api/v1/` prefix (D16). Status codes: `401` unauthenticated, `403` wrong role, `404` another user's record, `409` state conflict, `422` validation error.
+
+| Use Case | API Endpoint & Method | Business Purpose | RBAC Role |
+|:---|---|---|:---:|
+| UC29 | `POST /api/v1/auth/logout` | Revokes the current session. | Authenticated |
+| UC01, UC37 | `GET /api/v1/software` | Lists the catalog. Employee responses exclude price and license key. | All roles |
+| UC01 | `POST`, `PUT /api/v1/software/{id}` | Creates or updates a catalog item, with quick Vendor creation (D1). | Manager Only |
+| UC06 | `POST /api/v1/license-requests` | Creates a `Pending` request for one seat for the caller (D6). | Employee |
+| UC07 | `GET /api/v1/license-requests?status={}` | Lists all requests. | Manager Only |
+| UC38 | `GET /api/v1/license-requests/mine` | Lists the caller's own requests (BR-08). | Employee |
+| UC08 | `POST /api/v1/license-requests/{id}/approve` | Approves a `Pending` request; `409` if already processed (BR-19). | Manager Only |
+| UC08 | `POST /api/v1/license-requests/{id}/reject` | Rejects a `Pending` request with a mandatory reason; `409` if already processed (BR-19). | Manager Only |
+| UC39, UC11 | `GET /api/v1/assignments/mine` | Lists the caller's own assignments, without license keys (BR-08). | Employee |
+| UC31 | `POST`, `PUT /api/v1/license-usage/{id}` | Creates or corrects a usage record for a period. Staff may update only records they created. | Manager, Staff |
+| UC36 | `GET /api/v1/submissions/mine?type={}` | Lists usage and expense records created by the caller. | Staff |
+| UC05, UC21 | `GET /api/v1/compliance` | Returns compliance status per entitlement (D15). | Manager; Staff (read-only) |
+| UC15 | `GET /api/v1/licenses/expiring?days={}` | Lists SaaS and maintenance expiry dates in separate fields (BR-12). | Manager; Staff (read-only) |
+| UC18 | `GET /api/v1/notifications` | Lists the caller's in-app notifications (D14). | Authenticated |
+| UC23 | `GET /api/v1/dashboards/license` | Returns license dashboard metrics. | Manager Only |
+| UC24 | `GET /api/v1/dashboards/financial?fiscalYear={year}` | Returns financial dashboard metrics per D4. | Manager Only |
+| UC27 | `GET`, `POST`, `PUT /api/v1/users/{id}` | Lists, creates, and updates users, including deactivation (BR-18). | Manager Only |
+| UC28 | `PUT /api/v1/users/{id}/role` | Changes a user's role and revokes that user's sessions. | Manager Only |
+| UC30 | `GET /api/v1/audit-logs` | Reads audit logs. No write endpoint exists (BR-17). | Manager Only |
 
 ---
 
@@ -228,7 +259,7 @@ Comprehensive matrix mapping all 18 Manager Portal screens to backend REST API e
     - *Card 4:* Expiring Soon within $\le 30$ days.
     - *Card 5:* Over-allocated / Compliance Risk count.
   - **Filter & Search Toolbar:**
-    - Instant search input matching software name, vendor, license key (300ms debounce).
+    - Instant search input matching software name, vendor, license code (300ms debounce). License keys are never searchable (NFR-01).
     - Dropdowns: Vendor, Model (`SaaS Subscription` / `Perpetual License`), Status (`Active`, `Expiring Soon`, `Expired`, `Suspended`), Expiration Range, Seat Availability.
   - **License Data Grid:**
     - Columns: License Code, Software & Edition, Vendor, Model, Capacity Utilization ($Allocated / Purchased$), Available Seats ($Available$), Expiration Date, Status (Pill Badge), Row Actions `[...]`.
@@ -246,7 +277,7 @@ Comprehensive matrix mapping all 18 Manager Portal screens to backend REST API e
   - Purchased Quantity ($Purchased \ge 1$), Unit Cost, Currency (`VND` or `USD` per BR-10, BR-11).
   - **SaaS Specifics:** Start Date, Expiration Date (Mandatory), Billing Cycle, Auto-renewal Toggle.
   - **Perpetual Specifics:** Purchase Date, Core Validity fixed to `Perpetual` (BR-12), Maintenance Agreement Checkbox, Maintenance Expiration Date.
-  - Contract/PO Code, Supporting Invoice Upload (PDF, PNG $\le 10$MB).
+  - Contract/PO Code, optional Supporting Invoice Upload (P1; PDF, PNG, JPG $\le 10$MB, validated by file content per NFR-01).
 - **Post-condition:** Initializes $Allocated = 0$, $Available = Purchased$. Records audit log `CREATE_LICENSE_ENTITLEMENT`.
 
 #### 1.3. `SCR-LIC-DETAIL-01`: License Detail View & Seat Gauge (4 Tabs)
@@ -258,7 +289,7 @@ Comprehensive matrix mapping all 18 Manager Portal screens to backend REST API e
   - **Quick Action Bar:** `[+ Assign Seat]` (opens `SCR-ASGN-ADD-01`), `[Renew Agreement]`, `[Edit License]`, `[Delete/Archive]`.
   - **4 Management Tabs:**
     - *Tab 1 (General Info & Contract Profile):* Pricing, billing frequency, contract reference, invoice attachment.
-    - *Tab 2 (Active Assigned Users):* Interactive table of employees holding a seat, usage status (`Active`, `Idle`, `Inactive $\ge 60$ days` with red alert badge), inline action buttons `[Change Tier]` and `[Revoke]`.
+    - *Tab 2 (Active Assigned Users):* Interactive table of employees holding a seat, usage status (`Active`, `Idle`, `Inactive` for $\ge 60$ days with red alert badge, `Unknown` when no valid usage exists per BR-15), inline action button `[Revoke]` (`[Change Tier]` is deferred post-MVP per D10).
     - *Tab 3 (Allocation History):* Chronological audit log of all grants and revocations for this license (BR-13).
     - *Tab 4 (License Change Audit Log):* Immutable log of seat changes, renewals, and price modifications (BR-17).
 
@@ -312,7 +343,7 @@ flowchart TD
 flowchart TD
     Step1["Step 1: Select Beneficiary Employee<br/>(Search by Name, Email, Dept)"]
     Step1 --> CheckDuplicate{"Check Existing Licenses:<br/>Already holds identical license?"}
-    CheckDuplicate -->|"Yes (Already has tier)"| DupWarn["Warning: Employee already holds this license<br/>(Suggestion: Use Change Tier / Upgrade flow)"]
+    CheckDuplicate -->|"Yes (Already has active seat)"| DupWarn["BLOCK ALLOCATION:<br/>Employee already holds an active seat for this software<br/>(Revoke the current seat first)"]
     CheckDuplicate -->|"No (Eligible)"| Step2["Step 2: Select Software and Entitlement Pool"]
 
     Step2 --> RealtimeCheck{"Validate Seat Availability:<br/>Available = Purchased - Allocated > 0?"}
@@ -320,8 +351,8 @@ flowchart TD
     RealtimeCheck -->|"Available > 0 (Seats Available)"| Step3["Step 3: Configure Parameters and Terms"]
 
     Step3 --> Params["Set Effective Date, Term Duration,<br/>Business Justification, and Request ID"]
-    Params --> LockTx["Execute Database Transaction with Row-Level Locking"]
-    LockTx --> Success["Success:<br/>1. Create license_assignments (Active)<br/>2. Increment allocated_quantity (+1)<br/>3. Decrement available_quantity (-1)<br/>4. Write Audit Log (ASSIGN_LICENSE)<br/>5. Send notification to Employee"]
+    Params --> LockTx["Execute Database Transaction with Row-Level Locking<br/>Re-check request status, duplicates, and seats on the server"]
+    LockTx --> Success["Success:<br/>1. Create license_assignments (Active)<br/>2. Increment allocated_quantity (+1), available is derived<br/>3. Mark linked request as Fulfilled<br/>4. Write Audit Log (ASSIGN_LICENSE)<br/>5. Send notification to Employee"]
 ```
 
 #### 2.3. `SCR-ASGN-REVOKE-01`: Revoke License Modal
@@ -334,7 +365,10 @@ flowchart TD
   - Optional email notification toggle to the employee.
 - **System Execution:** Updates status to `Revoked`, restores $Available += 1$, preserves audit record indefinitely (BR-13).
 
-#### 2.4. `SCR-ASGN-CHANGE-01`: Change License Tier Modal (Atomic Swap)
+#### 2.4. `SCR-ASGN-CHANGE-01`: Change License Tier Modal (Atomic Swap) — Deferred post-MVP
+
+> Not part of the pilot: no use case or business rule defines this flow (D10). During the pilot, revoke the current seat and then assign the target tier. The specification below is kept for later reference.
+
 - **Triggered from:** "Change Tier" button on an employee's software record.
 - **Presentation:** Modal Overlay (Width: 620px)
 - **Components:**
@@ -368,15 +402,15 @@ flowchart TD
 - **Permissions:** Manager Only.
 - **Interface Layout:**
   - **Fiscal Year Selector:** `FY2026`, `FY2027` and Base Currency Toggle (`VND`, `USD`).
-  - **5 Core Financial Health Metrics (Cards):**
+  - **Core Financial Health Metrics (Cards), per UC14 and D4:**
     1. `Total Budget:` Approved financial ceiling for the fiscal year.
     2. `Actual Spending:` Cash settled and disbursed to date ($\sum \text{Paid}$).
-    3. `Committed Spending:` Obligated liabilities (Pending invoices + Active contracts).
-    4. `Remaining Budget:` Unobligated procurement headroom ($\text{Total} - (\text{Actual} + \text{Committed})$).
-    5. `Budget Utilization:` Budget velocity percentage ($\frac{\text{Actual} + \text{Committed}}{\text{Total}} \times 100\%$).
+    3. `Remaining Budget:` $\text{Total} - \text{Actual}$.
+    4. `Budget Utilization:` $\frac{\text{Actual}}{\text{Total}} \times 100\%$. All threshold banners use this value.
+    5. `Committed Spending` (P1, shown separately): Unpaid invoices plus remaining contract obligations that have no invoice yet, so no obligation is counted twice. It is excluded from metrics 3 and 4.
   - **Automated Threshold Banners:**
     - Amber warning banner at $\ge 80\%$: Prompts Manager to review Q4 expenditure.
-    - Red critical banner at $\ge 100\%$: Over-budget alert requiring board override.
+    - Red critical banner at $\ge 100\%$: Over-budget alert to the Manager, with no additional approval tier (D11).
   - **Cumulative Spending Burn-down / Burn-up Chart:** 12-month trajectory comparing Planned vs. Actual vs. Committed.
   - **Departmental Utilization Progress Bars:** Visual spending velocity per cost center.
 
@@ -397,14 +431,15 @@ flowchart TD
 - **Route:** `/manager/budget/expenses`
 - **Presentation:** Full Page
 - **Features:**
-  - Filters: Status (`All`, `PAID`, `PENDING`, `OVERDUE`, `PROJECTED`), Vendor, Frequency (`Monthly` / `Annual`), Cost Center.
+  - Filters: Vendor, Frequency (`Monthly` / `Annual`), Cost Center. In P0 the ledger holds paid expenses only. `PENDING` and `OVERDUE` payables are a P1 extension that needs its own rule, because BR-10 requires a payment date. `PROJECTED` is forecast data from reports, not an expense record (D5).
   - **Expense Ledger Data Grid:**
     - Columns: Invoice ID, Software & Tier, Vendor, Amount & Currency, Frequency, Invoice Date, Payment Due Date, Status, VAT Invoice PDF link, Actions (View, Approve).
-  - Enforces mandatory VAT receipt compliance (**BR-10**) and currency standardization (**BR-11**).
+  - Enforces amount, currency, and payment date (**BR-10**) and currency standardization (**BR-11**). The VAT invoice attachment is optional and arrives with UC35 in P1 (D2).
 
 #### 3.4. `SCR-BDG-REPORT-01`: Financial Reporting & Renewal Forecast
 - **Route:** `/manager/budget/reports`
 - **Presentation:** Full Page
+- **Scope:** P1 in full. The P0 financial overview is provided by `SCR-BDG-MONITOR-01`.
 - **4 Specialized Report Types:**
   1. *Report 1: Monthly Trends:* Stacked bar chart of SaaS vs. Perpetual over 12 months with MoM growth rates.
   2. *Report 2: By Vendor:* Donut & Treemap market share analysis identifying Top 5 suppliers for volume negotiations.
@@ -452,6 +487,8 @@ Comprehensive access permission matrix for all 18 Manager Portal Screens & Dialo
 | **SCR-BDG-REPORT-01** | Financial Reporting Center | ❌ | ✅ (Full Access) | ❌ (Blocked 403) | ❌ (Blocked 403) |
 | **SCR-ERR-403** | 403 Forbidden | ✅ | ✅ | ✅ | ✅ |
 | **SCR-ERR-404** | 404 Not Found | ✅ | ✅ | ✅ | ✅ |
+
+**Screen access versus data access (D9):** This matrix covers Manager Portal screens only. A 403 here does not remove the read access granted to Staff in the [README permissions matrix](../README.md); Staff read that data through the APIs in Section 4 and through Staff screens that will be specified separately. Enforcement happens on the backend for every API, and hiding a screen is not an access control.
 
 ---
 

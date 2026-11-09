@@ -32,35 +32,64 @@ pie title Phân bổ 25 User Stories theo Vai trò
 
 | Nhóm Vai trò | Mã Story | Tên User Story | Độ ưu tiên | Liên kết Use Cases |
 | :--- | :--- | :--- | :---: | :---: |
-| **Manager** | **US-M01** | Quản lý danh mục sản phẩm phần mềm chuẩn | **P0** | UC01 |
-| | **US-M02** | Đăng ký & quản lý Entitlement (SaaS & Perpetual) | **P0** | UC03 |
+| **Manager** | **US-M01** | Quản lý danh mục sản phẩm phần mềm chuẩn | **P0** | UC01, UC02 |
+| | **US-M02** | Đăng ký & quản lý Entitlement (SaaS & Perpetual) | **P0** | UC02, UC03 |
 | | **US-M03** | Quản lý hợp đồng pháp lý mua sắm license | P1 | UC04 |
 | | **US-M04** | Xem xét danh sách License Request từ nhân viên | **P0** | UC07 |
 | | **US-M05** | Phê duyệt hoặc từ chối License Request | **P0** | UC08 |
-| | **US-M06** | Cấp phát (Assign) license cho nhân viên | **P0** | UC09 |
+| | **US-M06** | Cấp phát (Assign) license cho nhân viên | **P0** | UC09, UC11 |
 | | **US-M07** | Thu hồi (Revoke) license để giải phóng dung lượng | **P0** | UC10 |
-| | **US-M08** | Thiết lập và quản lý ngân sách phần mềm | **P0** | UC12 |
-| | **US-M09** | Rà soát và quản lý các bản ghi chi phí thực tế | **P0** | UC13 |
-| | **US-M10** | Giám sát tuân thủ bản quyền và phát hiện Overuse | **P0** | UC05, UC21 |
-| | **US-M11** | Theo dõi hạn hết hạn hợp đồng và kế hoạch gia hạn | **P0** | UC15, UC16, UC17 |
+| | **US-M08** | Thiết lập và quản lý ngân sách phần mềm | **P0** | UC12, UC14 |
+| | **US-M09** | Rà soát và quản lý các bản ghi chi phí thực tế | **P0** | UC13, UC14 |
+| | **US-M10** | Giám sát tuân thủ bản quyền và phát hiện Overuse | **P0** | UC05, UC21, UC25 |
+| | **US-M11** | Theo dõi hạn hết hạn hợp đồng và kế hoạch gia hạn | **P0** | UC15, UC16, UC17, UC18 |
 | | **US-M12** | Đánh giá các đề xuất tối ưu hóa chi phí | P1 | UC19, UC20, UC22 |
-| | **US-M13** | Xem Dashboard tổng quan về tài sản và tài chính | **P0** | UC23, UC24, UC25 |
-| | **US-M14** | Quản trị tài khoản người dùng và phân quyền 3 role | **P0** | UC27, UC28, UC30 |
-| **Staff** | **US-S01** | Nhập dữ liệu mức độ sử dụng license thực tế | **P0** | UC31 |
+| | **US-M13** | Xem Dashboard tổng quan về tài sản và tài chính | **P0** | UC23, UC24, UC25, UC26 |
+| | **US-M14** | Quản trị tài khoản người dùng và phân quyền 3 role | **P0** | UC27, UC28, UC29, UC30 |
+| **Staff** | **US-S01** | Nhập dữ liệu mức độ sử dụng license thực tế | **P0** | UC29, UC31 |
 | | **US-S02** | Import dữ liệu License Usage từ file CSV/Excel | P1 | UC32 |
 | | **US-S03** | Ghi nhận các khoản chi phí phát sinh thực tế | **P0** | UC33, UC13 |
 | | **US-S04** | Import dữ liệu Expense từ file CSV/Excel | P1 | UC34 |
 | | **US-S05** | Tải lên hóa đơn và chứng từ thanh toán đính kèm | P1 | UC35 |
-| | **US-S06** | Xem và kiểm tra lại toàn bộ dữ liệu đã nạp | **P0** | UC36 |
-| **Employee** | **US-U01** | Xem danh mục các phần mềm khả dụng | **P0** | UC37 |
+| | **US-S06** | Xem và kiểm tra lại toàn bộ dữ liệu đã nạp | **P0** | UC26, UC36 |
+| **Employee** | **US-U01** | Xem danh mục các phần mềm khả dụng | **P0** | UC29, UC37 |
 | | **US-U02** | Gửi yêu cầu xin cấp phát license mới | **P0** | UC06 |
 | | **US-U03** | Theo dõi trạng thái tiến độ xử lý yêu cầu cá nhân | **P0** | UC38 |
 | | **US-U04** | Xem danh sách các license đang được cấp phát | **P0** | UC39, UC11 |
 | | **US-U05** | Xem thời hạn và thông tin hết hạn license cá nhân | P1 | UC39 |
 
+Cột "Liên kết Use Cases" khớp với ma trận truy vết ở Mục 4.
+
+**Phạm vi P0 của các story liên kết cả use case P1 (D3 tại [MVP](01-MVP.md)):** `US-M01` giao ở P0 phần `UC01`; `US-M02` giao ở P0 phần `UC03`, Vendor theo D1; `US-M10` giao ở P0 phần `UC05`, `UC21`; `US-M11` giao ở P0 phần `UC15`, `UC18`; `US-M13` giao ở P0 phần `UC23`, `UC24`; `US-S06` giao ở P0 phần `UC36`. Các use case P1 còn lại (`UC02`, `UC16`, `UC17`, `UC25`, `UC26`) giao ở P1.
+
 ---
 
 ## 3. Đặc tả Chi tiết Từng User Story (Given - When - Then)
+
+### Kịch bản chung về phân quyền và lỗi (áp dụng cho mọi story)
+
+Các kịch bản dưới đây là tiêu chí chấp nhận của **mọi** story, kiểm thử trên từng API mà story sử dụng. Từng story bên dưới chỉ ghi thêm kịch bản riêng của nó.
+
+- **Kịch bản C1: Chưa đăng nhập**
+  - *Given:* Request không có phiên hợp lệ.
+  - *When:* Request gọi API của story.
+  - *Then:* Hệ thống trả về `401` và không thay đổi dữ liệu.
+- **Kịch bản C2: Sai vai trò**
+  - *Given:* Người dùng có role không được cấp quyền theo ma trận phân quyền trong README, ví dụ Employee gọi API duyệt request, hoặc Staff sửa Entitlement hay Budget (BR-09).
+  - *When:* Người dùng gọi API đó, kể cả khi gọi trực tiếp không qua giao diện.
+  - *Then:* Hệ thống trả về `403`, không thay đổi dữ liệu và không dựa vào việc ẩn nút trên giao diện.
+- **Kịch bản C3: Truy cập dữ liệu của người khác**
+  - *Given:* Employee A và Employee B đều có yêu cầu và license; Staff A và Staff B đều có dữ liệu đã nạp.
+  - *When:* A truy cập bản ghi của B bằng mã bản ghi.
+  - *Then:* Hệ thống trả về `404` và không tiết lộ bản ghi có tồn tại hay không (BR-08).
+- **Kịch bản C4: Tài khoản bị vô hiệu hóa**
+  - *Given:* Tài khoản đã bị vô hiệu hóa trong lúc còn phiên đăng nhập.
+  - *When:* Người dùng gửi request kế tiếp.
+  - *Then:* Hệ thống từ chối request (BR-18).
+- **Kịch bản C5: Dữ liệu không hợp lệ**
+  - *Given:* Dữ liệu gửi lên thiếu trường bắt buộc hoặc sai định dạng.
+  - *When:* Người dùng gửi form hoặc gọi API.
+  - *Then:* Hệ thống trả về `422` kèm lỗi theo từng trường và không lưu dữ liệu.
 
 ---
 
@@ -96,8 +125,9 @@ pie title Phân bổ 25 User Stories theo Vai trò
     - *When:* Tạo Entitlement Perpetual với Số lượng = 10 licenses, Ngày mua = 15/01/2026, Hạn bảo trì = 15/01/2027.
     - *Then:* Hệ thống lưu thông tin license vĩnh viễn và lưu thông tin bảo trì ở trường riêng biệt (BR-12), không tự động gán ngày hết hạn bản quyền vĩnh viễn.
   - **Kịch bản 3: Kiểm tra trường bắt buộc và ghi Audit Log**
-    - *Given:* Manager tạo Entitlement SaaS nhưng để trống trường Ngày hết hạn.
-    - *Then:* Hệ thống bắt buộc nhập ngày hết hạn và ghi vết thao tác vào Audit Log khi lưu thành công.
+    - *Given:* Manager đang tạo Entitlement SaaS.
+    - *When:* Manager để trống trường Ngày hết hạn và nhấn Lưu.
+    - *Then:* Hệ thống từ chối lưu và báo lỗi bắt buộc nhập ngày hết hạn; khi Manager nhập ngày hợp lệ và lưu thành công, thao tác được ghi vào Audit Log.
 
 #### US-M03: Quản lý Hợp đồng Pháp lý Bản quyền
 - **Mã:** `US-M03` | **Độ ưu tiên:** `P1`
@@ -147,11 +177,19 @@ pie title Phân bổ 25 User Stories theo Vai trò
   - **Kịch bản 1: Cấp phát thành công khi kho còn bản quyền**
     - *Given:* Tồn tại Entitlement hợp lệ có $\text{Available Quantity} > 0$.
     - *When:* Manager thực hiện cấp phát license cho nhân viên đã được duyệt.
-    - *Then:* Tạo bản ghi `LicenseAssignment`, giảm `available_quantity` đi 1 đơn vị, tăng `allocated_quantity` lên 1 đơn vị.
+    - *Then:* Tạo bản ghi `LicenseAssignment`, tăng `allocated_quantity` lên 1 đơn vị (`available_quantity` tính ra giảm 1) và chuyển yêu cầu liên quan sang `Fulfilled`.
   - **Kịch bản 2: Ngăn chặn cấp phát vượt quá số lượng mua**
     - *Given:* Entitlement có $\text{Available Quantity} = 0$.
     - *When:* Manager cố gắng cấp phát thêm một seat cho nhân viên.
     - *Then:* Hệ thống từ chối giao dịch, hiển thị thông báo lỗi: *"Số lượng phân bổ không được vượt quá số lượng bản quyền khả dụng."* (BR-05).
+  - **Kịch bản 3: Hai Manager cùng cấp seat cuối cùng**
+    - *Given:* Entitlement chỉ còn $\text{Available Quantity} = 1$.
+    - *When:* Hai Manager gửi yêu cầu cấp phát cho hai nhân viên khác nhau cùng lúc.
+    - *Then:* Chỉ một giao dịch thành công; giao dịch còn lại bị từ chối theo BR-05 và `allocated_quantity` không vượt `purchased_quantity`.
+  - **Kịch bản 4: Chặn cấp trùng**
+    - *Given:* Nhân viên đang có assignment `Active` cho phần mềm đó, hoặc yêu cầu đã ở trạng thái `Fulfilled`.
+    - *When:* Manager cấp phát thêm cho nhân viên đó hoặc theo yêu cầu đó.
+    - *Then:* Hệ thống từ chối giao dịch, không thay đổi số lượng seat.
 
 #### US-M07: Thu hồi (Revoke) License
 - **Mã:** `US-M07` | **Độ ưu tiên:** `P0`
@@ -161,7 +199,7 @@ pie title Phân bổ 25 User Stories theo Vai trò
 - **Tiêu chí chấp nhận:**
   - *Given:* Nhân viên A đang được gán 1 seat phần mềm Slack Pro.
   - *When:* Manager nhấn "Thu hồi (Revoke)" và nhập lý do = "Nhân viên chuyển dự án".
-  - *Then:* Lượt gán chuyển sang trạng thái `Revoked`, dung lượng khả dụng của kho tăng thêm 1 đơn vị, lịch sử gán vẫn được lưu vết đầy đủ trong hệ thống (BR-13).
+  - *Then:* Lượt gán chuyển sang trạng thái `Revoked`, dung lượng khả dụng của kho tăng thêm 1 đơn vị, lịch sử gán vẫn được lưu vết đầy đủ trong hệ thống (BR-13). Nếu lượt gán đã bị thu hồi trước đó, hệ thống báo lỗi và không hoàn trả seat lần hai.
 
 #### US-M08: Thiết lập & Quản lý Ngân sách Phần mềm
 - **Mã:** `US-M08` | **Độ ưu tiên:** `P0`
@@ -232,6 +270,10 @@ pie title Phân bổ 25 User Stories theo Vai trò
   - *Given:* Manager đang ở màn hình Quản trị Người dùng (`UC27`, `UC28`).
   - *When:* Gán vai trò `Staff` cho nhân viên IT mới.
   - *Then:* Tài khoản đó được cấp quyền nạp Usage và Expense, không có quyền duyệt request hay chỉnh sửa Entitlement.
+  - **Vô hiệu hóa tài khoản (BR-18):**
+    - *Given:* Người dùng đang có phiên đăng nhập hợp lệ.
+    - *When:* Manager vô hiệu hóa tài khoản đó.
+    - *Then:* Request kế tiếp của người dùng bị từ chối, phiên bị thu hồi và thao tác được ghi Audit Log.
 
 ---
 
@@ -256,6 +298,10 @@ pie title Phân bổ 25 User Stories theo Vai trò
   - *Given:* File Excel chứa dữ liệu hoạt động hàng tháng kết xuất từ cổng quản trị SSO.
   - *When:* Staff tải file lên hệ thống (`UC32`).
   - *Then:* Hệ thống xác thực từng dòng, báo cáo số dòng hợp lệ và nạp toàn bộ vào cơ sở dữ liệu.
+  - **Kịch bản lỗi: File có dòng không hợp lệ**
+    - *Given:* File import có ít nhất một dòng sai, ví dụ nhân viên không tồn tại hoặc ngày sai định dạng.
+    - *When:* Staff tải file lên hệ thống.
+    - *Then:* Hệ thống không nạp dòng nào và trả về danh sách lỗi kèm số dòng và lý do (D16).
 
 #### US-S03: Ghi nhận Bản ghi Chi phí Thực tế (Expense)
 - **Mã:** `US-S03` | **Độ ưu tiên:** `P0`
@@ -272,6 +318,19 @@ pie title Phân bổ 25 User Stories theo Vai trò
 - **User Story:**
   > *As a Staff member, I want to import expense data from CSV/Excel, so that financial records can be updated efficiently.*
   > *(Là một Staff, tôi muốn import dữ liệu chi phí từ bảng tính, để cập nhật nhanh các chứng từ tài chính).*
+- **Tiêu chí chấp nhận:**
+  - **Kịch bản 1: Import thành công**
+    - *Given:* Staff có file CSV/Excel theo mẫu, mỗi dòng có Số tiền, Tiền tệ, Ngày thanh toán, Phần mềm, Phòng ban và Số hóa đơn.
+    - *When:* Staff tải file lên hệ thống (`UC34`).
+    - *Then:* Hệ thống xác thực từng dòng theo BR-10, nạp toàn bộ các dòng, gắn `created_by = Staff_ID` và báo số bản ghi đã nạp; các khoản này được tính vào `Actual Spending`.
+  - **Kịch bản 2: File có dòng không hợp lệ**
+    - *Given:* File có ít nhất một dòng thiếu tiền tệ, có số tiền nhỏ hơn hoặc bằng 0, hoặc thiếu ngày thanh toán.
+    - *When:* Staff tải file lên hệ thống.
+    - *Then:* Hệ thống không nạp dòng nào và trả về danh sách lỗi kèm số dòng và lý do (D16).
+  - **Kịch bản 3: Từ chối người không có quyền**
+    - *Given:* Người dùng đăng nhập với role `Employee`.
+    - *When:* Người dùng gọi API import chi phí.
+    - *Then:* Hệ thống trả về `403` và không nạp dữ liệu.
 
 #### US-S05: Tải lên Hóa đơn và Tài liệu Chứng minh Đính kèm
 - **Mã:** `US-S05` | **Độ ưu tiên:** `P1`
@@ -325,7 +384,7 @@ pie title Phân bổ 25 User Stories theo Vai trò
 - **Tiêu chí chấp nhận:**
   - *Given:* Yêu cầu cấp license vừa được Manager phê duyệt hoặc từ chối.
   - *When:* Employee mở trang "Yêu cầu của tôi" (`UC38`).
-  - *Then:* Hiển thị trạng thái tương ứng (`Approved` hoặc `Rejected` kèm lý do giải trình).
+  - *Then:* Hiển thị trạng thái tương ứng (`Approved`, `Fulfilled` khi đã được cấp, hoặc `Rejected` kèm lý do giải trình).
 
 #### US-U04: Xem Danh sách License Đang được Cấp phát
 - **Mã:** `US-U04` | **Độ ưu tiên:** `P0`
@@ -335,7 +394,11 @@ pie title Phân bổ 25 User Stories theo Vai trò
 - **Tiêu chí chấp nhận:**
   - *Given:* Employee đã được Manager cấp phát 2 license: Microsoft 365 và JetBrains.
   - *When:* Employee mở trang "License của tôi" (`UC39`, `UC11`).
-  - *Then:* Hiển thị đầy đủ danh sách 2 phần mềm trên kèm ngày bắt đầu được cấp.
+  - *Then:* Hiển thị đầy đủ danh sách 2 phần mềm trên kèm ngày bắt đầu được cấp, không hiển thị license key hoặc giá.
+  - **Kịch bản riêng tư:**
+    - *Given:* Employee B cũng được cấp license.
+    - *When:* Employee A mở trang "License của tôi".
+    - *Then:* Danh sách chỉ có license của A; license của B không xuất hiện (BR-08).
 
 #### US-U05: Xem Thời hạn Bản quyền Cá nhân
 - **Mã:** `US-U05` | **Độ ưu tiên:** `P1`

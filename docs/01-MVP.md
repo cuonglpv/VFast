@@ -51,7 +51,7 @@ pie title Phân bổ Mức độ Ưu tiên cho Phiên bản 14 Ngày
 
 - **P0 – Must Have (Bắt buộc cho Pilot 14 ngày):**
   - Xác thực đăng nhập và phân quyền 3 role RBAC (`Manager, Staff, Employee`).
-  - Quản lý danh mục phần mềm chuẩn (`Software Catalog`).
+  - Quản lý danh mục phần mềm chuẩn (`Software Catalog`), kèm danh mục Vendor tối giản (chỉ tên nhà cung cấp) để thỏa BR-02 (xem D1, Mục 8).
   - Đăng ký và quản lý Entitlement cho cả **SaaS Subscription** và **Perpetual License**.
   - Quy trình gửi yêu cầu (`License Request`) và phê duyệt/từ chối của Manager.
   - Cấp phát (`Assign`) và thu hồi (`Revoke`) license có kiểm soát số lượng khả dụng.
@@ -60,7 +60,7 @@ pie title Phân bổ Mức độ Ưu tiên cho Phiên bản 14 Ngày
   - Theo dõi các mốc hết hạn hợp đồng thuê bao và bảo trì.
   - Bảng điều khiển tổng quan (`Core Dashboard`) và lưu vết kiểm toán (`Audit Logging`).
 - **P1 – Should Have (Nên có ngay sau luồng cốt lõi):**
-  - Quản lý nhà cung cấp (`Vendor`) và hồ sơ hợp đồng chi tiết (`Contract`).
+  - Quản lý nhà cung cấp đầy đủ (`Vendor`: CRUD, thông tin liên hệ) và hồ sơ hợp đồng chi tiết (`Contract`).
   - Tính năng nạp dữ liệu hàng loạt từ file Excel/CSV (`Import Usage & Expense`).
   - Tải lên tệp đính kèm hóa đơn và chứng từ thanh toán hợp lệ.
   - Phát hiện license chưa gán, license không hoạt động $\ge 60$ ngày và hiển thị khuyến nghị tối ưu.
@@ -103,9 +103,16 @@ Theo chuẩn hóa tại **Mục 8 của bản SRS v1.0**:
   - Mật khẩu phải được mã hóa bằng thuật toán băm an toàn (BCrypt / Argon2).
   - Xác thực phiên làm việc trên mọi endpoint; kiểm tra quyền hạn RBAC tại tầng Backend API.
   - Bảo vệ dữ liệu truyền tải trên mạng bằng giao thức HTTPS/TLS.
-  - License key và thông tin bí mật không được xuất hiện dưới dạng rõ trong nhật ký log hoặc file kết xuất.
+  - License key và thông tin bí mật không được xuất hiện dưới dạng rõ trong nhật ký log, URL/query string hoặc file kết xuất; không được dùng license key làm tiêu chí tìm kiếm.
+  - License key được mã hóa khi lưu (AES-256-GCM hoặc tương đương), khóa mã hóa quản lý ngoài cơ sở dữ liệu. API danh sách và chi tiết chỉ trả về dạng che; chỉ Manager được xem key rõ qua thao tác riêng, có giới hạn tần suất, phản hồi `Cache-Control: no-store` và ghi Audit Log `VIEW_LICENSE_KEY`.
+  - Phiên đăng nhập phải thu hồi được từ phía máy chủ để bảo đảm BR-18: access token ngắn hạn, refresh token xoay vòng được lưu phía máy chủ, kiểm tra trạng thái tài khoản và phiên bản phiên ở mỗi request; vô hiệu hóa tài khoản hoặc đổi role sẽ thu hồi toàn bộ phiên (chi tiết tại UC29).
+  - File tải lên: chỉ nhận PDF/PNG/JPG, kiểm tra theo nội dung thực của file thay vì phần mở rộng, tối đa 10MB, lưu ngoài webroot với tên ngẫu nhiên, tải về phải qua kiểm tra quyền theo từng bản ghi.
+  - File import được kiểm tra từng dòng và giới hạn kích thước; file export phải vô hiệu hóa công thức bảng tính (ô bắt đầu bằng `=`, `+`, `-`, `@`).
 - **NFR-02 (Toàn vẹn Dữ liệu - Data Integrity):**
-  - Giao dịch cơ sở dữ liệu (ACID Transactions) có khóa dòng để ngăn chặn tình trạng gán vượt dung lượng khi có nhiều người cùng thao tác (Concurrency Control).
+  - Giao dịch cơ sở dữ liệu (ACID Transactions) có khóa dòng để ngăn chặn tình trạng gán vượt dung lượng khi có nhiều người cùng thao tác (Concurrency Control); áp dụng cho cả Assign và Revoke.
+  - Ràng buộc ở tầng cơ sở dữ liệu làm lớp bảo vệ cuối: `CHECK (allocated_quantity >= 0 AND allocated_quantity <= purchased_quantity)`; unique index một phần trên `license_assignments (entitlement_id, user_id) WHERE status = 'Active'` và trên `license_assignments (request_id) WHERE request_id IS NOT NULL`.
+  - `available_quantity` không được cập nhật độc lập: giá trị luôn được tính từ `purchased_quantity - allocated_quantity` (BR-04), ví dụ bằng generated column.
+  - Chuyển trạng thái `License Request` dùng cập nhật có điều kiện (`WHERE status = 'Pending'`); nếu không có dòng nào được cập nhật thì báo lỗi theo BR-19. Audit Log được ghi trong cùng transaction với thao tác nghiệp vụ.
   - Giữ nguyên lịch sử giao dịch khi thu hồi license hoặc lưu trữ dữ liệu.
 - **NFR-03 (Hiệu năng - Performance):**
   - Thời gian phản hồi trung bình của các API thông thường $\le 2$ giây dưới tải thử nghiệm pilot.
@@ -128,11 +135,24 @@ Theo chuẩn hóa tại **Mục 8 của bản SRS v1.0**:
 
 ## 6. Mô hình Thực thể Dữ liệu (12 Core Entities)
 
-Theo chuẩn hóa tại **Mục 9 của bản SRS v1.0**, hệ thống sử dụng cơ sở dữ liệu quan hệ PostgreSQL với 12 thực thể cốt lõi:
+Theo chuẩn hóa tại **Mục 9 của bản SRS v1.0**, hệ thống sử dụng cơ sở dữ liệu quan hệ PostgreSQL với 12 thực thể cốt lõi, cùng 5 thực thể bổ trợ cần cho các use case và quy tắc nghiệp vụ hiện có:
 
 ```mermaid
 erDiagram
-    users ||--o{ roles : has
+    roles ||--o{ users : assigned_to
+    departments ||--o{ users : employs
+    departments ||--o{ budgets : owns
+    departments ||--o{ expenses : bears
+    vendors ||--o{ software_products : publishes
+    software_products ||--o{ license_requests : requested_as
+    license_requests |o--o{ license_assignments : fulfilled_by
+    users ||--o{ license_usage : reported_for
+    contracts |o--o{ expenses : billed_under
+    expenses ||--o{ attachments : evidenced_by
+    contracts ||--o{ attachments : documented_by
+    users ||--o{ notifications : receives
+    license_entitlements |o--o{ notifications : alerts_about
+    license_entitlements ||--o{ optimization_recommendations : targets
     users ||--o{ license_requests : submits
     users ||--o{ license_assignments : assigned_to
     software_products ||--o{ license_entitlements : provides
@@ -148,18 +168,28 @@ erDiagram
 
 | Tên Thực thể (Table) | Mục đích Quản lý Nghiệp vụ |
 | :--- | :--- |
-| `users` | Lưu trữ tài khoản người dùng, email, họ tên, phòng ban và trạng thái hoạt động. |
+| `users` | Lưu trữ tài khoản người dùng, email, họ tên, `department_id`, `role_id` (mỗi người một role), trạng thái hoạt động và phiên bản phiên đăng nhập. |
 | `roles` | Lưu trữ 3 vai trò hệ thống: `MANAGER`, `STAFF`, `EMPLOYEE`. |
 | `software_products` | Danh mục sản phẩm phần mềm chuẩn hóa (tên, hãng, phiên bản, danh mục, trạng thái). |
 | `vendors` | Danh bạ các nhà cung cấp, đại lý phân phối và thông tin liên hệ. |
 | `contracts` | Hợp đồng mua sắm pháp lý, ngày ký kết, giá trị và tệp tài liệu đính kèm. |
-| `license_entitlements` | Gói quyền sử dụng bản quyền sở hữu (SaaS/Perpetual, purchased, allocated, available, dates). |
-| `license_requests` | Yêu cầu xin cấp license từ nhân viên (requester, software, lý do, trạng thái pending/approved/rejected). |
-| `license_assignments` | Bản ghi cấp phát seat cụ thể cho nhân viên (active, revoked, assigned_date). |
-| `license_usage` | Dữ liệu tiêu thụ thực tế (ngày hoạt động gần nhất, số ngày dùng, mức độ active/inactive). |
+| `license_entitlements` | Gói quyền sử dụng bản quyền sở hữu (SaaS/Perpetual, purchased, allocated, dates, license key đã mã hóa); `available` là giá trị tính từ `purchased - allocated`. |
+| `license_requests` | Yêu cầu xin cấp 1 seat từ nhân viên (requester, `software_id`, lý do, người duyệt, trạng thái pending/approved/rejected/fulfilled). |
+| `license_assignments` | Bản ghi cấp phát seat cụ thể cho nhân viên (`entitlement_id`, `user_id`, `request_id` nếu có, active/revoked, assigned_date, người và lý do thu hồi). |
+| `license_usage` | Dữ liệu tiêu thụ thực tế theo kỳ (`entitlement_id`, `user_id`, kỳ dữ liệu, ngày hoạt động gần nhất, số ngày dùng, mức độ active/inactive, `created_by`), duy nhất theo `entitlement_id`, `user_id`, kỳ. Không có bản ghi trong kỳ nghĩa là `Unknown` (BR-15). |
 | `budgets` | Hạn mức ngân sách phần mềm theo năm tài chính hoặc theo phòng ban. |
-| `expenses` | Các bản ghi chi phí phát sinh thực tế, hóa đơn thanh toán và chứng từ VAT. |
+| `expenses` | Các khoản đã chi thực tế (số tiền, tiền tệ, ngày thanh toán theo BR-10; `software_id`, `contract_id` nếu có, `department_id`, số hóa đơn, `created_by`). |
 | `audit_logs` | Nhật ký kiểm toán bất biến ghi nhận mọi thao tác quan trọng trên hệ thống. |
+
+**Thực thể bổ trợ:**
+
+| Tên Thực thể (Table) | Mục đích | Ưu tiên |
+| :--- | :--- | :---: |
+| `departments` | Phòng ban dùng chung cho người dùng, ngân sách và chi phí; không lưu tên phòng ban dạng văn bản tự do. | P0 |
+| `notifications` | Thông báo trong hệ thống (cảnh báo hết hạn UC18, kết quả xử lý yêu cầu), có khóa chống gửi trùng theo entitlement và mốc 30/15/7 ngày. | P0 |
+| `exchange_rates` | Tỷ giá do Manager khai báo theo ngày hiệu lực, là chính sách quy đổi tường minh theo BR-11. Không có tỷ giá hiệu lực thì không cộng gộp. | P0 |
+| `attachments` | Metadata file hóa đơn và hợp đồng (đường dẫn lưu trữ, loại file, kích thước, người tải lên). | P1 |
+| `optimization_recommendations` | Đề xuất tối ưu kèm căn cứ dữ liệu và quyết định của Manager theo BR-16. | P1 |
 
 ---
 
@@ -172,11 +202,36 @@ Theo chuẩn hóa tại **Mục 13 của bản SRS v1.0**, phiên bản MVP đư
 4. Employee có thể gửi yêu cầu cấp license và theo dõi trạng thái yêu cầu cá nhân.
 5. Manager có thể phê duyệt, từ chối yêu cầu; thực hiện cấp phát và thu hồi license thành công.
 6. Số lượng cấp phát được tính toán tự động và không bao giờ vượt quá dung lượng khả dụng ($\text{Allocated} \le \text{Purchased}$).
-7. Staff có thể nạp dữ liệu sử dụng (`Usage`) và ghi nhận các khoản chi phí (`Expense`) kèm chứng từ hóa đơn.
+7. Staff có thể nạp dữ liệu sử dụng (`Usage`) và ghi nhận các khoản chi phí (`Expense`) kèm số hóa đơn; đính kèm file chứng từ (`UC35`) là P1, không phải điều kiện nghiệm thu pilot.
 8. Manager có thể giám sát hạn mức ngân sách và chi phí giải ngân thực tế theo từng bộ phận.
 9. Hệ thống nhận diện và phát sinh cảnh báo trước các mốc hết hạn hợp đồng hoặc bảo trì.
-10. Dashboard hiển thị đầy đủ và trực quan các chỉ số về bản quyền, tài chính và tuân thủ.
+10. Dashboard hiển thị đầy đủ và trực quan các chỉ số về bản quyền và tài chính (`UC23`, `UC24`), kèm cảnh báo tuân thủ từ `UC05`, `UC21`; Compliance Dashboard chuyên sâu (`UC25`) là P1.
 11. Các thao tác nghiệp vụ quan trọng được ghi nhận đầy đủ vào hệ thống Audit Log bất biến.
 12. Toàn bộ các luồng nghiệp vụ kinh doanh chính vượt qua kiểm thử tích hợp (Integration Tests).
 13. Quy trình sao lưu (Backup) và phục hồi (Restore) cơ sở dữ liệu được kiểm nghiệm thành công.
 14. Ứng dụng được triển khai ổn định trên môi trường thử nghiệm pilot và vượt qua kiểm thử chấp nhận người dùng (UAT).
+
+---
+
+## 8. Quyết định Làm rõ Phạm vi (Scope Decisions)
+
+Các quyết định dưới đây xử lý mâu thuẫn giữa các tài liệu. Đây là phương án mặc định **đang chờ nhóm xác nhận**; các tài liệu khác đã được viết theo các phương án này. Mức ưu tiên của từng use case và 20 quy tắc nghiệp vụ không thay đổi.
+
+| Mã | Vấn đề | Quyết định | Lý do |
+| :---: | :--- | :--- | :--- |
+| **D1** | BR-02 bắt buộc có Vendor, nhưng `UC02` là P1 | P0 có danh mục Vendor tối giản: chọn hoặc tạo nhanh theo tên trong `UC01`, `UC03`. CRUD đầy đủ vẫn thuộc `UC02` (P1). | Giữ BR-02 mà không đổi độ ưu tiên của `UC02`. |
+| **D2** | Tiêu chí nghiệm thu đòi hóa đơn, nhưng `UC35` là P1 | Bản ghi Expense P0 chỉ cần số hóa đơn. File đính kèm là P1 và không bắt buộc. | BR-10 không yêu cầu chứng từ VAT. |
+| **D3** | Story P0 liên kết use case P1 | Phần P0 của từng story: `US-M01` là `UC01`; `US-M02` là `UC03` (Vendor theo D1); `US-M10` là `UC05`, `UC21`; `US-M11` là `UC15`, `UC18`; `US-M13` là `UC23`, `UC24`; `US-S06` là `UC36`. Các use case còn lại giao ở P1. | Giữ nguyên mã story và độ ưu tiên use case. |
+| **D4** | Hai công thức tài chính khác nhau | Chỉ số chính thức theo `UC14`: `Actual Spending` là tổng khoản đã chi; `Remaining Budget = Total - Actual`; `Budget Utilization = Actual / Total`. Ngưỡng cảnh báo dùng `Utilization` này. `Committed Spending` là chỉ số P1 hiển thị riêng, không tính vào `Utilization`. | Bám baseline và tránh tính trùng nghĩa vụ. |
+| **D5** | BR-10 bắt buộc ngày thanh toán, nhưng IA có khoản chưa thanh toán | Bảng `expenses` ở P0 chỉ chứa khoản đã chi. `PENDING`, `OVERDUE` và thao tác Mark as Paid là mở rộng P1, cần bổ sung quy tắc riêng trước khi làm. `PROJECTED` là số liệu dự báo, không phải bản ghi Expense. | Không phải sửa BR-10 và giảm phạm vi 14 ngày. |
+| **D6** | Request có số lượng nhưng mỗi lần Assign chỉ +1; có thể cấp nhiều lần cho một request | Mỗi request tương ứng đúng 1 seat cho chính người gửi. Thêm trạng thái `Fulfilled` khi đã cấp. Request `Approved` chưa có seat vẫn chờ, không tự chuyển trạng thái. | Khép kín vòng đời request và phù hợp BR-19. |
+| **D7** | Cấp trùng chỉ bị cảnh báo | Chặn cấp thêm khi nhân viên đang có assignment `Active` cho cùng phần mềm. | Tránh lãng phí seat; `Change Tier` đã hoãn (D10). |
+| **D8** | JWT không tự thu hồi được, trái BR-18 | Dùng cơ chế phiên thu hồi được như NFR-01 và `UC29`. Các thông số là mặc định có thể cấu hình. | BR-18 yêu cầu khóa truy cập ngay lập tức. |
+| **D9** | README cho Staff đọc Entitlement và Budget, IA chặn hết | API cho Staff đọc (không có license key). Lệnh chặn 403 chỉ áp dụng cho các màn hình của Manager Portal; màn hình của Staff sẽ được đặc tả riêng. | Staff cần dữ liệu này để nhập Usage và Expense. |
+| **D10** | `Change Tier` không có use case hoặc quy tắc nghiệp vụ | Hoãn sang sau MVP. Phần đặc tả trong IA được giữ lại để tham khảo. | Thay thế tạm bằng Revoke rồi Assign. |
+| **D11** | "Board override", "soft-stop approval" trái với phạm vi loại trừ phê duyệt đa cấp | Vượt ngân sách chỉ cảnh báo Manager, không chặn chi phí và không thêm tầng phê duyệt. | Bám Mục 2.2. |
+| **D12** | Thiếu nguồn tỷ giá cho BR-11 | Manager khai báo tỷ giá theo ngày hiệu lực trong `exchange_rates`. Không có tỷ giá thì hiển thị riêng từng loại tiền. | Là chính sách quy đổi tường minh theo BR-11. |
+| **D13** | Ngưỡng đỏ là `>100%` ở `UC14` nhưng `≥100%` ở IA | Thống nhất cảnh báo đỏ khi `Budget Utilization` $\ge 100\%$. | Ở mức 100% ngân sách đã hết, không còn dư. |
+| **D14** | Chưa quy định kênh thông báo | P0 dùng thông báo trong hệ thống. Email là mở rộng sau pilot. | Không phụ thuộc hạ tầng email trong 14 ngày. |
+| **D15** | `UC21` so sánh số lượng usage, nhưng `license_usage` không có trường số lượng; chưa có cách biểu diễn dữ liệu thiếu | Với metric `Per User`, số lượng usage là số nhân viên khác nhau có bản ghi `Active` trong kỳ gần nhất. Không có bản ghi là `Unknown`; không đánh giá được là `Not Evaluated`. `Unknown` không được tính là `Inactive` trong `UC20`. | Thực hiện được BR-14, BR-15 từ dữ liệu sẵn có. |
+| **D16** | Hai cách viết API khác nhau; chưa quy định khi import có dòng lỗi | Mọi API dùng tiền tố `/api/v1/`. File import có dòng lỗi thì không nạp dòng nào và trả về danh sách lỗi theo dòng. | Một hợp đồng API duy nhất; tránh dữ liệu nạp dở dang. |
