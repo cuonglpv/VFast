@@ -58,6 +58,8 @@ pie title Phân bổ 25 User Stories theo Vai trò
 | | **US-U04** | Xem danh sách các license đang được cấp phát | **P0** | UC39, UC11 |
 | | **US-U05** | Xem thời hạn và thông tin hết hạn license cá nhân | P1 | UC39 |
 
+**Phạm vi P0 của các story liên kết cả use case P1 (D3 tại [MVP](01-MVP.md)):** `US-M11` giao ở P0 phần `UC15`, `UC18`; `UC16`, `UC17` giao ở P1. `US-M13` giao ở P0 phần `UC23`, `UC24`; `UC25` giao ở P1.
+
 ---
 
 ## 3. Đặc tả Chi tiết Từng User Story (Given - When - Then)
@@ -147,11 +149,19 @@ pie title Phân bổ 25 User Stories theo Vai trò
   - **Kịch bản 1: Cấp phát thành công khi kho còn bản quyền**
     - *Given:* Tồn tại Entitlement hợp lệ có $\text{Available Quantity} > 0$.
     - *When:* Manager thực hiện cấp phát license cho nhân viên đã được duyệt.
-    - *Then:* Tạo bản ghi `LicenseAssignment`, giảm `available_quantity` đi 1 đơn vị, tăng `allocated_quantity` lên 1 đơn vị.
+    - *Then:* Tạo bản ghi `LicenseAssignment`, tăng `allocated_quantity` lên 1 đơn vị (`available_quantity` tính ra giảm 1) và chuyển yêu cầu liên quan sang `Fulfilled`.
   - **Kịch bản 2: Ngăn chặn cấp phát vượt quá số lượng mua**
     - *Given:* Entitlement có $\text{Available Quantity} = 0$.
     - *When:* Manager cố gắng cấp phát thêm một seat cho nhân viên.
     - *Then:* Hệ thống từ chối giao dịch, hiển thị thông báo lỗi: *"Số lượng phân bổ không được vượt quá số lượng bản quyền khả dụng."* (BR-05).
+  - **Kịch bản 3: Hai Manager cùng cấp seat cuối cùng**
+    - *Given:* Entitlement chỉ còn $\text{Available Quantity} = 1$.
+    - *When:* Hai Manager gửi yêu cầu cấp phát cho hai nhân viên khác nhau cùng lúc.
+    - *Then:* Chỉ một giao dịch thành công; giao dịch còn lại bị từ chối theo BR-05 và `allocated_quantity` không vượt `purchased_quantity`.
+  - **Kịch bản 4: Chặn cấp trùng**
+    - *Given:* Nhân viên đang có assignment `Active` cho phần mềm đó, hoặc yêu cầu đã ở trạng thái `Fulfilled`.
+    - *When:* Manager cấp phát thêm cho nhân viên đó hoặc theo yêu cầu đó.
+    - *Then:* Hệ thống từ chối giao dịch, không thay đổi số lượng seat.
 
 #### US-M07: Thu hồi (Revoke) License
 - **Mã:** `US-M07` | **Độ ưu tiên:** `P0`
@@ -161,7 +171,7 @@ pie title Phân bổ 25 User Stories theo Vai trò
 - **Tiêu chí chấp nhận:**
   - *Given:* Nhân viên A đang được gán 1 seat phần mềm Slack Pro.
   - *When:* Manager nhấn "Thu hồi (Revoke)" và nhập lý do = "Nhân viên chuyển dự án".
-  - *Then:* Lượt gán chuyển sang trạng thái `Revoked`, dung lượng khả dụng của kho tăng thêm 1 đơn vị, lịch sử gán vẫn được lưu vết đầy đủ trong hệ thống (BR-13).
+  - *Then:* Lượt gán chuyển sang trạng thái `Revoked`, dung lượng khả dụng của kho tăng thêm 1 đơn vị, lịch sử gán vẫn được lưu vết đầy đủ trong hệ thống (BR-13). Nếu lượt gán đã bị thu hồi trước đó, hệ thống báo lỗi và không hoàn trả seat lần hai.
 
 #### US-M08: Thiết lập & Quản lý Ngân sách Phần mềm
 - **Mã:** `US-M08` | **Độ ưu tiên:** `P0`
@@ -232,6 +242,10 @@ pie title Phân bổ 25 User Stories theo Vai trò
   - *Given:* Manager đang ở màn hình Quản trị Người dùng (`UC27`, `UC28`).
   - *When:* Gán vai trò `Staff` cho nhân viên IT mới.
   - *Then:* Tài khoản đó được cấp quyền nạp Usage và Expense, không có quyền duyệt request hay chỉnh sửa Entitlement.
+  - **Vô hiệu hóa tài khoản (BR-18):**
+    - *Given:* Người dùng đang có phiên đăng nhập hợp lệ.
+    - *When:* Manager vô hiệu hóa tài khoản đó.
+    - *Then:* Request kế tiếp của người dùng bị từ chối, phiên bị thu hồi và thao tác được ghi Audit Log.
 
 ---
 
@@ -325,7 +339,7 @@ pie title Phân bổ 25 User Stories theo Vai trò
 - **Tiêu chí chấp nhận:**
   - *Given:* Yêu cầu cấp license vừa được Manager phê duyệt hoặc từ chối.
   - *When:* Employee mở trang "Yêu cầu của tôi" (`UC38`).
-  - *Then:* Hiển thị trạng thái tương ứng (`Approved` hoặc `Rejected` kèm lý do giải trình).
+  - *Then:* Hiển thị trạng thái tương ứng (`Approved`, `Fulfilled` khi đã được cấp, hoặc `Rejected` kèm lý do giải trình).
 
 #### US-U04: Xem Danh sách License Đang được Cấp phát
 - **Mã:** `US-U04` | **Độ ưu tiên:** `P0`

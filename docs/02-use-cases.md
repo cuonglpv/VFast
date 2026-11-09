@@ -156,18 +156,22 @@ sequenceDiagram
     alt Trường hợp Từ chối (Reject)
         Mgr->>UI: Nhập lý do từ chối & Nhấn Reject (UC08)
         UI->>API: POST /api/license-requests/REQ-201/reject
-        API->>DB: UPDATE status='Rejected', rejection_reason='...'
+        API->>DB: UPDATE status='Rejected', rejection_reason='...' WHERE status='Pending'
+        API->>DB: INSERT into audit_logs (Action='REJECT_REQUEST')
         API-->>Emp: Thông báo yêu cầu bị từ chối kèm lý do (UC38)
     else Trường hợp Phê duyệt & Cấp phát (Approve & Assign)
         Mgr->>UI: Nhấn Approve (UC08)
         UI->>API: POST /api/license-requests/REQ-201/approve
-        API->>DB: UPDATE status='Approved'
+        API->>DB: UPDATE status='Approved' WHERE status='Pending'
+        API->>DB: INSERT into audit_logs (Action='APPROVE_REQUEST')
         
         Mgr->>UI: Chọn Entitlement nguồn & Nhấn Cấp phát (UC09)
-        UI->>API: POST /api/license-assignments (EmployeeId, EntitlementId)
-        API->>DB: Bắt đầu Transaction (Kiểm tra Available > 0)
+        UI->>API: POST /api/license-assignments (EmployeeId, EntitlementId, RequestId)
+        API->>DB: Bắt đầu Transaction, khóa request và entitlement (SELECT FOR UPDATE)
+        API->>DB: Kiểm tra request Approved, không cấp trùng, Available > 0
         API->>DB: INSERT into license_assignments (Status='Active')
         API->>DB: UPDATE license_entitlements SET allocated_quantity += 1
+        API->>DB: UPDATE license_requests SET status='Fulfilled'
         API->>DB: INSERT into audit_logs (Action='ASSIGN_LICENSE')
         API->>DB: Commit Transaction
         API-->>Mgr: Cấp phát thành công!
@@ -195,7 +199,7 @@ sequenceDiagram
     participant DB as PostgreSQL Database
 
     Stf->>UI: Nhập bản ghi chi phí hoặc Import file CSV (UC33, UC34)
-    Stf->>UI: Tải lên tệp đính kèm hóa đơn VAT (PDF) (UC35)
+    Stf->>UI: Tùy chọn P1 - Tải lên tệp hóa đơn VAT (PDF) (UC35)
     UI->>API: POST /api/expenses (Dữ liệu chi phí + Tệp đính kèm)
     API->>DB: Lưu file vào Storage & INSERT into expenses
     API->>DB: Ghi log tạo bởi Staff (created_by)
@@ -236,7 +240,7 @@ sequenceDiagram
 - **Hậu điều kiện:** Thông tin sản phẩm phần mềm được lưu trữ chuẩn hóa; hiển thị cho Employee tra cứu khi ở trạng thái hoạt động.
 - **Luồng sự kiện chính:**
   1. Manager mở màn hình Software Catalog và chọn "Thêm mới sản phẩm".
-  2. Nhập các trường: Tên phần mềm, Nhà phát hành (Vendor), Danh mục (Văn phòng, Kỹ thuật, Thiết kế,...), Mô tả tính năng, Loại license (`SaaS Subscription` hoặc `Perpetual License`), và Trạng thái (`Active` / `Deprecated`).
+  2. Nhập các trường: Tên phần mềm, Nhà phát hành (Vendor: chọn từ danh mục hoặc tạo nhanh theo tên, xem D1 tại [MVP](01-MVP.md)), Danh mục (Văn phòng, Kỹ thuật, Thiết kế,...), Mô tả tính năng, Loại license (`SaaS Subscription` hoặc `Perpetual License`), và Trạng thái (`Active` / `Deprecated`).
   3. Hệ thống xác thực tính duy nhất của bộ khóa `Software Name + Vendor`.
   4. Hệ thống lưu bản ghi mới, ghi Audit Log và cập nhật danh mục.
 - **Luồng rẽ nhánh:** Nếu phần mềm đã tồn tại, hệ thống từ chối lưu và yêu cầu cập nhật bản ghi hiện hữu.
@@ -246,7 +250,7 @@ sequenceDiagram
 ### UC03 – Quản lý Quyền sở hữu Bản quyền (Manage License Entitlement)
 - **Tác nhân chính:** Manager
 - **Độ ưu tiên:** P0
-- **Tiền điều kiện:** Sản phẩm phần mềm và Nhà cung cấp đã tồn tại trong hệ thống.
+- **Tiền điều kiện:** Sản phẩm phần mềm và Nhà cung cấp đã tồn tại trong hệ thống; Nhà cung cấp có thể được tạo nhanh theo tên ngay trong luồng này (D1).
 - **Hậu điều kiện:** Gói quyền sử dụng được xác lập; dung lượng khả dụng (`Available Quantity`) được khởi tạo.
 - **Luồng sự kiện chính:**
   1. Manager chọn phần mềm và chọn "Đăng ký Entitlement mới".
@@ -270,7 +274,7 @@ sequenceDiagram
 - **Luồng sự kiện chính:**
   1. Employee truy cập danh mục phần mềm khả dụng (`UC37`).
   2. Chọn phần mềm cần xin cấp và nhấn "Gửi yêu cầu cấp phát".
-  3. Nhập số lượng cần cấp (mặc định = 1) và bắt buộc nhập lý do sử dụng công việc.
+  3. Bắt buộc nhập lý do sử dụng công việc. Mỗi yêu cầu tương ứng đúng 1 seat cho chính người gửi (D6).
   4. Nhấn "Gửi yêu cầu".
   5. Hệ thống xác thực: Trường lý do không được để trống.
   6. Tạo bản ghi `LicenseRequest` ở trạng thái `Pending`, gán mã định danh duy nhất (ví dụ `REQ-2026-001`).
@@ -290,12 +294,12 @@ sequenceDiagram
   3. **Kịch bản Chấp thuận (Approve):**
      - Manager nhấn "Phê duyệt".
      - Hệ thống đổi trạng thái sang `Approved`, lưu `approver_id = Manager_ID` và dấu thời gian duyệt.
-     - Yêu cầu được chuyển sang trạng thái sẵn sàng để cấp phát license (`UC09`).
+     - Yêu cầu được chuyển sang trạng thái sẵn sàng để cấp phát license (`UC09`). Nếu chưa có seat khả dụng, yêu cầu vẫn giữ `Approved` để chờ cấp và không tự chuyển trạng thái.
   4. **Kịch bản Từ chối (Reject):**
      - Manager nhấn "Từ chối" và bắt buộc nhập lý do từ chối.
      - Hệ thống đổi trạng thái sang `Rejected`, lưu lý do giải trình.
      - Gửi thông báo đến Employee kèm lý do từ chối.
-- **Quy tắc bất biến:** Một yêu cầu đã được xử lý (`Approved` hoặc `Rejected`) không được phép duyệt lại lần thứ hai (BR-19).
+- **Quy tắc bất biến:** Một yêu cầu đã được xử lý (`Approved`, `Rejected` hoặc `Fulfilled`) không được phép duyệt lại lần thứ hai (BR-19). Thao tác duyệt dùng cập nhật có điều kiện `WHERE status = 'Pending'`, nên khi hai Manager xử lý đồng thời chỉ một người thành công. Quyết định và Audit Log được ghi trong cùng một transaction.
 
 ---
 
@@ -303,16 +307,18 @@ sequenceDiagram
 - **Tác nhân chính:** Manager
 - **Độ ưu tiên:** P0
 - **Tiền điều kiện:** Yêu cầu đã được `Approved` (hoặc Manager chỉ định trực tiếp); Entitlement nguồn còn seat khả dụng ($\text{Available} > 0$).
-- **Hậu điều kiện:** Tạo bản ghi `LicenseAssignment`; giảm số seat khả dụng trong kho; Employee nhìn thấy license trong tài khoản cá nhân.
+- **Hậu điều kiện:** Tạo bản ghi `LicenseAssignment`; giảm số seat khả dụng trong kho; yêu cầu liên quan (nếu có) chuyển sang `Fulfilled`; Employee nhìn thấy license trong tài khoản cá nhân.
 - **Luồng sự kiện chính:**
   1. Manager chọn yêu cầu đã duyệt hoặc chọn phần mềm cần cấp phát.
   2. Chọn Entitlement nguồn còn hiệu lực và còn seat khả dụng.
   3. Hệ thống mở một Database Transaction có khóa dòng (`Row Locking`) để chống tranh chấp:
+     - Khóa yêu cầu (nếu có) rồi khóa Entitlement. Kiểm tra yêu cầu đang `Approved` và chưa được cấp; nhân viên đang hoạt động (BR-18); Entitlement còn hiệu lực.
+     - Kiểm tra nhân viên chưa có assignment `Active` cho cùng phần mềm. Nếu đã có, hủy giao dịch và báo lỗi (D7).
      - Kiểm tra điều kiện: $\text{Available Quantity} = \text{Purchased} - \text{Allocated} > 0$.
      - Nếu $\text{Available} \le 0$: Transaction lập tức bị hủy bỏ (Rollback), hệ thống báo lỗi không đủ bản quyền (BR-05).
   4. Hệ thống tạo bản ghi `LicenseAssignment`: Liên kết `EmployeeId`, `EntitlementId`, ngày gán và trạng thái `Active`.
-  5. Cập nhật Entitlement nguồn: $\text{Allocated Quantity} = \text{Allocated Quantity} + 1$.
-  6. Cam kết giao dịch (Commit Transaction) và ghi Audit Log.
+  5. Cập nhật Entitlement nguồn: $\text{Allocated Quantity} = \text{Allocated Quantity} + 1$ và chuyển yêu cầu (nếu có) sang `Fulfilled`.
+  6. Ghi Audit Log rồi cam kết giao dịch (Commit Transaction).
   7. Gửi thông báo cho Employee: License đã sẵn sàng sử dụng.
 
 ---
@@ -325,8 +331,8 @@ sequenceDiagram
 - **Luồng sự kiện chính:**
   1. Manager tra cứu bản ghi cấp phát theo nhân viên hoặc theo phần mềm.
   2. Nhấn "Thu hồi (Revoke)" và nhập lý do thu hồi (Nhân viên chuyển vị trí, Không còn nhu cầu, Nhân sự nghỉ việc).
-  3. Hệ thống chuyển trạng thái Assignment sang `Revoked`, ghi nhận thời gian thu hồi và người thực hiện.
-  4. Hệ thống hoàn trả dung lượng: $\text{Allocated Quantity} = \text{Allocated Quantity} - 1$ (tương đương $\text{Available Quantity}$ tăng 1).
+  3. Hệ thống mở một Database Transaction, khóa Assignment rồi khóa Entitlement và kiểm tra Assignment vẫn đang `Active`. Nếu đã bị thu hồi, hủy giao dịch và báo lỗi, không hoàn trả seat lần hai. Sau đó chuyển trạng thái sang `Revoked`, ghi nhận thời gian thu hồi và người thực hiện.
+  4. Hệ thống hoàn trả dung lượng: $\text{Allocated Quantity} = \text{Allocated Quantity} - 1$ (tương đương $\text{Available Quantity}$ tăng 1), ghi Audit Log và cam kết giao dịch.
   5. Bản ghi Assignment cũ vẫn được lưu trữ nguyên vẹn trong lịch sử phục vụ kiểm toán (BR-13).
 
 ---
@@ -339,6 +345,7 @@ sequenceDiagram
   1. Manager thiết lập ngân sách phần mềm theo năm tài chính và theo phòng ban (`UC12`).
   2. Hệ thống tổng hợp tự động các khoản chi phí thực tế (`Expense`) phát sinh trong kỳ:
      $$\text{Actual Spending} = \sum \text{Expense Amount}$$
+     Chỉ tính các khoản đã chi trong kỳ của đúng ngân sách đó. Khoản khác loại tiền tệ chỉ được cộng khi có tỷ giá hiệu lực (BR-11, D12); nếu không có thì hiển thị riêng. `Committed Spending` là chỉ số P1 hiển thị riêng, không tính vào các công thức bên dưới (D4).
   3. Hệ thống tính toán các chỉ số:
      - $\text{Remaining Budget} = \text{Total Budget} - \text{Actual Spending}$
      - $\text{Budget Utilization (\%)} = \left(\frac{\text{Actual Spending}}{\text{Total Budget}}\right) \times 100$
@@ -353,11 +360,30 @@ sequenceDiagram
 - **Mục tiêu:** Phát hiện ngay lập tức tình trạng vi phạm hạn ngạch bản quyền để phòng ngừa rủi ro pháp lý.
 - **Luồng sự kiện chính:**
   1. Hệ thống định kỳ hoặc theo yêu cầu tính toán chỉ số chênh lệch:
-     - Trường hợp 1 (Over-allocation): $\text{Allocated Quantity} > \text{Purchased Quantity}$.
+     - Trường hợp 1 (Over-allocation): số assignment `Active` lớn hơn $\text{Purchased Quantity}$. Luồng chuẩn không thể tạo ra tình huống này do BR-05 và ràng buộc `CHECK`; đây là phép đối soát để phát hiện dữ liệu sai lệch, ví dụ từ migration.
      - Trường hợp 2 (Overuse qua Usage Data): $\text{Actual Usage Quantity} > \text{Purchased Quantity}$ (khi có dữ liệu usage hợp lệ).
   2. Nếu phát hiện vi phạm, hệ thống gắn cờ trạng thái `Overused` hoặc `At Risk`.
   3. Bật cảnh báo đỏ nổi bật trên Dashboard và gửi thông báo khẩn cấp đến Manager.
   4. Liệt kê danh sách chi tiết các tài khoản hoặc seat đang vượt quyền để Manager đưa ra phương án xử lý (mua thêm hoặc thu hồi).
+
+---
+
+### UC29 – Đăng nhập & Đăng xuất (Login / Logout)
+- **Tác nhân chính:** Tất cả các vai trò
+- **Độ ưu tiên:** P0
+- **Tiền điều kiện:** Tài khoản do Manager tạo (`UC27`) và đang hoạt động. Tự đăng ký và SSO nằm ngoài phạm vi MVP.
+- **Hậu điều kiện:** Phiên đăng nhập được tạo hoặc thu hồi; sự kiện được ghi Audit Log.
+- **Luồng sự kiện chính:**
+  1. Người dùng nhập email và mật khẩu.
+  2. Hệ thống đối chiếu mật khẩu với giá trị băm BCrypt/Argon2 và kiểm tra tài khoản đang hoạt động.
+  3. Hệ thống cấp access token sống tối đa 15 phút và refresh token xoay vòng được lưu phía máy chủ, hết hạn sau 30 phút không hoạt động hoặc tối đa 8 giờ. Cả hai đặt trong cookie `HttpOnly`, `Secure`, `SameSite`.
+  4. Mỗi request kiểm tra chữ ký, thời hạn, trạng thái tài khoản và phiên bản phiên. Role luôn lấy từ máy chủ, không lấy từ dữ liệu do client gửi.
+  5. Khi đăng xuất, hệ thống thu hồi refresh token và ghi Audit Log.
+- **Luồng ngoại lệ:**
+  - Sai thông tin đăng nhập: chỉ hiển thị thông báo chung *"Email hoặc mật khẩu không đúng."*, không tiết lộ tài khoản có tồn tại hay không.
+  - Sai 5 lần liên tiếp: tạm khóa đăng nhập 15 phút và ghi Audit Log; có giới hạn tần suất theo tài khoản và địa chỉ IP.
+  - Tài khoản `Deactivated` hoặc bị đổi role: tăng phiên bản phiên và thu hồi mọi refresh token, nên request kế tiếp bị từ chối hoặc phải đăng nhập lại (BR-18).
+- **Chính sách mật khẩu:** Tối thiểu 12 ký tự. Mật khẩu ban đầu và mật khẩu do Manager đặt lại phải đổi ở lần đăng nhập đầu tiên. Các thông số trong đặc tả này là mặc định có thể cấu hình (D8).
 
 ---
 
@@ -371,7 +397,7 @@ sequenceDiagram
 - **Luồng sự kiện chính cho Nhập Expense (UC33):**
   1. Staff chọn phần mềm/hợp đồng phát sinh chi phí.
   2. Nhập Số tiền, Loại tiền tệ (VND/USD), Ngày thanh toán, Số hóa đơn và Phòng ban chịu chi phí.
-  3. Đính kèm file hóa đơn VAT dạng PDF/ảnh (`UC35`).
+  3. Tùy chọn khi `UC35` (P1) đã sẵn sàng: đính kèm file hóa đơn VAT dạng PDF/PNG/JPG; không bắt buộc ở P0 (D2).
   4. Nhấn Lưu. Hệ thống xác thực số tiền hợp lệ và lưu vào cơ sở dữ liệu.
 
 ---
