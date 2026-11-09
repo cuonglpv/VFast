@@ -144,29 +144,29 @@ sequenceDiagram
 
     Emp->>UI: Xem Software Catalog (UC37)
     Emp->>UI: Điền form và Gửi License Request (UC06)
-    UI->>API: POST /api/license-requests
+    UI->>API: POST /api/v1/license-requests
     API->>DB: INSERT into license_requests (Status='Pending')
     API-->>UI: Xác nhận gửi thành công (RequestId = REQ-201)
 
     API-->>Mgr: Thông báo có Request mới cần xử lý
     Mgr->>UI: Mở danh sách Review Request (UC07)
-    UI->>API: GET /api/license-requests?status=Pending
+    UI->>API: GET /api/v1/license-requests?status=Pending
     API-->>UI: Hiển thị chi tiết yêu cầu & Số seat khả dụng
 
     alt Trường hợp Từ chối (Reject)
         Mgr->>UI: Nhập lý do từ chối & Nhấn Reject (UC08)
-        UI->>API: POST /api/license-requests/REQ-201/reject
+        UI->>API: POST /api/v1/license-requests/REQ-201/reject
         API->>DB: UPDATE status='Rejected', rejection_reason='...' WHERE status='Pending'
         API->>DB: INSERT into audit_logs (Action='REJECT_REQUEST')
         API-->>Emp: Thông báo yêu cầu bị từ chối kèm lý do (UC38)
     else Trường hợp Phê duyệt & Cấp phát (Approve & Assign)
         Mgr->>UI: Nhấn Approve (UC08)
-        UI->>API: POST /api/license-requests/REQ-201/approve
+        UI->>API: POST /api/v1/license-requests/REQ-201/approve
         API->>DB: UPDATE status='Approved' WHERE status='Pending'
         API->>DB: INSERT into audit_logs (Action='APPROVE_REQUEST')
         
         Mgr->>UI: Chọn Entitlement nguồn & Nhấn Cấp phát (UC09)
-        UI->>API: POST /api/license-assignments (EmployeeId, EntitlementId, RequestId)
+        UI->>API: POST /api/v1/assignments (EmployeeId, EntitlementId, RequestId)
         API->>DB: Bắt đầu Transaction, khóa request và entitlement (SELECT FOR UPDATE)
         API->>DB: Kiểm tra request Approved, không cấp trùng, Available > 0
         API->>DB: INSERT into license_assignments (Status='Active')
@@ -200,18 +200,18 @@ sequenceDiagram
 
     Stf->>UI: Nhập bản ghi chi phí hoặc Import file CSV (UC33, UC34)
     Stf->>UI: Tùy chọn P1 - Tải lên tệp hóa đơn VAT (PDF) (UC35)
-    UI->>API: POST /api/expenses (Dữ liệu chi phí + Tệp đính kèm)
+    UI->>API: POST /api/v1/expenses (Dữ liệu chi phí + Tệp đính kèm)
     API->>DB: Lưu file vào Storage & INSERT into expenses
     API->>DB: Ghi log tạo bởi Staff (created_by)
     API-->>UI: Nạp dữ liệu thành công!
 
     Stf->>UI: Nạp dữ liệu mức độ sử dụng License Usage (UC31, UC32)
-    UI->>API: POST /api/license-usage
+    UI->>API: POST /api/v1/license-usage
     API->>DB: INSERT into license_usage
     API-->>UI: Cập nhật usage thành công!
 
     Mgr->>UI: Truy cập Dashboard Quản trị & Đối soát (UC24)
-    UI->>API: GET /api/financial-dashboard
+    UI->>API: GET /api/v1/dashboards/financial
     API->>DB: Tổng hợp Actual Spending vs Budget
     API->>DB: So sánh Entitlement vs Usage (Kiểm tra Overuse)
     API-->>UI: Hiển thị biểu đồ giải ngân, chi phí theo vendor và cảnh báo
@@ -350,7 +350,7 @@ sequenceDiagram
      - $\text{Remaining Budget} = \text{Total Budget} - \text{Actual Spending}$
      - $\text{Budget Utilization (\%)} = \left(\frac{\text{Actual Spending}}{\text{Total Budget}}\right) \times 100$
   4. Hiển thị tiến độ giải ngân trực quan.
-  5. Tự động bật cảnh báo vàng khi đạt $\ge 80\%$ ngân sách, và cảnh báo đỏ khi vượt quá $100\%$ ngân sách.
+  5. Tự động bật cảnh báo vàng khi đạt $\ge 80\%$ ngân sách, và cảnh báo đỏ khi đạt $\ge 100\%$ ngân sách (D13).
 
 ---
 
@@ -361,7 +361,8 @@ sequenceDiagram
 - **Luồng sự kiện chính:**
   1. Hệ thống định kỳ hoặc theo yêu cầu tính toán chỉ số chênh lệch:
      - Trường hợp 1 (Over-allocation): số assignment `Active` lớn hơn $\text{Purchased Quantity}$. Luồng chuẩn không thể tạo ra tình huống này do BR-05 và ràng buộc `CHECK`; đây là phép đối soát để phát hiện dữ liệu sai lệch, ví dụ từ migration.
-     - Trường hợp 2 (Overuse qua Usage Data): $\text{Actual Usage Quantity} > \text{Purchased Quantity}$ (khi có dữ liệu usage hợp lệ).
+     - Trường hợp 2 (Overuse qua Usage Data): $\text{Actual Usage Quantity} > \text{Purchased Quantity}$ (khi có dữ liệu usage hợp lệ). Với metric `Per User`, $\text{Actual Usage Quantity}$ là số nhân viên khác nhau có bản ghi `Active` trong kỳ gần nhất của Entitlement, kể cả người chưa được cấp seat (D15).
+     - Nếu kỳ gần nhất chưa có dữ liệu usage, hoặc metric không phải `Per User`, trạng thái là `Not Evaluated`. Không suy diễn mức dùng bằng không và không kết luận vi phạm (BR-03, BR-14, BR-15).
   2. Nếu phát hiện vi phạm, hệ thống gắn cờ trạng thái `Overused` hoặc `At Risk`.
   3. Bật cảnh báo đỏ nổi bật trên Dashboard và gửi thông báo khẩn cấp đến Manager.
   4. Liệt kê danh sách chi tiết các tài khoản hoặc seat đang vượt quyền để Manager đưa ra phương án xử lý (mua thêm hoặc thu hồi).
@@ -391,8 +392,8 @@ sequenceDiagram
 - **Tác nhân chính:** Staff
 - **Độ ưu tiên:** P0
 - **Luồng sự kiện chính cho Nhập Usage (UC31):**
-  1. Staff chọn phần mềm và nhân viên cần cập nhật mức dùng.
-  2. Nhập các trường: Ngày hoạt động gần nhất (`Last Active Date`), Số ngày sử dụng trong kỳ, Mức độ sử dụng (`Active` / `Inactive`).
+  1. Staff chọn Entitlement và nhân viên cần cập nhật mức dùng, kể cả nhân viên chưa được cấp seat, để phát hiện sử dụng ngoài phân bổ.
+  2. Nhập các trường: Kỳ dữ liệu, Ngày hoạt động gần nhất (`Last Active Date`), Số ngày sử dụng trong kỳ, Mức độ sử dụng (`Active` / `Inactive`). Nhân viên không có bản ghi trong kỳ được xem là `Unknown`, không phải `Inactive` (BR-15).
   3. Nhấn Lưu. Bản ghi được gắn tự động `created_by = Staff_ID` và dấu thời gian.
 - **Luồng sự kiện chính cho Nhập Expense (UC33):**
   1. Staff chọn phần mềm/hợp đồng phát sinh chi phí.
@@ -408,3 +409,172 @@ sequenceDiagram
 - **Luồng sự kiện chính:**
   1. Employee đăng nhập và mở trang "Danh mục phần mềm khả dụng" (`UC37`): Hiển thị tên phần mềm, mô tả và nút yêu cầu cấp phát; **tuyệt đối không hiển thị giá tiền hoặc key kích hoạt**.
   2. Employee mở trang "License của tôi" (`UC39`): Hiển thị toàn bộ các phần mềm đang được cấp phát cho cá nhân, ngày được cấp, và ngày hết hạn hợp đồng đối với gói SaaS.
+
+---
+
+## 6. Đặc tả Bổ sung các Use Case P0 còn lại
+
+---
+
+### UC05 – Kiểm tra Tuân thủ Bản quyền (Check License Compliance)
+- **Tác nhân chính:** Manager (Staff chỉ đọc)
+- **Độ ưu tiên:** P0
+- **Tiền điều kiện:** Đã có Entitlement; dữ liệu usage là tùy chọn.
+- **Hậu điều kiện:** Mỗi Entitlement có một trạng thái tuân thủ; việc đánh giá không làm thay đổi dữ liệu.
+- **Luồng sự kiện chính:**
+  1. Manager mở danh sách tuân thủ, lọc theo phần mềm, vendor hoặc trạng thái.
+  2. Hệ thống tính trạng thái của từng Entitlement theo `UC21`: `Compliant`, `Over-allocated`, `Overused` hoặc `Not Evaluated`.
+  3. Manager mở chi tiết để xem số liệu đã dùng và kỳ dữ liệu.
+- **Luồng ngoại lệ:** Thiếu usage hợp lệ hoặc metric không tương thích thì trạng thái là `Not Evaluated`, không được hiểu là tuân thủ hay mức dùng bằng không (BR-03, BR-14, BR-15).
+
+---
+
+### UC07 – Xem xét Yêu cầu Cấp License (Review License Request)
+- **Tác nhân chính:** Manager
+- **Độ ưu tiên:** P0
+- **Tiền điều kiện:** Manager đã đăng nhập.
+- **Hậu điều kiện:** Không thay đổi dữ liệu.
+- **Luồng sự kiện chính:**
+  1. Manager mở danh sách yêu cầu, mặc định lọc trạng thái `Pending`; có phân trang và lọc theo phần mềm, phòng ban, trạng thái.
+  2. Hệ thống hiển thị mã REQ, nhân viên, phòng ban, phần mềm, lý do, thời điểm gửi và số seat còn trống.
+  3. Manager chọn một yêu cầu để xử lý (`UC08`).
+- **Luồng ngoại lệ:** Không có yêu cầu thì hiển thị trạng thái rỗng. Số seat ở đây chỉ để tham khảo; `UC09` kiểm tra lại trong transaction.
+
+---
+
+### UC11 – Theo dõi Phân bổ License (Track License Allocation)
+- **Tác nhân chính:** Manager, Employee
+- **Độ ưu tiên:** P0
+- **Tiền điều kiện:** Người dùng đã đăng nhập.
+- **Hậu điều kiện:** Không thay đổi dữ liệu.
+- **Luồng sự kiện chính:**
+  1. Manager xem `Purchased`, `Allocated`, `Available` theo Entitlement và danh sách assignment theo nhân viên hoặc theo phần mềm.
+  2. Manager xem lịch sử gán và thu hồi, gồm cả các lượt `Revoked` (BR-13).
+  3. Employee chỉ xem được phân bổ của chính mình (BR-08).
+- **Luồng ngoại lệ:** Employee truy cập bản ghi của người khác nhận `404`, để không lộ việc bản ghi đó có tồn tại.
+
+---
+
+### UC13 – Quản lý Chi phí (Manage Expense)
+- **Tác nhân chính:** Manager, Staff
+- **Độ ưu tiên:** P0
+- **Tiền điều kiện:** Có bản ghi Expense do Staff nhập (`UC33`) hoặc Manager tạo.
+- **Hậu điều kiện:** Thay đổi được ghi Audit Log kèm giá trị cũ và mới; `Actual Spending` được cập nhật.
+- **Luồng sự kiện chính:**
+  1. Manager xem danh sách chi phí, lọc theo phần mềm, vendor, phòng ban, kỳ và tiền tệ.
+  2. Manager tạo hoặc sửa bản ghi. Staff chỉ sửa được bản ghi do chính mình tạo.
+  3. Hệ thống xác thực số tiền lớn hơn 0, tiền tệ và ngày thanh toán (BR-10).
+  4. Manager có thể hủy bản ghi sai kèm lý do. Bản ghi hủy được giữ lại trong lịch sử và không tính vào `Actual Spending`.
+- **Luồng ngoại lệ:** Dữ liệu không hợp lệ thì từ chối lưu và báo lỗi theo từng trường. Không xóa vật lý bản ghi Expense.
+
+---
+
+### UC15 – Theo dõi Hết hạn License (Track License Expiration)
+- **Tác nhân chính:** Manager (Staff chỉ đọc)
+- **Độ ưu tiên:** P0
+- **Tiền điều kiện:** Đã có Entitlement.
+- **Hậu điều kiện:** Không thay đổi dữ liệu.
+- **Luồng sự kiện chính:**
+  1. Manager mở danh sách, sắp xếp theo ngày hết hạn gần nhất.
+  2. Hệ thống hiển thị ngày hết hạn SaaS và ngày hết hạn bảo trì Perpetual ở hai trường riêng (BR-12).
+  3. Hệ thống phân nhóm: `Upcoming` (trong 30 ngày, gồm các mốc 15 và 7 ngày) và `Expired`.
+- **Luồng ngoại lệ:** License Perpetual không có thỏa thuận bảo trì thì không hiển thị là sắp hết hạn. Theo dõi bảo trì chuyên sâu thuộc `UC17` (P1).
+
+---
+
+### UC18 – Phát sinh Thông báo Vòng đời (Generate Lifecycle Notification)
+- **Tác nhân chính:** Lifecycle Notification System
+- **Độ ưu tiên:** P0
+- **Tiền điều kiện:** Tác vụ theo lịch đang hoạt động.
+- **Hậu điều kiện:** Mỗi Manager đang hoạt động nhận thông báo trong hệ thống (D14).
+- **Luồng sự kiện chính:**
+  1. Tác vụ chạy mỗi ngày một lần và quét ngày hết hạn SaaS cùng ngày hết hạn bảo trì Perpetual.
+  2. Với mỗi mốc 30, 15, 7 ngày đã đến (số ngày còn lại nhỏ hơn hoặc bằng mốc), hệ thống tạo thông báo nếu chưa có thông báo cho cùng Entitlement, mốc và ngày hết hạn.
+  3. Hệ thống ghi Audit Log với Actor là tác nhân hệ thống.
+- **Luồng ngoại lệ:** Tác vụ lỗi thì ghi log và lần chạy sau tự bù các mốc bị bỏ lỡ, không gửi trùng. Khi ngày hết hạn được gia hạn, các mốc được tính lại theo ngày mới.
+
+---
+
+### UC23 – Xem Dashboard License (View License Dashboard)
+- **Tác nhân chính:** Manager
+- **Độ ưu tiên:** P0
+- **Tiền điều kiện:** Manager đã đăng nhập.
+- **Hậu điều kiện:** Không thay đổi dữ liệu.
+- **Luồng sự kiện chính:**
+  1. Manager mở Dashboard. Thời gian phản hồi không quá 3 giây (NFR-03).
+  2. Hệ thống hiển thị tổng số phần mềm, số seat đã mua và đã cấp, tỷ lệ gán seat, số license sắp hết hạn và số cảnh báo tuân thủ.
+- **Luồng ngoại lệ:** Chỉ cộng số lượng có cùng metric (BR-03); metric khác nhau được hiển thị riêng. Chưa có dữ liệu thì hiển thị trạng thái rỗng.
+
+---
+
+### UC24 – Xem Dashboard Tài chính (View Financial Dashboard)
+- **Tác nhân chính:** Manager
+- **Độ ưu tiên:** P0
+- **Tiền điều kiện:** Manager đã đăng nhập.
+- **Hậu điều kiện:** Không thay đổi dữ liệu.
+- **Luồng sự kiện chính:**
+  1. Manager chọn năm tài chính và phòng ban.
+  2. Hệ thống hiển thị `Total Budget`, `Actual Spending`, `Remaining Budget`, `Budget Utilization` theo `UC14` và D4, cùng chi phí theo vendor.
+  3. Hệ thống hiển thị cảnh báo vàng hoặc đỏ theo ngưỡng của `UC14`.
+- **Luồng ngoại lệ:** Chưa thiết lập ngân sách thì hiển thị "Chưa thiết lập" thay vì chia cho 0. Thiếu tỷ giá thì hiển thị riêng từng loại tiền (BR-11).
+
+---
+
+### UC27 – Quản lý Người dùng (Manage Users)
+- **Tác nhân chính:** Manager
+- **Độ ưu tiên:** P0
+- **Tiền điều kiện:** Manager đã đăng nhập.
+- **Hậu điều kiện:** Thay đổi được ghi Audit Log.
+- **Luồng sự kiện chính:**
+  1. Manager tạo tài khoản với email (duy nhất), họ tên, phòng ban, role và mật khẩu ban đầu.
+  2. Manager cập nhật thông tin hoặc đặt lại mật khẩu.
+  3. Manager vô hiệu hóa tài khoản: phiên bị thu hồi ngay (BR-18) và hệ thống liệt kê các assignment `Active` của người đó để Manager quyết định thu hồi.
+- **Luồng ngoại lệ:** Email trùng thì từ chối lưu. Không được vô hiệu hóa Manager đang hoạt động cuối cùng. Không xóa vật lý tài khoản đã có lịch sử.
+
+---
+
+### UC28 – Quản lý Vai trò (Manage Roles)
+- **Tác nhân chính:** Manager
+- **Độ ưu tiên:** P0
+- **Tiền điều kiện:** Tài khoản người dùng đã tồn tại.
+- **Hậu điều kiện:** Người dùng có đúng một role; phiên cũ bị thu hồi; Audit Log ghi role cũ và mới.
+- **Luồng sự kiện chính:**
+  1. Manager chọn người dùng và chọn một trong ba role cố định: `MANAGER`, `STAFF`, `EMPLOYEE`.
+  2. Hệ thống lưu thay đổi và thu hồi các phiên đang có của người dùng đó.
+- **Luồng ngoại lệ:** Không được đổi role của Manager đang hoạt động cuối cùng. MVP không hỗ trợ tạo role tùy chỉnh.
+
+---
+
+### UC30 – Xem Nhật ký Kiểm toán (View Audit Logs)
+- **Tác nhân chính:** Manager
+- **Độ ưu tiên:** P0
+- **Tiền điều kiện:** Manager đã đăng nhập.
+- **Hậu điều kiện:** Không thay đổi dữ liệu.
+- **Luồng sự kiện chính:**
+  1. Manager lọc nhật ký theo Actor, Action, thực thể và khoảng thời gian, có phân trang.
+  2. Hệ thống hiển thị Actor, Action, thực thể, thời điểm, giá trị cũ và mới. License key và dữ liệu bí mật luôn được che (NFR-01).
+- **Luồng ngoại lệ:** Không có API sửa hoặc xóa nhật ký (BR-17). Quyền xem "thao tác của chính mình" của Staff được đáp ứng qua `UC36`.
+
+---
+
+### UC36 – Xem Dữ liệu Đã nạp (View Submitted Data)
+- **Tác nhân chính:** Staff
+- **Độ ưu tiên:** P0
+- **Tiền điều kiện:** Staff đã đăng nhập.
+- **Hậu điều kiện:** Không thay đổi dữ liệu.
+- **Luồng sự kiện chính:**
+  1. Staff mở màn hình dữ liệu đã nạp, lọc theo loại (`Usage` / `Expense`) và khoảng thời gian.
+  2. Hệ thống chỉ hiển thị bản ghi có `created_by` là chính người đó, kèm trạng thái (`Đã lưu` / `Đã hủy`) và thời gian nạp.
+- **Luồng ngoại lệ:** Bản ghi của Staff khác trả về `404`. Chưa có bản ghi thì hiển thị trạng thái rỗng.
+
+---
+
+### UC38 – Xem Trạng thái Yêu cầu Cá nhân (View Own Request Status)
+- **Tác nhân chính:** Employee
+- **Độ ưu tiên:** P0
+- **Tiền điều kiện:** Employee đã đăng nhập.
+- **Hậu điều kiện:** Không thay đổi dữ liệu.
+- **Luồng sự kiện chính:**
+  1. Employee mở trang "Yêu cầu của tôi", có phân trang và lọc theo trạng thái.
+  2. Hệ thống hiển thị mã REQ, phần mềm, thời điểm gửi và trạng thái: `Pending`, `Approved`, `Fulfilled` hoặc `Rejected` kèm lý do từ chối.
+- **Luồng ngoại lệ:** Yêu cầu của người khác trả về `404` (BR-08). Chưa có yêu cầu thì hiển thị trạng thái rỗng.

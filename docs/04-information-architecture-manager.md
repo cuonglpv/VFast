@@ -166,7 +166,7 @@ flowchart TD
 5. **Rule 5: Multi-currency Separation & Administrative Normalization (BR-10, BR-11):**
    - `VND` and `USD` expenditure figures are never summed directly across raw tables.
    - The system applies an administrative exchange rate table (e.g., $1 \text{ USD} = 25,400 \text{ VND}$) to standardize reporting into the fiscal base currency.
-6. **Rule 6: Automated 3-Tier Budget Threshold Alerting (UC14, BR-16):**
+6. **Rule 6: Automated 3-Tier Budget Threshold Alerting (UC14):**
    - Below 80%: Safe Zone (Green). Normal disbursement pace.
    - 80% to 99%: Warning Zone (Amber). Alerts Manager to review upcoming renewals and audit inactive users.
    - 100% or Above: Critical Zone (Red). Flags over-budget status and alerts the Manager. New expenses are not blocked and no additional approval tier is added (D11).
@@ -209,6 +209,34 @@ Comprehensive matrix mapping all 18 Manager Portal screens to backend REST API e
 | **SCR-BDG-REPORT-01** | Load Variance Report | `GET /api/v1/budgets/reports/variance?fiscalYear={year}`| P1. Computes budget vs. actuals variance across departments and vendors. | Manager Only |
 | **SCR-BDG-REPORT-01** | Load Renewal Forecast | `GET /api/v1/budgets/reports/renewal-forecast?days=90` | P1. Forecasts forward cash outlays and integrates inactive seat reductions. | Manager Only |
 | **SCR-BDG-REPORT-01** | Export Executive PDF | `GET /api/v1/budgets/reports/export-pdf?type={}` | P1 (UC26). Generates board-ready graphical PDF financial report. | Manager Only |
+
+---
+
+### 4.1. Supporting API Contract for Other P0 Flows
+
+These P0 endpoints serve use cases that have no screen in this document yet. All APIs use the `/api/v1/` prefix (D16). Status codes: `401` unauthenticated, `403` wrong role, `404` another user's record, `409` state conflict, `422` validation error.
+
+| Use Case | API Endpoint & Method | Business Purpose | RBAC Role |
+|:---|---|---|:---:|
+| UC29 | `POST /api/v1/auth/logout` | Revokes the current session. | Authenticated |
+| UC01, UC37 | `GET /api/v1/software` | Lists the catalog. Employee responses exclude price and license key. | All roles |
+| UC01 | `POST`, `PUT /api/v1/software/{id}` | Creates or updates a catalog item, with quick Vendor creation (D1). | Manager Only |
+| UC06 | `POST /api/v1/license-requests` | Creates a `Pending` request for one seat for the caller (D6). | Employee |
+| UC07 | `GET /api/v1/license-requests?status={}` | Lists all requests. | Manager Only |
+| UC38 | `GET /api/v1/license-requests/mine` | Lists the caller's own requests (BR-08). | Employee |
+| UC08 | `POST /api/v1/license-requests/{id}/approve` | Approves a `Pending` request; `409` if already processed (BR-19). | Manager Only |
+| UC08 | `POST /api/v1/license-requests/{id}/reject` | Rejects a `Pending` request with a mandatory reason; `409` if already processed (BR-19). | Manager Only |
+| UC39, UC11 | `GET /api/v1/assignments/mine` | Lists the caller's own assignments, without license keys (BR-08). | Employee |
+| UC31 | `POST`, `PUT /api/v1/license-usage/{id}` | Creates or corrects a usage record for a period. Staff may update only records they created. | Manager, Staff |
+| UC36 | `GET /api/v1/submissions/mine?type={}` | Lists usage and expense records created by the caller. | Staff |
+| UC05, UC21 | `GET /api/v1/compliance` | Returns compliance status per entitlement (D15). | Manager; Staff (read-only) |
+| UC15 | `GET /api/v1/licenses/expiring?days={}` | Lists SaaS and maintenance expiry dates in separate fields (BR-12). | Manager; Staff (read-only) |
+| UC18 | `GET /api/v1/notifications` | Lists the caller's in-app notifications (D14). | Authenticated |
+| UC23 | `GET /api/v1/dashboards/license` | Returns license dashboard metrics. | Manager Only |
+| UC24 | `GET /api/v1/dashboards/financial?fiscalYear={year}` | Returns financial dashboard metrics per D4. | Manager Only |
+| UC27 | `GET`, `POST`, `PUT /api/v1/users/{id}` | Lists, creates, and updates users, including deactivation (BR-18). | Manager Only |
+| UC28 | `PUT /api/v1/users/{id}/role` | Changes a user's role and revokes that user's sessions. | Manager Only |
+| UC30 | `GET /api/v1/audit-logs` | Reads audit logs. No write endpoint exists (BR-17). | Manager Only |
 
 ---
 
@@ -261,7 +289,7 @@ Comprehensive matrix mapping all 18 Manager Portal screens to backend REST API e
   - **Quick Action Bar:** `[+ Assign Seat]` (opens `SCR-ASGN-ADD-01`), `[Renew Agreement]`, `[Edit License]`, `[Delete/Archive]`.
   - **4 Management Tabs:**
     - *Tab 1 (General Info & Contract Profile):* Pricing, billing frequency, contract reference, invoice attachment.
-    - *Tab 2 (Active Assigned Users):* Interactive table of employees holding a seat, usage status (`Active`, `Idle`, `Inactive $\ge 60$ days` with red alert badge), inline action button `[Revoke]` (`[Change Tier]` is deferred post-MVP per D10).
+    - *Tab 2 (Active Assigned Users):* Interactive table of employees holding a seat, usage status (`Active`, `Idle`, `Inactive` for $\ge 60$ days with red alert badge, `Unknown` when no valid usage exists per BR-15), inline action button `[Revoke]` (`[Change Tier]` is deferred post-MVP per D10).
     - *Tab 3 (Allocation History):* Chronological audit log of all grants and revocations for this license (BR-13).
     - *Tab 4 (License Change Audit Log):* Immutable log of seat changes, renewals, and price modifications (BR-17).
 

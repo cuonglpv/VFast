@@ -176,7 +176,7 @@ erDiagram
 | `license_entitlements` | Gói quyền sử dụng bản quyền sở hữu (SaaS/Perpetual, purchased, allocated, dates, license key đã mã hóa); `available` là giá trị tính từ `purchased - allocated`. |
 | `license_requests` | Yêu cầu xin cấp 1 seat từ nhân viên (requester, `software_id`, lý do, người duyệt, trạng thái pending/approved/rejected/fulfilled). |
 | `license_assignments` | Bản ghi cấp phát seat cụ thể cho nhân viên (`entitlement_id`, `user_id`, `request_id` nếu có, active/revoked, assigned_date, người và lý do thu hồi). |
-| `license_usage` | Dữ liệu tiêu thụ thực tế (`entitlement_id`, `user_id`, ngày hoạt động gần nhất, số ngày dùng, mức độ active/inactive, `created_by`). |
+| `license_usage` | Dữ liệu tiêu thụ thực tế theo kỳ (`entitlement_id`, `user_id`, kỳ dữ liệu, ngày hoạt động gần nhất, số ngày dùng, mức độ active/inactive, `created_by`), duy nhất theo `entitlement_id`, `user_id`, kỳ. Không có bản ghi trong kỳ nghĩa là `Unknown` (BR-15). |
 | `budgets` | Hạn mức ngân sách phần mềm theo năm tài chính hoặc theo phòng ban. |
 | `expenses` | Các khoản đã chi thực tế (số tiền, tiền tệ, ngày thanh toán theo BR-10; `software_id`, `contract_id` nếu có, `department_id`, số hóa đơn, `created_by`). |
 | `audit_logs` | Nhật ký kiểm toán bất biến ghi nhận mọi thao tác quan trọng trên hệ thống. |
@@ -221,7 +221,7 @@ Các quyết định dưới đây xử lý mâu thuẫn giữa các tài liệu
 | :---: | :--- | :--- | :--- |
 | **D1** | BR-02 bắt buộc có Vendor, nhưng `UC02` là P1 | P0 có danh mục Vendor tối giản: chọn hoặc tạo nhanh theo tên trong `UC01`, `UC03`. CRUD đầy đủ vẫn thuộc `UC02` (P1). | Giữ BR-02 mà không đổi độ ưu tiên của `UC02`. |
 | **D2** | Tiêu chí nghiệm thu đòi hóa đơn, nhưng `UC35` là P1 | Bản ghi Expense P0 chỉ cần số hóa đơn. File đính kèm là P1 và không bắt buộc. | BR-10 không yêu cầu chứng từ VAT. |
-| **D3** | Story P0 liên kết use case P1 | Trong `US-M11`, phần P0 là `UC15`, `UC18`. Trong `US-M13`, phần P0 là `UC23`, `UC24`. Các use case còn lại giao ở P1. | Giữ nguyên mã story và độ ưu tiên use case. |
+| **D3** | Story P0 liên kết use case P1 | Phần P0 của từng story: `US-M01` là `UC01`; `US-M02` là `UC03` (Vendor theo D1); `US-M10` là `UC05`, `UC21`; `US-M11` là `UC15`, `UC18`; `US-M13` là `UC23`, `UC24`; `US-S06` là `UC36`. Các use case còn lại giao ở P1. | Giữ nguyên mã story và độ ưu tiên use case. |
 | **D4** | Hai công thức tài chính khác nhau | Chỉ số chính thức theo `UC14`: `Actual Spending` là tổng khoản đã chi; `Remaining Budget = Total - Actual`; `Budget Utilization = Actual / Total`. Ngưỡng cảnh báo dùng `Utilization` này. `Committed Spending` là chỉ số P1 hiển thị riêng, không tính vào `Utilization`. | Bám baseline và tránh tính trùng nghĩa vụ. |
 | **D5** | BR-10 bắt buộc ngày thanh toán, nhưng IA có khoản chưa thanh toán | Bảng `expenses` ở P0 chỉ chứa khoản đã chi. `PENDING`, `OVERDUE` và thao tác Mark as Paid là mở rộng P1, cần bổ sung quy tắc riêng trước khi làm. `PROJECTED` là số liệu dự báo, không phải bản ghi Expense. | Không phải sửa BR-10 và giảm phạm vi 14 ngày. |
 | **D6** | Request có số lượng nhưng mỗi lần Assign chỉ +1; có thể cấp nhiều lần cho một request | Mỗi request tương ứng đúng 1 seat cho chính người gửi. Thêm trạng thái `Fulfilled` khi đã cấp. Request `Approved` chưa có seat vẫn chờ, không tự chuyển trạng thái. | Khép kín vòng đời request và phù hợp BR-19. |
@@ -231,3 +231,7 @@ Các quyết định dưới đây xử lý mâu thuẫn giữa các tài liệu
 | **D10** | `Change Tier` không có use case hoặc quy tắc nghiệp vụ | Hoãn sang sau MVP. Phần đặc tả trong IA được giữ lại để tham khảo. | Thay thế tạm bằng Revoke rồi Assign. |
 | **D11** | "Board override", "soft-stop approval" trái với phạm vi loại trừ phê duyệt đa cấp | Vượt ngân sách chỉ cảnh báo Manager, không chặn chi phí và không thêm tầng phê duyệt. | Bám Mục 2.2. |
 | **D12** | Thiếu nguồn tỷ giá cho BR-11 | Manager khai báo tỷ giá theo ngày hiệu lực trong `exchange_rates`. Không có tỷ giá thì hiển thị riêng từng loại tiền. | Là chính sách quy đổi tường minh theo BR-11. |
+| **D13** | Ngưỡng đỏ là `>100%` ở `UC14` nhưng `≥100%` ở IA | Thống nhất cảnh báo đỏ khi `Budget Utilization` $\ge 100\%$. | Ở mức 100% ngân sách đã hết, không còn dư. |
+| **D14** | Chưa quy định kênh thông báo | P0 dùng thông báo trong hệ thống. Email là mở rộng sau pilot. | Không phụ thuộc hạ tầng email trong 14 ngày. |
+| **D15** | `UC21` so sánh số lượng usage, nhưng `license_usage` không có trường số lượng; chưa có cách biểu diễn dữ liệu thiếu | Với metric `Per User`, số lượng usage là số nhân viên khác nhau có bản ghi `Active` trong kỳ gần nhất. Không có bản ghi là `Unknown`; không đánh giá được là `Not Evaluated`. `Unknown` không được tính là `Inactive` trong `UC20`. | Thực hiện được BR-14, BR-15 từ dữ liệu sẵn có. |
+| **D16** | Hai cách viết API khác nhau; chưa quy định khi import có dòng lỗi | Mọi API dùng tiền tố `/api/v1/`. File import có dòng lỗi thì không nạp dòng nào và trả về danh sách lỗi theo dòng. | Một hợp đồng API duy nhất; tránh dữ liệu nạp dở dang. |
