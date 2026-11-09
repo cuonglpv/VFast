@@ -73,59 +73,11 @@ Detailed MVP scope, the 20 business rules (BR-01 to BR-20), non-functional requi
 
 ### 1.2 Product mind map
 
-```mermaid
-mindmap
-  root((VFast ELMS))
-    License Management
-      Catalog and Vendor
-        Software Catalog
-        Vendor
-      Entitlement and Contract
-        SaaS Subscription
-        Perpetual License
-        Contract
-      Allocation
-        Request
-        Approve / Reject
-        Assign
-        Revoke
-        Allocation tracking
-      Lifecycle
-        SaaS term
-        Perpetual maintenance term
-        Renewal
-        Alerts at 30 / 15 / 7 days
-      Compliance
-        Over-allocation
-        Overuse
-    Budget Management
-      Budget per year / period / department
-      Expense
-        Manual entry
-        CSV / Excel import
-        Invoice upload
-      Budget Utilization
-        Actual Spending
-        Remaining Budget
-        Alerts at 80% / 100%
-    Optimization
-      Unallocated licenses
-      Inactive 60 days or more
-      Overuse
-      Saving recommendations
-      Manager approval
-    Analytics and Reporting
-      License Dashboard
-      Financial Dashboard
-      Compliance Dashboard
-      Export
-    Users and Access
-      3 roles
-      Login / Logout
-      Audit Log
-```
+![VFast ELMS mind map](docs/mindmap.png)
 
-The first two license groups (F01 Management and F02 Allocation) and Lifecycle (F04) are merged under one **License Management** branch, so the three main branches are License Management, Budget Management, and Optimization.
+The three key branches — **License Management**, **Budget Management**, and **Optimization** — are drawn in bold. License Management merges the license groups F01 (Management), F02 (Allocation), and F04 (Lifecycle).
+
+Editable source: [`docs/mindmap/vfast-elms.xmind`](docs/mindmap/vfast-elms.xmind) (same structure, open with XMind; branches labelled `key` are drawn bold). After editing it, regenerate the image with `python docs/mindmap/render_mindmap.py`.
 
 ### 1.3 INVEST requirements
 
