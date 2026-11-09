@@ -6,18 +6,19 @@
 
 ## 1. Tổng quan Kiến trúc Thông tin & Mô hình Điều hướng (Information Architecture & Navigation)
 
-Tài liệu này xác lập **Kiến trúc Thông tin (Information Architecture - IA)** và **Đặc tả Thiết kế Giao diện (View Specifications)** toàn diện dành riêng cho vai trò **Manager (Quản trị viên / Quản lý cấp cao)** đối với hai phân hệ nghiệp vụ hạt nhân:
+Tài liệu này xác lập **Kiến trúc Thông tin (Information Architecture - IA)** và **Đặc tả Thiết kế Giao diện (View Specifications)** toàn diện dành riêng cho vai trò **Manager (Quản trị viên / Quản lý cấp cao)** đối với ba phân hệ nghiệp vụ hạt nhân:
 1. **Module 1: License Management (Quản lý Quyền sở hữu Bản quyền / Entitlements)**
 2. **Module 2: License Assignment Management (Quản lý Phân bổ & Gán License cho Nhân viên)**
+3. **Module 3: Budget Management (Quản lý Ngân sách, Chi phí & Báo cáo Tài chính)**
 
 ### 1.1. Bản đồ Cấu trúc Cây Thông tin (Sitemap Tree for Manager)
 
 ```mermaid
 flowchart TD
-    Root["Manager Portal Portal Root (/)"] --> Dash["Dashboard Tổng quan (/manager/dashboard)"]
+    Root["Manager Portal Root (/)"] --> Dash["Dashboard Tổng quan (/manager/dashboard)"]
     Root --> M1["Module 1: License Management (/manager/licenses)"]
     Root --> M2["Module 2: Assignment Management (/manager/assignments)"]
-    Root --> M3["Module 3: Finance & Budget (/manager/budget)"]
+    Root --> M3["Module 3: Budget Management (/manager/budget)"]
     Root --> M4["Module 4: Optimization & Compliance (/manager/compliance)"]
     Root --> M5["Module 5: System Admin & Audit Logs (/manager/settings)"]
 
@@ -38,11 +39,16 @@ flowchart TD
     M2_Hub --> M2_View_Soft["View B: Theo Phần mềm & Seat (By Software/Seat)"]
     M2_Hub --> M2_View_Avail["View C: Bảng Kiểm tra Seat Còn trống (Availability Monitor)"]
     M2_Hub --> M2_View_Hist["View D: Sổ Lịch sử Cấp phát Toàn hệ thống (Global History)"]
+    M2_Hub --> M2_Assign["2.2 Assign License Drawer/Modal (Seat Check)"]
+    M2_Hub --> M2_Revoke["2.3 Revoke License Modal (Reclaim to Pool)"]
+    M2_Hub --> M2_Change["2.4 Change License Type Modal (Atomic Flow)"]
+    M2_Hub --> M2_Tracking["2.5 Active User Tracking (Inactive >= 60d)"]
 
-    M2_Hub --> M2_Assign["2.2 Assign License Drawer/Modal<br/>(Real-time Seat Validation)"]
-    M2_Hub --> M2_Revoke["2.3 Revoke License Modal<br/>(Reclaim to Pool & Mandatory Reason)"]
-    M2_Hub --> M2_Change["2.4 Change License Type Modal<br/>(Upgrade / Downgrade Atomic Flow)"]
-    M2_Hub --> M2_Tracking["2.5 Active User Tracking<br/>(Nhận diện Inactive >= 60 ngày)"]
+    %% Module 3 Sub-views
+    M3 --> M3_Plan["3.1 Budget Planning (/manager/budget/planning)<br/>(Annual, Monthly, Dept, Vendor/Software)"]
+    M3 --> M3_Exp["3.2 Expense Tracking (/manager/budget/expenses)<br/>(Monthly, Annual, Paid, Unpaid, Projected)"]
+    M3 --> M3_Mon["3.3 Budget Monitoring (/manager/budget/monitoring)<br/>(5 Metrics, Threshold Alerts, Burn-down)"]
+    M3 --> M3_Rep["3.4 Financial Reporting (/manager/budget/reports)<br/>(Monthly, Vendor, Variance, Renewal Forecast)"]
 ```
 
 ---
@@ -119,6 +125,14 @@ sequenceDiagram
 | **M2-F04** | Thay đổi loại License | Modal Dialog | Chuyển đổi gói (VD: Standard $\to$ Pro). Hoán đổi Atomic Transaction. |
 | **M2-F05** | Theo dõi Người đang dùng | `/manager/assignments` | Quản lý trạng thái Active / Idle / Inactive $\ge 60$ ngày phục vụ tối ưu hóa. |
 | **M2-F06** | Xem Lịch sử Cấp phát | Tab Lịch sử | Nhật ký cấp phát toàn diện (Assign, Revoke, Upgrade, Downgrade). |
+| **M3-F01** | Lập Ngân sách Năm & Tháng | `/manager/budget/planning` | Chỉ Manager có quyền tạo/sửa hạn mức ngân sách (BR-09, UC12). |
+| **M3-F02** | Phân bổ Ngân sách theo Dept | `/manager/budget/planning` | Ràng buộc: $\sum Budget_{dept} \le Budget_{annual}$. |
+| **M3-F03** | Phân bổ Ngân sách Vendor/Soft | `/manager/budget/planning` | Gán trần ngân sách cho từng vendor hoặc sản phẩm phần mềm. |
+| **M3-F04** | Theo dõi Chi phí Tháng & Năm | `/manager/budget/expenses` | Quản lý chi phí chu kỳ SaaS và chi phí mua sắm/bảo trì Perpetual. |
+| **M3-F05** | Quản lý Paid / Unpaid / Projected | `/manager/budget/expenses` | Bắt buộc kiểm tra hóa đơn VAT (BR-10) và tỷ giá quy đổi tiền tệ (BR-11). |
+| **M3-F06** | Giám sát 5 Chỉ số Ngân sách | `/manager/budget/monitoring`| Giám sát Total, Actual, Committed, Remaining, Utilization. Cảnh báo 80%/100%. |
+| **M3-F07** | Báo cáo Đối soát Variance | `/manager/budget/reports` | Phân tích chênh lệch Ngân sách vs Thực tế (Favorable / Unfavorable). |
+| **M3-F08** | Dự báo Chi phí Gia hạn | `/manager/budget/reports` | Dự phóng dòng tiền gia hạn 3/6/12 tháng tới kèm khuyến nghị tối ưu (UC22). |
 
 ---
 
@@ -616,9 +630,212 @@ Màn hình sổ nhật ký kiểm toán độc lập ghi nhận toàn bộ hoạ
 
 ---
 
-## 5. Sơ đồ Luồng Trạng thái & Cơ chế Bảo toàn Dữ liệu (State Machines & Data Integrity)
+## 5. Module 3: Budget Management (Quản lý Ngân sách, Chi phí & Báo cáo Tài chính)
 
-### 5.1. Vòng đời Trạng thái của License Entitlement (Module 1)
+Module 3 cung cấp cho Manager công cụ quản trị tài chính toàn diện xoay quanh tài sản phần mềm, chia thành **4 nhóm nghiệp vụ chiến lược**:
+- **A. Budget Planning (Thiết lập & Phân bổ Ngân sách)**
+- **B. Expense Tracking (Theo dõi & Đối soát Chi phí)**
+- **C. Budget Monitoring (Giám sát Ngân sách & Cảnh báo Ngưỡng)**
+- **D. Financial Reporting (Báo cáo Tài chính & Dự báo Dòng tiền)**
+
+```mermaid
+flowchart LR
+    subgraph M3_Flow["CHU TRÌNH TÀI CHÍNH BẢN QUYỀN (FINANCIAL CYCLE)"]
+        direction TB
+        A["A. Budget Planning<br/>(Thiết lập Ngân sách Năm, Tháng, Dept, Vendor)"]
+        B["B. Expense Tracking<br/>(Ghi nhận Chi phí Tháng, Năm, Paid, Unpaid, Projected)"]
+        C["C. Budget Monitoring<br/>(Giám sát 5 Metrics & Cảnh báo Ngưỡng 80% / 100%)"]
+        D["D. Financial Reporting<br/>(Báo cáo Chi phí Tháng, Vendor, Variance, Dự báo Gia hạn)"]
+
+        A -->|Thiết lập hạn mức| C
+        B -->|Nạp dữ liệu chi tiêu| C
+        C -->|Dữ liệu giải ngân| D
+        D -->|Căn cứ tối ưu hóa| A
+    end
+```
+
+---
+
+### 5.1. Nhóm Nghiệp vụ A: Budget Planning (Thiết lập Ngân sách)
+
+Cho phép Manager xác lập và phân bổ các hạn ngạch tài chính trước mỗi năm tài chính hoặc kỳ ngân sách (Tuân thủ **UC12, US-M08, BR-09**).
+
+#### 1. Thiết lập Tổng Ngân sách Hàng năm (Annual Total Budget)
+- **Màn hình/Modal thiết lập:** `/manager/budget/planning?action=new-annual`
+- **Các trường tham số:**
+  - `Năm tài chính (Fiscal Year):` Dropdown chọn năm (VD: `FY2026`, `FY2027`).
+  - `Đơn vị tiền tệ cơ sở (Base Currency):` `VND` hoặc `USD` (Cố định cho cả năm tài chính theo **BR-10, BR-11**).
+  - `Tổng hạn mức ngân sách phần mềm (Total Annual Ceiling):` Số tiền ngân sách được phê duyệt (VD: `5,000,000,000 VND` hoặc `$200,000 USD`).
+  - `Ngày bắt đầu & kết thúc tài khóa:` Mặc định từ `01/01` đến `31/12`.
+  - `Mô tả & Căn cứ phê duyệt:` Nhập số tờ trình / nghị quyết HĐQT phê duyệt ngân sách.
+  - `Tệp đính kèm:` Upload văn bản phê duyệt kế hoạch ngân sách (PDF).
+
+#### 2. Phân bổ Ngân sách theo Tháng (Monthly Budget Breakdown)
+Hỗ trợ 2 phương thức phân bổ 12 tháng:
+- **Phương thức 1 – Dàn đều tự động (Even Distribution):** Hệ thống tự động chia đều: $\text{Monthly Budget} = \frac{\text{Total Annual Budget}}{12}$.
+- **Phương thức 2 – Phân bổ tùy biến theo chu kỳ (Seasonal / Custom Allocation):**
+  - Manager trực tiếp nhập hạn mức cho từng tháng từ Tháng 1 đến Tháng 12.
+  - Phù hợp với đặc thù doanh nghiệp thường tập trung thanh toán gia hạn các gói lớn vào các tháng cố định (ví dụ: Tháng 3 gia hạn Microsoft 365, Tháng 11 gia hạn AWS/GCP).
+  - **Quy tắc Kiểm tra Ràng buộc (Validation Rule):**
+    $$\sum_{m=1}^{12} \text{Monthly Budget}_m \le \text{Total Annual Budget}$$
+    Nếu tổng 12 tháng vượt quá ngân sách năm, hệ thống báo đỏ: *"Tổng ngân sách 12 tháng đang vượt quá hạn mức năm X đồng. Vui lòng cân đối lại."*
+
+#### 3. Phân bổ Ngân sách theo Phòng ban (Department Allocation)
+- Gán hạn ngạch chi tiêu phần mềm cho từng đơn vị thụ hưởng (Cost Center):
+  - Khối Kỹ thuật & Công nghệ (Tech / Engineering)
+  - Khối Thiết kế Sản phẩm (Product Design)
+  - Khối Kinh doanh & Tiếp thị (Sales & Marketing)
+  - Khối Vận hành & Tài chính (Operations & Finance)
+  - Khối Nhân sự & Đào tạo (HR & Admin)
+- **Bảng Ma trận Phân bổ (Allocation Grid):**
+  - Cột: Tên phòng ban, Người phụ trách duyệt (Head of Dept), Hạn mức phân bổ, Tỷ lệ % trên tổng ngân sách, Ngân sách dự phòng chung (Unallocated Buffer).
+  - Tự động kiểm tra: $\sum \text{Dept Budget} + \text{Buffer} = \text{Total Annual Budget}$.
+
+#### 4. Phân bổ Ngân sách theo Phần mềm hoặc Vendor (Software / Vendor Bucket Allocation)
+- Phân bổ trần ngân sách cho các Nhà cung cấp chiến lược hoặc nhóm phần mềm:
+  - *Bucket Vendor:* Microsoft Pool, Adobe Pool, JetBrains Pool, Atlassian Pool, Google Workspace Pool,...
+  - *Bucket Nhóm phần mềm:* Phần mềm Văn phòng & Cộng tác, Công cụ Lập trình & Hạ tầng, Phần mềm Đồ họa & Thiết kế, Phần mềm Chuyên dụng Kỹ thuật (CAD/CAM).
+- Giúp Manager kiểm soát không cho phép một nhóm vendor chi tiêu vượt quá hạn mức thỏa thuận đầu năm.
+
+#### 5. Quản lý Phiên bản & Lịch sử Điều chỉnh Ngân sách (Budget Revisions & Audit Log)
+- Mọi lần điều chỉnh tăng/giảm ngân sách đều tạo một phiên bản mới: `v1.0 (Kế hoạch gốc)`, `v1.1 (Điều chỉnh Q2)`, `v1.2 (Bổ sung ngân sách dự án mới)`.
+- Bắt buộc nhập `Lý do điều chỉnh (Revision Justification)` và lưu vết vào `audit_logs` (**BR-17**).
+
+---
+
+### 5.2. Nhóm Nghiệp vụ B: Expense Tracking (Theo dõi Chi phí)
+
+Cung cấp sổ cái theo dõi toàn diện các khoản chi phí phát sinh thực tế từ việc mua mới, gia hạn thuê bao SaaS và duy trì bảo trì Perpetual (**UC13, UC33, UC34, US-M09**).
+
+#### 1. Các Chiều Theo dõi Chi phí Trọng yếu
+- **Chi phí License Hàng tháng (Monthly License Expenses):**
+  - Tập hợp toàn bộ chi phí phát sinh trong từng tháng của các dịch vụ SaaS trả theo tháng (Monthly billings).
+  - Cho phép lọc xem chi tiêu từng tháng riêng biệt hoặc xem lũy kế.
+- **Chi phí License Hàng năm (Annual License Expenses):**
+  - Các hợp đồng thuê bao SaaS trả theo chu kỳ năm (Yearly commitments) và phí thỏa thuận bảo trì Perpetual License (**BR-12**).
+- **Chi phí Đã thanh toán (Paid Expenses):**
+  - Các khoản chi phí đã hoàn tất giao dịch thanh toán ngân hàng, có đính kèm hóa đơn VAT hợp lệ và ủy nhiệm chi kế toán.
+  - Trạng thái: `PAID`. Đóng góp trực tiếp vào chỉ số **Actual Spending**.
+- **Chi phí Chưa thanh toán (Unpaid / Pending Expenses):**
+  - Các hóa đơn đã được lập/nhận từ vendor nhưng đang trong thời hạn chờ duyệt thanh toán hoặc đang chờ kế toán giải ngân.
+  - Trạng thái: `PENDING` (Trong hạn thanh toán) hoặc `OVERDUE` (Quá hạn thanh toán).
+  - Đóng góp vào chỉ số **Committed Spending**.
+- **Chi phí Dự kiến trong Tương lai (Projected / Future Commitments):**
+  - Chi phí dự kiến phải trả trong các kỳ thanh toán tiếp theo căn cứ trên các hợp đồng SaaS đang hoạt động và hợp đồng bảo trì sắp đến hạn gia hạn.
+  - Trạng thái: `PROJECTED`. Giúp Manager chủ động chuẩn bị dòng tiền.
+
+#### 2. Bảng Sổ cái Chi phí (Expense Ledger View - `/manager/budget/expenses`)
+
+| Mã Hóa Đơn / Chi Phí | Tên Phần Mềm & Gói | Nhà Cung Cấp | Số Tiền & Tiền Tệ | Chu Kỳ | Ngày Phát Sinh | Hạn Thanh Toán | Trạng Thái | Chứng Từ VAT | Thao Tác |
+| :--- | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
+| `EXP-2026-081` | Microsoft 365 E5 | Microsoft Corp | $1,750 USD | Tháng | 01/11/2026 | 15/11/2026 | `PAID` 🟢 | [HD-881.pdf] | Xem |
+| `EXP-2026-082` | Figma Enterprise | Figma Inc | $900 USD | Tháng | 05/11/2026 | 20/11/2026 | `PENDING` 🟡 | [HD-892.pdf] | Duyệt chi |
+| `EXP-2026-079` | JetBrains All Pack | JetBrains s.r.o | 320,000,000 VND | Năm | 15/10/2026 | 30/10/2026 | `PAID` 🟢 | [VAT-012.pdf]| Xem |
+| `EXP-2026-090` | AutoCAD 2026 Maint | Autodesk Inc | 145,000,000 VND | Năm (Bảo trì)| 01/12/2026 | 15/12/2026 | `PROJECTED` 🔵| [Dự thảo PO] | Xem |
+
+#### 3. Quy tắc Nghiệp vụ về Hóa đơn & Tiền tệ (BR-10 & BR-11)
+- **Quy tắc BR-10:** Bản ghi Expense hợp lệ bắt buộc phải có: Số tiền $> 0$, Loại tiền tệ xác định (`VND` hoặc `USD`), Ngày thanh toán / phát sinh, Số hóa đơn và Đơn vị thụ hưởng.
+- **Quy tắc BR-11:** Các khoản chi phí khác loại tiền tệ tuyệt đối không được cộng gộp trực tiếp. Hệ thống cung cấp bảng tỷ giá tham chiếu (`Exchange Rate Table`, ví dụ: $1 \text{ USD} = 25,400 \text{ VND}$) để quy đổi toàn bộ về đồng tiền cơ sở khi tính toán tổng ngân sách.
+
+---
+
+### 5.3. Nhóm Nghiệp vụ C: Budget Monitoring (Theo dõi Ngân sách & 5 Metrics Cốt lõi)
+
+Màn hình bảng điều hành trung tâm giám sát sức khỏe tài chính bản quyền (`/manager/budget/monitoring`), cung cấp 5 chỉ số then chốt và cơ chế cảnh báo ngưỡng tự động (**UC14, US-M08, US-M13**).
+
+#### 1. Bảng 5 Chỉ số Đo lường Hiệu suất Ngân sách (Core Financial Metrics)
+
+| Tên Chỉ Số (Metric) | Ý Nghĩa Nghiệp Vụ | Công Thức Tính Toán | Mục Đích Quản Trị |
+| :--- | :--- | :--- | :--- |
+| **1. Total Budget** | Tổng ngân sách được phân bổ cho kỳ tài chính đã duyệt. | $\text{Total Budget} = \sum \text{Department Budgets}$ | Xác lập trần ngân sách pháp lý tối đa được phép chi. |
+| **2. Actual Spending** | Chi phí thực tế đã giải ngân và thanh toán xong. | $\text{Actual Spending} = \sum \text{Paid Expenses}$ | Đo lường số tiền thực tế đã rời khỏi tài khoản doanh nghiệp. |
+| **3. Committed Spending** | Chi phí đã cam kết phải trả (Hóa đơn chờ trả + Hợp đồng đang chạy). | $\text{Committed} = \sum \text{Pending Expenses} + \sum \text{Active Contracts in Period}$ | Nắm bắt nghĩa vụ tài chính bắt buộc phải chi trả trong kỳ. |
+| **4. Remaining Budget** | Ngân sách còn lại khả dụng cho các nhu cầu mua sắm mới. | $\text{Remaining} = \text{Total Budget} - (\text{Actual} + \text{Committed})$ | Biết chính xác doanh nghiệp còn bao nhiêu tiền để mua license mới. |
+| **5. Budget Utilization** | Tỷ lệ sử dụng và cam kết ngân sách so với kế hoạch. | $\text{Utilization (\%)} = \left(\frac{\text{Actual} + \text{Committed}}{\text{Total Budget}}\right) \times 100\%$ | Đánh giá tốc độ giải ngân và nguy cơ vượt hạn mức. |
+
+---
+
+#### 2. Hệ thống Cảnh báo Ngưỡng Chi tiêu Tự động (Budget Threshold Alerts - UC14)
+Hệ thống giám sát liên tục chỉ số **Budget Utilization** và phân loại cảnh báo:
+
+```mermaid
+flowchart LR
+    Util["Tỷ lệ Giải ngân<br/>Budget Utilization (%)"] --> Check{Kiểm tra Ngưỡng}
+    Check -->|Dưới 80%| Safe["🟢 VÙNG AN TOÀN (SAFE)<br/>Tiến độ chi tiêu ổn định, trong tầm kiểm soát."]
+    Check -->|Từ 80% đến 99%| Warn["🟡 CẢNH BÁO SỚM (WARNING)<br/>Đã sử dụng >= 80% ngân sách.<br/>Bật thông báo nhắc nhở Manager."]
+    Check -->|Đạt >= 100%| Danger["🔴 BÁO ĐỘNG ĐỎ (OVER-BUDGET)<br/>Vượt trần ngân sách phê duyệt!<br/>Khóa cảnh báo & yêu cầu tờ trình bổ sung."]
+```
+
+- **Mức Xanh (Safe - Dưới 80%):** Hoạt động giải ngân bình thường, không có nguy cơ vượt trần.
+- **Mức Vàng (Warning - Từ 80% đến 99%):** 
+  - Kích hoạt thông báo cảnh báo sớm trên Dashboard của Manager.
+  - Gợi ý Manager rà soát các hợp đồng sắp gia hạn và kiểm tra các license không dùng (Inactive) để cắt giảm trước khi vượt trần.
+- **Mức Đỏ (Over-budget - Đạt $\ge 100\%$):**
+  - Bật cảnh báo nguy hiểm màu đỏ trên toàn bộ phân hệ Manager.
+  - Khi Manager cố gắng Approve một License Request mới đòi hỏi phát sinh chi phí, hệ thống hiển thị thông báo chặn mềm: *"Ngân sách phòng ban [Tên Dept] đã vượt trần 100%. Yêu cầu phê duyệt ngoại lệ từ Ban Giám Đốc để tiếp tục."*
+
+#### 3. Biểu đồ Tiến độ Giải ngân Lũy kế (Cumulative Spending Burn-down / Burn-up Chart)
+- Đường màu Xám: Đường kế hoạch ngân sách chuẩn (Planned Budget Pace - lũy kế đều 12 tháng).
+- Đường màu Xanh dương: Chi phí thực tế đã giải ngân (Actual Spending).
+- Đường màu Vàng nét đứt: Chi phí đã cam kết lũy kế (Actual + Committed).
+- Trực quan hóa điểm giao cắt và dự báo thời điểm có nguy cơ chạm trần ngân sách trước hạn (nếu có).
+
+---
+
+### 5.4. Nhóm Nghiệp vụ D: Financial Reporting (Báo cáo Tài chính)
+
+Cung cấp các báo cáo phân tích tài chính chuyên sâu phục vụ công tác đối soát kế toán, thẩm định hiệu quả đầu tư phần mềm và lập kế hoạch ngân sách chu kỳ tiếp theo (**UC24, UC26, US-M13**).
+
+#### 1. Báo cáo 1: Chi phí theo Tháng (Monthly Expense Trend Report)
+- **Dạng thể hiện:** Biểu đồ cột chồng (Stacked Bar Chart) kết hợp bảng số liệu chi tiết.
+- **Dữ liệu phân rã:**
+  - Cột thành phần 1: Chi phí thuê bao đám mây (SaaS Subscriptions).
+  - Cột thành phần 2: Chi phí mua mới & duy trì bảo trì (Perpetual Maintenance).
+  - Cột thành phần 3: Chi phí dịch vụ bổ sung / Support fees.
+- **Chỉ số phân tích:**
+  - Tốc độ tăng trưởng chi phí hàng tháng (Month-over-Month Growth - MoM %).
+  - Tháng có chi phí đột biến và phân tích nguyên nhân gốc rễ (Root cause: do bổ sung dự án mới hay gia hạn tập trung).
+
+#### 2. Báo cáo 2: Chi phí theo Vendor (Expense Breakdown by Vendor)
+- **Dạng thể hiện:** Biểu đồ Tròn (Donut Chart) và Biểu đồ Treemap.
+- **Nội dung phân tích:**
+  - Tỷ trọng ngân sách dành cho từng Vendor: Microsoft (ví dụ 42%), Adobe (18%), JetBrains (14%), Atlassian (10%), Google (8%), Các vendor khác (8%).
+  - **Phân tích Top 5 Nhà cung cấp chiếm chi tiêu lớn nhất:** Giúp Manager nhận diện đối tác chiến lược để đàm phán chính sách giá doanh nghiệp lớn (Volume Discount / Enterprise Agreement).
+
+#### 3. Báo cáo 3: So sánh Ngân sách và Chi phí Thực tế (Budget vs. Actual Variance Analysis)
+- **Mục tiêu:** Đối chiếu sai lệch giữa kế hoạch ngân sách đề ra đầu năm và chi phí thực tế phát sinh theo từng phòng ban và từng danh mục phần mềm.
+- **Cấu trúc Bảng Đối soát Sai lệch (Variance Matrix Grid):**
+
+| Phòng Ban / Danh Mục | Ngân Sách Kế Hoạch (Budget) | Thực Chi (Actual) | Đã Cam Kết (Committed) | Tổng Tiêu Thụ (Total Used) | Chênh Lệch (Variance) | Tỷ Lệ Lệch (% Var) | Đánh Giá Tình Trạng |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Phòng Kỹ thuật (Tech)** | 1,800,000,000 ₫ | 1,420,000,000 ₫ | 180,000,000 ₫ | 1,600,000,000 ₫ | +200,000,000 ₫ | +11.1% | 🟢 Tiết kiệm (Favorable) |
+| **Phòng Thiết kế (Design)** | 600,000,000 ₫ | 510,000,000 ₫ | 115,000,000 ₫ | 625,000,000 ₫ | -25,000,000 ₫ | -4.2% | 🔴 Vượt trần (Unfavorable) |
+| **Phòng Marketing** | 450,000,000 ₫ | 340,000,000 ₫ | 60,000,000 ₫ | 400,000,000 ₫ | +50,000,000 ₫ | +11.1% | 🟢 Tiết kiệm (Favorable) |
+| **Dự phòng Chung (Buffer)**| 300,000,000 ₫ | 0 ₫ | 0 ₫ | 0 ₫ | +300,000,000 ₫ | +100% | 🟢 Khả dụng |
+
+- **Ý nghĩa chỉ số Chênh lệch (Variance):**
+  - $\text{Variance} = \text{Budget} - (\text{Actual} + \text{Committed})$.
+  - $\text{Variance} > 0$: **Thuận lợi (Favorable - Xanh)** $\to$ Chi tiêu dưới ngân sách, tiết kiệm chi phí.
+  - $\text{Variance} < 0$: **Bất lợi (Unfavorable - Đỏ)** $\to$ Chi tiêu vượt ngân sách, cần giải trình.
+
+#### 4. Báo cáo 4: Dự báo Chi phí Gia hạn (Renewal Cost Forecasting)
+- **Mục tiêu:** Cung cấp bức tranh dự phóng dòng tiền cần chi trả trong tương lai ngắn hạn và trung hạn để doanh nghiệp không bị bất ngờ về mặt tài chính (**UC15, UC16, UC22**).
+- **Khung thời gian dự phóng (Forecasting Horizons):**
+  - *Dự báo 30 ngày tới (Next 30 Days):* Các hợp đồng SaaS và hạn bảo trì sắp hết hạn ngay trong tháng.
+  - *Dự báo Quý tới (Next Quarter - 90 Days):* Lịch thanh toán các gói lớn trong quý.
+  - *Dự báo 12 tháng tới (Next 12 Months):* Dòng tiền dự kiến theo chu kỳ năm tài chính kế tiếp.
+- **Tính năng Đề xuất Tối ưu hóa Tích hợp (Integrated Cost Optimization Insight):**
+  - Hệ thống tự động liên kết dữ liệu nhân viên **Inactive $\ge 60$ ngày** (từ Module 2) với các hợp đồng sắp gia hạn:
+  - *Ví dụ cảnh báo thông minh:* *"Hợp đồng JetBrains All Products Pack sắp gia hạn ngày 15/12/2026 với 50 seats ($15,000). Hệ thống phát hiện có 8 nhân viên không hoạt động trong 60 ngày qua. Nếu cắt giảm 8 seats trước khi gia hạn, doanh nghiệp sẽ tiết kiệm được $2,400 USD/năm."*
+- **Xuất Báo cáo Đa định dạng (Exporting Capabilities):**
+  - `[Xuất PDF Chuẩn Ban Giám Đốc]`: Trình bày biểu đồ màu sắc, bảng tóm tắt chỉ số và phân tích chuyên sâu.
+  - `[Xuất Excel / CSV Thô]`: Đầy đủ dữ liệu chi tiết từng giao dịch phục vụ bộ phận Kế toán / Kiểm toán.
+
+---
+
+## 6. Sơ đồ Luồng Trạng thái & Cơ chế Bảo toàn Dữ liệu (State Machines & Data Integrity)
+
+### 6.1. Vòng đời Trạng thái của License Entitlement (Module 1)
 
 ```mermaid
 stateDiagram-v2
@@ -637,7 +854,7 @@ stateDiagram-v2
 
 ---
 
-### 5.2. Vòng đời Trạng thái của Phân bổ Seat - License Assignment (Module 2)
+### 6.2. Vòng đời Trạng thái của Phân bổ Seat - License Assignment (Module 2)
 
 ```mermaid
 stateDiagram-v2
@@ -667,9 +884,48 @@ stateDiagram-v2
 
 ---
 
-## 6. Thiết kế Wireframes Trực quan (UI Layout Wireframes)
+### 6.3. Vòng đời Trạng thái của Khoản Chi phí - Expense (Module 3)
 
-### 6.1. Wireframe: License Management List View (`/manager/licenses`)
+```mermaid
+stateDiagram-v2
+    [*] --> Projected: Dự phóng từ hợp đồng SaaS/Perpetual còn hạn
+    Projected --> Pending: Nhận hóa đơn / Đến hạn thanh toán (Editor nạp)
+    Pending --> Paid: Kế toán thanh toán & Manager xác nhận (Có VAT)
+    note right of Paid
+        Đóng góp vào Actual Spending
+        Giảm Remaining Budget
+    end note
+    Pending --> Overdue: Quá hạn thanh toán (Quá Due Date)
+    Overdue --> Paid: Thanh toán muộn hoàn tất
+    Pending --> Cancelled: Hủy bỏ hóa đơn (Sai sót / Đàm phán lại)
+    Projected --> Cancelled: Ngừng hợp đồng trước hạn
+    Paid --> [*]
+    Cancelled --> [*]
+```
+
+---
+
+### 6.4. Vòng đời Kế hoạch Ngân sách - Budget Plan (Module 3)
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft: Manager lập dự thảo ngân sách năm/dept
+    Draft --> UnderReview: Trình Ban Giám Đốc xem xét
+    UnderReview --> Approved: Ban Giám Đốc phê duyệt hạn mức
+    UnderReview --> Draft: Yêu cầu điều chỉnh cắt giảm
+    Approved --> Active: Bắt đầu năm tài chính (Kích hoạt kiểm soát chi)
+    Active --> Revised: Điều chỉnh bổ sung hạn mức trong năm (Tạo v1.1, v1.2)
+    Revised --> Active: Kích hoạt hạn mức mới
+    Active --> Closed: Kết thúc năm tài chính (Chốt sổ đối soát)
+    Closed --> Archived: Lưu trữ lịch sử vĩnh viễn (BR-20)
+    Archived --> [*]
+```
+
+---
+
+## 7. Thiết kế Wireframes Trực quan (UI Layout Wireframes)
+
+### 7.1. Wireframe: License Management List View (`/manager/licenses`)
 
 ```text
 +--------------------------------------------------------------------------------------------------------------------+
@@ -705,7 +961,7 @@ stateDiagram-v2
 
 ---
 
-### 6.2. Wireframe: Assignment Hub & Availability Monitor (`/manager/assignments`)
+### 7.2. Wireframe: Assignment Hub & Availability Monitor (`/manager/assignments`)
 
 ```text
 +--------------------------------------------------------------------------------------------------------------------+
@@ -744,7 +1000,7 @@ stateDiagram-v2
 
 ---
 
-### 6.3. Wireframe: Assign License Drawer (`/manager/assignments/new`)
+### 7.3. Wireframe: Assign License Drawer (`/manager/assignments/new`)
 
 ```text
 +-------------------------------------------------------------+
@@ -783,7 +1039,7 @@ stateDiagram-v2
 
 ---
 
-### 6.4. Wireframe: Change License Type Modal (Upgrade / Downgrade)
+### 7.4. Wireframe: Change License Type Modal (Upgrade / Downgrade)
 
 ```text
 +-----------------------------------------------------------------------+
@@ -816,19 +1072,117 @@ stateDiagram-v2
 
 ---
 
-## 7. Quy tắc Tương tác Giao diện & Xử lý Ngoại lệ (Interaction & Feedback Guidelines)
+### 7.5. Wireframe: Budget Monitoring Cockpit (`/manager/budget/monitoring`)
 
-### 7.1. Trạng thái Phản hồi Người dùng (Toast Notifications & Dialogs)
+```text
++--------------------------------------------------------------------------------------------------------------------+
+|  VFast ELMS  |  [Dashboard]  [Licenses]  [Assignments]  [Budgets*]  [Optimization]  [Audit Logs]   | (Mgr) Dat Nguyen |
++--------------------------------------------------------------------------------------------------------------------+
+| TRANG CHỦ / QUẢN LÝ NGÂN SÁCH & CHI PHÍ                                                                            |
+|                                                                                                                    |
+| Bảng Giám sát Ngân sách & Tài chính (Budget Monitoring)                        [ Xuất Báo Cáo ]  [ + Thiết lập Ngân Sách ]|
+| Năm tài chính: [ FY2026 (01/01/2026 - 31/12/2026) v ]      Tiền tệ hiển thị: [ VND (Triệu đồng) v ]                |
+|                                                                                                                    |
+| 5 CHỈ SỐ TÀI CHÍNH CỐT LÕI (CORE FINANCIAL METRICS)                                                                |
+| +--------------------+ +--------------------+ +--------------------+ +--------------------+ +--------------------+ |
+| | 1. TOTAL BUDGET    | | 2. ACTUAL SPENT    | | 3. COMMITTED       | | 4. REMAINING       | | 5. UTILIZATION     | |
+| | 5,000,000,000 ₫    | | 3,450,000,000 ₫    | | 750,000,000 ₫      | | 800,000,000 ₫      | | 84.0% (Warning)    | |
+| | Đã duyệt năm 2026  | | Thực tế đã thanh toán| Hóa đơn chờ trả + HĐ| Khả dụng mua mới     | 🟡 Vượt ngưỡng 80%   | |
+| +--------------------+ +--------------------+ +--------------------+ +--------------------+ +--------------------+ |
+|                                                                                                                    |
+| [!] CẢNH BÁO: Tỷ lệ sử dụng và cam kết ngân sách đã đạt 84.0% (Ngưỡng cảnh báo: 80%). Cần kiểm soát chi phí quý 4. |
+|                                                                                                                    |
+| [ Monitoring Cockpit* ]   [ Budget Planning ]   [ Expense Tracking Ledger ]   [ Financial Reporting Center ]       |
+|                                                                                                                    |
+| BIỂU ĐỒ TIẾN ĐỘ GIẢI NGÂN LŨY KẾ 12 THÁNG (CUMULATIVE SPENDING BURN-DOWN / BURN-UP)                                |
+| 5,000Tr ₫ |-----------------------------------------------------------------------------[ TRẦN NGÂN SÁCH NĂM ]     |
+| 4,000Tr ₫ |                                                          /----(Committed 4,200Tr)                     |
+| 3,000Tr ₫ |                                         /---------------/ (Actual 3,450Tr)                            |
+| 2,000Tr ₫ |                         /--------------/                                                              |
+| 1,000Tr ₫ |         /--------------/                                                                              |
+|     0 ₫   +---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+    |
+|           T1        T2        T3        T4        T5        T6        T7        T8        T9(Now)   T10  T11  T12    |
+|           --- Kế hoạch đều (Planned)        === Thực chi (Actual)         ... Đã cam kết (Committed)              |
+|                                                                                                                    |
+| TIẾN ĐỘ GIẢI NGÂN THEO PHÒNG BAN (DEPARTMENT UTILIZATION PROGRESS)                                                 |
+| Khối Kỹ thuật (Tech)     | Budget: 2,200 Tr ₫ | Dùng: 1,920 Tr (87%) | [====================----] 87% 🟡 Cảnh báo |
+| Khối Thiết kế (Design)   | Budget:   700 Tr ₫ | Dùng:   650 Tr (93%) | [======================--] 93% 🟡 Cảnh báo |
+| Khối Kinh doanh & Sales  | Budget:   900 Tr ₫ | Dùng:   630 Tr (70%) | [================--------] 70% 🟢 An toàn  |
+| Khối Vận hành & Chung    | Budget: 1,200 Tr ₫ | Dùng: 1,000 Tr (83%) | [===================-----] 83% 🟡 Cảnh báo |
++--------------------------------------------------------------------------------------------------------------------+
+```
+
+---
+
+### 7.6. Wireframe: Budget Planning Matrix (`/manager/budget/planning`)
+
+```text
++--------------------------------------------------------------------------------------------------------------------+
+| THIẾT LẬP & PHÂN BỔ NGÂN SÁCH (BUDGET PLANNING)                                                                    |
+| Năm tài chính: [ FY2026 v ]    Tổng ngân sách: [ 5,000,000,000 ] VND     [ Tự động chia 12 tháng ] [ Lưu kế hoạch ]|
++--------------------------------------------------------------------------------------------------------------------+
+| PHÂN BỔ HẠN MỨC THEO PHÒNG BAN & THEO THÁNG (Đơn vị: Triệu VNĐ)                                                    |
+| +--------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+------+------+------+ |
+| | Phòng ban / Tháng  | T1    | T2    | T3*   | T4    | T5    | T6    | T7    | T8    | T9    | T10  | T11* | T12  | |
+| +--------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+------+------+------+ |
+| | Kỹ thuật (Tech)    |  150  |  150  |  350  |  150  |  150  |  200  |  150  |  150  |  150  |  150 |  300 |  100 | |
+| | Thiết kế (Design)  |   50  |   50  |   80  |   50  |   50  |   60  |   50  |   50  |   50  |   50 |   60 |   40 | |
+| | Marketing & Sales  |   70  |   70  |   70  |   70  |   70  |  100  |   70  |   70  |   70  |   70 |   70 |   90 | |
+| | Vận hành & HR      |   80  |   80  |  120  |   80  |   80  |   80  |   80  |   80  |   80  |   80 |  120 |  240 | |
+| | Dự phòng (Buffer)  |   20  |   20  |   20  |   20  |   20  |   40  |   20  |   20  |   20  |   20  |   20  |   60 | |
+| +--------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+------+------+------+ |
+| | TỔNG CỘNG THÁNG    |  370  |  370  |  640  |  370  |  370  |  480  |  370  |  370  |  370  |  370 |  570 |  530 | |
+| +--------------------+-------+-------+-------+-------+-------+-------+-------+-------+-------+------+------+------+ |
+| (*) Các tháng có gia hạn hợp đồng lớn tập trung (Tháng 3: Microsoft Enterprise; Tháng 11: AWS Cloud & Dev Tools). |
+| Tổng phân bổ 12 tháng: 5,000 / 5,000 Triệu ₫ [ HOÀN TOÀN CÂN BẰNG 100% 🟢 ]                                        |
++--------------------------------------------------------------------------------------------------------------------+
+```
+
+---
+
+### 7.7. Wireframe: Financial Reporting Center (`/manager/budget/reports`)
+
+```text
++--------------------------------------------------------------------------------------------------------------------+
+| BÁO CÁO TÀI CHÍNH BẢN QUYỀN (FINANCIAL REPORTING CENTER)                        [ Xuất PDF Ban GĐ ]  [ Xuất Excel ]|
+| Loại báo cáo: (o) Chi phí theo tháng   ( ) Theo Vendor   ( ) So sánh Ngân sách vs Thực tế   ( ) Dự báo chi phí gia hạn|
++--------------------------------------------------------------------------------------------------------------------+
+| SO SÁNH NGÂN SÁCH VÀ CHI PHÍ THỰC TẾ (BUDGET VS. ACTUAL VARIANCE ANALYSIS - FY2026)                                |
+| +------------------------+------------------+------------------+------------------+----------------+--------------+|
+| | Danh mục / Đơn vị      | Ngân sách (Plan) | Thực chi (Actual)| Cam kết (Commit) | Chênh lệch     | Đánh giá     ||
+| +------------------------+------------------+------------------+------------------+----------------+--------------+|
+| | Khối Kỹ thuật (Tech)   | 2,200,000,000 ₫  | 1,720,000,000 ₫  |   200,000,000 ₫  | +280,000,000 ₫ | 🟢 Tiết kiệm ||
+| | Khối Thiết kế (Design) |   700,000,000 ₫  |   580,000,000 ₫  |   140,000,000 ₫  |  -20,000,000 ₫ | 🔴 Vượt trần ||
+| | Khối Sales & Marketing |   900,000,000 ₫  |   630,000,000 ₫  |    80,000,000 ₫  | +190,000,000 ₫ | 🟢 Tiết kiệm ||
+| | Khối Vận hành (Ops)    | 1,200,000,000 ₫  |   820,000,000 ₫  |   180,000,000 ₫  | +200,000,000 ₫ | 🟢 Tiết kiệm ||
+| +------------------------+------------------+------------------+------------------+----------------+--------------+|
+| | TOÀN DOANH NGHIỆP      | 5,000,000,000 ₫  | 3,750,000,000 ₫  |   600,000,000 ₫  | +650,000,000 ₫ | 🟢 Dư ngân sách|
+| +------------------------+------------------+------------------+------------------+----------------+--------------+|
+|                                                                                                                    |
+| DỰ BÁO CHI PHÍ GIA HẠN 90 NGÀY TỚI & KHUYẾN NGHỊ TỐI ƯU HÓA (RENEWAL FORECAST & OPTIMIZATION)                      |
+| 1. Microsoft 365 E5: Hết hạn 31/12/2026. Chi phí dự kiến gia hạn: $21,000 USD (50 seats).                         |
+|    -> Khuyến nghị: Có 5 seats Inactive >= 60 ngày. Giảm xuống 45 seats tiết kiệm: $2,100 USD/năm.                  |
+| 2. JetBrains All Pack: Hết hạn 15/10/2026. Chi phí dự kiến gia hạn: 320,000,000 VND (50 seats).                   |
+|    -> Khuyến nghị: Có 8 seats Inactive >= 60 ngày. Cắt giảm giúp tiết kiệm: 51,200,000 VND/năm.                   |
++--------------------------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## 8. Quy tắc Tương tác Giao diện & Xử lý Ngoại lệ (Interaction & Feedback Guidelines)
+
+### 8.1. Trạng thái Phản hồi Người dùng (Toast Notifications & Dialogs)
 - **Cấp phát thành công:** Toast xanh lá: *"Đã cấp phát thành công license [Tên phần mềm] cho nhân viên [Tên NV]. Dung lượng còn lại: X seats."*
 - **Thu hồi thành công:** Toast xanh lá: *"Đã thu hồi license [Tên phần mềm] về kho. Dung lượng khả dụng đã tăng +1."*
 - **Lỗi hết Seat (BR-05):** Hộp thoại cảnh báo đỏ: *"Cấp phát thất bại: License đã hết dung lượng khả dụng trong kho ($Available = 0$). Vui lòng kiểm tra lại."*
 - **Chặn Xóa License (BR-05, BR-13):** Modal cảnh báo: *"Không thể xóa license này vì đang có X nhân viên sử dụng. Vui lòng thu hồi toàn bộ phân bổ trước khi xóa."*
+- **Cảnh báo Vượt Ngân sách (UC14):** Toast vàng cam khi đạt 80%: *"Cảnh báo: Ngân sách phòng ban [Dept] đã giải ngân đạt 80%."*
 
-### 7.2. Xử lý Trạng thái Rỗng (Empty States)
+### 8.2. Xử lý Trạng thái Rỗng (Empty States)
 - Khi kho chưa có License: Hiển thị minh họa đồ họa + Dòng chữ *"Doanh nghiệp chưa có bản quyền nào trong kho"* + Nút bấm lớn `[+ Đăng ký License Đầu Tiên]`.
-- Khi bộ lọc không có kết quả: Hiển thị *"Không tìm thấy license nào khớp với tiêu chí tìm kiếm"* + Nút `[Xóa bộ lọc]`.
-- Khi nhân viên chưa được gán license: Hiển thị *"Nhân viên này hiện chưa được phân bổ bản quyền nào"* + Nút `[+ Gán License Ngay]`.
+- Khi chưa lập Ngân sách năm: Hiển thị *"Chưa có kế hoạch ngân sách cho năm tài chính này"* + Nút `[+ Thiết Lập Ngân Sách Mới]`.
+- Khi bộ lọc không có kết quả: Hiển thị *"Không tìm thấy dữ liệu khớp với tiêu chí tìm kiếm"* + Nút `[Xóa bộ lọc]`.
 
-### 7.3. Bảo mật Phân quyền & Giám sát (Security & Audit Trail)
-- Mọi nút Cấp phát, Thu hồi, Thêm, Sửa, Xóa chỉ hiển thị và cho phép thao tác đối với vai trò **Manager** (RBAC Enforcement). Editor và Employee khi truy cập vào URL này sẽ bị hệ thống chặn và chuyển hướng về trang báo lỗi `403 Forbidden`.
-- 100% các thao tác thay đổi trạng thái đều được ghi nhận vào `audit_logs` với các trường: `actor_id`, `actor_role = 'Manager'`, `action`, `target_id`, `old_value`, `new_value`, `ip_address`, `timestamp` (Tuân thủ BR-17).
+### 8.3. Bảo mật Phân quyền & Giám sát (Security & Audit Trail)
+- Mọi nút Cấp phát, Thu hồi, Thêm, Sửa, Xóa, Thiết lập Ngân sách chỉ hiển thị và cho phép thao tác đối với vai trò **Manager** (RBAC Enforcement theo **BR-06, BR-07, BR-09**). Editor và Employee khi truy cập vào URL này sẽ bị hệ thống chặn và trả mã `403 Forbidden`.
+- 100% các thao tác thay đổi số lượng, trạng thái, hạn mức ngân sách, cấp phát, thu hồi đều được ghi nhận vào `audit_logs` với các trường: `actor_id`, `actor_role = 'Manager'`, `action`, `target_id`, `old_value`, `new_value`, `ip_address`, `timestamp` (Tuân thủ **BR-17**).
