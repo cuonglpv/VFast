@@ -284,7 +284,8 @@ VFast/
 └── docs/
     ├── 01-MVP.md                  # Đặc tả Phạm vi MVP, 19 Stories P0, 20 Business Rules & Tiêu chí Nghiệm thu
     ├── 02-use-cases.md            # Đặc tả ĐẦY ĐỦ 39 Use Cases (UC01-UC39) theo 3 Role & 3 Luồng Sequence Diagrams
-    └── 03-user-stories.md         # Đặc tả 25 User Stories chuẩn INVEST (P0/P1) với Given-When-Then & Traceability Matrix
+    ├── 03-user-stories.md         # Đặc tả 25 User Stories chuẩn INVEST (P0/P1) với Given-When-Then & Traceability Matrix
+    └── 04-information-architecture-manager.md # Kiến trúc Thông tin & Đặc tả Thiết kế Giao diện Phân hệ Manager (M1 & M2)
 ```
 
 - 📘 [**Tài liệu Đặc tả Phạm vi MVP (01-MVP.md)**](file:///home/datnguyen-nuoa/VFast/docs/01-MVP.md):
@@ -293,6 +294,8 @@ VFast/
   Đặc tả chuẩn hóa **39 Use Cases (UC01 đến UC39)** theo bảng phân loại SRS v1.0, mô tả chi tiết 3 luồng nghiệp vụ trọng yếu (License Allocation, Expense Management, Budget Monitoring) và các biểu đồ Sequence Diagram tương tác.
 - 📙 [**Tài liệu Đặc tả User Stories (03-user-stories.md)**](file:///home/datnguyen-nuoa/VFast/docs/03-user-stories.md):
   Đặc tả chi tiết **25 User Stories** chuẩn hóa theo tiêu chí INVEST phân bổ cho 3 Role (Manager US-M01 đến US-M14, Editor US-E01 đến US-E06, Employee US-U01 đến US-U05), cung cấp 100% kịch bản kiểm thử chấp nhận định dạng Gherkin (**Given - When - Then**) và Ma trận ánh xạ Traceability Matrix với 39 Use Cases.
+- 📕 [**Kiến trúc Thông tin & Thiết kế View Manager (04-information-architecture-manager.md)**](file:///home/datnguyen-nuoa/VFast/docs/04-information-architecture-manager.md):
+  Đặc tả toàn diện Kiến trúc Thông tin (IA), Sitemap phân tầng và Thiết kế chi tiết từng View/Modal/Drawer cho **Manager**, bao trọn **Module 1 (License Management)** và **Module 2 (License Assignment Management)** kèm sơ đồ luồng, state machine và wireframe ASCII trực quan.
 
 ---
 
