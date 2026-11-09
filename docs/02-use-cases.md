@@ -90,90 +90,29 @@ Theo chuẩn hóa tại **Mục 5 của bản SRS v1.0**, toàn bộ 39 Use Case
 
 ## 3. Sơ đồ Use Case Tổng quan (Use Case Diagrams)
 
-### 3.1. Phân hệ Quản trị & Ra Quyết định (Manager Use Cases)
+Sơ đồ theo chuẩn UML: tác nhân là hình người, một khung ranh giới hệ thống, mỗi use case là một hình ellipse. 39 use case được tách theo tác nhân để các đường nối không chồng chéo. Lifecycle Scheduler là tác nhân hệ thống (Lifecycle Notification System) thực hiện UC18.
 
-```mermaid
-flowchart LR
-    M["Manager (Quản lý)"]
+### 3.1. Manager (Quản trị & Ra Quyết định)
 
-    subgraph F01_M["F01. License Management"]
-        UC01["UC01: Manage Catalog (P0)"]
-        UC02["UC02: Manage Vendor (P1)"]
-        UC03["UC03: Manage Entitlements (P0)"]
-        UC04["UC04: Manage Contracts (P1)"]
-        UC05["UC05: Check Compliance (P0)"]
-    end
+#### Manager (1/2) — License, Cấp phát, Vòng đời
 
-    subgraph F02_M["F02. Allocation & Approval"]
-        UC07["UC07: Review Requests (P0)"]
-        UC08["UC08: Approve / Reject (P0)"]
-        UC09["UC09: Assign License (P0)"]
-        UC10["UC10: Revoke License (P0)"]
-        UC11_M["UC11: Track Allocations (P0)"]
-    end
+![Manager use cases, licenses](diagrams/out/uc_manager_license.png)
 
-    subgraph F03_M["F03. Budget & Financial"]
-        UC12["UC12: Manage Budget (P0)"]
-        UC13_M["UC13: Manage Expense (P0)"]
-        UC14["UC14: Monitor Budget Utilization (P0)"]
-    end
+#### Manager (2/2) — Ngân sách, Tối ưu hóa, Phân tích, Quản trị
 
-    subgraph F04_05_M["F04 & F05. Lifecycle & Optimization"]
-        UC15["UC15: Track Expiration (P0)"]
-        UC16["UC16: Manage Renewal (P1)"]
-        UC17["UC17: Track Maintenance (P1)"]
-        UC19["UC19: Detect Unallocated (P1)"]
-        UC20["UC20: Detect Inactive (P1)"]
-        UC21["UC21: Detect Overuse (P0)"]
-        UC22["UC22: Review Recommendations (P1)"]
-    end
+![Manager use cases, budget and analytics](diagrams/out/uc_manager_finance.png)
 
-    subgraph F06_07_08_M["F06, F07 & F08. Admin & Reports"]
-        UC23["UC23: License Dashboard (P0)"]
-        UC24["UC24: Financial Dashboard (P0)"]
-        UC25["UC25: Compliance Dashboard (P1)"]
-        UC26_M["UC26: Export Reports (P1)"]
-        UC27["UC27: Manage Users (P0)"]
-        UC28["UC28: Manage Roles (P0)"]
-        UC30["UC30: View Audit Logs (P0)"]
-    end
+### 3.2. Editor & Employee
 
-    M --> F01_M
-    M --> F02_M
-    M --> F03_M
-    M --> F04_05_M
-    M --> F06_07_08_M
-```
+#### Editor (Nạp dữ liệu)
 
-### 3.2. Phân hệ Nạp Dữ liệu & Tự phục vụ (Editor & Employee Use Cases)
+![Editor use cases](diagrams/out/uc_editor.png)
 
-```mermaid
-flowchart LR
-    E["Editor (Nhập liệu)"]
-    U["Employee (Nhân viên)"]
+#### Employee (Tự phục vụ)
 
-    subgraph Editor_Features["Phân hệ Nạp Dữ liệu (Editor)"]
-        UC31["UC31: Input License Usage (P0)"]
-        UC32["UC32: Import License Usage CSV/Excel (P1)"]
-        UC33["UC33: Input Expense Data (P0)"]
-        UC34["UC34: Import Expense CSV/Excel (P1)"]
-        UC35["UC35: Upload Supporting Documents (P1)"]
-        UC36["UC36: View Submitted Data (P0)"]
-        UC13_E["UC13: Manage Expense (P0)"]
-        UC26_E["UC26: Export Data Reports (P1)"]
-    end
+![Employee use cases](diagrams/out/uc_employee.png)
 
-    subgraph Employee_Features["Phân hệ Tự phục vụ (Employee)"]
-        UC37["UC37: View Available Software (P0)"]
-        UC06["UC06: Submit License Request (P0)"]
-        UC38["UC38: View Own Request Status (P0)"]
-        UC39["UC39: View Own Assigned Licenses (P0)"]
-        UC11_U["UC11: Track Personal Allocation (P0)"]
-    end
-
-    E --> Editor_Features
-    U --> Employee_Features
-```
+Mã nguồn sơ đồ: [`diagrams/ve_elms.py`](diagrams/ve_elms.py); mỗi sơ đồ có thêm bản SVG và file draw.io chỉnh sửa được trong [`diagrams/out/`](diagrams/out/).
 
 ---
 
