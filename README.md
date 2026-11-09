@@ -111,43 +111,25 @@ Backlog, story ↔ use case traceability matrix, and acceptance criteria: [User 
 
 ### 1.4 Use cases
 
-```mermaid
-flowchart TB
-    subgraph roles["Actors"]
-        direction LR
-        manager(["Manager"])
-        editor(["Editor"])
-        employee(["Employee"])
-        scheduler(["Lifecycle Notification System<br/>(system actor)"])
-    end
+Use case diagrams follow UML: actors as stick figures, one system boundary, and one ellipse per use case. The 39 use cases are split by actor so every line stays readable. The Lifecycle Scheduler is the system actor (Lifecycle Notification System) that runs UC18.
 
-    subgraph system["VFast ELMS — System Boundary"]
-        direction LR
-        managerCases["<b>Manager</b><br/><br/>UC01–05 Catalog, Vendor, Entitlement,<br/>Contract, Compliance<br/>UC07–11 Review requests, Assign, Revoke, track allocation<br/>UC12–14 Budget, Expense, Budget Utilization<br/>UC15–17 Expiration, Renewal, Maintenance<br/>UC19–22 Unallocated, Inactive, Overuse, Optimization<br/>UC23–26 Dashboards, Export<br/>UC27–28 · UC30 Users, Roles, Audit Log<br/>UC29 Login / Logout"]
-        editorCases["<b>Editor</b><br/><br/>UC31–32 Enter / import Usage<br/>UC33–35 Enter / import Expense, upload invoices<br/>UC36 View submitted data<br/>UC13 Expense · UC26 Export<br/>UC29 Login / Logout"]
-        employeeCases["<b>Employee</b><br/><br/>UC37 View available software<br/>UC06 Submit request<br/>UC38 My request status<br/>UC39 · UC11 My licenses<br/>UC29 Login / Logout"]
-        systemCases["<b>System</b><br/><br/>UC18 Daily scan and expiry /<br/>maintenance notifications"]
-    end
+#### Manager (1/2) — licenses, allocation, lifecycle
 
-    manager --> managerCases
-    editor --> editorCases
-    employee --> employeeCases
-    scheduler --> systemCases
-    systemCases -.->|alerts at 30 / 15 / 7 days| manager
+![Manager use cases, licenses](docs/diagrams/out/uc_manager_license.png)
 
-    classDef actor fill:#666,color:#fff,stroke:#333
-    classDef primary fill:#1168bd,color:#fff,stroke:#0b4f9e
-    classDef standard fill:#3a7bd5,color:#fff,stroke:#245fa8
-    classDef personal fill:#0f766e,color:#fff,stroke:#0b5a54
-    classDef sys fill:#7c3aed,color:#fff,stroke:#5b21b6
-    class manager,editor,employee,scheduler actor
-    class managerCases primary
-    class editorCases standard
-    class employeeCases personal
-    class systemCases sys
-    style roles fill:#fff,stroke:#bbb,stroke-dasharray:5 5
-    style system fill:#f8fbff,stroke:#1168bd,stroke-dasharray:5 5
-```
+#### Manager (2/2) — budget, optimization, analytics, administration
+
+![Manager use cases, budget and analytics](docs/diagrams/out/uc_manager_finance.png)
+
+#### Editor
+
+![Editor use cases](docs/diagrams/out/uc_editor.png)
+
+#### Employee
+
+![Employee use cases](docs/diagrams/out/uc_employee.png)
+
+Sources: [`docs/diagrams/ve_elms.py`](docs/diagrams/ve_elms.py), drawn with [`srsdiagram.py`](docs/diagrams/srsdiagram.py); each diagram is also available as SVG and as an editable draw.io file in [`docs/diagrams/out/`](docs/diagrams/out/). Regenerate with `python ve_elms.py` from `docs/diagrams` (needs Pillow, Playwright with Chromium, and the Liberation Sans font).
 
 There are **39 use cases** (25 P0, 14 P1). Three main business flows:
 

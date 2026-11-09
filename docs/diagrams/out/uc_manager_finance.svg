@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="614" height="791" viewBox="0 0 614 791" font-family="Liberation Sans, Arial, Helvetica, sans-serif">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<g transform="translate(-34.5,-14.0)">
+<rect x="215.0" y="30.0" width="417.0" height="759.0" rx="0" fill="#F8FAFC" stroke="#334155" stroke-width="1.3"/>
+<text x="423.5" y="58.1" font-size="17" fill="#0f172a" text-anchor="middle" font-weight="bold" xml:space="preserve">Manager (2/2): budget and analytics</text>
+<circle cx="80" cy="410.0" r="6" fill="#fff" stroke="#000" stroke-width="1.3"/><line x1="80" y1="416.0" x2="80" y2="431.0" stroke="#000" stroke-width="1.3" fill="none"/><line x1="69" y1="421.0" x2="91" y2="421.0" stroke="#000" stroke-width="1.3" fill="none"/><line x1="80" y1="431.0" x2="70" y2="444.0" stroke="#000" stroke-width="1.3" fill="none"/><line x1="80" y1="431.0" x2="90" y2="444.0" stroke="#000" stroke-width="1.3" fill="none"/><text x="80.0" y="461.3" font-size="14" fill="#000000" text-anchor="middle" font-weight="bold" xml:space="preserve">Manager</text>
+<path d="M94.0,421.0 L260.0,96.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M94.0,421.0 L260.0,146.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M94.0,421.0 L260.0,196.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M94.0,421.0 L260.0,246.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M94.0,421.0 L260.0,296.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M94.0,421.0 L260.0,346.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M94.0,421.0 L260.0,396.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M94.0,421.0 L260.0,446.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M94.0,421.0 L260.0,496.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M94.0,421.0 L260.0,546.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M94.0,421.0 L260.0,596.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M94.0,421.0 L260.0,646.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M94.0,421.0 L260.0,696.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M94.0,421.0 L260.0,746.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<ellipse cx="423.5" cy="96.0" rx="163.5" ry="19.0" fill="#ffffff" stroke="#334155" stroke-width="1.2"/><text x="423.5" y="100.3" font-size="13" fill="#0f172a" text-anchor="middle" xml:space="preserve">UC12 Manage Budget</text>
+<ellipse cx="423.5" cy="146.0" rx="163.5" ry="19.0" fill="#ffffff" stroke="#334155" stroke-width="1.2"/><text x="423.5" y="150.3" font-size="13" fill="#0f172a" text-anchor="middle" xml:space="preserve">UC13 Manage Expense</text>
+<ellipse cx="423.5" cy="196.0" rx="163.5" ry="19.0" fill="#ffffff" stroke="#334155" stroke-width="1.2"/><text x="423.5" y="200.3" font-size="13" fill="#0f172a" text-anchor="middle" xml:space="preserve">UC14 Monitor Budget Utilization</text>
+<ellipse cx="423.5" cy="246.0" rx="163.5" ry="19.0" fill="#ffffff" stroke="#334155" stroke-width="1.2"/><text x="423.5" y="250.3" font-size="13" fill="#0f172a" text-anchor="middle" xml:space="preserve">UC19 Detect Unallocated Licenses</text>
+<ellipse cx="423.5" cy="296.0" rx="163.5" ry="19.0" fill="#ffffff" stroke="#334155" stroke-width="1.2"/><text x="423.5" y="300.4" font-size="13" fill="#0f172a" text-anchor="middle" xml:space="preserve">UC20 Detect Inactive Assignments</text>
+<ellipse cx="423.5" cy="346.0" rx="163.5" ry="19.0" fill="#ffffff" stroke="#334155" stroke-width="1.2"/><text x="423.5" y="350.4" font-size="13" fill="#0f172a" text-anchor="middle" xml:space="preserve">UC21 Detect License Overuse</text>
+<ellipse cx="423.5" cy="396.0" rx="163.5" ry="19.0" fill="#ffffff" stroke="#334155" stroke-width="1.2"/><text x="423.5" y="400.4" font-size="13" fill="#0f172a" text-anchor="middle" xml:space="preserve">UC22 Review Optimization Recommendations</text>
+<ellipse cx="423.5" cy="446.0" rx="163.5" ry="19.0" fill="#ffffff" stroke="#334155" stroke-width="1.2"/><text x="423.5" y="450.4" font-size="13" fill="#0f172a" text-anchor="middle" xml:space="preserve">UC23 View License Dashboard</text>
+<ellipse cx="423.5" cy="496.0" rx="163.5" ry="19.0" fill="#ffffff" stroke="#334155" stroke-width="1.2"/><text x="423.5" y="500.4" font-size="13" fill="#0f172a" text-anchor="middle" xml:space="preserve">UC24 View Financial Dashboard</text>
+<ellipse cx="423.5" cy="546.0" rx="163.5" ry="19.0" fill="#ffffff" stroke="#334155" stroke-width="1.2"/><text x="423.5" y="550.4" font-size="13" fill="#0f172a" text-anchor="middle" xml:space="preserve">UC25 View Compliance Dashboard</text>
+<ellipse cx="423.5" cy="596.0" rx="163.5" ry="19.0" fill="#ffffff" stroke="#334155" stroke-width="1.2"/><text x="423.5" y="600.4" font-size="13" fill="#0f172a" text-anchor="middle" xml:space="preserve">UC26 Export Reports</text>
+<ellipse cx="423.5" cy="646.0" rx="163.5" ry="19.0" fill="#ffffff" stroke="#334155" stroke-width="1.2"/><text x="423.5" y="650.4" font-size="13" fill="#0f172a" text-anchor="middle" xml:space="preserve">UC27 Manage Users</text>
+<ellipse cx="423.5" cy="696.0" rx="163.5" ry="19.0" fill="#ffffff" stroke="#334155" stroke-width="1.2"/><text x="423.5" y="700.4" font-size="13" fill="#0f172a" text-anchor="middle" xml:space="preserve">UC28 Manage Roles</text>
+<ellipse cx="423.5" cy="746.0" rx="163.5" ry="19.0" fill="#ffffff" stroke="#334155" stroke-width="1.2"/><text x="423.5" y="750.4" font-size="13" fill="#0f172a" text-anchor="middle" xml:space="preserve">UC30 View Audit Logs</text>
+</g></svg>
