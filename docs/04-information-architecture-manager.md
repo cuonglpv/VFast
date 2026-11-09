@@ -1,278 +1,278 @@
-# KIẾN TRÚC THÔNG TIN & THIẾT KẾ VIEW TOÀN DIỆN (INFORMATION ARCHITECTURE - IA)
-## Dự án: VFast – Enterprise License Management System (ELMS)
-### Phân hệ: Quản trị Toàn diện Dành cho Manager (Module 1, Module 2, Module 3)
+# COMPREHENSIVE INFORMATION ARCHITECTURE & VIEW SPECIFICATIONS (IA)
+## Project: VFast – Enterprise License Management System (ELMS)
+### Subsystem: Executive Management Portal for Manager Role (Module 1, Module 2, Module 3)
 
-> **Căn cứ tài liệu:** [README.md](../README.md), [docs/01-MVP.md](01-MVP.md), [docs/02-use-cases.md](02-use-cases.md), [docs/03-user-stories.md](03-user-stories.md)  
-> **Tham chiếu cấu trúc:** [PMDC-BATCH4-DATNT250 / 09-information-architecture.md](https://github.com/DatTienNguyenn/PMDC-BATCH4-DATNT250/blob/main/docs/09-information-architecture.md)  
-> **Phiên bản:** 3.0 (Chuẩn hóa toàn diện Danh mục Screen ID, Route, Screen Hierarchy, UI/UX State Contract, Screen-to-API Mapping Matrix và Ma trận Phân quyền RBAC)  
-> **Nhánh phát triển:** `docs/manager-information-architecture`
+> **Document Baselines:** [README.md](../README.md), [docs/01-MVP.md](01-MVP.md), [docs/02-use-cases.md](02-use-cases.md), [docs/03-user-stories.md](03-use-stories.md)  
+> **Structural Reference:** [PMDC-BATCH4-DATNT250 / 09-information-architecture.md](https://github.com/DatTienNguyenn/PMDC-BATCH4-DATNT250/blob/main/docs/09-information-architecture.md)  
+> **Version:** 3.0 (Comprehensive Standardization of Screen IDs, Routes, Hierarchy, UI/UX State Contract, Screen-to-API Mapping Matrix, View Specifications, and RBAC Matrix)  
+> **Development Branch:** `docs/manager-information-architecture`
 
 ---
 
-## 📋 MỤC LỤC TỔNG QUAN
+## 📋 TABLE OF CONTENTS
 
-1. [Master Screen Catalog (Danh mục Toàn bộ Màn hình Chuẩn hóa)](#-1-master-screen-catalog-danh-mục-màn-hình-chuẩn-hóa)
-2. [Screen Hierarchy (Cấu trúc Phân cấp Màn hình)](#-2-screen-hierarchy-cấu-trúc-phân-cấp-màn-hình)
+1. [Master Screen Catalog](#-1-master-screen-catalog)
+2. [Screen Hierarchy](#-2-screen-hierarchy)
 3. [UI/UX State Contract & Interaction Rules](#-3-uiux-state-contract--interaction-rules)
-4. [Screen-to-API Mapping Matrix (Ánh xạ Giao diện - API Operations)](#-4-screen-to-api-mapping-matrix)
-5. [Đặc tả Chi tiết Giao diện & Thành phần Tương tác (View Specifications)](#-5-đặc-tả-chi-tiết-giao-diện--thành-phần-tương-tác)
-6. [Ma trận Phân quyền Truy cập Màn hình (RBAC Matrix)](#-6-ma-trận-phân-quyền-truy-cập-màn-hình-rbac-matrix)
+4. [Screen-to-API Mapping Matrix](#-4-screen-to-api-mapping-matrix)
+5. [Detailed View Specifications](#-5-detailed-view-specifications)
+6. [RBAC Screen Access Matrix](#-6-rbac-screen-access-matrix)
 
 ---
 
-## 🗂️ 1. MASTER SCREEN CATALOG (DANH MỤC MÀN HÌNH CHUẨN HÓA)
+## 🗂️ 1. MASTER SCREEN CATALOG
 
-Toàn bộ hệ thống quản trị dành cho Manager được chuẩn hóa thành **18 Màn hình & Giao diện tương tác** (bao gồm Full Pages, Modals, Drawers và Error Views). 100% các view đều được cấp phát **Screen ID duy nhất**, **Route định danh rõ ràng**, **hình thức hiển thị (Presentation)**, **User Story ánh xạ trực tiếp** và **trạng thái triển khai**.
+The Manager Portal is standardized into **18 Screens & Interactive Views** (comprising Full Pages, Side Drawers, Modal Overlays, and System Error Views). 100% of views are provisioned with a **Unique Screen ID**, **Designated Route Path**, **Presentation Mode**, **Mapped User Stories**, and **Implementation Scope**.
 
-| Screen ID | Tên Màn hình / Modal | Hình thức (Presentation) | Đường dẫn Route (URL Path) | Stories Relate | Trạng thái (Scope) |
+| Screen ID | Screen Name / Modal | Presentation | Route URL Path | Related Stories | Scope / Status |
 |:---|:---|:---:|:---|:---|:---:|
-| **SCR-AUTH-01** | Đăng nhập Hệ thống (Enterprise Login) | Full Page | `/auth/login` | `US-M14` | MVP P0 |
-| **SCR-LIC-01** | Quản lý Kho License & KPI Tổng quan | Full Page | `/manager/licenses` | `US-M01`, `US-M02` | MVP P0 |
-| **SCR-LIC-ADD-01** | Drawer Đăng ký License Mới (SaaS & Perpetual) | Side Drawer | `/manager/licenses?action=create` | `US-M02` | MVP P0 |
-| **SCR-LIC-DETAIL-01**| Chi tiết License & Đo lường Seat (4 Tabs) | Full Page | `/manager/licenses/[id]` | `US-M02`, `US-M06` | MVP P0 |
-| **SCR-LIC-EDIT-01** | Drawer Chỉnh sửa License & Ràng buộc Seat | Side Drawer | `/manager/licenses/[id]?action=edit` | `US-M02` | MVP P0 |
-| **SCR-LIC-DEL-01** | Modal Xóa / Lưu trữ License (Safety Check) | Modal Overlay | `/manager/licenses/[id]?action=delete` | `US-M02` | MVP P0 |
-| **SCR-ASGN-01** | Trung tâm Phân bổ Bản quyền (Assignment Hub) | Full Page (4 Views) | `/manager/assignments` | `US-M06`, `US-M07` | MVP P0 |
-| **SCR-ASGN-ADD-01** | Drawer Cấp phát License cho Nhân viên | Side Drawer | `/manager/assignments?action=assign` | `US-M06` | MVP P0 |
-| **SCR-ASGN-REVOKE-01**| Modal Thu hồi License về Kho (Lý do Bắt buộc)| Modal Overlay | `/manager/assignments?action=revoke` | `US-M07` | MVP P0 |
-| **SCR-ASGN-CHANGE-01**| Modal Thay đổi Loại License (Atomic Swap) | Modal Overlay | `/manager/assignments?action=change-tier`| `US-M06`, `US-M07` | MVP P0 |
-| **SCR-ASGN-AVAIL-01** | Bảng Giám sát Dung lượng Seat Còn trống | Sub-view / Table | `/manager/assignments?view=availability`| `US-M06`, `US-M10` | MVP P0 |
-| **SCR-ASGN-HIST-01** | Sổ Lịch sử Cấp phát Toàn hệ thống | Sub-view / Table | `/manager/assignments?view=history` | `US-M06`, `US-M07` | MVP P0 |
-| **SCR-BDG-MONITOR-01**| Dashboard Giám sát Ngân sách & Cảnh báo Ngưỡng| Full Page | `/manager/budget` | `US-M08`, `US-M13` | MVP P0 |
-| **SCR-BDG-PLAN-01** | Ma trận Lập Kế hoạch & Phân bổ Ngân sách | Full Page | `/manager/budget/planning` | `US-M08` | MVP P0 |
-| **SCR-BDG-EXP-01** | Sổ cái Theo dõi Chi phí Bản quyền Toàn diện | Full Page | `/manager/budget/expenses` | `US-M09` | MVP P0 |
-| **SCR-BDG-REPORT-01** | Trung tâm Báo cáo Tài chính & Dự báo Dòng tiền | Full Page | `/manager/budget/reports` | `US-M13` | MVP P0 |
-| **SCR-ERR-403** | Trang 403 Forbidden (Chặn quyền RBAC) | Full Page | `/403` | `US-M14` | MVP P0 |
-| **SCR-ERR-404** | Trang 404 Not Found (Không tìm thấy tài nguyên)| Full Page | `/404` | System | MVP P0 |
+| **SCR-AUTH-01** | Enterprise Authentication (Login) | Full Page | `/auth/login` | `US-M14` | MVP P0 |
+| **SCR-LIC-01** | License Inventory & Executive KPIs | Full Page | `/manager/licenses` | `US-M01`, `US-M02` | MVP P0 |
+| **SCR-LIC-ADD-01** | Add License Drawer (SaaS & Perpetual) | Side Drawer | `/manager/licenses?action=create` | `US-M02` | MVP P0 |
+| **SCR-LIC-DETAIL-01**| License Detail View & Seat Gauge (4 Tabs) | Full Page | `/manager/licenses/[id]` | `US-M02`, `US-M06` | MVP P0 |
+| **SCR-LIC-EDIT-01** | Edit License Drawer (Seat Floor Guard) | Side Drawer | `/manager/licenses/[id]?action=edit` | `US-M02` | MVP P0 |
+| **SCR-LIC-DEL-01** | Delete / Decommission Modal (Safety Check) | Modal Overlay | `/manager/licenses/[id]?action=delete` | `US-M02` | MVP P0 |
+| **SCR-ASGN-01** | License Assignment Hub (4 Views) | Full Page (4 Views) | `/manager/assignments` | `US-M06`, `US-M07` | MVP P0 |
+| **SCR-ASGN-ADD-01** | Assign License Drawer (Seat Validation) | Side Drawer | `/manager/assignments?action=assign` | `US-M06` | MVP P0 |
+| **SCR-ASGN-REVOKE-01**| Revoke License Modal (Mandatory Reason) | Modal Overlay | `/manager/assignments?action=revoke` | `US-M07` | MVP P0 |
+| **SCR-ASGN-CHANGE-01**| Change License Tier Modal (Atomic Swap) | Modal Overlay | `/manager/assignments?action=change-tier`| `US-M06`, `US-M07` | MVP P0 |
+| **SCR-ASGN-AVAIL-01** | Real-time Seat Availability Monitor | Sub-view / Table | `/manager/assignments?view=availability`| `US-M06`, `US-M10` | MVP P0 |
+| **SCR-ASGN-HIST-01** | Global Assignment Audit History View | Sub-view / Table | `/manager/assignments?view=history` | `US-M06`, `US-M07` | MVP P0 |
+| **SCR-BDG-MONITOR-01**| Budget Monitoring Cockpit (5 Metrics) | Full Page | `/manager/budget` | `US-M08`, `US-M13` | MVP P0 |
+| **SCR-BDG-PLAN-01** | Multi-dimensional Budget Planning Matrix | Full Page | `/manager/budget/planning` | `US-M08` | MVP P0 |
+| **SCR-BDG-EXP-01** | Comprehensive License Expense Ledger | Full Page | `/manager/budget/expenses` | `US-M09` | MVP P0 |
+| **SCR-BDG-REPORT-01** | Financial Reporting & Renewal Forecast | Full Page | `/manager/budget/reports` | `US-M13` | MVP P0 |
+| **SCR-ERR-403** | 403 Forbidden Access (RBAC Guard) | Full Page | `/403` | `US-M14` | MVP P0 |
+| **SCR-ERR-404** | 404 Page Not Found (Resource Error) | Full Page | `/404` | System | MVP P0 |
 
 ---
 
-## 🌳 2. SCREEN HIERARCHY (CẤU TRÚC PHÂN CẤP MÀN HÌNH)
+## 🌳 2. SCREEN HIERARCHY
 
-### 2.1. Sơ đồ Phân cấp Cây Màn hình (Mermaid Diagram)
+### 2.1. Screen Hierarchy Tree (Mermaid Diagram)
 
 ```mermaid
 flowchart TD
-    Root["Root Application (/)"] --> L1_Auth["Khối 1: Xác thực & Điều hướng"]
-    Root --> L1_Manager["Khối 2: Phân hệ Quản trị Manager (/manager)"]
-    Root --> L1_Error["Khối 3: Giao diện Lỗi Hệ thống"]
+    Root["Root Application (/)"] --> L1_Auth["Block 1: Authentication & Session"]
+    Root --> L1_Manager["Block 2: Manager Executive Portal (/manager)"]
+    Root --> L1_Error["Block 3: System Error Views"]
 
-    %% Khối 1: Auth
-    L1_Auth --> SCR_AUTH_01["SCR-AUTH-01: Đăng nhập Hệ thống (/auth/login)"]
+    %% Block 1: Auth
+    L1_Auth --> SCR_AUTH_01["SCR-AUTH-01: Enterprise Login (/auth/login)"]
 
-    %% Khối 2: Manager Shell
-    L1_Manager --> M1_Hub["Phân hệ Module 1: License Management"]
-    L1_Manager --> M2_Hub["Phân hệ Module 2: Assignment Management"]
-    L1_Manager --> M3_Hub["Phân hệ Module 3: Budget Management"]
+    %% Block 2: Manager Shell
+    L1_Manager --> M1_Hub["Module 1: License Management"]
+    L1_Manager --> M2_Hub["Module 2: Assignment Management"]
+    L1_Manager --> M3_Hub["Module 3: Budget Management"]
 
     %% Module 1 Sub-views
-    M1_Hub --> SCR_LIC_01["SCR-LIC-01: Danh sách License & KPI (/manager/licenses)"]
-    SCR_LIC_01 -.->|"Nút Thêm mới"| SCR_LIC_ADD_01["SCR-LIC-ADD-01: Drawer Đăng ký License"]
-    SCR_LIC_01 --> SCR_LIC_DETAIL_01["SCR-LIC-DETAIL-01: Chi tiết License (/manager/licenses/:id)"]
-    SCR_LIC_DETAIL_01 -.->|"Nút Chỉnh sửa"| SCR_LIC_EDIT_01["SCR-LIC-EDIT-01: Drawer Chỉnh sửa License"]
-    SCR_LIC_DETAIL_01 -.->|"Nút Xóa"| SCR_LIC_DEL_01["SCR-LIC-DEL-01: Modal Xóa/Lưu trữ License"]
-    SCR_LIC_DETAIL_01 -.->|"Cấp phát nhanh"| SCR_ASGN_ADD_01
+    M1_Hub --> SCR_LIC_01["SCR-LIC-01: License Inventory & KPIs (/manager/licenses)"]
+    SCR_LIC_01 -.->|"Add Button"| SCR_LIC_ADD_01["SCR-LIC-ADD-01: Add License Drawer"]
+    SCR_LIC_01 --> SCR_LIC_DETAIL_01["SCR-LIC-DETAIL-01: License Details (/manager/licenses/:id)"]
+    SCR_LIC_DETAIL_01 -.->|"Edit Button"| SCR_LIC_EDIT_01["SCR-LIC-EDIT-01: Edit License Drawer"]
+    SCR_LIC_DETAIL_01 -.->|"Delete Button"| SCR_LIC_DEL_01["SCR-LIC-DEL-01: Delete/Archive Modal"]
+    SCR_LIC_DETAIL_01 -.->|"Quick Assign"| SCR_ASGN_ADD_01
 
     %% Module 2 Sub-views
     M2_Hub --> SCR_ASGN_01["SCR-ASGN-01: Assignment Hub (/manager/assignments)"]
-    SCR_ASGN_01 -.->|"Tab Theo Nhân viên"| SCR_ASGN_01_A["View A: Theo Nhân viên (By Employee)"]
-    SCR_ASGN_01 -.->|"Tab Theo Phần mềm"| SCR_ASGN_01_B["View B: Theo Phần mềm & Seat"]
-    SCR_ASGN_01 -.->|"Tab Seat Còn trống"| SCR_ASGN_AVAIL_01["SCR-ASGN-AVAIL-01: Seat Availability Monitor"]
-    SCR_ASGN_01 -.->|"Tab Lịch sử"| SCR_ASGN_HIST_01["SCR-ASGN-HIST-01: Sổ Lịch sử Cấp phát"]
+    SCR_ASGN_01 -.->|"By Employee Tab"| SCR_ASGN_01_A["View A: By Employee Perspective"]
+    SCR_ASGN_01 -.->|"By Software Tab"| SCR_ASGN_01_B["View B: By Software & Seat"]
+    SCR_ASGN_01 -.->|"Seat Capacity Tab"| SCR_ASGN_AVAIL_01["SCR-ASGN-AVAIL-01: Seat Availability Monitor"]
+    SCR_ASGN_01 -.->|"Audit History Tab"| SCR_ASGN_HIST_01["SCR-ASGN-HIST-01: Global Assignment History"]
 
-    SCR_ASGN_01 -.->|"Nút Gán Seat"| SCR_ASGN_ADD_01["SCR-ASGN-ADD-01: Drawer Gán License"]
-    SCR_ASGN_01 -.->|"Nút Thu hồi"| SCR_ASGN_REVOKE_01["SCR-ASGN-REVOKE-01: Modal Thu hồi License"]
-    SCR_ASGN_01 -.->|"Nút Đổi loại"| SCR_ASGN_CHANGE_01["SCR-ASGN-CHANGE-01: Modal Đổi loại License"]
+    SCR_ASGN_01 -.->|"Assign Button"| SCR_ASGN_ADD_01["SCR-ASGN-ADD-01: Assign License Drawer"]
+    SCR_ASGN_01 -.->|"Revoke Button"| SCR_ASGN_REVOKE_01["SCR-ASGN-REVOKE-01: Revoke License Modal"]
+    SCR_ASGN_01 -.->|"Change Tier Button"| SCR_ASGN_CHANGE_01["SCR-ASGN-CHANGE-01: Change License Tier Modal"]
 
     %% Module 3 Sub-views
-    M3_Hub --> SCR_BDG_MONITOR_01["SCR-BDG-MONITOR-01: Dashboard Ngân sách (/manager/budget)"]
-    M3_Hub --> SCR_BDG_PLAN_01["SCR-BDG-PLAN-01: Ma trận Lập Ngân sách (/manager/budget/planning)"]
-    M3_Hub --> SCR_BDG_EXP_01["SCR-BDG-EXP-01: Sổ cái Chi phí (/manager/budget/expenses)"]
-    M3_Hub --> SCR_BDG_REPORT_01["SCR-BDG-REPORT-01: Báo cáo Tài chính (/manager/budget/reports)"]
+    M3_Hub --> SCR_BDG_MONITOR_01["SCR-BDG-MONITOR-01: Budget Monitoring (/manager/budget)"]
+    M3_Hub --> SCR_BDG_PLAN_01["SCR-BDG-PLAN-01: Budget Planning (/manager/budget/planning)"]
+    M3_Hub --> SCR_BDG_EXP_01["SCR-BDG-EXP-01: Expense Ledger (/manager/budget/expenses)"]
+    M3_Hub --> SCR_BDG_REPORT_01["SCR-BDG-REPORT-01: Financial Reporting (/manager/budget/reports)"]
 
-    %% Khối 3: Error
+    %% Block 3: Error
     L1_Error --> SCR_ERR_403["SCR-ERR-403: 403 Forbidden"]
     L1_Error --> SCR_ERR_404["SCR-ERR-404: 404 Not Found"]
 ```
 
 ---
 
-### 2.2. Bảng Phân cấp Theo Cấp độ Giao diện (Level Hierarchy Table)
+### 2.2. Level Hierarchy Table
 
-| Cấp độ (Level) | Khái niệm & Trách nhiệm | Danh sách Màn hình / Thành phần | Quy tắc Hiển thị & Điều hướng |
+| Level | Concept & Architecture Responsibility | Screen / Component Catalog | Display & Navigation Constraints |
 |:---:|---|---|---|
-| **Level 0** | **Global Layout & Context Shell** | Root App Context, Auth State Provider, Role Guard Provider, Toast & Modal Provider | Duy trì phiên làm việc JWT, xác thực quyền `Manager` trước khi render. |
-| **Level 1** | **Root Layout Shells** | 1. `AuthShell`: Bố cục tối giản, thẻ form đăng nhập trung tâm.<br>2. `ManagerShell`: Sidebar menu trái, Header trên, Breadcrumbs, User Profile.<br>3. `ErrorShell`: Giao diện toàn màn hình không có sidebar menu. | Phân tách không gian bảo mật giữa Manager, Editor và Employee; chặn 403 ngay tại Shell. |
-| **Level 2** | **Trang Chính (Primary Pages)** | `SCR-LIC-01`, `SCR-LIC-DETAIL-01`, `SCR-ASGN-01`, `SCR-BDG-MONITOR-01`, `SCR-BDG-PLAN-01`, `SCR-BDG-EXP-01`, `SCR-BDG-REPORT-01`. | Gắn trực tiếp với thanh điều hướng chính (Navigation Bar); hỗ trợ URL routing đầy đủ. |
-| **Level 3** | **Phân đoạn / Tabs lồng nhau (Sub-Views)** | - 4 Tabs trong `SCR-LIC-DETAIL-01`: Thông tin chung, Danh sách phân bổ, Lịch sử cấp phát, Audit Log.<br>- 4 Views trong `SCR-ASGN-01`: By Employee, By Software, Availability Monitor, Global History.<br>- 4 Báo cáo trong `SCR-BDG-REPORT-01`: Monthly, Vendor, Variance, Renewal Forecast. | Duy trì trạng thái chuyển tab trên URL qua query parameters (ví dụ: `?tab=active-users` hoặc `?view=availability`). |
-| **Level 4** | **Lớp phủ / Modals / Drawers (Overlay Dialogs)** | `SCR-LIC-ADD-01`, `SCR-LIC-EDIT-01`, `SCR-LIC-DEL-01`, `SCR-ASGN-ADD-01`, `SCR-ASGN-REVOKE-01`, `SCR-ASGN-CHANGE-01`. | Lớp phủ làm mờ nền (backdrop blur); khóa cuộn trang (`overflow: hidden`); hỗ trợ phím `Esc` và nút đóng `X`. |
+| **Level 0** | **Global Layout & Context Shell** | Root App Context, Auth State Provider, Role Guard Provider, Toast & Modal Provider | Maintains active JWT session, enforces `Manager` role authentication before DOM render. |
+| **Level 1** | **Root Layout Shells** | 1. `AuthShell`: Minimalist centered authentication card.<br>2. `ManagerShell`: Left navigation sidebar, top executive header, breadcrumbs, user profile.<br>3. `ErrorShell`: Full-page boundary view without administrative navigation. | Strict security isolation between Manager, Editor, and Employee portals; blocks unauthorized roles at shell level. |
+| **Level 2** | **Primary Pages** | `SCR-LIC-01`, `SCR-LIC-DETAIL-01`, `SCR-ASGN-01`, `SCR-BDG-MONITOR-01`, `SCR-BDG-PLAN-01`, `SCR-BDG-EXP-01`, `SCR-BDG-REPORT-01`. | Direct routing destinations linked to primary sidebar navigation; preserves full browser history. |
+| **Level 3** | **Nested Sub-Views & Tabs** | - 4 Tabs in `SCR-LIC-DETAIL-01`: General Info, Active Assignments, History, Audit Logs.<br>- 4 Views in `SCR-ASGN-01`: By Employee, By Software, Availability Monitor, Global History.<br>- 4 Reports in `SCR-BDG-REPORT-01`: Monthly Trends, By Vendor, Variance, Renewal Forecast. | Tab selection state persisted in URL query parameters (e.g., `?tab=active-users` or `?view=availability`). |
+| **Level 4** | **Overlay Modals & Side Drawers** | `SCR-LIC-ADD-01`, `SCR-LIC-EDIT-01`, `SCR-LIC-DEL-01`, `SCR-ASGN-ADD-01`, `SCR-ASGN-REVOKE-01`, `SCR-ASGN-CHANGE-01`. | Backdrop blur overlay; background scroll-locked (`overflow: hidden`); supports `Esc` key dismiss and top-right close `X`. |
 
 ---
 
-### 2.3. Quy tắc Điều hướng & Phân cấp Breadcrumbs
-- **Cấu trúc Breadcrumbs chuẩn:**
-  - `License List:` `Quản trị > Quản lý Bản quyền`
-  - `License Detail:` `Quản trị > Quản lý Bản quyền > [Tên Phần mềm & Gói] ([Mã License])`
-  - `Assignment Hub:` `Quản trị > Phân bổ Bản quyền > [Tên Chế độ Xem]`
-  - `Budget Monitoring:` `Quản trị > Ngân sách & Chi phí > Giám sát Ngân sách`
-  - `Budget Planning:` `Quản trị > Ngân sách & Chi phí > Lập Kế hoạch Ngân sách`
-  - `Expense Ledger:` `Quản trị > Ngân sách & Chi phí > Sổ cái Chi phí`
-  - `Financial Reporting:` `Quản trị > Ngân sách & Chi phí > Báo cáo Tài chính > [Loại Báo cáo]`
+### 2.3. Navigation & Breadcrumb Hierarchy Rules
+- **Standardized Breadcrumb Syntax:**
+  - `License List:` `Administration > License Management`
+  - `License Detail:` `Administration > License Management > [Software Name & Edition] ([License Code])`
+  - `Assignment Hub:` `Administration > License Assignments > [View Name]`
+  - `Budget Monitoring:` `Administration > Budget & Finance > Budget Monitoring`
+  - `Budget Planning:` `Administration > Budget & Finance > Budget Planning`
+  - `Expense Ledger:` `Administration > Budget & Finance > Expense Ledger`
+  - `Financial Reporting:` `Administration > Budget & Finance > Financial Reporting > [Report Type]`
 
 ---
 
 ## 🎨 3. UI/UX STATE CONTRACT & INTERACTION RULES
 
-Nhằm bảo đảm tính toàn vẹn dữ liệu, loại bỏ hoàn toàn rủi ro cấp phát vượt mức (**Over-allocation**) và duy trì trải nghiệm vận hành chuẩn mực, mọi màn hình bắt buộc phải tuân thủ nghiêm ngặt **Hợp đồng 5 Cung bậc Trạng thái UI** và **6 Quy tắc Tương tác Cốt lõi**.
+To guarantee data consistency, completely eliminate over-allocation liabilities (**BR-05**), and maintain enterprise-grade reliability, all screens strictly adhere to the **5 Core UI States Contract** and **6 Core UX Interaction Rules**.
 
-### 3.1. Hợp đồng 5 Cung bậc Trạng thái UI (The 5 Core UI States Contract)
+### 3.1. The 5 Core UI States Contract
 
 ```mermaid
 flowchart TD
-    Init(["Khởi tạo View"]) --> Loading["1. Loading State: Đang tải dữ liệu, Skeleton, Spinner"]
-    Loading -->|"Dữ liệu rỗng (0 bản ghi)"| Empty["2. Empty State: Chưa có dữ liệu, Nút CTA định hướng"]
-    Loading -->|"Tải thành công (Có dữ liệu)"| Success["3. Success State: Dữ liệu đầy đủ, KPIs, Bảng dữ liệu"]
-    Loading -->|"Lỗi gọi API hoặc Chặn quyền"| Error["5. Error State: Báo lỗi inline, Toast, Trang 403/404"]
-    Success -->|"Hết dung lượng khả dụng"| Degraded["4. Capacity Alert State: Cảnh báo đỏ 0 seats, Cảnh báo ngân sách 80%/100%"]
-    Degraded -->|"Thu hồi seat / Bổ sung ngân sách"| Success
-    Empty -->|"Người dùng thêm bản ghi mới"| Loading
-    Error -->|"Nhấn Thử lại (Retry)"| Loading
+    Init(["View Initialization"]) --> Loading["1. Loading State: Data fetch in progress, Skeleton loaders, Spinners"]
+    Loading -->|"Empty dataset (0 records)"| Empty["2. Empty State: Zero data, Actionable onboarding CTA"]
+    Loading -->|"Fetch succeeded (Data present)"| Success["3. Success State: Standardized data grid, KPIs, Metrics"]
+    Loading -->|"API failure or Permission denied"| Error["5. Error State: Inline validation, Toast alerts, 403/404 Views"]
+    Success -->|"Capacity exhausted or Budget breached"| Degraded["4. Capacity Alert State: 0 seats alert, 80%/100% budget warning banner"]
+    Degraded -->|"Seats reclaimed / Budget supplemented"| Success
+    Empty -->|"User creates initial record"| Loading
+    Error -->|"User clicks Retry"| Loading
 ```
 
-| Cung bậc Trạng thái | Tiêu chuẩn Kỹ thuật UI | Thành phần Giao diện Bắt buộc | Hành vi Trải nghiệm (UX Behavior) |
+| UI State | Technical UI Standard | Mandatory Interface Components | UX Interaction Behavior |
 |:---|---|---|---|
-| **1. Loading State** (Đang nạp) | - Tuyệt đối không để màn hình trắng.<br>- Không dịch chuyển bố cục (CLS $< 0.1$). | - **Skeleton Placeholders:** Giả lập khung xám mờ cho thẻ KPI, biểu đồ và các dòng bảng dữ liệu.<br>- **Button Spinner:** Vô hiệu hóa nút và hiện icon xoay tròn khi form đang submit. | Tránh người dùng nhấp đúp (Double-click submit); người dùng nhận biết hệ thống đang xử lý giao dịch. |
-| **2. Empty State** (Chưa có dữ liệu) | - Không hiển thị bảng trống trơn hoặc số `0` trơ trọi.<br>- Trình bày hướng dẫn hành động rõ ràng. | - Vector minh họa thân thiện.<br>- Thông điệp rõ nghĩa (ví dụ: *"Doanh nghiệp chưa có bản quyền nào trong kho"*).<br>- **Primary CTA Button:** Nút nổi bật mở form hành động (ví dụ: `+ Đăng ký License Đầu Tiên`). | Biến không gian trống thành cơ hội Onboarding người dùng tiếp tục luồng công việc. |
-| **3. Success / Ideal State** (Lý tưởng) | - Hiển thị đầy đủ thông tin chuẩn hóa.<br>- Định dạng số liệu phân tách hàng nghìn rõ ràng. | - Số liệu định dạng chuẩn: Tiền tệ (`5,000,000,000 VND`, `$12,500 USD`), Số lượng seat (`45/50 seats`).<br>- Huy hiệu trạng thái chuẩn: Xanh lá (`Active`, `Paid`), Vàng cam (`Expiring Soon`, `Pending`), Đỏ (`Expired`, `Overdue`).<br>- Phân trang rõ ràng (10, 25, 50 dòng/trang). | Mang lại cảm giác tin cậy, minh bạch và giúp Manager nắm bắt nhanh tình trạng kho bản quyền. |
-| **4. Capacity Alert / Degraded State** | - Bật cảnh báo trực quan khi chạm ngưỡng dung lượng hoặc ngân sách. | - Banner cảnh báo màu vàng nhạt khi đạt 80% ngân sách hoặc còn $\le 10\%$ seats.<br>- Banner đỏ đậm khi hết seat ($Available = 0$) hoặc vượt trần ngân sách ($\ge 100\%$).<br>- Vô hiệu hóa nút `[Gán Seat]` kèm Tooltip giải thích nguyên nhân. | Phòng ngừa vi phạm hạn ngạch bản quyền (**Over-allocation**) và bội chi ngân sách. |
-| **5. Error / Failure State** (Sự cố) | - Thông báo lỗi chuẩn xác theo ngữ cảnh nghiệp vụ, không lộ stack-trace kỹ thuật. | - **Inline Field Errors:** Dòng chữ đỏ ngay dưới ô nhập liệu cho lỗi Validation (422).<br>- **Toast Alert:** Góc phải trên cho lỗi máy chủ (500) kèm Transaction ID.<br>- **Error View (403/404):** Minh họa thân thiện kèm nút "Quay lại trang chủ". | Hướng dẫn Manager xử lý sự cố hoặc chuyển tiếp thông tin cho đội ngũ hỗ trợ kỹ thuật. |
+| **1. Loading State** | - Zero blank white screen flashes.<br>- Zero layout shifts (CLS $< 0.1$). | - **Skeleton Placeholders:** Muted rectangular pulse loaders for KPI cards, charts, and table rows.<br>- **Button Spinner:** Submitting buttons disabled with animated spinning indicator. | Prevents duplicate click submissions; provides continuous feedback for asynchronous network jobs. |
+| **2. Empty State** | - Never display bare empty tables or blank zeros.<br>- Provide guiding visual prompts. | - Vector illustration matching operational context.<br>- Explicit messaging (e.g., *"No software licenses registered in inventory"*).<br>- **Primary CTA Button:** Prominent button triggering initial workflow (e.g., `+ Register First License`). | Transforms empty spaces into actionable onboarding pathways. |
+| **3. Success / Ideal State** | - Displays complete, standardized records.<br>- Strict number formatting with thousands separators. | - Formatted currency: `5,000,000,000 VND`, `$12,500 USD`.<br>- Formatted seat quantities: `45/50 seats (90%)`.<br>- Standardized status badges: Green (`Active`, `Paid`), Amber (`Expiring Soon`, `Pending`), Red (`Expired`, `Overdue`).<br>- Pagination: 10, 25, 50 rows per page. | Conveys reliability, transparency, and actionable clarity to executive managers. |
+| **4. Capacity Alert State** | - Visual warnings when approaching operational ceilings. | - Amber warning banner when budget reaches 80% or available seats drop to $\le 10\%$.<br>- Critical red banner when available seats equal 0 ($Available = 0$) or budget reaches $\ge 100\%$.<br>- Action button `[Assign Seat]` dynamically disabled with explanatory tooltip. | Preempts over-allocation legal violations and corporate budget overruns. |
+| **5. Error / Failure State** | - Contextual error messages without exposing technical stack traces. | - **Inline Field Errors:** Crisp red text under invalid input fields for validation errors (422).<br>- **Toast Alert:** Top-right toast notification for server errors (500) with Transaction ID.<br>- **System Error Views (403/404):** Dedicated pages with "Return to Dashboard" action buttons. | Guides Manager toward corrective action or IT support channels. |
 
 ---
 
-### 3.2. 6 Quy tắc Tương tác Cốt lõi (Core UX Interaction Rules)
+### 3.2. 6 Core UX Interaction Rules
 
-1. **Quy tắc 1: Khóa Dòng Chống Cấp phát Vượt Mức (Concurrency Row-Locking - BR-04, BR-05):**
-   - Khi Manager bấm gán license, hệ thống thực thi giao dịch Database Transaction với cơ chế khóa dòng (`SELECT ... FOR UPDATE`).
-   - Nếu $Available = Purchased - Allocated \le 0$, hệ thống lập tức hủy giao dịch (Rollback) và hiển thị thông báo lỗi: *"Kho license đã hết chỗ khả dụng. Không thể cấp phát."*
-2. **Quy tắc 2: Chặn Hạ Dung lượng Thấp hơn Số lượng Đang Cấp ($Purchased \ge Allocated$ - BR-05):**
-   - Khi chỉnh sửa số lượng mua của License, hệ thống kiểm tra: $Purchased_{mới} \ge Allocated_{hiện tại}$.
-   - Nếu Manager nhập số lượng thấp hơn số seat đã cấp phát cho nhân viên, nút Lưu bị vô hiệu hóa kèm thông báo: *"Vui lòng thu hồi bớt seat trước khi giảm số lượng mua."*
-3. **Quy tắc 3: Bắt buộc Nhập Lý do Điều chỉnh cho Mọi Thay đổi Quan trọng (Audit Trail - BR-17):**
-   - Mọi thao tác Chỉnh sửa License, Thu hồi License, Đổi loại License hoặc Điều chỉnh Ngân sách đều yêu cầu trường `Lý do thay đổi (Change Reason)` tối thiểu 10 ký tự.
-   - Bản ghi được lưu bất biến vào `audit_logs` kèm Actor, Action, Old Value, New Value và Timestamp.
-4. **Quy tắc 4: Bảo toàn Dữ liệu Lịch sử Không Phá hủy (Non-destructive Soft Delete / Revoke - BR-13, BR-20):**
-   - Tuyệt đối không xóa vật lý (Hard delete) các bản ghi License hoặc Assignment đã từng phát sinh lịch sử.
-   - Thu hồi license chuyển trạng thái sang `Revoked`, hoàn trả dung lượng $Available += 1$, nhưng bản ghi cũ được giữ nguyên để đối soát kiểm toán.
-5. **Quy tắc 5: Phân tách Đồng tiền Độc lập & Quy đổi Tỷ giá Chuẩn hóa (BR-10, BR-11):**
-   - Chi phí `VND` và `USD` không được cộng gộp trực tiếp.
-   - Hệ thống sử dụng bảng tỷ giá tham chiếu quản trị để quy đổi toàn bộ chi phí về đồng tiền cơ sở của năm tài chính khi tính toán ngân sách tổng thể.
-6. **Quy tắc 6: Cơ chế Cảnh báo Ngưỡng Ngân sách 3 Cấp độ Tự động (UC14, BR-16):**
-   - Dưới 80%: Vùng an toàn (Xanh lá).
-   - Từ 80% đến 99%: Cảnh báo sớm (Vàng hổ phách), nhắc nhở rà soát các hợp đồng sắp gia hạn.
-   - Đạt $\ge 100\%$: Báo động đỏ (Over-budget), bật cờ cảnh báo nguy hiểm và kích hoạt quy trình phê duyệt ngoại lệ khi duyệt chi phí mới.
+1. **Rule 1: Concurrency Row-Level Locking Against Over-allocation (BR-04, BR-05):**
+   - License assignments execute within an atomic database transaction with pessimistic row-level locking (`SELECT ... FOR UPDATE`).
+   - If $Available = Purchased - Allocated \le 0$, the transaction rolls back immediately and displays: *"License pool has 0 available seats. Allocation blocked."*
+2. **Rule 2: Purchased Seat Reduction Guard ($Purchased \ge Allocated$ - BR-05):**
+   - When modifying the purchased quantity of an entitlement, the system enforces: $Purchased_{new} \ge Allocated_{current}$.
+   - If a Manager inputs a number below the active assigned seats, the Save button is disabled with the error: *"Cannot reduce purchased seats below active assigned count. Reclaim seats first."*
+3. **Rule 3: Mandatory Audit Change Reason on Significant Events (BR-17):**
+   - Every Edit License, Revoke Seat, Change Tier, or Budget Revision action requires a non-empty `Change Reason` of at least 10 characters.
+   - Persisted immutably to `audit_logs` containing Actor ID, Action Type, Target ID, Old Value, New Value, and Timestamp.
+4. **Rule 4: Non-destructive Historical Data Retention (BR-13, BR-20):**
+   - Physical deletion (`HARD DELETE`) is strictly forbidden for entitlements and assignments that have operational history.
+   - Revoking a seat transitions status to `Revoked` and restores $Available += 1$, retaining historical records indefinitely for corporate audits.
+5. **Rule 5: Multi-currency Separation & Administrative Normalization (BR-10, BR-11):**
+   - `VND` and `USD` expenditure figures are never summed directly across raw tables.
+   - The system applies an administrative exchange rate table (e.g., $1 \text{ USD} = 25,400 \text{ VND}$) to standardize reporting into the fiscal base currency.
+6. **Rule 6: Automated 3-Tier Budget Threshold Alerting (UC14, BR-16):**
+   - Below 80%: Safe Zone (Green). Normal disbursement pace.
+   - 80% to 99%: Warning Zone (Amber). Alerts Manager to review upcoming renewals and audit inactive users.
+   - 100% or Above: Critical Zone (Red). Flags over-budget status and triggers soft-stop approval workflows for new expenses.
 
 ---
 
 ## 🔗 4. SCREEN-TO-API MAPPING MATRIX
 
-Bảng ánh xạ toàn bộ 18 màn hình và giao diện tương tác với các Endpoints backend API:
+Comprehensive matrix mapping all 18 Manager Portal screens to backend REST API endpoints:
 
-| Screen ID | Thao tác Giao diện (UI Action) | API Endpoint & Method | Ý nghĩa Nghiệp vụ & Dữ liệu Trao đổi | Phân quyền (RBAC) |
+| Screen ID | UI Action / Trigger | API Endpoint & Method | Business Purpose & Data Payload | RBAC Role |
 |:---|---|---|---|:---:|
-| **SCR-AUTH-01** | Form Đăng nhập | `POST /api/v1/auth/login` | Xác thực email/mật khẩu, trả về JWT Token và Role `Manager`. | Public |
-| **SCR-LIC-01** | Tải danh sách & KPI License | `GET /api/v1/licenses?status={}&vendor={}` | Lấy danh sách entitlements, phân trang và 5 thẻ số liệu KPI tổng quan. | Manager Only |
-| **SCR-LIC-01** | Xuất Báo cáo License | `GET /api/v1/licenses/export?format=csv` | Xuất toàn bộ kho license ra file CSV/Excel phục vụ kiểm toán nội bộ. | Manager Only |
-| **SCR-LIC-ADD-01** | Nút "Lưu License Mới" | `POST /api/v1/licenses` | Đăng ký entitlement mới (SaaS / Perpetual), khởi tạo $Available = Purchased$. | Manager Only |
-| **SCR-LIC-DETAIL-01**| Tải chi tiết License | `GET /api/v1/licenses/{id}` | Lấy metadata, hợp đồng, file đính kèm và tỷ lệ lấp đầy seat. | Manager Only |
-| **SCR-LIC-DETAIL-01**| Nút Xem License Key (Reveal) | `POST /api/v1/licenses/{id}/reveal-key` | Trả về License Key đầy đủ và ghi log hành vi `VIEW_LICENSE_KEY`. | Manager Only |
-| **SCR-LIC-DETAIL-01**| Tab 2: Danh sách Active Users | `GET /api/v1/licenses/{id}/assignments?status=Active` | Lấy danh sách nhân viên đang nắm giữ seat và trạng thái sử dụng thực tế. | Manager Only |
-| **SCR-LIC-DETAIL-01**| Tab 3: Lịch sử Cấp phát | `GET /api/v1/licenses/{id}/assignments/history` | Lấy toàn bộ lịch sử gán và thu hồi seat của license này (BR-13). | Manager Only |
-| **SCR-LIC-DETAIL-01**| Tab 4: Lịch sử Đổi cấu hình | `GET /api/v1/licenses/{id}/audit-logs` | Lấy nhật ký biến động số lượng, ngày gia hạn và giá trị thay đổi (BR-17). | Manager Only |
-| **SCR-LIC-EDIT-01**| Nút "Lưu Chỉnh sửa" | `PUT /api/v1/licenses/{id}` | Cập nhật ngày gia hạn, số lượng mua (Kiểm tra $Purchased \ge Allocated$). | Manager Only |
-| **SCR-LIC-DEL-01** | Nút "Xác nhận Xóa/Lưu trữ" | `DELETE /api/v1/licenses/{id}` | Kiểm tra $Allocated = 0$, chuyển trạng thái sang `Archived` hoặc xóa nháp. | Manager Only |
-| **SCR-ASGN-01** | Tải Assignment Hub | `GET /api/v1/assignments/summary` | Lấy 4 chỉ số vĩ mô: Total Allocated, Available Pool, Active Assignees, Inactive. | Manager Only |
-| **SCR-ASGN-01** | View A: Danh sách theo User | `GET /api/v1/assignments/by-employee` | Lấy danh sách nhân viên kèm các license họ đang nắm giữ. | Manager Only |
-| **SCR-ASGN-01** | View B: Danh sách theo Seat | `GET /api/v1/assignments/by-software` | Lấy danh sách chi tiết từng vị trí ghế (seat) của từng phần mềm. | Manager Only |
-| **SCR-ASGN-AVAIL-01**| Tải Bảng Seat Còn trống | `GET /api/v1/licenses/availability-monitor` | Lấy tỷ lệ lấp đầy real-time và cờ cảnh báo (Đỏ/Vàng/Xanh/Lam). | Manager Only |
-| **SCR-ASGN-HIST-01** | Tải Sổ Lịch sử Phân bổ | `GET /api/v1/assignments/global-history` | Lấy nhật ký toàn bộ sự kiện gán, thu hồi, đổi loại theo dòng thời gian. | Manager Only |
-| **SCR-ASGN-ADD-01** | Nút "Xác nhận Cấp phát" | `POST /api/v1/assignments` | Cấp phát seat cho nhân viên, kiểm tra $Available > 0$ với khóa dòng. | Manager Only |
-| **SCR-ASGN-REVOKE-01**| Nút "Xác nhận Thu hồi" | `POST /api/v1/assignments/{id}/revoke` | Thu hồi seat về kho, hoàn trả $Available += 1$, lưu lý do thu hồi (BR-13). | Manager Only |
-| **SCR-ASGN-CHANGE-01**| Nút "Xác nhận Chuyển đổi"| `POST /api/v1/assignments/{id}/change-tier` | Giao dịch nguyên tử (Atomic Swap): Thu hồi gói cũ và cấp phát gói mới. | Manager Only |
-| **SCR-BDG-MONITOR-01**| Tải Dashboard Ngân sách | `GET /api/v1/budgets/monitoring?fiscalYear={year}` | Lấy 5 chỉ số tài chính, tiến độ giải ngân lũy kế và cảnh báo ngưỡng. | Manager Only |
-| **SCR-BDG-PLAN-01** | Tải Ma trận Kế hoạch | `GET /api/v1/budgets/planning?fiscalYear={year}` | Lấy bảng phân bổ ngân sách 12 tháng, theo phòng ban và theo vendor. | Manager Only |
-| **SCR-BDG-PLAN-01** | Nút "Lưu Kế hoạch Ngân sách" | `POST /api/v1/budgets/planning` | Thiết lập hạn mức ngân sách năm tài chính mới hoặc lưu điều chỉnh phân bổ. | Manager Only |
-| **SCR-BDG-EXP-01** | Tải Sổ cái Chi phí | `GET /api/v1/expenses?fiscalYear={year}&status={}` | Lấy danh sách chi phí hàng tháng, hàng năm, Paid, Unpaid và Projected. | Manager Only |
-| **SCR-BDG-EXP-01** | Nút "Xác nhận Thanh toán" | `PATCH /api/v1/expenses/{id}/mark-paid` | Chuyển trạng thái chi phí sang `PAID`, xác thực hóa đơn VAT đính kèm. | Manager Only |
-| **SCR-BDG-REPORT-01** | Tải Báo cáo Variance | `GET /api/v1/budgets/reports/variance?fiscalYear={year}`| Lấy ma trận đối soát Ngân sách Kế hoạch vs Thực chi vs Cam kết. | Manager Only |
-| **SCR-BDG-REPORT-01** | Tải Dự báo Gia hạn | `GET /api/v1/budgets/reports/renewal-forecast?days=90` | Dự phóng dòng tiền gia hạn và gợi ý cắt giảm seat từ nhân viên Inactive. | Manager Only |
-| **SCR-BDG-REPORT-01** | Nút "Xuất PDF Ban Giám Đốc"| `GET /api/v1/budgets/reports/export-pdf?type={}` | Xuất file PDF đồ họa chuyên nghiệp phục vụ báo cáo Hội đồng Quản trị. | Manager Only |
+| **SCR-AUTH-01** | Login Form Submit | `POST /api/v1/auth/login` | Authenticates credentials, returns JWT Token and `Manager` role context. | Public |
+| **SCR-LIC-01** | Fetch Inventory & KPIs | `GET /api/v1/licenses?status={}&vendor={}` | Retrieves paginated entitlements list and 5 executive KPI summary cards. | Manager Only |
+| **SCR-LIC-01** | Export Inventory Data | `GET /api/v1/licenses/export?format=csv` | Exports full company-wide license register as CSV/Excel for auditing. | Manager Only |
+| **SCR-LIC-ADD-01** | Submit New License Form | `POST /api/v1/licenses` | Registers new entitlement (SaaS / Perpetual), initializes $Available = Purchased$. | Manager Only |
+| **SCR-LIC-DETAIL-01**| Load License Details | `GET /api/v1/licenses/{id}` | Fetches license metadata, contract profile, attachments, and capacity gauge. | Manager Only |
+| **SCR-LIC-DETAIL-01**| Click "Reveal License Key" | `POST /api/v1/licenses/{id}/reveal-key` | Decrypts serial key; writes security audit log `VIEW_LICENSE_KEY`. | Manager Only |
+| **SCR-LIC-DETAIL-01**| Tab 2: Active Assigned Users | `GET /api/v1/licenses/{id}/assignments?status=Active` | Retrieves list of employees currently holding a seat with usage status. | Manager Only |
+| **SCR-LIC-DETAIL-01**| Tab 3: Allocation History | `GET /api/v1/licenses/{id}/assignments/history` | Retrieves complete chronological assignment/revocation log (BR-13). | Manager Only |
+| **SCR-LIC-DETAIL-01**| Tab 4: Configuration Audit | `GET /api/v1/licenses/{id}/audit-logs` | Retrieves audit trail of quantity changes, renewals, and price edits (BR-17). | Manager Only |
+| **SCR-LIC-EDIT-01**| Submit Edit Form | `PUT /api/v1/licenses/{id}` | Updates renewal terms, notes, and purchased count ($Purchased \ge Allocated$). | Manager Only |
+| **SCR-LIC-DEL-01** | Confirm Decommission | `DELETE /api/v1/licenses/{id}` | Verifies $Allocated = 0$, marks status as `Archived` or deletes draft. | Manager Only |
+| **SCR-ASGN-01** | Load Assignment Hub | `GET /api/v1/assignments/summary` | Retrieves macro sizing metrics: Total Allocated, Available Pool, Inactive. | Manager Only |
+| **SCR-ASGN-01** | View A: By Employee | `GET /api/v1/assignments/by-employee` | Lists employees with expandable cards showing held software tools. | Manager Only |
+| **SCR-ASGN-01** | View B: By Software | `GET /api/v1/assignments/by-software` | Displays discrete seat-level allocations per software catalog item. | Manager Only |
+| **SCR-ASGN-AVAIL-01**| Load Seat Monitor | `GET /api/v1/licenses/availability-monitor` | Fetches real-time capacity percentages and alert flags (Red/Yellow/Green/Blue). | Manager Only |
+| **SCR-ASGN-HIST-01** | Load Global Audit Log | `GET /api/v1/assignments/global-history` | Fetches company-wide chronological assignment event register. | Manager Only |
+| **SCR-ASGN-ADD-01** | Confirm Seat Allocation | `POST /api/v1/assignments` | Assigns seat to employee; verifies $Available > 0$ with row-level locking. | Manager Only |
+| **SCR-ASGN-REVOKE-01**| Confirm Seat Revocation | `POST /api/v1/assignments/{id}/revoke` | Revokes seat to pool ($Available += 1$); logs mandatory reason (BR-13). | Manager Only |
+| **SCR-ASGN-CHANGE-01**| Confirm Tier Transition | `POST /api/v1/assignments/{id}/change-tier` | Atomic swap transaction: Revokes current tier and assigns target tier. | Manager Only |
+| **SCR-BDG-MONITOR-01**| Load Budget Cockpit | `GET /api/v1/budgets/monitoring?fiscalYear={year}` | Retrieves 5 core financial metrics, burn-down trajectory, and alerts. | Manager Only |
+| **SCR-BDG-PLAN-01** | Load Budget Matrix | `GET /api/v1/budgets/planning?fiscalYear={year}` | Fetches 12-month departmental and vendor allocation matrix grid. | Manager Only |
+| **SCR-BDG-PLAN-01** | Save Budget Allocations | `POST /api/v1/budgets/planning` | Establishes fiscal budget ceiling or saves departmental revisions. | Manager Only |
+| **SCR-BDG-EXP-01** | Load Expense Ledger | `GET /api/v1/expenses?fiscalYear={year}&status={}` | Retrieves expense outlays: Monthly, Annual, Paid, Pending, Projected. | Manager Only |
+| **SCR-BDG-EXP-01** | Mark Expense as Paid | `PATCH /api/v1/expenses/{id}/mark-paid` | Transitions expense to `PAID`, verifies attached VAT invoice PDF. | Manager Only |
+| **SCR-BDG-REPORT-01** | Load Variance Report | `GET /api/v1/budgets/reports/variance?fiscalYear={year}`| Computes budget vs. actuals variance across departments and vendors. | Manager Only |
+| **SCR-BDG-REPORT-01** | Load Renewal Forecast | `GET /api/v1/budgets/reports/renewal-forecast?days=90` | Forecasts forward cash outlays and integrates inactive seat reductions. | Manager Only |
+| **SCR-BDG-REPORT-01** | Export Executive PDF | `GET /api/v1/budgets/reports/export-pdf?type={}` | Generates board-ready graphical PDF financial report. | Manager Only |
 
 ---
 
-## 📱 5. ĐẶC TẢ CHI TIẾT GIAO DIỆN & THÀNH PHẦN TƯƠNG TÁC
+## 📱 5. DETAILED VIEW SPECIFICATIONS
 
 ---
 
-### KHỐI 1: QUẢN LÝ KHO BẢN QUYỀN (MODULE 1: LICENSE MANAGEMENT)
+### BLOCK 1: LICENSE INVENTORY MANAGEMENT (MODULE 1)
 
-#### 1.1. `SCR-LIC-01`: Quản lý Kho License & KPI Tổng quan
-- **Đường dẫn (Route):** `/manager/licenses`
+#### 1.1. `SCR-LIC-01`: License Inventory & Executive KPIs
+- **Route:** `/manager/licenses`
 - **Presentation:** Full Page
-- **Quyền hạn:** Manager Only.
-- **Bố cục giao diện (Layout):**
-  - **Header Bar:** Tiêu đề `Quản lý Bản quyền`, nút `[Xuất Báo cáo CSV/Excel]` và nút nổi bật `[+ Thêm License Mới]`.
-  - **Thẻ KPI Tổng quan (5 Cards):**
-    - *Thẻ 1:* Tổng số License đang hoạt động (`Active`).
-    - *Thẻ 2:* Tổng số Seats sở hữu toàn công ty.
-    - *Thẻ 3:* Tỷ lệ phân bổ trung bình ($\frac{\sum Allocated}{\sum Purchased} \times 100\%$).
-    - *Thẻ 4:* Cảnh báo sắp hết hạn trong $\le 30$ ngày.
-    - *Thẻ 5:* Cảnh báo quá hạn hoặc vi phạm hạn ngạch.
-  - **Toolbar Lọc & Tìm kiếm:**
-    - Ô tìm kiếm tức thì theo tên phần mềm, vendor, license key (Debounce 300ms).
-    - Dropdowns lọc: Vendor, Mô hình (`SaaS Subscription` / `Perpetual License`), Trạng thái (`Active`, `Expiring Soon`, `Expired`, `Suspended`), Khoảng thời gian hết hạn, Tình trạng còn trống/hết seat.
-  - **Bảng dữ liệu License Grid:**
-    - Cột: Mã License, Tên & Phiên bản, Vendor, Loại hình, Tỷ lệ lấp đầy ($Allocated / Purchased$), Số seat còn trống ($Available$), Hạn dùng/Bảo trì, Trạng thái (Pill Badge), Menu thao tác dòng `[...]`.
-  - **Phân trang:** 10, 25, 50 dòng/trang.
+- **Permissions:** Manager Only.
+- **Layout & Functional Components:**
+  - **Header Bar:** Title `License Management`, buttons `[Export Report (CSV/Excel)]` and `[+ Add New License]`.
+  - **KPI Summary Cards (5 Cards):**
+    - *Card 1:* Active Licenses count (`Active` status).
+    - *Card 2:* Total Purchased Seats enterprise-wide.
+    - *Card 3:* Average Allocation Rate ($\frac{\sum Allocated}{\sum Purchased} \times 100\%$).
+    - *Card 4:* Expiring Soon within $\le 30$ days.
+    - *Card 5:* Over-allocated / Compliance Risk count.
+  - **Filter & Search Toolbar:**
+    - Instant search input matching software name, vendor, license key (300ms debounce).
+    - Dropdowns: Vendor, Model (`SaaS Subscription` / `Perpetual License`), Status (`Active`, `Expiring Soon`, `Expired`, `Suspended`), Expiration Range, Seat Availability.
+  - **License Data Grid:**
+    - Columns: License Code, Software & Edition, Vendor, Model, Capacity Utilization ($Allocated / Purchased$), Available Seats ($Available$), Expiration Date, Status (Pill Badge), Row Actions `[...]`.
+  - **Pagination:** 10, 25, 50 rows per page.
 
-#### 1.2. `SCR-LIC-ADD-01`: Drawer Đăng ký License Mới
-- **Kích hoạt từ:** Nút `[+ Thêm License Mới]` tại `SCR-LIC-01`.
-- **Presentation:** Side Drawer (Độ rộng 640px)
-- **Quyền hạn:** Manager Only.
-- **Thành phần nhập liệu (Form Fields):**
-  - Radio button chọn mô hình: `SaaS Subscription` hoặc `Perpetual License`.
-  - Dropdown chọn phần mềm từ Software Catalog; tự động điền Vendor tương ứng.
-  - Tên gói/phiên bản, License Key / Serial Number (hỗ trợ nút tự sinh mã ngẫu nhiên).
-  - Metric: `Per User (Seat)` (Mặc định), `Per Core`, `Concurrent`, `Per Device`.
-  - Số lượng mua ($Purchased \ge 1$), Đơn giá, Đơn vị tiền tệ (`VND` hoặc `USD` per BR-10, BR-11).
-  - **Nhánh SaaS:** Ngày bắt đầu, Ngày hết hạn (bắt buộc), Chu kỳ thanh toán, Cờ tự động gia hạn.
-  - **Nhánh Perpetual:** Ngày mua, Thời hạn gốc cố định `Vĩnh viễn` (BR-12), Checkbox gói bảo trì và Ngày hết hạn bảo trì độc lập.
-  - Số hợp đồng/PO, Tải tệp đính kèm hóa đơn/hợp đồng (PDF, PNG $\le 10$MB).
-- **Hậu điều kiện:** Khởi tạo $Allocated = 0$, $Available = Purchased$. Ghi nhận Audit Log `CREATE_LICENSE_ENTITLEMENT`.
+#### 1.2. `SCR-LIC-ADD-01`: Add License Drawer (SaaS & Perpetual)
+- **Triggered from:** `[+ Add New License]` button on `SCR-LIC-01`.
+- **Presentation:** Side Drawer (Width: 640px)
+- **Permissions:** Manager Only.
+- **Form Fields:**
+  - Licensing Model: Radio buttons `SaaS Subscription` or `Perpetual License`.
+  - Software selector from Software Catalog; auto-populates Vendor.
+  - Edition/Tier, License Key / Serial Number (with inline random generator).
+  - Metric: `Per User (Seat)` (Default), `Per Core`, `Concurrent`, `Per Device`.
+  - Purchased Quantity ($Purchased \ge 1$), Unit Cost, Currency (`VND` or `USD` per BR-10, BR-11).
+  - **SaaS Specifics:** Start Date, Expiration Date (Mandatory), Billing Cycle, Auto-renewal Toggle.
+  - **Perpetual Specifics:** Purchase Date, Core Validity fixed to `Perpetual` (BR-12), Maintenance Agreement Checkbox, Maintenance Expiration Date.
+  - Contract/PO Code, Supporting Invoice Upload (PDF, PNG $\le 10$MB).
+- **Post-condition:** Initializes $Allocated = 0$, $Available = Purchased$. Records audit log `CREATE_LICENSE_ENTITLEMENT`.
 
-#### 1.3. `SCR-LIC-DETAIL-01`: Chi tiết License & Đo lường Seat (4 Tabs)
-- **Đường dẫn (Route):** `/manager/licenses/[id]`
+#### 1.3. `SCR-LIC-DETAIL-01`: License Detail View & Seat Gauge (4 Tabs)
+- **Route:** `/manager/licenses/[id]`
 - **Presentation:** Full Page
-- **Thành phần giao diện:**
-  - **Header:** Mã license, Vendor, Trạng thái badge, License Key ẩn `XXXX-XXXX-****-1234` kèm icon con mắt để Manager nhấn mở xem (ghi log `VIEW_LICENSE_KEY`).
-  - **Seat Utilization Gauge:** Thanh đo lấp đầy 3 màu: Xanh dương (Active seats), Vàng (Idle seats), Xanh lá (Available seats).
-  - **Nút thao tác nhanh:** `[+ Cấp phát Seat Mới]` (mở `SCR-ASGN-ADD-01`), `[Gia hạn]`, `[Chỉnh sửa]`, `[Xóa/Lưu trữ]`.
-  - **Hệ thống 4 Tabs Nghiệp vụ:**
-    - *Tab 1 (Thông tin chung & Hợp đồng):* Đơn giá, chu kỳ thanh toán, hợp đồng liên kết, file hóa đơn đính kèm.
-    - *Tab 2 (Active Users):* Danh sách nhân viên đang giữ seat, trạng thái sử dụng (`Active`, `Idle`, `Inactive $\ge 60$ ngày` có cảnh báo đỏ), nút inline `[Đổi loại]` và `[Thu hồi]`.
-    - *Tab 3 (Lịch sử Cấp phát):* Nhật ký mọi sự kiện gán và thu hồi của license này (BR-13).
-    - *Tab 4 (Audit Log):* Lưu vết mọi sửa đổi cấu hình gói bản quyền (BR-17).
+- **Interface Structure:**
+  - **Header:** License Code, Vendor, Status Badge, Masked Key `XXXX-XXXX-****-1234` with reveal button (writes `VIEW_LICENSE_KEY` audit log).
+  - **Seat Utilization Gauge:** Tripartite progress bar: Blue (Active seats), Amber (Idle seats), Green (Available seats).
+  - **Quick Action Bar:** `[+ Assign Seat]` (opens `SCR-ASGN-ADD-01`), `[Renew Agreement]`, `[Edit License]`, `[Delete/Archive]`.
+  - **4 Management Tabs:**
+    - *Tab 1 (General Info & Contract Profile):* Pricing, billing frequency, contract reference, invoice attachment.
+    - *Tab 2 (Active Assigned Users):* Interactive table of employees holding a seat, usage status (`Active`, `Idle`, `Inactive $\ge 60$ days` with red alert badge), inline action buttons `[Change Tier]` and `[Revoke]`.
+    - *Tab 3 (Allocation History):* Chronological audit log of all grants and revocations for this license (BR-13).
+    - *Tab 4 (License Change Audit Log):* Immutable log of seat changes, renewals, and price modifications (BR-17).
 
-#### 1.4. `SCR-LIC-EDIT-01`: Drawer Chỉnh sửa License
-- **Kích hoạt từ:** Nút "Chỉnh sửa" tại `SCR-LIC-01` hoặc `SCR-LIC-DETAIL-01`.
+#### 1.4. `SCR-LIC-EDIT-01`: Edit License Drawer
+- **Triggered from:** "Edit" button on `SCR-LIC-01` or `SCR-LIC-DETAIL-01`.
 - **Presentation:** Side Drawer
-- **Ràng buộc bảo vệ dữ liệu:**
-  - Khóa chết trường Model, Metric và Mã định danh ID.
-  - **Ràng buộc hạ seat:** Chỉ cho phép giảm $Purchased$ nếu $Purchased_{mới} \ge Allocated_{hiện tại}$ (BR-05).
-  - Bắt buộc nhập `Lý do thay đổi (Change Reason)` để ghi Audit Log (BR-17).
+- **Data Safeguards:**
+  - Model, Metric, and License ID fields are permanently locked.
+  - **Seat Reduction Guard:** Restricts $Purchased$ reduction if $Purchased_{new} < Allocated_{current}$ (BR-05).
+  - Mandatory `Change Reason` input required to save changes (BR-17).
 
-#### 1.5. `SCR-LIC-DEL-01`: Modal Xóa / Lưu trữ License (Safety Check)
-- **Kích hoạt từ:** Nút "Xóa" tại `SCR-LIC-DETAIL-01`.
-- **Presentation:** Modal Overlay (Độ rộng 520px)
+#### 1.5. `SCR-LIC-DEL-01`: Delete / Decommission Modal (Safety Check)
+- **Triggered from:** "Delete" button on `SCR-LIC-DETAIL-01`.
+- **Presentation:** Modal Overlay (Width: 520px)
 
 ```mermaid
 flowchart TD
@@ -292,21 +292,21 @@ flowchart TD
 
 ---
 
-### KHỐI 2: PHÂN BỔ & ĐIỀU CHUYỂN SEAT (MODULE 2: LICENSE ASSIGNMENT MANAGEMENT)
+### BLOCK 2: SEAT ALLOCATION & ASSIGNMENT MANAGEMENT (MODULE 2)
 
-#### 2.1. `SCR-ASGN-01`: Trung tâm Phân bổ Bản quyền (Assignment Hub)
-- **Đường dẫn (Route):** `/manager/assignments`
+#### 2.1. `SCR-ASGN-01`: License Assignment Hub
+- **Route:** `/manager/assignments`
 - **Presentation:** Full Page
-- **Thống kê Vĩ mô:** Tổng Seats Đang Cấp Phát, Tổng Seats Còn Trống Trong Kho, Số Nhân Viên Sở Hữu License, Số Seats Bị Lãng Phí (Inactive $\ge 60$ ngày).
-- **Bộ chuyển đổi 4 Chế độ Xem:**
-  - *View A (Theo Nhân viên - Mặc định):* Danh sách nhân viên, phòng ban, click mở rộng để xem các license cá nhân đang giữ kèm nút Đổi loại / Thu hồi.
-  - *View B (Theo Phần mềm & Seat):* Quản lý chi tiết từng vị trí ghế của từng phần mềm.
-  - *View C (Seat Availability Monitor - `SCR-ASGN-AVAIL-01`):* Giám sát sức chứa kho license real-time.
-  - *View D (Global History - `SCR-ASGN-HIST-01`):* Sổ nhật ký cấp phát toàn công ty.
+- **Macro Sizing Cards:** Total Assigned Seats, Available Pool, Unique Active Assignees, Under-utilized Seats (Inactive $\ge 60$ days).
+- **4 Perspective Sub-views:**
+  - *View A (By Employee - Default):* Employee directory with expandable rows displaying software tools held and action buttons.
+  - *View B (By Software & Seat):* Seat-by-seat inventory breakdown per software product.
+  - *View C (Seat Availability Monitor - `SCR-ASGN-AVAIL-01`):* Real-time capacity monitor across all pools.
+  - *View D (Global History - `SCR-ASGN-HIST-01`):* Enterprise assignment event ledger.
 
-#### 2.2. `SCR-ASGN-ADD-01`: Drawer Cấp phát License cho Nhân viên
-- **Kích hoạt từ:** Nút `[+ Gán License Mới]` hoặc duyệt License Request (UC09).
-- **Presentation:** Side Drawer (Độ rộng 560px)
+#### 2.2. `SCR-ASGN-ADD-01`: Assign License Drawer
+- **Triggered from:** `[+ Assign License]` button or approving a request (UC09).
+- **Presentation:** Side Drawer (Width: 560px)
 
 ```mermaid
 flowchart TD
@@ -324,135 +324,135 @@ flowchart TD
     LockTx --> Success["Success:<br/>1. Create license_assignments (Active)<br/>2. Increment allocated_quantity (+1)<br/>3. Decrement available_quantity (-1)<br/>4. Write Audit Log (ASSIGN_LICENSE)<br/>5. Send notification to Employee"]
 ```
 
-#### 2.3. `SCR-ASGN-REVOKE-01`: Modal Thu hồi License về Kho
-- **Kích hoạt từ:** Nút "Thu hồi" tại tài khoản nhân viên.
-- **Presentation:** Modal Overlay (Độ rộng 500px)
-- **Thành phần giao diện:**
-  - Thông tin tóm tắt: Nhân viên, Phần mềm, Mã seat, Thời gian sử dụng, Lần hoạt động cuối.
-  - Dropdown lý do thu hồi chuẩn hóa: *Nghỉ việc, Chuyển dự án, Inactive $\ge 60$ ngày (UC20), Hết hạn dự án, Hoàn trả tự nguyện, Khác*.
-  - Ô nhập chi tiết lý do thu hồi (Bắt buộc tối thiểu 10 ký tự).
-  - Tùy chọn gửi email thông báo tự động cho nhân viên.
-- **Hệ thống xử lý:** Chuyển trạng thái sang `Revoked`, hoàn trả dung lượng $Available += 1$, bản ghi cũ được giữ nguyên vẹn trong lịch sử (BR-13).
+#### 2.3. `SCR-ASGN-REVOKE-01`: Revoke License Modal
+- **Triggered from:** "Revoke" button on an employee's software record.
+- **Presentation:** Modal Overlay (Width: 500px)
+- **Form Components:**
+  - Summary: Employee name, Software title, Seat code, Duration utilized, Last active timestamp.
+  - Standardized Revocation Reasons (Dropdown): *Employee departure, Project completion, Inactive $\ge 60$ days (UC20), Project term expired, Voluntary return, Other*.
+  - Detailed justification text input (Mandatory, minimum 10 characters).
+  - Optional email notification toggle to the employee.
+- **System Execution:** Updates status to `Revoked`, restores $Available += 1$, preserves audit record indefinitely (BR-13).
 
-#### 2.4. `SCR-ASGN-CHANGE-01`: Modal Thay đổi Loại License (Atomic Swap)
-- **Kích hoạt từ:** Nút "Đổi loại" trên dòng license của nhân viên.
-- **Presentation:** Modal Overlay (Độ rộng 620px)
-- **Thành phần giao diện:**
-  - Cột trái (Hiện tại): Tên gói, Chi phí hiện tại.
-  - Cột phải (Mục tiêu): Dropdown chọn gói mới tương thích, hiển thị số seat còn trống của gói mới.
-  - Tự động gắn nhãn giao dịch: `Nâng cấp (Upgrade)` hoặc `Hạ cấp (Downgrade)`.
-  - Ô nhập lý do thay đổi gói bản quyền (Bắt buộc).
-- **Giao dịch nguyên tử:** Thu hồi gói cũ (+1 pool cũ) và cấp phát gói mới (-1 pool mới) trong cùng một Database Transaction.
+#### 2.4. `SCR-ASGN-CHANGE-01`: Change License Tier Modal (Atomic Swap)
+- **Triggered from:** "Change Tier" button on an employee's software record.
+- **Presentation:** Modal Overlay (Width: 620px)
+- **Components:**
+  - Left Column (Current): Current Tier, Current monthly cost.
+  - Right Column (Target): Dropdown of compatible tiers displaying real-time available seats in target pool.
+  - Automatic transaction classification: `Upgrade` or `Downgrade`.
+  - Mandatory justification input.
+- **Atomic Transaction:** Closes old assignment (+1 seat to source pool) and provisions new assignment (-1 seat from target pool) in a single database transaction.
 
-#### 2.5. `SCR-ASGN-AVAIL-01`: Bảng Giám sát Dung lượng Seat Còn trống
-- **Đường dẫn (Route):** `/manager/assignments?view=availability`
+#### 2.5. `SCR-ASGN-AVAIL-01`: Real-time Seat Availability Monitor
+- **Route:** `/manager/assignments?view=availability`
 - **Presentation:** Sub-view / Table
-- **Thước đo 4 Cấp độ Cảnh báo:**
-  - 🔴 **Báo động Đỏ (Hết Seat):** $Available = 0$.
-  - 🟡 **Báo động Vàng (Sắp Hết):** $Available \le 10\%$.
-  - 🟢 **Báo động Xanh Lục (Tối ưu):** $10\% < Available \le 30\%$.
-  - 🔵 **Báo động Xanh Lam (Dư thừa):** $Available > 30\%$ (Cơ hội tối ưu hóa chi phí theo UC19).
+- **4 Alert Bands:**
+  - 🔴 **Critical Red (Capacity Exhausted):** $Available = 0$.
+  - 🟡 **Warning Yellow (Low Capacity):** $Available \le 10\%$.
+  - 🟢 **Optimal Green:** $10\% < Available \le 30\%$.
+  - 🔵 **Under-utilized Blue:** $Available > 30\%$ (Cost optimization opportunity per UC19).
 
-#### 2.6. `SCR-ASGN-HIST-01`: Sổ Lịch sử Cấp phát Toàn hệ thống
-- **Đường dẫn (Route):** `/manager/assignments?view=history`
+#### 2.6. `SCR-ASGN-HIST-01`: Global Assignment Audit History View
+- **Route:** `/manager/assignments?view=history`
 - **Presentation:** Sub-view / Table
-- **Nội dung:** Bảng nhật ký đối soát toàn diện ghi nhận thời điểm, loại hành động (`ASSIGN`, `REVOKE`, `UPGRADE`, `DOWNGRADE`), nhân viên, phần mềm, người thực hiện và lý do nghiệp vụ (BR-13, BR-17).
+- **Content:** Complete chronological audit ledger recording timestamp, action (`ASSIGN`, `REVOKE`, `UPGRADE`, `DOWNGRADE`), employee, software, actor (Manager), and business justification (BR-13, BR-17).
 
 ---
 
-### KHỐI 3: QUẢN TRỊ TÀI CHÍNH BẢN QUYỀN (MODULE 3: BUDGET MANAGEMENT)
+### BLOCK 3: FINANCIAL & BUDGET MANAGEMENT (MODULE 3)
 
-#### 3.1. `SCR-BDG-MONITOR-01`: Dashboard Giám sát Ngân sách & Cảnh báo Ngưỡng
-- **Đường dẫn (Route):** `/manager/budget`
+#### 3.1. `SCR-BDG-MONITOR-01`: Budget Monitoring Cockpit
+- **Route:** `/manager/budget`
 - **Presentation:** Full Page
-- **Quyền hạn:** Manager Only.
-- **Bố cục giao diện:**
-  - **Dropdown chọn Năm tài chính:** `FY2026`, `FY2027` và Đơn vị tiền tệ hiển thị (`VND`, `USD`).
-  - **Hàng 5 Chỉ số Tài chính Cốt lõi (Metric Cards):**
-    1. `Total Budget:` Ngân sách được phân bổ cho kỳ tài khóa đã duyệt.
-    2. `Actual Spending:` Chi phí thực tế đã thanh toán ($\sum \text{Paid}$).
-    3. `Committed Spending:` Chi phí đã cam kết (Hóa đơn chờ trả + Hợp đồng đang chạy).
-    4. `Remaining Budget:` Ngân sách còn lại ($\text{Remaining} = \text{Total} - (\text{Actual} + \text{Committed})$).
-    5. `Budget Utilization:` Tỷ lệ sử dụng ngân sách ($\frac{\text{Actual} + \text{Committed}}{\text{Total}} \times 100\%$).
-  - **Banner Cảnh báo Ngưỡng Tự động:**
-    - Cảnh báo Vàng khi đạt $\ge 80\%$: Nhắc nhở Manager kiểm soát chi phí quý tới.
-    - Cảnh báo Đỏ khi đạt $\ge 100\%$: Thông báo vượt trần ngân sách, yêu cầu trình ngoại lệ.
-  - **Biểu đồ Tiến độ Giải ngân Lũy kế:** Cumulative Spending Burn-down / Burn-up Chart so sánh Kế hoạch vs Thực chi vs Cam kết qua 12 tháng.
-  - **Tiến độ theo Phòng ban:** Thanh tiến độ tỷ lệ giải ngân của từng phòng ban.
+- **Permissions:** Manager Only.
+- **Interface Layout:**
+  - **Fiscal Year Selector:** `FY2026`, `FY2027` and Base Currency Toggle (`VND`, `USD`).
+  - **5 Core Financial Health Metrics (Cards):**
+    1. `Total Budget:` Approved financial ceiling for the fiscal year.
+    2. `Actual Spending:` Cash settled and disbursed to date ($\sum \text{Paid}$).
+    3. `Committed Spending:` Obligated liabilities (Pending invoices + Active contracts).
+    4. `Remaining Budget:` Unobligated procurement headroom ($\text{Total} - (\text{Actual} + \text{Committed})$).
+    5. `Budget Utilization:` Budget velocity percentage ($\frac{\text{Actual} + \text{Committed}}{\text{Total}} \times 100\%$).
+  - **Automated Threshold Banners:**
+    - Amber warning banner at $\ge 80\%$: Prompts Manager to review Q4 expenditure.
+    - Red critical banner at $\ge 100\%$: Over-budget alert requiring board override.
+  - **Cumulative Spending Burn-down / Burn-up Chart:** 12-month trajectory comparing Planned vs. Actual vs. Committed.
+  - **Departmental Utilization Progress Bars:** Visual spending velocity per cost center.
 
-#### 3.2. `SCR-BDG-PLAN-01`: Ma trận Lập Kế hoạch & Phân bổ Ngân sách
-- **Đường dẫn (Route):** `/manager/budget/planning`
+#### 3.2. `SCR-BDG-PLAN-01`: Multi-dimensional Budget Planning Matrix
+- **Route:** `/manager/budget/planning`
 - **Presentation:** Full Page
-- **Thành phần giao diện:**
-  - Ô thiết lập Tổng ngân sách năm và tiền tệ cơ sở (`VND`/`USD`).
-  - Nút chuyển chế độ: *Dàn đều tự động 12 tháng* hoặc *Nhập tùy biến theo chu kỳ*.
-  - **Bảng Ma trận Phân bổ Đa chiều (Allocation Matrix Grid):**
-    - Hàng: Các phòng ban (Tech, Design, Sales, Marketing, Ops, HR, Buffer).
-    - Cột: 12 Tháng (T1 đến T12) và Tổng cộng cả năm.
-    - Đánh dấu sao (*) tại các tháng cao điểm gia hạn (Tháng 3, Tháng 11).
-    - Cột kiểm tra cân bằng: Hệ thống báo xanh khi $\sum = \text{Annual Budget}$ và báo đỏ khi vượt trần.
-  - Nút `[Lưu Kế Hoạch Ngân Sách]` (Ghi phiên bản mới `v1.0`, `v1.1` vào Audit Log).
+- **Interface Structure:**
+  - Annual ceiling input and base currency selection (`VND`/`USD`).
+  - Allocation strategy toggle: *Even 12-Month Partition* vs. *Custom Seasonal Input*.
+  - **Allocation Matrix Grid:**
+    - Rows: Cost centers (Engineering, Design, Sales, Marketing, Operations, HR, Buffer).
+    - Columns: 12 Months (M01 to M12) and Annual Total.
+    - Asterisk indicators (*) on peak renewal months (March, November).
+    - Balance validation column: Green checkmark when $\sum = \text{Annual Budget}$, red alert when unbalanced.
+  - `[Save Budget Plan]` button (appends revision version `v1.0`, `v1.1` to Audit Log).
 
-#### 3.3. `SCR-BDG-EXP-01`: Sổ cái Theo dõi Chi phí Bản quyền Toàn diện
-- **Đường dẫn (Route):** `/manager/budget/expenses`
+#### 3.3. `SCR-BDG-EXP-01`: Comprehensive License Expense Ledger
+- **Route:** `/manager/budget/expenses`
 - **Presentation:** Full Page
-- **Thành phần giao diện:**
-  - Bộ lọc: Trạng thái (`Tất cả`, `PAID`, `PENDING`, `OVERDUE`, `PROJECTED`), Vendor, Chu kỳ (`Tháng` / `Năm`), Phòng ban.
-  - **Bảng Sổ cái Chi phí (Expense Ledger):**
-    - Cột: Mã hóa đơn, Tên phần mềm & Gói, Vendor, Số tiền & Tiền tệ, Chu kỳ, Ngày phát sinh, Hạn thanh toán, Trạng thái, Chứng từ VAT đính kèm (Link tải PDF), Hành động (Xem, Duyệt chi).
-  - Tuân thủ kiểm tra hóa đơn VAT (**BR-10**) và quy đổi ngoại tệ chuẩn hóa (**BR-11**).
+- **Features:**
+  - Filters: Status (`All`, `PAID`, `PENDING`, `OVERDUE`, `PROJECTED`), Vendor, Frequency (`Monthly` / `Annual`), Cost Center.
+  - **Expense Ledger Data Grid:**
+    - Columns: Invoice ID, Software & Tier, Vendor, Amount & Currency, Frequency, Invoice Date, Payment Due Date, Status, VAT Invoice PDF link, Actions (View, Approve).
+  - Enforces mandatory VAT receipt compliance (**BR-10**) and currency standardization (**BR-11**).
 
-#### 3.4. `SCR-BDG-REPORT-01`: Trung tâm Báo cáo Tài chính & Dự báo Dòng tiền
-- **Đường dẫn (Route):** `/manager/budget/reports`
+#### 3.4. `SCR-BDG-REPORT-01`: Financial Reporting & Renewal Forecast
+- **Route:** `/manager/budget/reports`
 - **Presentation:** Full Page
-- **Bộ chọn 4 Báo cáo Chuyên sâu:**
-  1. *Báo cáo 1: Chi phí theo Tháng (Monthly Trends):* Biểu đồ cột chồng phân tách SaaS vs Perpetual qua 12 tháng, đo lường tăng trưởng MoM.
-  2. *Báo cáo 2: Chi phí theo Vendor (By Vendor):* Biểu đồ Donut & Treemap phân tích Top 5 Nhà cung cấp chiếm chi tiêu lớn nhất để đàm phán Volume Discount.
-  3. *Báo cáo 3: So sánh Ngân sách vs Thực tế (Budget vs. Actual Variance Analysis):* Bảng ma trận đối soát kế hoạch vs thực tế vs cam kết; đánh dấu Thuận lợi (*Favorable - Xanh*) khi tiết kiệm chi phí và Bất lợi (*Unfavorable - Đỏ*) khi bội chi.
-  4. *Báo cáo 4: Dự báo Chi phí Gia hạn (Renewal Cashflow Forecast):* Dự phóng dòng tiền 30 ngày, 90 ngày và 12 tháng tới; tự động liên kết dữ liệu **Inactive $\ge 60$ ngày** (từ Module 2) để đề xuất cắt giảm seat trước khi gia hạn nhằm tiết kiệm ngân sách (UC22).
-  - Nút hành động: `[Xuất PDF Chuẩn Ban Giám Đốc]` và `[Xuất Excel / CSV Thô]`.
+- **4 Specialized Report Types:**
+  1. *Report 1: Monthly Trends:* Stacked bar chart of SaaS vs. Perpetual over 12 months with MoM growth rates.
+  2. *Report 2: By Vendor:* Donut & Treemap market share analysis identifying Top 5 suppliers for volume negotiations.
+  3. *Report 3: Budget vs. Actual Variance Analysis:* Variance matrix ($Variance = Budget - (Actual + Committed)$) highlighting favorable (green) and unfavorable (red) cost deviations.
+  4. *Report 4: Renewal Cashflow Forecast:* 30/90/365-day forward cash flow forecast linked to **Inactive Users ($\ge 60$ days)** from Module 2 to recommend seat downsizing before renewal (UC22).
+  - Export actions: `[Export Executive PDF]` and `[Export CSV / Excel]`.
 
 ---
 
-### KHỐI 4: GIAO DIỆN LỖI & ĐIỀU HƯỚNG BẢO MẬT (SYSTEM ERROR VIEWS)
+### BLOCK 4: SYSTEM ERROR & SECURITY VIEWS
 
 #### 4.1. `SCR-ERR-403`: 403 Forbidden Access
-- **Đường dẫn (Route):** `/403`
+- **Route:** `/403`
 - **Presentation:** Full Page
-- **Nội dung:** Minh họa truy cập trái phép, giải thích vai trò hiện tại không có quyền truy cập vào phân hệ Quản trị Manager, kèm nút `[Quay lại Trang Cá Nhân]`.
+- **Content:** Access denied illustration, explanation that current role lacks Manager privileges, `[Return to Personal Portal]` action button.
 
 #### 4.2. `SCR-ERR-404`: 404 Page Not Found
-- **Đường dẫn (Route):** `/404`
+- **Route:** `/404`
 - **Presentation:** Full Page
-- **Nội dung:** Minh họa trang không tồn tại, kèm nút `[Quay lại Dashboard]`.
+- **Content:** Resource not found illustration, `[Return to Dashboard]` action button.
 
 ---
 
-## 🔐 6. MA TRẬN PHÂN QUYỀN TRUY CẬP MÀN HÌNH (RBAC MATRIX)
+## 🔐 6. RBAC SCREEN ACCESS MATRIX
 
-Bảng tổng hợp quyền hạn truy cập đối với toàn bộ 18 Màn hình & Modal trong hệ thống:
+Comprehensive access permission matrix for all 18 Manager Portal Screens & Dialogs:
 
-| Screen ID | Tên Màn hình / Modal | Khách Vãng Lai | Quản lý Cấp cao (Manager) | Quản trị Nhập liệu (Editor) | Nhân viên (Employee) |
+| Screen ID | Screen Name / Modal | Public | Manager (Full Admin) | Editor (Data Ingestion) | Employee (End User) |
 |:---|---|:---:|:---:|:---:|:---:|
-| **SCR-AUTH-01** | Đăng nhập Hệ thống | ✅ | ✅ | ✅ | ✅ |
-| **SCR-LIC-01** | Danh sách License & KPI | ❌ | ✅ (Toàn quyền) | ❌ (Chặn 403) | ❌ (Chặn 403) |
-| **SCR-LIC-ADD-01** | Drawer Đăng ký License | ❌ | ✅ | ❌ | ❌ |
-| **SCR-LIC-DETAIL-01**| Chi tiết License & Seat | ❌ | ✅ (Toàn quyền) | ❌ (Chặn 403) | ❌ (Chặn 403) |
-| **SCR-LIC-EDIT-01** | Drawer Chỉnh sửa License | ❌ | ✅ | ❌ | ❌ |
-| **SCR-LIC-DEL-01** | Modal Xóa/Lưu trữ License | ❌ | ✅ | ❌ | ❌ |
-| **SCR-ASGN-01** | Assignment Hub | ❌ | ✅ (Toàn quyền) | ❌ (Chặn 403) | ❌ (Chặn 403) |
-| **SCR-ASGN-ADD-01** | Drawer Gán License | ❌ | ✅ | ❌ | ❌ |
-| **SCR-ASGN-REVOKE-01**| Modal Thu hồi License | ❌ | ✅ | ❌ | ❌ |
-| **SCR-ASGN-CHANGE-01**| Modal Đổi loại License | ❌ | ✅ | ❌ | ❌ |
-| **SCR-ASGN-AVAIL-01** | Bảng Seat Còn trống | ❌ | ✅ (Toàn quyền) | ❌ | ❌ |
-| **SCR-ASGN-HIST-01** | Sổ Lịch sử Cấp phát | ❌ | ✅ (Toàn quyền) | ❌ | ❌ |
-| **SCR-BDG-MONITOR-01**| Dashboard Ngân sách | ❌ | ✅ (Toàn quyền) | ❌ (Chặn 403) | ❌ (Chặn 403) |
-| **SCR-BDG-PLAN-01** | Ma trận Lập Ngân sách | ❌ | ✅ (Toàn quyền) | ❌ (Chặn 403) | ❌ (Chặn 403) |
-| **SCR-BDG-EXP-01** | Sổ cái Chi phí | ❌ | ✅ (Toàn quyền) | ✅ (Chỉ nạp & xem) | ❌ (Chặn 403) |
-| **SCR-BDG-REPORT-01** | Báo cáo Tài chính | ❌ | ✅ (Toàn quyền) | ❌ (Chặn 403) | ❌ (Chặn 403) |
+| **SCR-AUTH-01** | Enterprise Authentication | ✅ | ✅ | ✅ | ✅ |
+| **SCR-LIC-01** | License Inventory & KPIs | ❌ | ✅ (Full Access) | ❌ (Blocked 403) | ❌ (Blocked 403) |
+| **SCR-LIC-ADD-01** | Add License Drawer | ❌ | ✅ | ❌ | ❌ |
+| **SCR-LIC-DETAIL-01**| License Details & Seat Gauge | ❌ | ✅ (Full Access) | ❌ (Blocked 403) | ❌ (Blocked 403) |
+| **SCR-LIC-EDIT-01** | Edit License Drawer | ❌ | ✅ | ❌ | ❌ |
+| **SCR-LIC-DEL-01** | Delete / Decommission Modal | ❌ | ✅ | ❌ | ❌ |
+| **SCR-ASGN-01** | Assignment Hub | ❌ | ✅ (Full Access) | ❌ (Blocked 403) | ❌ (Blocked 403) |
+| **SCR-ASGN-ADD-01** | Assign License Drawer | ❌ | ✅ | ❌ | ❌ |
+| **SCR-ASGN-REVOKE-01**| Revoke License Modal | ❌ | ✅ | ❌ | ❌ |
+| **SCR-ASGN-CHANGE-01**| Change License Tier Modal | ❌ | ✅ | ❌ | ❌ |
+| **SCR-ASGN-AVAIL-01** | Real-time Seat Monitor | ❌ | ✅ (Full Access) | ❌ | ❌ |
+| **SCR-ASGN-HIST-01** | Global Assignment History | ❌ | ✅ (Full Access) | ❌ | ❌ |
+| **SCR-BDG-MONITOR-01**| Budget Monitoring Cockpit | ❌ | ✅ (Full Access) | ❌ (Blocked 403) | ❌ (Blocked 403) |
+| **SCR-BDG-PLAN-01** | Budget Planning Matrix | ❌ | ✅ (Full Access) | ❌ (Blocked 403) | ❌ (Blocked 403) |
+| **SCR-BDG-EXP-01** | License Expense Ledger | ❌ | ✅ (Full Access) | ✅ (Input & View) | ❌ (Blocked 403) |
+| **SCR-BDG-REPORT-01** | Financial Reporting Center | ❌ | ✅ (Full Access) | ❌ (Blocked 403) | ❌ (Blocked 403) |
 | **SCR-ERR-403** | 403 Forbidden | ✅ | ✅ | ✅ | ✅ |
 | **SCR-ERR-404** | 404 Not Found | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
-*Tài liệu Kiến trúc Thông tin & Đặc tả View này đồng bộ 100% với [README.md](../README.md), [docs/01-MVP.md](01-MVP.md), [docs/02-use-cases.md](02-use-cases.md) và [docs/03-user-stories.md](03-user-stories.md).*
+*This Information Architecture & View Specifications document is 100% aligned with [README.md](../README.md), [docs/01-MVP.md](01-MVP.md), [docs/02-use-cases.md](02-use-cases.md), and [docs/03-user-stories.md](03-user-stories.md).*
