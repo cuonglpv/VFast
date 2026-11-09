@@ -90,7 +90,11 @@ Theo chuẩn hóa tại **Mục 5 của bản SRS v1.0**, toàn bộ 39 Use Case
 
 ## 3. Sơ đồ Use Case Tổng quan (Use Case Diagrams)
 
-Sơ đồ theo chuẩn UML: tác nhân là hình người, một khung ranh giới hệ thống, mỗi use case là một hình ellipse. 39 use case được tách theo tác nhân để các đường nối không chồng chéo. Lifecycle Scheduler là tác nhân hệ thống (Lifecycle Notification System) thực hiện UC18.
+Sơ đồ theo chuẩn UML: tác nhân là hình người, một khung ranh giới hệ thống, mỗi use case là một hình ellipse. Sơ đồ tổng quan gom các use case theo nhóm chức năng; các sơ đồ chi tiết bên dưới vẽ từng use case và được tách theo tác nhân để các đường nối không chồng chéo. Lifecycle Scheduler là tác nhân hệ thống (Lifecycle Notification System) thực hiện UC18; UC29 (Login / Logout) dùng chung cho mọi vai trò.
+
+### 3.0. Tổng quan
+
+![VFast ELMS use case overview](diagrams/out/uc_overview.png)
 
 ### 3.1. Manager (Quản trị & Ra Quyết định)
 

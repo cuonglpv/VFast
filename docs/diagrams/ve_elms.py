@@ -10,6 +10,38 @@ import srsdiagram as sd
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
+def overview():
+    """One diagram for the README: use cases grouped by capability; UC29 Login / Logout is shared by all roles."""
+    u = sd.UseCase('VFast ELMS — Use case overview')
+    u.actor('mgr', 'Manager')
+    u.actor('edt', 'Editor')
+    u.actor('emp', 'Employee')
+    u.actor('sys', 'Lifecycle Scheduler', 'right')
+    for key, name in [
+        ('g_lic', 'Manage catalog, vendors, entitlements, contracts (UC01–04)'),
+        ('g_cmp', 'Check compliance and detect overuse (UC05, UC21)'),
+        ('g_alc', 'Review, approve, assign, revoke licenses (UC07–11)'),
+        ('g_bud', 'Manage budget and monitor utilization (UC12, UC14)'),
+        ('g_exp', 'Manage expenses and invoices (UC13, UC33–35)'),
+        ('g_lfc', 'Track expiry, renewal, maintenance (UC15–17)'),
+        ('g_ntf', 'Generate lifecycle notifications (UC18)'),
+        ('g_opt', 'Review optimization recommendations (UC19–20, UC22)'),
+        ('g_dsh', 'View dashboards and export reports (UC23–26)'),
+        ('g_adm', 'Manage users, roles, audit logs (UC27–28, UC30)'),
+        ('g_use', 'Enter or import license usage (UC31–32)'),
+        ('g_sub', 'View submitted data (UC36)'),
+        ('g_cat', 'View available software (UC37)'),
+        ('g_req', 'Submit a license request (UC06)'),
+        ('g_my', 'View own requests and licenses (UC11, UC38–39)'),
+    ]:
+        u.uc(key, name)
+    u.link('mgr', 'g_lic', 'g_cmp', 'g_alc', 'g_bud', 'g_exp', 'g_lfc', 'g_opt', 'g_dsh', 'g_adm')
+    u.link('edt', 'g_exp', 'g_use', 'g_sub')
+    u.link('emp', 'g_cat', 'g_req', 'g_my')
+    u.link('sys', 'g_ntf')
+    return u.build()
+
+
 def manager_license():
     u = sd.UseCase('Manager (1/2): licenses')
     u.actor('mgr', 'Manager')
@@ -99,6 +131,7 @@ def employee():
 
 if __name__ == '__main__':
     paths = sd.save({
+        'uc_overview': (overview(), 'Use case overview'),
         'uc_manager_license': (manager_license(), 'Manager: licenses'),
         'uc_manager_finance': (manager_finance(), 'Manager: budget and analytics'),
         'uc_editor': (editor(), 'Editor'),

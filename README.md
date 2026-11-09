@@ -109,25 +109,11 @@ Backlog, story ↔ use case traceability matrix, and acceptance criteria: [User 
 
 ### 1.3 Use cases
 
-Use case diagrams follow UML: actors as stick figures, one system boundary, and one ellipse per use case. The 39 use cases are split by actor so every line stays readable. The Lifecycle Scheduler is the system actor (Lifecycle Notification System) that runs UC18.
+The use case diagram follows UML: actors as stick figures, one system boundary, and one ellipse per capability. Each ellipse groups related use cases and names them (for example UC07–11), so the 39 use cases fit in one picture. All roles log in and out with UC29. The Lifecycle Scheduler is the system actor (Lifecycle Notification System) that runs UC18.
 
-#### Manager (1/2) — licenses, allocation, lifecycle
+![VFast ELMS use case overview](docs/diagrams/out/uc_overview.png)
 
-![Manager use cases, licenses](docs/diagrams/out/uc_manager_license.png)
-
-#### Manager (2/2) — budget, optimization, analytics, administration
-
-![Manager use cases, budget and analytics](docs/diagrams/out/uc_manager_finance.png)
-
-#### Editor
-
-![Editor use cases](docs/diagrams/out/uc_editor.png)
-
-#### Employee
-
-![Employee use cases](docs/diagrams/out/uc_employee.png)
-
-Sources: [`docs/diagrams/ve_elms.py`](docs/diagrams/ve_elms.py), drawn with [`srsdiagram.py`](docs/diagrams/srsdiagram.py); each diagram is also available as SVG and as an editable draw.io file in [`docs/diagrams/out/`](docs/diagrams/out/). Regenerate with `python ve_elms.py` from `docs/diagrams` (needs Pillow, Playwright with Chromium, and the Liberation Sans font).
+Diagram source: [`docs/diagrams/ve_elms.py`](docs/diagrams/ve_elms.py), drawn with [`srsdiagram.py`](docs/diagrams/srsdiagram.py); also available as SVG and an editable draw.io file in [`docs/diagrams/out/`](docs/diagrams/out/). Regenerate with `python ve_elms.py` from `docs/diagrams` (needs Pillow, Playwright with Chromium, and the Liberation Sans font). Detailed diagrams with one ellipse per use case, per actor: [Use cases](docs/02-use-cases.md).
 
 There are **39 use cases** (25 P0, 14 P1). Three main business flows:
 
