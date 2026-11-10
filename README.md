@@ -156,4 +156,4 @@ The backend must enforce RBAC, the Employee's access to personal data only (BR-0
 - [MVP specification](docs/01-MVP.md) — scope, 20 business rules, NFRs, 12 entities, 14 acceptance criteria
 - [Use cases](docs/02-use-cases.md) — 39 use cases, three business flows, sequence diagrams
 - [User stories](docs/03-user-stories.md) — 25 user stories, Given/When/Then, traceability matrix
-- [Manager information architecture](docs/04-information-architecture-manager.md) — 2-view executive architecture (License Management & Analytics), detail drill-down, and charts specification
+- [Enterprise Information Architecture](docs/04-information-architecture-manager.md) — Unified 3-pillar architecture (License Management, Analytics Hub [License Health & Budget Analytics], and Admin User & Tenant Management)
