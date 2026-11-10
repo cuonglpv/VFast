@@ -6,6 +6,7 @@
 > **Stitch Design System Asset:** `assets/8328167488966181312`  
 > **Target Scope:** 2-View Focused Architecture (v4.2 Baseline)  
 > **Branch / Worktree:** `uiux/stitch-material-minimal`  
+> **Design Directory:** `/designs` (root level)  
 > **Theme Palette:** **Xám - Trắng - Xanh biển** (Grey - White - Ocean Blue)  
 
 ---
@@ -18,26 +19,26 @@
 | **Card & Surface** | Pure White | `#FFFFFF` | MUI `Card`, `Paper`, `TableContainer`, `Drawer` |
 | **Primary Accent** | Ocean Blue | `#0F67B1` | MUI `primary.main`, active nav tabs, primary buttons, major chart bars |
 | **Primary Container**| Soft Sky Container | `#E0F2FE` | Active menu container, selected table row indicator |
-| **Secondary Accent**| Slate Grey | `#475569` | MUI `text.secondary`, column headers, metadata captions |
+| **Secondary Neutral**| Slate Grey | `#475569` | MUI `text.secondary`, column headers, metadata captions |
 | **Neutral Inks** | Deep Slate | `#0F172A` / `#1E293B` | `text.primary`, bold KPI metrics, software titles |
-| **Border / Outlines**| Subtle Hairline | `#E2E8F0` | 1px crisp non-intrusive borders between cards, tables, panels |
+| **Hairline Border** | Subtle Hairline | `#E2E8F0` | 1px crisp non-intrusive borders between cards, tables, panels |
 | **Success / Compliant** | Emerald Green | `#10B981` / `#4CAF50` | Active accounts, Compliant chips, healthy progress segments |
 | **Warning / At Risk** | Warm Amber | `#F59E0B` / `#FF9800` | At Risk licenses (<30d, 95% capacity), Never Used chart segment |
 | **Error / Over-allocated** | Crimson / Rose | `#EF4444` / `#E91E63` | Over-allocated licenses, Unassigned inventory column |
 
 ### Strict Design Principles Applied
 1. **Material-UI (MUI v5/v6) Architecture:** Responsive grid, standard cards, structured data tables with pagination, and 640px right-anchored drawers.
-2. **Zero-Bloat Minimization:** Strictly displaying documented metrics and columns. No speculative widgets, decorative fluff, or redundant nested cards.
-3. **Icon Integrity Constraint:** Strictly utilizing official `@mui/icons-material` symbols (`Search`, `FilterList`, `Close`, `OpenInNew`, `ArrowUpward`, `KeyboardArrowRight`). No arbitrary or hallucinated icons. Vendor logos are rendered cleanly as two-letter monogram avatars (`MS`, `SL`, `GH`, `JR`, `FG`, `DD`).
+2. **Zero-Bloat Minimization:** Strictly displaying documented metrics and columns. All descriptive secondary text converted to clean interactive tooltips (`@mui/material/Tooltip` + `@mui/icons-material/InfoOutlined`).
+3. **Icon Integrity Constraint:** Strictly utilizing official `@mui/icons-material` symbols (`Search`, `FilterList`, `Close`, `OpenInNew`, `InfoOutlined`, `ArrowForward`). No arbitrary or hallucinated icons. Vendor logos are rendered cleanly as two-letter monogram avatars (`MS`, `SL`, `GH`, `JR`, `FG`, `DD`).
 
 ---
 
-## 📱 Generated Master Screen Catalog
+## 📱 Master Screen Catalog & Specifications
 
 ### 1. View 1: License Management (`SCR-LIC-MGMT-01`)
 - **Route:** `/manager/licenses`
 - **Stitch Screen ID:** `f15ccbba39404967a93b70e24b6f75fe`
-- **Files:** `SCR-LIC-MGMT-01.html`, `SCR-LIC-MGMT-01.png`
+- **Files:** `designs/SCR-LIC-MGMT-01.html`, `designs/SCR-LIC-MGMT-01.png`
 - **Key Sections:**
   - **Top Grid (3 MUI Cards, 300px height):**
     1. *Total Licenses Card (Col 1-3):* `1,284 Total`, Active Entitlements `1,142 (88.9%)`, Expiring in <=30 Days `18 licenses` (Amber Chip), MoM Growth `+4.5%`.
@@ -55,7 +56,7 @@
 ### 2. View 1 Drill-Down: License Detail Drawer (`SCR-LIC-DETAIL-01`)
 - **Route:** `/manager/licenses?drawer=detail&id=ms-365`
 - **Stitch Screen ID:** `d647069953a5420d9db1a112b92be7eb`
-- **Files:** `SCR-LIC-DETAIL-01.html`, `SCR-LIC-DETAIL-01.png`
+- **Files:** `designs/SCR-LIC-DETAIL-01.html`, `designs/SCR-LIC-DETAIL-01.png`
 - **Key Sections:**
   - **Presentation:** 640px right-anchored MUI `Drawer` over the License Management dashboard with dimmed backdrop overlay and active row highlight.
   - **Header:** Software title "Microsoft 365 Enterprise", publisher "Microsoft Corporation", green "Compliant" chip, standard close icon button.
@@ -72,25 +73,25 @@
 
 ---
 
-### 3. View 2: Analytics & Health Dashboard (`SCR-ANALYTICS-01`)
+### 3. View 2: Analytics & Health Dashboard (`SCR-ANALYTICS-01` - Redesigned v2)
 - **Route:** `/manager/analytics`
-- **Stitch Screen ID:** `bc364f2f2157438188c255f992e7b241`
-- **Files:** `SCR-ANALYTICS-01.html`, `SCR-ANALYTICS-01.png`
-- **Key Sections:**
-  - **Top KPI Health Metrics (4 MUI Cards):**
-    1. *Total Annual Spend:* `$1,420,000 USD` (`+3.2% vs approved ceiling`)
-    2. *Managed Licenses:* `1,284 Licenses` (across 48 applications)
-    3. *Underutilized Accounts:* `312 Accounts` (`24.3%` warning badge)
-    4. *Underutilized License Cost:* `$285,600 USD / yr` (`20.1%` wasted spend reclamation target)
-  - **Middle Charts:**
-    - *Chart 1 (Col 1-7): Application Usage Optimization (ApexCharts Horizontal Stacked Bar)*:
-      Segments: Never used (Orange `#FF9800`), Inactive >60d (Gray `#9E9E9E`), Actively used (Green `#4CAF50`).
-      MUI ToggleButtonGroup: Top 5 | Top 10 | Top 20.
-    - *Chart 2 (Col 8-12): Spend by Department (ApexCharts Donut)*:
-      Annualized departmental allocations: Engineering & Product ($580k), Sales & BD ($320k), Tech Support ($180k), Accounting & Finance ($140k), Marketing & Creative ($120k), HR & Operations ($80k). Total center label: `$1.42M Total`.
-  - **Bottom Full-Width Chart:**
-    - *Chart 3 (Col 1-12): Subscription Usage 12-Month Comparative Dynamics (ApexCharts Dual-Column)*:
-      Column 1 (Stacked Deployed Seats): Active (Green), Inactive (Amber), No activity (Dark Gray), Not monitored (Indigo).
-      Column 2 (Single Inventory Column): Unassigned (Rose).
-      12 monthly data points showing active utilization growth (+34.6%) and unassigned inventory reduction from 220 to 70 seats.
-    - *Executive Insight Banner:* Key takeaway highlighting $82,400 in reclaimed software capital.
+- **Stitch Screen ID:** `30fc56d9d28a4f23a810fc4324717c95`
+- **Files:** `designs/SCR-ANALYTICS-01.html`, `designs/SCR-ANALYTICS-01.png`
+- **Key Enhancements (Feedback Applied):**
+  - **Subtitles as Tooltips:** All secondary descriptive subtitles under headers, KPI cards, and charts are converted into interactive MUI Tooltip buttons (`@mui/icons-material/InfoOutlined`), keeping the main layout completely uncluttered.
+  - **Top 4 KPI Health Metrics:** Total Annual Spend ($1,420,000), Managed Licenses (1,284), Underutilized Accounts (312), and Underutilized License Cost ($285,600/yr).
+  - **Chart 1: Application Usage Optimization (Col 7 - Horizontal Stacked Bar):**
+    - Zero hardcoded numbers/percentages on bars.
+    - Hover tooltip displays exact numbers for Actively used, Inactive (>60d), and Never used.
+    - Calibrated horizontal X-axis at bottom `[0, 100, 200, 300, 400, 500 users]` with hairline gridlines for visual referencing.
+  - **Chart 2: Spend by Department (Col 5 - Horizontal Bar Chart):**
+    - Redesigned from donut chart to a clean **Horizontal Bar Chart** in Ocean Blue (`#0F67B1`).
+    - 6 Organizational departments on Y-axis.
+    - Calibrated currency X-axis at bottom `[$0, $150k, $300k, $450k, $600k]`.
+    - Hover tooltip reveals exact dollar amount and department percentage.
+  - **Chart 3: Subscription Usage (Col 12 - Grouped Dual-Column Bar Chart):**
+    - Simplified title to **"Subscription Usage"** (removed "12-Month Comparative").
+    - Explicit horizontal X-axis (`Jan` to `Dec`) and vertical Y-axis (`0` to `1250 seats`) with horizontal gridlines.
+    - Group 1 (Deployed 4-state stacked) vs. Group 2 (Unassigned single column).
+    - Removed bulky management insight callout box, replaced with a concise footnote chú thích at the card bottom:
+      `* Chú thích: Cột 1 biểu thị các trạng thái bản quyền đã cấp phát (Active, Inactive, No activity, Not monitored); Cột 2 biểu thị tồn kho chưa cấp phát (Unassigned).`
