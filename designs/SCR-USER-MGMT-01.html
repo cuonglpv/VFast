@@ -125,7 +125,7 @@
 <!-- Tenant Status Card -->
 <div class="bg-slate-50 border border-outline rounded-lg p-3 space-y-1.5">
 <div class="flex items-center justify-between">
-<span class="text-xs font-semibold text-slate-700">VFast Global Core</span>
+<span class="text-xs font-semibold text-slate-700">VFast Enterprise - US-East (Virginia)</span>
 <span class="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-100"></span>
 </div>
 <div class="flex items-center gap-1.5 text-[11px] text-slate-500">
@@ -212,69 +212,72 @@
 </div>
 </div>
 <!-- 4. TOP 4 IDENTITY KPIS -->
-<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 <!-- KPI 1: Total Users -->
-<div class="bg-white border border-outline rounded-xl p-5 shadow-xs flex flex-col justify-between">
-<div class="flex items-center justify-between text-secondary">
-<span class="text-sm font-medium">Total Users</span>
+<div class="min-h-[128px] p-4 bg-white border border-slate-200 rounded-xl flex flex-col justify-between shadow-xs">
+<div class="flex items-center justify-between">
+<span class="text-xs uppercase font-semibold text-slate-500 tracking-wider">Total Users</span>
 <span class="material-symbols-outlined text-lg text-slate-400 cursor-help" data-icon="info">info</span>
 </div>
-<div class="flex items-baseline justify-between mt-3">
-<span class="text-3xl font-bold text-on-surface tracking-tight">850</span>
+<div class="my-1">
+<span class="text-3xl font-bold text-slate-900 leading-tight">850</span>
+</div>
+<div class="flex items-center">
 <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1">
-            +5.2% MoM
-          </span>
+      +5.2% MoM
+    </span>
 </div>
 </div>
 <!-- KPI 2: Active Users -->
-<div class="bg-white border border-outline rounded-xl p-5 shadow-xs flex flex-col justify-between">
-<div class="flex items-center justify-between text-secondary">
-<span class="text-sm font-medium">Active Users</span>
+<div class="min-h-[128px] p-4 bg-white border border-slate-200 rounded-xl flex flex-col justify-between shadow-xs">
+<div class="flex items-center justify-between">
+<span class="text-xs uppercase font-semibold text-slate-500 tracking-wider">Active Users</span>
 <span class="material-symbols-outlined text-lg text-slate-400 cursor-help" data-icon="info">info</span>
 </div>
-<div class="flex items-baseline justify-between mt-3">
-<span class="text-3xl font-bold text-on-surface tracking-tight">92.0%</span>
+<div class="my-1">
+<span class="text-3xl font-bold text-slate-900 leading-tight">92.0%</span>
+</div>
+<div class="flex items-center">
 <span class="bg-slate-100 text-slate-700 border border-slate-200 text-xs px-2 py-0.5 rounded-full font-medium">
-            782 Active
-          </span>
+      782 Active
+    </span>
 </div>
 </div>
 <!-- KPI 3: Tenants -->
-<div class="bg-white border border-outline rounded-xl p-5 shadow-xs flex flex-col justify-between">
-<div class="flex items-center justify-between text-secondary">
-<span class="text-sm font-medium">Tenants</span>
+<div class="min-h-[128px] p-4 bg-white border border-slate-200 rounded-xl flex flex-col justify-between shadow-xs">
+<div class="flex items-center justify-between">
+<span class="text-xs uppercase font-semibold text-slate-500 tracking-wider">Tenants</span>
 <span class="material-symbols-outlined text-lg text-slate-400 cursor-help" data-icon="info">info</span>
 </div>
-<div class="flex items-baseline justify-between mt-3">
-<span class="text-3xl font-bold text-on-surface tracking-tight">12</span>
+<div class="my-1">
+<span class="text-3xl font-bold text-slate-900 leading-tight">12</span>
+</div>
+<div class="flex items-center">
 <span class="bg-sky-50 text-primary border border-sky-200 text-xs px-2 py-0.5 rounded-full font-medium">
-            Isolation Active
-          </span>
+      Isolation Active
+    </span>
 </div>
 </div>
 <!-- KPI 4: Privileged Roles -->
-<div class="bg-white border border-outline rounded-xl p-5 shadow-xs flex flex-col justify-between">
-<div>
-<div class="flex items-center justify-between text-secondary">
-<span class="text-sm font-medium">Privileged Roles</span>
+<div class="min-h-[128px] p-4 bg-white border border-slate-200 rounded-xl flex flex-col justify-between shadow-xs">
+<div class="flex items-center justify-between">
+<span class="text-xs uppercase font-semibold text-slate-500 tracking-wider">Privileged Roles</span>
 <span class="material-symbols-outlined text-lg text-slate-400 cursor-help" data-icon="info">info</span>
 </div>
-<p class="text-xs text-slate-500 mt-0.5">Admin &amp; Manager accounts</p>
+<div class="my-1">
+<span class="text-3xl font-bold text-slate-900 leading-tight">14</span>
 </div>
-<div class="flex items-baseline justify-between mt-3">
-<span class="text-3xl font-bold text-on-surface tracking-tight">14</span>
+<div class="flex items-center">
 <span class="bg-amber-50 text-amber-800 border border-amber-200 text-xs px-2 py-0.5 rounded-full font-medium">
-            4 Admins, 10 Mgrs
-          </span>
+      4 Admins, 10 Mgrs
+    </span>
 </div>
 </div>
 </section>
 <!-- 5. HEADER FILTERS TOOLBAR -->
-<div class="bg-white p-4 rounded-xl border border-outline mb-6 flex flex-wrap items-center justify-between gap-4 shadow-xs">
-<!-- Left Filters Group -->
-<div class="flex flex-wrap items-center gap-3 flex-1">
-<!-- Search -->
-<div class="relative w-72">
+<div class="bg-white p-3 rounded-xl border border-slate-200 mb-6 flex items-center gap-3 w-full shadow-xs">
+<!-- Search Input -->
+<div class="relative flex-1 min-w-[260px]">
 <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-lg pointer-events-none" data-icon="search">search</span>
 <input class="w-full border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-sm bg-white focus:outline-none focus:border-primary transition-colors placeholder:text-slate-400" placeholder="Search name, email, employee ID..." type="text"/>
 </div>
@@ -300,298 +303,14 @@
 <option>Suspended</option>
 <option>Deactivated</option>
 </select>
-</div>
-<!-- Right Actions Group -->
-<div class="flex items-center gap-3">
-<button class="border border-slate-300 text-slate-700 rounded-lg px-3.5 py-2 text-sm font-medium hover:bg-slate-50 flex items-center gap-1.5 transition-colors">
-<span class="material-symbols-outlined text-base" data-icon="file_download">file_download</span>
-<span>Export CSV</span>
+<!-- Clear Filters Button -->
+<button class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded-lg border border-slate-300 transition-colors flex items-center justify-center" title="Reset filters">
+<span class="material-symbols-outlined text-lg" data-icon="filter_alt_off">filter_alt_off</span>
 </button>
-<button class="bg-primary text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-[#0c538f] flex items-center gap-1.5 shadow-xs transition-colors">
-<span class="material-symbols-outlined text-base" data-icon="person_add">person_add</span>
-<span>+ Add User</span>
-</button>
-</div>
 </div>
 <!-- 6. USER & TENANT DATA GRID (9 Core Columns) -->
 <div class="bg-white border border-outline rounded-xl overflow-hidden shadow-xs">
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-slate-50 border-b border-outline text-xs font-semibold text-slate-500 uppercase tracking-wider">
-<th class="px-5 py-3.5" scope="col">USER PROFILE</th>
-<th class="px-4 py-3.5" scope="col">TENANT / ORG</th>
-<th class="px-4 py-3.5" scope="col">ASSIGNED ROLE</th>
-<th class="px-4 py-3.5" scope="col">ALLOCATED LICENSES</th>
-<th class="px-4 py-3.5" scope="col">DEPARTMENT</th>
-<th class="px-4 py-3.5" scope="col">ACCOUNT STATUS</th>
-<th class="px-4 py-3.5" scope="col">LAST ACTIVE</th>
-<th class="px-4 py-3.5" scope="col">CREATED DATE</th>
-<th class="px-4 py-3.5 text-right" scope="col">ACTIONS</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-outline text-sm">
-<!-- Row 1: Dat Nguyen -->
-<tr class="hover:bg-slate-50/70 transition-colors">
-<td class="px-5 py-4 whitespace-nowrap">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">DN</div>
-<div>
-<div class="font-bold text-on-surface leading-tight">Dat Nguyen</div>
-<div class="text-xs text-slate-500">d.nguyen@vfast.corp</div>
-</div>
-</div>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="border border-slate-300 rounded-md px-2.5 py-1 text-xs text-slate-700 bg-white font-medium">HQ - Vietnam</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="bg-blue-50 text-primary border border-blue-200 font-semibold px-2.5 py-0.5 rounded-full text-xs">Admin</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="text-xs font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded">5 Licenses</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap text-slate-700 text-sm">Engineering</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                  Active
-                </span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-secondary">2026-11-10 09:30</td>
-<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-slate-500">2024-01-15</td>
-<td class="px-4 py-4 whitespace-nowrap text-right text-slate-400">
-<div class="inline-flex items-center gap-1">
-<button class="p-1 rounded hover:bg-slate-100 hover:text-primary transition-colors" title="Edit Role &amp; Tenant">
-<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
-</button>
-<button class="p-1 rounded hover:bg-slate-100 hover:text-amber-600 transition-colors" title="Suspend User">
-<span class="material-symbols-outlined text-lg" data-icon="block">block</span>
-</button>
-<button class="p-1 rounded hover:bg-slate-100 hover:text-slate-700 transition-colors" title="More Options">
-<span class="material-symbols-outlined text-lg" data-icon="more_vert">more_vert</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Row 2: Sarah Jenkins -->
-<tr class="hover:bg-slate-50/70 transition-colors">
-<td class="px-5 py-4 whitespace-nowrap">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center">SJ</div>
-<div>
-<div class="font-bold text-on-surface leading-tight">Sarah Jenkins</div>
-<div class="text-xs text-slate-500">s.jenkins@vfast.corp</div>
-</div>
-</div>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="border border-slate-300 rounded-md px-2.5 py-1 text-xs text-slate-700 bg-white font-medium">North America Branch</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold px-2.5 py-0.5 rounded-full text-xs">Manager</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="text-xs font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded">4 Licenses</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap text-slate-700 text-sm">Product &amp; Design</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                  Active
-                </span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-secondary">2026-11-09 17:45</td>
-<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-slate-500">2024-03-20</td>
-<td class="px-4 py-4 whitespace-nowrap text-right text-slate-400">
-<div class="inline-flex items-center gap-1">
-<button class="p-1 rounded hover:bg-slate-100 hover:text-primary transition-colors" title="Edit Role &amp; Tenant">
-<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
-</button>
-<button class="p-1 rounded hover:bg-slate-100 hover:text-amber-600 transition-colors" title="Suspend User">
-<span class="material-symbols-outlined text-lg" data-icon="block">block</span>
-</button>
-<button class="p-1 rounded hover:bg-slate-100 hover:text-slate-700 transition-colors" title="More Options">
-<span class="material-symbols-outlined text-lg" data-icon="more_vert">more_vert</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Row 3: Alex Mercer -->
-<tr class="hover:bg-slate-50/70 transition-colors">
-<td class="px-5 py-4 whitespace-nowrap">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-teal-600 text-white font-bold text-xs flex items-center justify-center">AM</div>
-<div>
-<div class="font-bold text-on-surface leading-tight">Alex Mercer</div>
-<div class="text-xs text-slate-500">a.mercer@vfast.corp</div>
-</div>
-</div>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="border border-slate-300 rounded-md px-2.5 py-1 text-xs text-slate-700 bg-white font-medium">EU Operations</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="bg-slate-100 text-slate-700 border border-slate-200 font-medium px-2.5 py-0.5 rounded-full text-xs">Staff</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="text-xs font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded">3 Licenses</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap text-slate-700 text-sm">Tech Support</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                  Active
-                </span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-secondary">2026-11-10 08:12</td>
-<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-slate-500">2024-05-10</td>
-<td class="px-4 py-4 whitespace-nowrap text-right text-slate-400">
-<div class="inline-flex items-center gap-1">
-<button class="p-1 rounded hover:bg-slate-100 hover:text-primary transition-colors" title="Edit Role &amp; Tenant">
-<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
-</button>
-<button class="p-1 rounded hover:bg-slate-100 hover:text-amber-600 transition-colors" title="Suspend User">
-<span class="material-symbols-outlined text-lg" data-icon="block">block</span>
-</button>
-<button class="p-1 rounded hover:bg-slate-100 hover:text-slate-700 transition-colors" title="More Options">
-<span class="material-symbols-outlined text-lg" data-icon="more_vert">more_vert</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Row 4: Linh Tran -->
-<tr class="hover:bg-slate-50/70 transition-colors">
-<td class="px-5 py-4 whitespace-nowrap">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-pink-600 text-white font-bold text-xs flex items-center justify-center">LT</div>
-<div>
-<div class="font-bold text-on-surface leading-tight">Linh Tran</div>
-<div class="text-xs text-slate-500">l.tran@vfast.corp</div>
-</div>
-</div>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="border border-slate-300 rounded-md px-2.5 py-1 text-xs text-slate-700 bg-white font-medium">HQ - Vietnam</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="border border-slate-300 text-slate-600 font-medium px-2.5 py-0.5 rounded-full text-xs">Employee</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="text-xs font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded">2 Licenses</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap text-slate-700 text-sm">Marketing</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                  Active
-                </span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-secondary">2026-11-08 14:20</td>
-<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-slate-500">2024-07-01</td>
-<td class="px-4 py-4 whitespace-nowrap text-right text-slate-400">
-<div class="inline-flex items-center gap-1">
-<button class="p-1 rounded hover:bg-slate-100 hover:text-primary transition-colors" title="Edit Role &amp; Tenant">
-<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
-</button>
-<button class="p-1 rounded hover:bg-slate-100 hover:text-amber-600 transition-colors" title="Suspend User">
-<span class="material-symbols-outlined text-lg" data-icon="block">block</span>
-</button>
-<button class="p-1 rounded hover:bg-slate-100 hover:text-slate-700 transition-colors" title="More Options">
-<span class="material-symbols-outlined text-lg" data-icon="more_vert">more_vert</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Row 5: Michael Vance -->
-<tr class="hover:bg-slate-50/70 transition-colors">
-<td class="px-5 py-4 whitespace-nowrap">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-amber-600 text-white font-bold text-xs flex items-center justify-center">MV</div>
-<div>
-<div class="font-bold text-on-surface leading-tight">Michael Vance</div>
-<div class="text-xs text-slate-500">m.vance@vfast.corp</div>
-</div>
-</div>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="border border-slate-300 rounded-md px-2.5 py-1 text-xs text-slate-700 bg-white font-medium">North America Branch</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="border border-slate-300 text-slate-600 font-medium px-2.5 py-0.5 rounded-full text-xs">Employee</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="text-xs font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded">3 Licenses</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap text-slate-700 text-sm">Sales</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="bg-amber-50 text-amber-700 border border-amber-200 text-xs px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5">
-<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                  Suspended
-                </span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-secondary">2026-09-12 11:05</td>
-<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-slate-500">2024-02-18</td>
-<td class="px-4 py-4 whitespace-nowrap text-right text-slate-400">
-<div class="inline-flex items-center gap-1">
-<button class="p-1 rounded hover:bg-slate-100 hover:text-primary transition-colors" title="Edit Role &amp; Tenant">
-<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
-</button>
-<button class="p-1 rounded hover:bg-slate-100 hover:text-emerald-600 transition-colors" title="Activate User">
-<span class="material-symbols-outlined text-lg" data-icon="check_circle">check_circle</span>
-</button>
-<button class="p-1 rounded hover:bg-slate-100 hover:text-slate-700 transition-colors" title="More Options">
-<span class="material-symbols-outlined text-lg" data-icon="more_vert">more_vert</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Row 6: David Rossi -->
-<tr class="hover:bg-slate-50/70 transition-colors">
-<td class="px-5 py-4 whitespace-nowrap">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-slate-600 text-white font-bold text-xs flex items-center justify-center">DR</div>
-<div>
-<div class="font-bold text-on-surface leading-tight">David Rossi</div>
-<div class="text-xs text-slate-500">d.rossi@vfast.corp</div>
-</div>
-</div>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="border border-slate-300 rounded-md px-2.5 py-1 text-xs text-slate-700 bg-white font-medium">EU Operations</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="border border-slate-300 text-slate-600 font-medium px-2.5 py-0.5 rounded-full text-xs">Employee</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded">0 Licenses</span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap text-slate-700 text-sm">Operations</td>
-<td class="px-4 py-4 whitespace-nowrap">
-<span class="bg-rose-50 text-rose-700 border border-rose-200 text-xs px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5">
-<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                  Deactivated
-                </span>
-</td>
-<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-secondary">2026-08-01 10:00</td>
-<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-slate-500">2024-04-05</td>
-<td class="px-4 py-4 whitespace-nowrap text-right text-slate-400">
-<div class="inline-flex items-center gap-1">
-<button class="p-1 rounded hover:bg-slate-100 hover:text-primary transition-colors" title="Edit Role &amp; Tenant">
-<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
-</button>
-<button class="p-1 rounded hover:bg-slate-100 hover:text-emerald-600 transition-colors" title="Activate User">
-<span class="material-symbols-outlined text-lg" data-icon="check_circle">check_circle</span>
-</button>
-<button class="p-1 rounded hover:bg-slate-100 hover:text-slate-700 transition-colors" title="More Options">
-<span class="material-symbols-outlined text-lg" data-icon="more_vert">more_vert</span>
-</button>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
+<div class="overflow-x-auto"><table class="w-full table-fixed text-left border-collapse text-xs"><thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold"><tr class="border-b border-slate-200"><th class="w-[22%] px-3 py-3" scope="col">USER PROFILE</th><th class="w-[13%] px-2 py-3" scope="col">TENANT / ORG</th><th class="w-[10%] px-2 py-3" scope="col">ASSIGNED ROLE</th><th class="w-[10%] px-2 py-3 text-right" scope="col">ALLOCATED LICENSES</th><th class="w-[12%] px-2 py-3" scope="col">DEPARTMENT</th><th class="w-[10%] px-2 py-3 text-center" scope="col">ACCOUNT STATUS</th><th class="w-[10%] px-2 py-3" scope="col">LAST ACTIVE</th><th class="w-[8%] px-2 py-3" scope="col">CREATED DATE</th><th class="w-[5%] px-1 py-3 text-center" scope="col">ACTIONS</th></tr></thead><tbody class="divide-y divide-slate-200 text-xs"><tr class="hover:bg-slate-50/70 transition-colors"><td class="w-[22%] px-3 py-3"><div class="flex items-center gap-2.5 min-w-0"><div class="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0">DN</div><div class="min-w-0"><div class="font-bold text-slate-900 leading-tight truncate">Dat Nguyen</div><div class="text-[11px] text-slate-500 truncate">d.nguyen@vfast.corp</div></div></div></td><td class="w-[13%] px-2 py-3"><span class="border border-slate-200 rounded px-1.5 py-0.5 text-[11px] text-slate-700 bg-white font-medium truncate block w-fit max-w-full">HQ - Vietnam</span></td><td class="w-[10%] px-2 py-3"><span class="bg-sky-100 text-[#0F67B1] font-semibold px-2 py-0.5 rounded-full text-[11px] inline-block">Admin</span></td><td class="w-[10%] px-2 py-3 text-right font-medium text-slate-700">5 Licenses</td><td class="w-[12%] px-2 py-3 text-slate-700 truncate">Engineering</td><td class="w-[10%] px-2 py-3 text-center"><span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>Active</span></td><td class="w-[10%] px-2 py-3 text-slate-600 font-medium whitespace-nowrap">Nov 10, 2026</td><td class="w-[8%] px-2 py-3 text-slate-500 whitespace-nowrap">Jan 15, 2024</td><td class="w-[5%] px-1 py-3 text-center"><div class="flex items-center justify-center gap-1"><button class="p-1 text-slate-400 hover:text-primary transition-colors" title="Manage Accounts"><span class="material-symbols-outlined text-base" data-icon="manage_accounts">manage_accounts</span></button><button class="p-1 text-slate-400 hover:text-amber-600 transition-colors" title="Block User"><span class="material-symbols-outlined text-base" data-icon="block">block</span></button></div></td></tr><tr class="hover:bg-slate-50/70 transition-colors"><td class="w-[22%] px-3 py-3"><div class="flex items-center gap-2.5 min-w-0"><div class="w-8 h-8 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0">SJ</div><div class="min-w-0"><div class="font-bold text-slate-900 leading-tight truncate">Sarah Jenkins</div><div class="text-[11px] text-slate-500 truncate">s.jenkins@vfast.corp</div></div></div></td><td class="w-[13%] px-2 py-3"><span class="border border-slate-200 rounded px-1.5 py-0.5 text-[11px] text-slate-700 bg-white font-medium truncate block w-fit max-w-full">North America Branch</span></td><td class="w-[10%] px-2 py-3"><span class="bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold px-2 py-0.5 rounded-full text-[11px] inline-block">Manager</span></td><td class="w-[10%] px-2 py-3 text-right font-medium text-slate-700">4 Licenses</td><td class="w-[12%] px-2 py-3 text-slate-700 truncate">Product &amp; Design</td><td class="w-[10%] px-2 py-3 text-center"><span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>Active</span></td><td class="w-[10%] px-2 py-3 text-slate-600 font-medium whitespace-nowrap">Nov 09, 2026</td><td class="w-[8%] px-2 py-3 text-slate-500 whitespace-nowrap">Mar 20, 2024</td><td class="w-[5%] px-1 py-3 text-center"><div class="flex items-center justify-center gap-1"><button class="p-1 text-slate-400 hover:text-primary transition-colors" title="Manage Accounts"><span class="material-symbols-outlined text-base" data-icon="manage_accounts">manage_accounts</span></button><button class="p-1 text-slate-400 hover:text-amber-600 transition-colors" title="Block User"><span class="material-symbols-outlined text-base" data-icon="block">block</span></button></div></td></tr><tr class="hover:bg-slate-50/70 transition-colors"><td class="w-[22%] px-3 py-3"><div class="flex items-center gap-2.5 min-w-0"><div class="w-8 h-8 rounded-full bg-teal-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0">AM</div><div class="min-w-0"><div class="font-bold text-slate-900 leading-tight truncate">Alex Mercer</div><div class="text-[11px] text-slate-500 truncate">a.mercer@vfast.corp</div></div></div></td><td class="w-[13%] px-2 py-3"><span class="border border-slate-200 rounded px-1.5 py-0.5 text-[11px] text-slate-700 bg-white font-medium truncate block w-fit max-w-full">EU Operations</span></td><td class="w-[10%] px-2 py-3"><span class="bg-slate-100 text-slate-700 border border-slate-200 font-medium px-2 py-0.5 rounded-full text-[11px] inline-block">Staff</span></td><td class="w-[10%] px-2 py-3 text-right font-medium text-slate-700">3 Licenses</td><td class="w-[12%] px-2 py-3 text-slate-700 truncate">Tech Support</td><td class="w-[10%] px-2 py-3 text-center"><span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>Active</span></td><td class="w-[10%] px-2 py-3 text-slate-600 font-medium whitespace-nowrap">Nov 10, 2026</td><td class="w-[8%] px-2 py-3 text-slate-500 whitespace-nowrap">May 10, 2024</td><td class="w-[5%] px-1 py-3 text-center"><div class="flex items-center justify-center gap-1"><button class="p-1 text-slate-400 hover:text-primary transition-colors" title="Manage Accounts"><span class="material-symbols-outlined text-base" data-icon="manage_accounts">manage_accounts</span></button><button class="p-1 text-slate-400 hover:text-amber-600 transition-colors" title="Block User"><span class="material-symbols-outlined text-base" data-icon="block">block</span></button></div></td></tr><tr class="hover:bg-slate-50/70 transition-colors"><td class="w-[22%] px-3 py-3"><div class="flex items-center gap-2.5 min-w-0"><div class="w-8 h-8 rounded-full bg-pink-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0">LT</div><div class="min-w-0"><div class="font-bold text-slate-900 leading-tight truncate">Linh Tran</div><div class="text-[11px] text-slate-500 truncate">l.tran@vfast.corp</div></div></div></td><td class="w-[13%] px-2 py-3"><span class="border border-slate-200 rounded px-1.5 py-0.5 text-[11px] text-slate-700 bg-white font-medium truncate block w-fit max-w-full">HQ - Vietnam</span></td><td class="w-[10%] px-2 py-3"><span class="border border-slate-200 text-slate-600 font-medium px-2 py-0.5 rounded-full text-[11px] inline-block">Employee</span></td><td class="w-[10%] px-2 py-3 text-right font-medium text-slate-700">2 Licenses</td><td class="w-[12%] px-2 py-3 text-slate-700 truncate">Marketing</td><td class="w-[10%] px-2 py-3 text-center"><span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>Active</span></td><td class="w-[10%] px-2 py-3 text-slate-600 font-medium whitespace-nowrap">Nov 08, 2026</td><td class="w-[8%] px-2 py-3 text-slate-500 whitespace-nowrap">Jul 01, 2024</td><td class="w-[5%] px-1 py-3 text-center"><div class="flex items-center justify-center gap-1"><button class="p-1 text-slate-400 hover:text-primary transition-colors" title="Manage Accounts"><span class="material-symbols-outlined text-base" data-icon="manage_accounts">manage_accounts</span></button><button class="p-1 text-slate-400 hover:text-amber-600 transition-colors" title="Block User"><span class="material-symbols-outlined text-base" data-icon="block">block</span></button></div></td></tr><tr class="hover:bg-slate-50/70 transition-colors"><td class="w-[22%] px-3 py-3"><div class="flex items-center gap-2.5 min-w-0"><div class="w-8 h-8 rounded-full bg-amber-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0">MV</div><div class="min-w-0"><div class="font-bold text-slate-900 leading-tight truncate">Michael Vance</div><div class="text-[11px] text-slate-500 truncate">m.vance@vfast.corp</div></div></div></td><td class="w-[13%] px-2 py-3"><span class="border border-slate-200 rounded px-1.5 py-0.5 text-[11px] text-slate-700 bg-white font-medium truncate block w-fit max-w-full">North America Branch</span></td><td class="w-[10%] px-2 py-3"><span class="border border-slate-200 text-slate-600 font-medium px-2 py-0.5 rounded-full text-[11px] inline-block">Employee</span></td><td class="w-[10%] px-2 py-3 text-right font-medium text-slate-700">3 Licenses</td><td class="w-[12%] px-2 py-3 text-slate-700 truncate">Sales</td><td class="w-[10%] px-2 py-3 text-center"><span class="bg-amber-50 text-amber-700 border border-amber-200 text-[11px] px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Suspended</span></td><td class="w-[10%] px-2 py-3 text-slate-600 font-medium whitespace-nowrap">Sep 12, 2026</td><td class="w-[8%] px-2 py-3 text-slate-500 whitespace-nowrap">Feb 18, 2024</td><td class="w-[5%] px-1 py-3 text-center"><div class="flex items-center justify-center gap-1"><button class="p-1 text-slate-400 hover:text-primary transition-colors" title="Manage Accounts"><span class="material-symbols-outlined text-base" data-icon="manage_accounts">manage_accounts</span></button><button class="p-1 text-slate-400 hover:text-amber-600 transition-colors" title="Block User"><span class="material-symbols-outlined text-base" data-icon="block">block</span></button></div></td></tr><tr class="hover:bg-slate-50/70 transition-colors"><td class="w-[22%] px-3 py-3"><div class="flex items-center gap-2.5 min-w-0"><div class="w-8 h-8 rounded-full bg-slate-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0">DR</div><div class="min-w-0"><div class="font-bold text-slate-900 leading-tight truncate">David Rossi</div><div class="text-[11px] text-slate-500 truncate">d.rossi@vfast.corp</div></div></div></td><td class="w-[13%] px-2 py-3"><span class="border border-slate-200 rounded px-1.5 py-0.5 text-[11px] text-slate-700 bg-white font-medium truncate block w-fit max-w-full">EU Operations</span></td><td class="w-[10%] px-2 py-3"><span class="border border-slate-200 text-slate-600 font-medium px-2 py-0.5 rounded-full text-[11px] inline-block">Employee</span></td><td class="w-[10%] px-2 py-3 text-right font-medium text-slate-500">0 Licenses</td><td class="w-[12%] px-2 py-3 text-slate-700 truncate">Operations</td><td class="w-[10%] px-2 py-3 text-center"><span class="bg-rose-50 text-rose-700 border border-rose-200 text-[11px] px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Deactivated</span></td><td class="w-[10%] px-2 py-3 text-slate-600 font-medium whitespace-nowrap">Aug 01, 2026</td><td class="w-[8%] px-2 py-3 text-slate-500 whitespace-nowrap">Apr 05, 2024</td><td class="w-[5%] px-1 py-3 text-center"><div class="flex items-center justify-center gap-1"><button class="p-1 text-slate-400 hover:text-primary transition-colors" title="Manage Accounts"><span class="material-symbols-outlined text-base" data-icon="manage_accounts">manage_accounts</span></button><button class="p-1 text-slate-400 hover:text-amber-600 transition-colors" title="Block User"><span class="material-symbols-outlined text-base" data-icon="block">block</span></button></div></td></tr></tbody></table></div>
 <!-- MUI-style Table Pagination -->
 <div class="px-6 py-3.5 bg-white border-t border-outline flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600">
 <div>
