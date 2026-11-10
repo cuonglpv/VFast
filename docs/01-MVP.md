@@ -1,141 +1,141 @@
-# Tài liệu Đặc tả Phạm vi Sản phẩm Khả dụng Tối thiểu (MVP Specification)
-## Dự án: VFast – Enterprise License Management System (ELMS)
-### Căn cứ: Bản Đặc tả Yêu cầu Phần mềm (SRS v1.0)
+# Minimum Viable Product Scope Specification (MVP Specification)
+## Project: VFast – Enterprise License Management System (ELMS)
+### Reference: Software Requirements Specification (SRS v1.0)
 
 ---
 
-## 1. Giới thiệu & Mục tiêu Chiến lược của MVP
+## 1. Introduction & Strategic Objectives of MVP
 
-### 1.1. Mục tiêu Chuyển giao
-Hệ thống **VFast – Enterprise License Management System (ELMS)** là giải pháp quản trị tài sản bản quyền phần mềm nội bộ (**Internal Enterprise**), hướng tới mục tiêu triển khai thử nghiệm đưa vào vận hành thực tế (**Production Pilot**) trong thời gian **2 tuần (14 ngày)**.
+### 1.1. Delivery Objectives
+The **VFast – Enterprise License Management System (ELMS)** is an internal enterprise software license asset management solution targeting a **Production Pilot** deployment within **2 weeks (14 days)**.
 
-Mục tiêu cốt lõi của phiên bản MVP:
-1. **Thiết lập Sổ cái Bản quyền Tập trung:** Gom toàn bộ dữ liệu phần mềm, nhà cung cấp, quyền sở hữu (SaaS và Perpetual) về một nguồn dữ liệu duy nhất (`Single Source of Truth`).
-2. **Kiểm soát Vòng đời Phân bổ:** Vận hành trơn tru quy trình xin cấp, phê duyệt, cấp phát và thu hồi license giữa Employee và Manager.
-3. **Theo dõi Ngân sách & Chi phí:** Cung cấp cho Staff công cụ nạp dữ liệu tiêu thụ (`Usage`) và chi phí thực tế (`Expense`), giúp Manager giám sát tỷ lệ giải ngân (`Budget Utilization`).
-4. **Giảm thiểu Rủi ro Tuân thủ:** Tự động cảnh báo khi xảy ra tình trạng cấp phát vượt quyền (`Over-allocation`) hoặc sử dụng vượt mức (`Overuse`), cảnh báo hợp đồng sắp hết hạn.
-
----
-
-## 2. Ranh giới Hệ thống (In-Scope vs. Out-of-Scope)
-
-### 2.1. Trong Phạm vi MVP (In-Scope - 8 Nhóm Chức năng F01–F08)
-- **F01. License Management:** Quản lý Software Catalog, Vendor, Entitlement (SaaS & Perpetual) và Contract.
-- **F02. License Allocation:** Quy trình gửi yêu cầu, phê duyệt, cấp phát, thu hồi và theo dõi phân bổ.
-- **F03. Budget Management:** Quản lý hạn mức ngân sách, ghi nhận chi phí thực tế và hóa đơn chứng từ.
-- **F04. Lifecycle Management:** Theo dõi hạn dùng SaaS, hạn bảo trì Perpetual và cảnh báo tự động.
-- **F05. License Optimization:** Phát hiện license chưa gán, license không dùng và đề xuất tối ưu hóa.
-- **F06. Analytics & Reporting:** Dashboard điều hành tổng quan (License, Finance, Compliance).
-- **F07. User & Role Management:** Quản lý tài khoản và phân quyền 3 role tập trung (Manager, Staff, Employee).
-- **F08. System Administration:** Xác thực đăng nhập/đăng xuất, lưu vết Audit Log và import dữ liệu.
-
-### 2.2. Ngoài Phạm vi Ban đầu (Out-of-Scope for Initial Pilot)
-- Tự động kết nối trực tiếp với API của tất cả các nhà cung cấp phần mềm (SaaS Vendor APIs).
-- Tự động tạo hoặc hủy tài khoản trực tiếp trên hệ thống của vendor (Auto-provisioning / Deprovisioning).
-- Tích hợp sâu vào hệ thống kế toán hoặc ERP bên ngoài (SAP, Oracle,...).
-- Tự động thanh toán thẻ tín dụng hoặc thanh toán hóa đơn trực tuyến.
-- Mô hình tối ưu hóa bằng Trí tuệ Nhân tạo / Học máy (AI/ML Optimization).
-- Luồng phê duyệt đa cấp phức tạp (Multi-level approval workflows).
-- Tự động thu hồi license ngay khi phát hiện không hoạt động mà không qua Manager duyệt.
-- Kiến trúc đa người thuê (Multi-tenancy) phục vụ nhiều doanh nghiệp độc lập.
+Core objectives of the MVP release:
+1. **Establish a Centralized License Ledger:** Consolidate all software data, vendors, and ownership rights (SaaS and Perpetual) into a single source of truth (`Single Source of Truth`).
+2. **Control Allocation Lifecycle:** Smoothly operate the workflow for requesting, approving, assigning, and revoking licenses between Employee and Manager.
+3. **Track Budgets & Expenses:** Provide Staff with tools to input actual usage data (`Usage`) and actual costs (`Expense`), enabling Managers to monitor budget utilization (`Budget Utilization`).
+4. **Mitigate Compliance Risks:** Automatically alert when over-allocation (`Over-allocation`) or over-utilization (`Overuse`) occurs, and warn of upcoming contract expirations.
 
 ---
 
-## 3. Phân cấp Ưu tiên Tính năng (Feature Prioritization)
+## 2. System Boundaries (In-Scope vs. Out-of-Scope)
+
+### 2.1. In-Scope for MVP (8 Feature Groups F01–F08)
+- **F01. License Management:** Manage Software Catalog, Vendor, Entitlement (SaaS & Perpetual), and Contract.
+- **F02. License Allocation:** Workflow for submitting requests, approval, assignment, revocation, and allocation tracking.
+- **F03. Budget Management:** Manage budget limits, record actual expenses and invoice/receipt documents.
+- **F04. Lifecycle Management:** Track SaaS expiration dates, Perpetual maintenance dates, and automatic alerts.
+- **F05. License Optimization:** Detect unallocated licenses, inactive licenses, and cost optimization recommendations.
+- **F06. Analytics & Reporting:** Executive dashboards (License, Finance, Compliance).
+- **F07. User & Role Management:** Account management and centralized 3-role RBAC permissions (Manager, Staff, Employee).
+- **F08. System Administration:** Authentication (login/logout), immutable Audit Log tracking, and data import.
+
+### 2.2. Out-of-Scope for Initial Pilot
+- Direct automatic integration with all software vendor APIs (SaaS Vendor APIs).
+- Direct automated provisioning or deprovisioning of accounts on vendor systems (Auto-provisioning / Deprovisioning).
+- Deep integration with external accounting or ERP systems (SAP, Oracle, etc.).
+- Automated credit card processing or online invoice payments.
+- Artificial Intelligence / Machine Learning optimization models (AI/ML Optimization).
+- Complex multi-level approval workflows.
+- Automatic revocation of licenses immediately upon detecting inactivity without Manager approval.
+- Multi-tenancy architecture serving multiple independent organizations.
+
+---
+
+## 3. Feature Prioritization
 
 ```mermaid
-pie title Phân bổ Mức độ Ưu tiên cho Phiên bản 14 Ngày
-    "P0 - Bắt buộc cho Pilot (19 Stories / 25 Use Cases)" : 75
-    "P1 - Nên có tiếp theo (6 Stories / 14 Use Cases)" : 25
+pie title Priority Distribution for the 14-Day Release
+    "P0 - Must Have for Pilot (19 Stories / 25 Use Cases)" : 75
+    "P1 - Should Have Next (6 Stories / 14 Use Cases)" : 25
 ```
 
-- **P0 – Must Have (Bắt buộc cho Pilot 14 ngày):**
-  - Xác thực đăng nhập và phân quyền 3 role RBAC (`Manager, Staff, Employee`).
-  - Quản lý danh mục phần mềm chuẩn (`Software Catalog`), kèm danh mục Vendor tối giản (chỉ tên nhà cung cấp) để thỏa BR-02 (xem D1, Mục 8).
-  - Đăng ký và quản lý Entitlement cho cả **SaaS Subscription** và **Perpetual License**.
-  - Quy trình gửi yêu cầu (`License Request`) và phê duyệt/từ chối của Manager.
-  - Cấp phát (`Assign`) và thu hồi (`Revoke`) license có kiểm soát số lượng khả dụng.
-  - Quản lý hạn mức ngân sách (`Budget`) và ghi nhận chi phí thực tế (`Expense`).
-  - Nhập dữ liệu mức độ sử dụng thực tế (`Usage Data`).
-  - Theo dõi các mốc hết hạn hợp đồng thuê bao và bảo trì.
-  - Bảng điều khiển tổng quan (`Core Dashboard`) và lưu vết kiểm toán (`Audit Logging`).
-- **P1 – Should Have (Nên có ngay sau luồng cốt lõi):**
-  - Quản lý nhà cung cấp đầy đủ (`Vendor`: CRUD, thông tin liên hệ) và hồ sơ hợp đồng chi tiết (`Contract`).
-  - Tính năng nạp dữ liệu hàng loạt từ file Excel/CSV (`Import Usage & Expense`).
-  - Tải lên tệp đính kèm hóa đơn và chứng từ thanh toán hợp lệ.
-  - Phát hiện license chưa gán, license không hoạt động $\ge 60$ ngày và hiển thị khuyến nghị tối ưu.
-  - Báo cáo tuân thủ (`Compliance Dashboard`) và chức năng xuất báo cáo.
-- **P2 – Could Have (Mở rộng trong tương lai):**
-  - Tích hợp tự động với hệ thống nhà cung cấp, đồng bộ SSO nâng cao, tối ưu hóa AI.
+- **P0 – Must Have (Mandatory for the 14-day Pilot):**
+  - Authentication and 3-role RBAC authorization (`Manager, Staff, Employee`).
+  - Standard software catalog management (`Software Catalog`), along with a minimalist Vendor catalog (vendor name only) to satisfy BR-02 (see D1, Section 8).
+  - Register and manage Entitlements for both **SaaS Subscription** and **Perpetual License**.
+  - License request workflow (`License Request`) with Manager approval/rejection.
+  - Allocation (`Assign`) and revocation (`Revoke`) of licenses with available quantity enforcement.
+  - Budget limit management (`Budget`) and recording of actual expenses (`Expense`).
+  - Manual entry of actual usage data (`Usage Data`).
+  - Tracking expiration milestones for subscription contracts and maintenance agreements.
+  - Executive overview dashboard (`Core Dashboard`) and audit logging (`Audit Logging`).
+- **P1 – Should Have (Next immediately following core flow):**
+  - Full vendor management (`Vendor`: CRUD, contact details) and detailed contract profiles (`Contract`).
+  - Bulk data import from Excel/CSV files (`Import Usage & Expense`).
+  - Uploading valid invoice and supporting payment document attachments.
+  - Detecting unallocated licenses, licenses inactive for $\ge 60$ days, and displaying optimization recommendations.
+  - Compliance reporting (`Compliance Dashboard`) and report export functionality.
+- **P2 – Could Have (Future expansion):**
+  - Automated integration with vendor systems, advanced SSO synchronization, AI-driven optimization.
 
 ---
 
-## 4. 20 Quy tắc Nghiệp vụ Bất biến (20 Business Rules)
+## 4. 20 Immutable Business Rules (20 Business Rules)
 
-Hệ thống tuân thủ nghiêm ngặt 20 quy tắc từ **Mục 7 của bản SRS v1.0**:
-- **BR-01:** Hệ thống hỗ trợ song song hai loại hình: SaaS Subscription và Perpetual License.
-- **BR-02:** Mọi Entitlement bắt buộc phải liên kết với một Sản phẩm phần mềm và một Nhà cung cấp xác định.
-- **BR-03:** Các số lượng license chỉ được phép so sánh hoặc cộng trừ khi sử dụng cùng metric đo lường và phạm vi dữ liệu tương thích.
-- **BR-04:** Công thức tính toán dung lượng: $\text{Available Quantity} = \text{Purchased Quantity} - \text{Allocated Quantity}$.
-- **BR-05:** Tuyệt đối không cho phép cấp phát vượt quá số lượng bản quyền khả dụng ($\text{Allocated} \le \text{Purchased}$).
-- **BR-06:** Chỉ duy nhất vai trò Manager có quyền phê duyệt hoặc từ chối các yêu cầu cấp license.
-- **BR-07:** Chỉ duy nhất vai trò Manager có quyền thực hiện cấp phát (Assign) hoặc thu hồi (Revoke) license.
-- **BR-08:** Employee chỉ được phép xem thông tin yêu cầu và license thuộc sở hữu của chính bản thân mình.
-- **BR-09:** Staff được quyền nhập dữ liệu usage và expense, nhưng tuyệt đối không được sửa đổi Entitlement hoặc Budget.
-- **BR-10:** Bản ghi Expense hợp lệ bắt buộc phải có Số tiền hợp lệ, Tiền tệ và Ngày thanh toán.
-- **BR-11:** Các khoản chi phí khác loại tiền tệ không được cộng gộp trừ khi có chính sách quy đổi tỷ giá rõ ràng.
-- **BR-12:** Thời hạn bản quyền vĩnh viễn và thời hạn thỏa thuận bảo trì (Maintenance) phải được quản lý ở hai trường độc lập.
-- **BR-13:** Các lượt gán đã bị thu hồi (`Revoked Assignments`) phải được giữ lại trong lịch sử để đối soát kiểm toán.
-- **BR-14:** Việc đánh giá tuân thủ dựa trên mức dùng thực tế bắt buộc phải có dữ liệu usage hợp lệ và tương thích.
-- **BR-15:** Dữ liệu usage bị thiếu không được tự động hiểu là mức sử dụng bằng không ($Usage \ne 0$).
-- **BR-16:** Mọi đề xuất tối ưu hóa chi phí bắt buộc phải có căn cứ dữ liệu và phải qua sự phê duyệt của Manager trước khi thực thi.
-- **BR-17:** Mọi thao tác nghiệp vụ quan trọng bắt buộc phải lưu vết vào Audit Log bất biến kèm Actor, Action và Timestamp.
-- **BR-18:** Người dùng ở trạng thái vô hiệu hóa (`Deactivated`) lập tức bị khóa quyền truy cập hệ thống.
-- **BR-19:** Một License Request đã xử lý (`Approved` hoặc `Rejected`) không được phép xử lý lại lần thứ hai.
-- **BR-20:** Các dữ liệu lưu trữ lịch sử được bảo lưu theo chính sách lưu trữ dữ liệu của doanh nghiệp.
-
----
-
-## 5. Yêu cầu Phi Chức năng (Non-Functional Requirements - NFRs)
-
-Theo chuẩn hóa tại **Mục 8 của bản SRS v1.0**:
-- **NFR-01 (Bảo mật - Security):**
-  - Mật khẩu phải được mã hóa bằng thuật toán băm an toàn (BCrypt / Argon2).
-  - Xác thực phiên làm việc trên mọi endpoint; kiểm tra quyền hạn RBAC tại tầng Backend API.
-  - Bảo vệ dữ liệu truyền tải trên mạng bằng giao thức HTTPS/TLS.
-  - License key và thông tin bí mật không được xuất hiện dưới dạng rõ trong nhật ký log, URL/query string hoặc file kết xuất; không được dùng license key làm tiêu chí tìm kiếm.
-  - License key được mã hóa khi lưu (AES-256-GCM hoặc tương đương), khóa mã hóa quản lý ngoài cơ sở dữ liệu. API danh sách và chi tiết chỉ trả về dạng che; chỉ Manager được xem key rõ qua thao tác riêng, có giới hạn tần suất, phản hồi `Cache-Control: no-store` và ghi Audit Log `VIEW_LICENSE_KEY`.
-  - Phiên đăng nhập phải thu hồi được từ phía máy chủ để bảo đảm BR-18: access token ngắn hạn, refresh token xoay vòng được lưu phía máy chủ, kiểm tra trạng thái tài khoản và phiên bản phiên ở mỗi request; vô hiệu hóa tài khoản hoặc đổi role sẽ thu hồi toàn bộ phiên (chi tiết tại UC29).
-  - File tải lên: chỉ nhận PDF/PNG/JPG, kiểm tra theo nội dung thực của file thay vì phần mở rộng, tối đa 10MB, lưu ngoài webroot với tên ngẫu nhiên, tải về phải qua kiểm tra quyền theo từng bản ghi.
-  - File import được kiểm tra từng dòng và giới hạn kích thước; file export phải vô hiệu hóa công thức bảng tính (ô bắt đầu bằng `=`, `+`, `-`, `@`).
-- **NFR-02 (Toàn vẹn Dữ liệu - Data Integrity):**
-  - Giao dịch cơ sở dữ liệu (ACID Transactions) có khóa dòng để ngăn chặn tình trạng gán vượt dung lượng khi có nhiều người cùng thao tác (Concurrency Control); áp dụng cho cả Assign và Revoke.
-  - Ràng buộc ở tầng cơ sở dữ liệu làm lớp bảo vệ cuối: `CHECK (allocated_quantity >= 0 AND allocated_quantity <= purchased_quantity)`; unique index một phần trên `license_assignments (entitlement_id, user_id) WHERE status = 'Active'` và trên `license_assignments (request_id) WHERE request_id IS NOT NULL`.
-  - `available_quantity` không được cập nhật độc lập: giá trị luôn được tính từ `purchased_quantity - allocated_quantity` (BR-04), ví dụ bằng generated column.
-  - Chuyển trạng thái `License Request` dùng cập nhật có điều kiện (`WHERE status = 'Pending'`); nếu không có dòng nào được cập nhật thì báo lỗi theo BR-19. Audit Log được ghi trong cùng transaction với thao tác nghiệp vụ.
-  - Giữ nguyên lịch sử giao dịch khi thu hồi license hoặc lưu trữ dữ liệu.
-- **NFR-03 (Hiệu năng - Performance):**
-  - Thời gian phản hồi trung bình của các API thông thường $\le 2$ giây dưới tải thử nghiệm pilot.
-  - Thời gian phản hồi của các truy vấn Dashboard $\le 3$ giây.
-  - Hỗ trợ phân trang (Pagination) và lọc tìm kiếm trên tất cả các màn hình danh sách.
-- **NFR-04 (Tính Sẵn sàng & Độ tin cậy):**
-  - Hệ thống có cơ chế xử lý lỗi ngoại lệ an toàn, tránh treo dịch vụ.
-  - Thiết lập cơ chế sao lưu cơ sở dữ liệu định kỳ và quy trình khôi phục được kiểm nghiệm.
-- **NFR-05 (Khả năng Bảo trì - Maintainability):**
-  - Kiến trúc Modular Monolith phân tách rõ ranh giới giữa Controller, Business Service và Data Persistence.
-  - Quản lý lịch sử thay đổi cấu trúc cơ sở dữ liệu thông qua công cụ Flyway Migration.
-- **NFR-06 (Khả năng Kiểm toán - Auditability):**
-  - Lưu vết đầy đủ thông tin: Người thực hiện (Actor), Thao tác (Action), Dấu thời gian (Timestamp) và Thực thể bị tác động.
-  - Nhật ký kiểm toán không thể bị chỉnh sửa hoặc ghi đè tùy tiện.
-- **NFR-07 (Tính Tiện dụng - Usability):**
-  - Giao diện thân thiện, nhất quán, cá nhân hóa theo vai trò của người dùng.
-  - Trạng thái dữ liệu được mã hóa bằng màu sắc trực quan (Xanh: An toàn/Duyệt; Đỏ: Vượt quyền/Từ chối; Vàng: Đang chờ/Cảnh báo).
+The system strictly adheres to the 20 business rules defined in **Section 7 of SRS v1.0**:
+- **BR-01:** The system concurrently supports two license models: SaaS Subscription and Perpetual License.
+- **BR-02:** Every Entitlement must be linked to a specific Software Product and a specific Vendor.
+- **BR-03:** License quantities may only be compared or calculated (added/subtracted) when using the same measurement metric and compatible data scopes.
+- **BR-04:** Capacity formula: $\text{Available Quantity} = \text{Purchased Quantity} - \text{Allocated Quantity}$.
+- **BR-05:** Over-allocation beyond the available license quantity is strictly prohibited ($\text{Allocated} \le \text{Purchased}$).
+- **BR-06:** Only the Manager role has the authority to approve or reject license requests.
+- **BR-07:** Only the Manager role has the authority to assign (Assign) or revoke (Revoke) licenses.
+- **BR-08:** Employees are only permitted to view request information and licenses assigned to themselves.
+- **BR-09:** Staff are authorized to input usage and expense data, but are strictly prohibited from modifying Entitlements or Budgets.
+- **BR-10:** A valid Expense record must contain a valid Amount, Currency, and Payment Date.
+- **BR-11:** Expenses in different currencies must not be aggregated unless an explicit exchange rate conversion policy is provided.
+- **BR-12:** Perpetual license duration and maintenance agreement duration (Maintenance) must be managed in two independent fields.
+- **BR-13:** Revoked license assignments (`Revoked Assignments`) must be preserved in historical records for audit reconciliation.
+- **BR-14:** Compliance evaluation based on actual usage requires valid and compatible usage data.
+- **BR-15:** Missing usage data must not be automatically assumed to represent zero usage ($Usage \ne 0$).
+- **BR-16:** All cost optimization recommendations must be grounded in data evidence and require Manager approval prior to execution.
+- **BR-17:** All critical business operations must be recorded in an immutable Audit Log with Actor, Action, and Timestamp.
+- **BR-18:** Users in a deactivated state (`Deactivated`) immediately lose system access permissions.
+- **BR-19:** A processed License Request (`Approved` or `Rejected`) cannot be processed a second time.
+- **BR-20:** Historical archive data is retained in accordance with the enterprise data retention policy.
 
 ---
 
-## 6. Mô hình Thực thể Dữ liệu (12 Core Entities)
+## 5. Non-Functional Requirements (NFRs)
 
-Theo chuẩn hóa tại **Mục 9 của bản SRS v1.0**, hệ thống sử dụng cơ sở dữ liệu quan hệ PostgreSQL với 12 thực thể cốt lõi, cùng 5 thực thể bổ trợ cần cho các use case và quy tắc nghiệp vụ hiện có:
+Standardized according to **Section 8 of SRS v1.0**:
+- **NFR-01 (Security):**
+  - Passwords must be hashed using secure algorithms (BCrypt / Argon2).
+  - Session authentication on all endpoints; RBAC permission checks enforced at the Backend API layer.
+  - Data in transit must be protected using HTTPS/TLS protocols.
+  - License keys and sensitive secrets must never appear in plaintext in log records, URLs/query strings, or export files; license keys must never be used as search criteria.
+  - License keys must be encrypted at rest (AES-256-GCM or equivalent), with encryption keys managed outside the database. List and detail APIs only return masked keys; only Managers can view plaintext keys via a dedicated action, with rate limiting, `Cache-Control: no-store` response headers, and `VIEW_LICENSE_KEY` Audit Log recording.
+  - User sessions must be revokable from the server side to guarantee BR-18: short-lived access tokens, server-side stored rotating refresh tokens, account status and session version validation on every request; account deactivation or role changes immediately revoke all active sessions (detailed in UC29).
+  - File uploads: accept only PDF/PNG/JPG, validate based on actual file magic bytes rather than file extensions, maximum size 10MB, stored outside the webroot with randomized filenames, downloads require per-record authorization checks.
+  - Import files must be validated row-by-row with size limits; export files must neutralize spreadsheet formula injection (cells starting with `=`, `+`, `-`, `@`).
+- **NFR-02 (Data Integrity):**
+  - Database transactions (ACID Transactions) with row-level locking to prevent over-allocation during concurrent operations (Concurrency Control); applies to both Assign and Revoke.
+  - Database-level constraints as the final defense layer: `CHECK (allocated_quantity >= 0 AND allocated_quantity <= purchased_quantity)`; partial unique index on `license_assignments (entitlement_id, user_id) WHERE status = 'Active'` and on `license_assignments (request_id) WHERE request_id IS NOT NULL`.
+  - `available_quantity` must not be updated independently: it is always calculated from `purchased_quantity - allocated_quantity` (BR-04), e.g., via generated columns.
+  - State transitions for `License Request` use conditional updates (`WHERE status = 'Pending'`); if zero rows are updated, raise an error per BR-19. Audit Logs are recorded within the same transaction as the business operation.
+  - Preserve transaction history upon license revocation or data archiving.
+- **NFR-03 (Performance):**
+  - Average response time for standard APIs $\le 2$ seconds under pilot test load.
+  - Dashboard query response time $\le 3$ seconds.
+  - Support pagination and filtering/search on all list views.
+- **NFR-04 (Availability & Reliability):**
+  - Graceful exception handling mechanisms to prevent service crashes.
+  - Periodic database backup mechanisms and verified recovery procedures.
+- **NFR-05 (Maintainability):**
+  - Modular Monolith architecture with clear separation of concerns between Controller, Business Service, and Data Persistence layers.
+  - Database schema migration history tracked and managed via Flyway Migration.
+- **NFR-06 (Auditability):**
+  - Complete audit trails recording: Actor, Action, Timestamp, and the Affected Entity.
+  - Audit logs are immutable and cannot be arbitrarily modified or overwritten.
+- **NFR-07 (Usability):**
+  - Intuitive, consistent user interface personalized by user role.
+  - Visual color-coded data statuses (Green: Safe/Approved; Red: Over-capacity/Rejected; Yellow: Pending/Warning).
+
+---
+
+## 6. Data Entity Model (12 Core Entities)
+
+Standardized according to **Section 9 of SRS v1.0**, the system utilizes a PostgreSQL relational database with 12 core entities, along with 5 auxiliary entities required for existing use cases and business rules:
 
 ```mermaid
 erDiagram
@@ -166,72 +166,72 @@ erDiagram
     users ||--o{ audit_logs : triggers
 ```
 
-| Tên Thực thể (Table) | Mục đích Quản lý Nghiệp vụ |
+| Entity Name (Table) | Business Management Purpose |
 | :--- | :--- |
-| `users` | Lưu trữ tài khoản người dùng, email, họ tên, `department_id`, `role_id` (mỗi người một role), trạng thái hoạt động và phiên bản phiên đăng nhập. |
-| `roles` | Lưu trữ 3 vai trò hệ thống: `MANAGER`, `STAFF`, `EMPLOYEE`. |
-| `software_products` | Danh mục sản phẩm phần mềm chuẩn hóa (tên, hãng, phiên bản, danh mục, trạng thái). |
-| `vendors` | Danh bạ các nhà cung cấp, đại lý phân phối và thông tin liên hệ. |
-| `contracts` | Hợp đồng mua sắm pháp lý, ngày ký kết, giá trị và tệp tài liệu đính kèm. |
-| `license_entitlements` | Gói quyền sử dụng bản quyền sở hữu (SaaS/Perpetual, purchased, allocated, dates, license key đã mã hóa); `available` là giá trị tính từ `purchased - allocated`. |
-| `license_requests` | Yêu cầu xin cấp 1 seat từ nhân viên (requester, `software_id`, lý do, người duyệt, trạng thái pending/approved/rejected/fulfilled). |
-| `license_assignments` | Bản ghi cấp phát seat cụ thể cho nhân viên (`entitlement_id`, `user_id`, `request_id` nếu có, active/revoked, assigned_date, người và lý do thu hồi). |
-| `license_usage` | Dữ liệu tiêu thụ thực tế theo kỳ (`entitlement_id`, `user_id`, kỳ dữ liệu, ngày hoạt động gần nhất, số ngày dùng, mức độ active/inactive, `created_by`), duy nhất theo `entitlement_id`, `user_id`, kỳ. Không có bản ghi trong kỳ nghĩa là `Unknown` (BR-15). |
-| `budgets` | Hạn mức ngân sách phần mềm theo năm tài chính hoặc theo phòng ban. |
-| `expenses` | Các khoản đã chi thực tế (số tiền, tiền tệ, ngày thanh toán theo BR-10; `software_id`, `contract_id` nếu có, `department_id`, số hóa đơn, `created_by`). |
-| `audit_logs` | Nhật ký kiểm toán bất biến ghi nhận mọi thao tác quan trọng trên hệ thống. |
+| `users` | Stores user accounts, email, full name, `department_id`, `role_id` (one role per user), active status, and session version. |
+| `roles` | Stores the 3 system roles: `MANAGER`, `STAFF`, `EMPLOYEE`. |
+| `software_products` | Standardized software product catalog (name, vendor, version, category, status). |
+| `vendors` | Directory of vendors, distributors, and contact information. |
+| `contracts` | Legal procurement contracts, signing dates, contract values, and attached documents. |
+| `license_entitlements` | Owned license entitlement packages (SaaS/Perpetual, purchased, allocated, dates, encrypted license key); `available` is a computed value from `purchased - allocated`. |
+| `license_requests` | Requests for 1 seat submitted by employees (requester, `software_id`, justification, approver, status: pending/approved/rejected/fulfilled). |
+| `license_assignments` | Specific seat allocation records for employees (`entitlement_id`, `user_id`, optional `request_id`, active/revoked, assigned_date, revoker, and revocation reason). |
+| `license_usage` | Actual consumption data by period (`entitlement_id`, `user_id`, reporting period, last activity date, days used, active/inactive status, `created_by`), unique by `entitlement_id`, `user_id`, period. No record in a period means `Unknown` (BR-15). |
+| `budgets` | Software budget limits by fiscal year or by department. |
+| `expenses` | Actual expenditure records (amount, currency, payment date per BR-10; `software_id`, optional `contract_id`, `department_id`, invoice number, `created_by`). |
+| `audit_logs` | Immutable audit log capturing all critical operations in the system. |
 
-**Thực thể bổ trợ:**
+**Auxiliary Entities:**
 
-| Tên Thực thể (Table) | Mục đích | Ưu tiên |
+| Entity Name (Table) | Purpose | Priority |
 | :--- | :--- | :---: |
-| `departments` | Phòng ban dùng chung cho người dùng, ngân sách và chi phí; không lưu tên phòng ban dạng văn bản tự do. | P0 |
-| `notifications` | Thông báo trong hệ thống (cảnh báo hết hạn UC18, kết quả xử lý yêu cầu), có khóa chống gửi trùng theo entitlement và mốc 30/15/7 ngày. | P0 |
-| `exchange_rates` | Tỷ giá do Manager khai báo theo ngày hiệu lực, là chính sách quy đổi tường minh theo BR-11. Không có tỷ giá hiệu lực thì không cộng gộp. | P0 |
-| `attachments` | Metadata file hóa đơn và hợp đồng (đường dẫn lưu trữ, loại file, kích thước, người tải lên). | P1 |
-| `optimization_recommendations` | Đề xuất tối ưu kèm căn cứ dữ liệu và quyết định của Manager theo BR-16. | P1 |
+| `departments` | Shared department directory for users, budgets, and expenses; prevents free-text department names. | P0 |
+| `notifications` | In-system notifications (UC18 expiry warnings, request processing results), with deduplication keys per entitlement and 30/15/7-day milestones. | P0 |
+| `exchange_rates` | Exchange rates configured by Manager with effective dates, serving as the explicit conversion policy required by BR-11. Without an active exchange rate, costs are not aggregated. | P0 |
+| `attachments` | Invoice and contract file metadata (storage path, file type, file size, uploader). | P1 |
+| `optimization_recommendations` | Cost optimization recommendations with data justification and Manager decisions per BR-16. | P1 |
 
 ---
 
-## 7. Tiêu chí Nghiệm thu & Chuyển giao Pilot (14 Criteria)
+## 7. Pilot Acceptance & Delivery Criteria (14 Criteria)
 
-Theo chuẩn hóa tại **Mục 13 của bản SRS v1.0**, phiên bản MVP được nghiệm thu đạt chuẩn khi thỏa mãn đồng thời 14 tiêu chí:
-1. Cả 3 vai trò (`Manager, Staff, Employee`) đăng nhập thành công và chỉ nhìn thấy các chức năng được cấp phép.
-2. Manager có thể tạo, chỉnh sửa và quản lý danh mục phần mềm cùng các khoản Entitlement.
-3. Cả hai mô hình **SaaS Subscription** và **Perpetual License** được đăng ký và theo dõi chuẩn xác.
-4. Employee có thể gửi yêu cầu cấp license và theo dõi trạng thái yêu cầu cá nhân.
-5. Manager có thể phê duyệt, từ chối yêu cầu; thực hiện cấp phát và thu hồi license thành công.
-6. Số lượng cấp phát được tính toán tự động và không bao giờ vượt quá dung lượng khả dụng ($\text{Allocated} \le \text{Purchased}$).
-7. Staff có thể nạp dữ liệu sử dụng (`Usage`) và ghi nhận các khoản chi phí (`Expense`) kèm số hóa đơn; đính kèm file chứng từ (`UC35`) là P1, không phải điều kiện nghiệm thu pilot.
-8. Manager có thể giám sát hạn mức ngân sách và chi phí giải ngân thực tế theo từng bộ phận.
-9. Hệ thống nhận diện và phát sinh cảnh báo trước các mốc hết hạn hợp đồng hoặc bảo trì.
-10. Dashboard hiển thị đầy đủ và trực quan các chỉ số về bản quyền và tài chính (`UC23`, `UC24`), kèm cảnh báo tuân thủ từ `UC05`, `UC21`; Compliance Dashboard chuyên sâu (`UC25`) là P1.
-11. Các thao tác nghiệp vụ quan trọng được ghi nhận đầy đủ vào hệ thống Audit Log bất biến.
-12. Toàn bộ các luồng nghiệp vụ kinh doanh chính vượt qua kiểm thử tích hợp (Integration Tests).
-13. Quy trình sao lưu (Backup) và phục hồi (Restore) cơ sở dữ liệu được kiểm nghiệm thành công.
-14. Ứng dụng được triển khai ổn định trên môi trường thử nghiệm pilot và vượt qua kiểm thử chấp nhận người dùng (UAT).
+Standardized according to **Section 13 of SRS v1.0**, the MVP version is accepted when meeting all 14 criteria simultaneously:
+1. All 3 roles (`Manager, Staff, Employee`) log in successfully and can access only their authorized capabilities.
+2. Manager can create, update, and manage the software catalog and Entitlement records.
+3. Both **SaaS Subscription** and **Perpetual License** models are registered and tracked accurately.
+4. Employees can submit license requests and track their own request statuses.
+5. Manager can approve and reject requests; successfully execute license assignments and revocations.
+6. Allocated quantities are calculated automatically and never exceed available capacity ($\text{Allocated} \le \text{Purchased}$).
+7. Staff can input usage data (`Usage`) and record expenses (`Expense`) with invoice numbers; supporting document file upload (`UC35`) is P1 and not a prerequisite for pilot acceptance.
+8. Manager can monitor budget limits and actual disbursed expenses by department.
+9. The system identifies and generates alerts prior to contract or maintenance expiration milestones.
+10. Dashboard comprehensively and visually presents license and financial metrics (`UC23`, `UC24`), along with compliance alerts from `UC05`, `UC21`; in-depth Compliance Dashboard (`UC25`) is P1.
+11. Critical business operations are fully captured in the immutable Audit Log system.
+12. All core business workflows pass integration testing (Integration Tests).
+13. Database backup and restore procedures are successfully verified.
+14. The application is deployed stably in a pilot staging environment and passes user acceptance testing (UAT).
 
 ---
 
-## 8. Quyết định Làm rõ Phạm vi (Scope Decisions)
+## 8. Scope Clarification Decisions (Scope Decisions)
 
-Các quyết định dưới đây xử lý mâu thuẫn giữa các tài liệu. Đây là phương án mặc định **đang chờ nhóm xác nhận**; các tài liệu khác đã được viết theo các phương án này. Mức ưu tiên của từng use case và 20 quy tắc nghiệp vụ không thay đổi.
+The decisions below resolve specification conflicts across documents. These represent default resolutions **pending team confirmation**; other documents have been aligned with these choices. The priority of each use case and the 20 business rules remain unchanged.
 
-| Mã | Vấn đề | Quyết định | Lý do |
+| Code | Issue | Decision | Rationale |
 | :---: | :--- | :--- | :--- |
-| **D1** | BR-02 bắt buộc có Vendor, nhưng `UC02` là P1 | P0 có danh mục Vendor tối giản: chọn hoặc tạo nhanh theo tên trong `UC01`, `UC03`. CRUD đầy đủ vẫn thuộc `UC02` (P1). | Giữ BR-02 mà không đổi độ ưu tiên của `UC02`. |
-| **D2** | Tiêu chí nghiệm thu đòi hóa đơn, nhưng `UC35` là P1 | Bản ghi Expense P0 chỉ cần số hóa đơn. File đính kèm là P1 và không bắt buộc. | BR-10 không yêu cầu chứng từ VAT. |
-| **D3** | Story P0 liên kết use case P1 | Phần P0 của từng story: `US-M01` là `UC01`; `US-M02` là `UC03` (Vendor theo D1); `US-M10` là `UC05`, `UC21`; `US-M11` là `UC15`, `UC18`; `US-M13` là `UC23`, `UC24`; `US-S06` là `UC36`. Các use case còn lại giao ở P1. | Giữ nguyên mã story và độ ưu tiên use case. |
-| **D4** | Hai công thức tài chính khác nhau | Chỉ số chính thức theo `UC14`: `Actual Spending` là tổng khoản đã chi; `Remaining Budget = Total - Actual`; `Budget Utilization = Actual / Total`. Ngưỡng cảnh báo dùng `Utilization` này. `Committed Spending` là chỉ số P1 hiển thị riêng, không tính vào `Utilization`. | Bám baseline và tránh tính trùng nghĩa vụ. |
-| **D5** | BR-10 bắt buộc ngày thanh toán, nhưng IA có khoản chưa thanh toán | Bảng `expenses` ở P0 chỉ chứa khoản đã chi. `PENDING`, `OVERDUE` và thao tác Mark as Paid là mở rộng P1, cần bổ sung quy tắc riêng trước khi làm. `PROJECTED` là số liệu dự báo, không phải bản ghi Expense. | Không phải sửa BR-10 và giảm phạm vi 14 ngày. |
-| **D6** | Request có số lượng nhưng mỗi lần Assign chỉ +1; có thể cấp nhiều lần cho một request | Mỗi request tương ứng đúng 1 seat cho chính người gửi. Thêm trạng thái `Fulfilled` khi đã cấp. Request `Approved` chưa có seat vẫn chờ, không tự chuyển trạng thái. | Khép kín vòng đời request và phù hợp BR-19. |
-| **D7** | Cấp trùng chỉ bị cảnh báo | Chặn cấp thêm khi nhân viên đang có assignment `Active` cho cùng phần mềm. | Tránh lãng phí seat; `Change Tier` đã hoãn (D10). |
-| **D8** | JWT không tự thu hồi được, trái BR-18 | Dùng cơ chế phiên thu hồi được như NFR-01 và `UC29`. Các thông số là mặc định có thể cấu hình. | BR-18 yêu cầu khóa truy cập ngay lập tức. |
-| **D9** | README cho Staff đọc Entitlement và Budget, IA chặn hết | API cho Staff đọc (không có license key). Lệnh chặn 403 chỉ áp dụng cho các màn hình của Manager Portal; màn hình của Staff sẽ được đặc tả riêng. | Staff cần dữ liệu này để nhập Usage và Expense. |
-| **D10** | `Change Tier` không có use case hoặc quy tắc nghiệp vụ | Hoãn sang sau MVP. Phần đặc tả trong IA được giữ lại để tham khảo. | Thay thế tạm bằng Revoke rồi Assign. |
-| **D11** | "Board override", "soft-stop approval" trái với phạm vi loại trừ phê duyệt đa cấp | Vượt ngân sách chỉ cảnh báo Manager, không chặn chi phí và không thêm tầng phê duyệt. | Bám Mục 2.2. |
-| **D12** | Thiếu nguồn tỷ giá cho BR-11 | Manager khai báo tỷ giá theo ngày hiệu lực trong `exchange_rates`. Không có tỷ giá thì hiển thị riêng từng loại tiền. | Là chính sách quy đổi tường minh theo BR-11. |
-| **D13** | Ngưỡng đỏ là `>100%` ở `UC14` nhưng `≥100%` ở IA | Thống nhất cảnh báo đỏ khi `Budget Utilization` $\ge 100\%$. | Ở mức 100% ngân sách đã hết, không còn dư. |
-| **D14** | Chưa quy định kênh thông báo | P0 dùng thông báo trong hệ thống. Email là mở rộng sau pilot. | Không phụ thuộc hạ tầng email trong 14 ngày. |
-| **D15** | `UC21` so sánh số lượng usage, nhưng `license_usage` không có trường số lượng; chưa có cách biểu diễn dữ liệu thiếu | Với metric `Per User`, số lượng usage là số nhân viên khác nhau có bản ghi `Active` trong kỳ gần nhất. Không có bản ghi là `Unknown`; không đánh giá được là `Not Evaluated`. `Unknown` không được tính là `Inactive` trong `UC20`. | Thực hiện được BR-14, BR-15 từ dữ liệu sẵn có. |
-| **D16** | Hai cách viết API khác nhau; chưa quy định khi import có dòng lỗi | Mọi API dùng tiền tố `/api/v1/`. File import có dòng lỗi thì không nạp dòng nào và trả về danh sách lỗi theo dòng. | Một hợp đồng API duy nhất; tránh dữ liệu nạp dở dang. |
+| **D1** | BR-02 requires Vendor, but `UC02` is P1 | P0 includes a minimalist Vendor catalog: select or quick-create by name in `UC01`, `UC03`. Full CRUD remains in `UC02` (P1). | Satisfies BR-02 without altering the priority of `UC02`. |
+| **D2** | Acceptance criteria mention invoices, but `UC35` is P1 | P0 Expense records only require an invoice number. File attachments are P1 and optional. | BR-10 does not mandate VAT document files. |
+| **D3** | P0 stories link P1 use cases | P0 scope of each story: `US-M01` covers `UC01`; `US-M02` covers `UC03` (Vendor per D1); `US-M10` covers `UC05`, `UC21`; `US-M11` covers `UC15`, `UC18`; `US-M13` covers `UC23`, `UC24`; `US-S06` covers `UC36`. Remaining use cases are delivered in P1. | Preserves story codes and use case priorities. |
+| **D4** | Two conflicting financial formulas | Official metrics follow `UC14`: `Actual Spending` is the sum of paid expenses; `Remaining Budget = Total - Actual`; `Budget Utilization = Actual / Total`. Alert thresholds use this `Utilization`. `Committed Spending` is a P1 metric displayed separately, not included in `Utilization`. | Aligns with baseline and avoids double-counting obligations. |
+| **D5** | BR-10 requires payment date, but IA includes unpaid expenses | The `expenses` table in P0 only stores disbursed expenses. `PENDING`, `OVERDUE`, and the Mark as Paid action are P1 extensions requiring dedicated rules prior to implementation. `PROJECTED` is a forecasting figure, not an Expense record. | Avoids modifying BR-10 and keeps the 14-day scope focused. |
+| **D6** | Requests specify quantity but each Assign adds only 1; multiple assignments possible per request | Each request corresponds to exactly 1 seat for the requester. Add `Fulfilled` status when assigned. An `Approved` request without an available seat remains pending fulfillment without automatic status changes. | Closes the request lifecycle and adheres to BR-19. |
+| **D7** | Duplicate assignments only trigger a warning | Prevent assigning additional seats if the employee already has an `Active` assignment for the same software. | Prevents seat waste; `Change Tier` is deferred (D10). |
+| **D8** | Standard JWT cannot be revoked, violating BR-18 | Implement server-side revokable session mechanism per NFR-01 and `UC29`. Parameters are configurable defaults. | BR-18 mandates immediate access revocation. |
+| **D9** | README allows Staff to read Entitlement and Budget, but IA blocks them | Backend APIs allow Staff read access (excluding license keys). 403 Forbidden applies only to Manager Portal screens; Staff screens will be specified separately. | Staff require this data to input Usage and Expense. |
+| **D10** | `Change Tier` lacks use cases or business rules | Deferred to post-MVP. Specifications in IA are retained for reference. | Temporarily substituted by Revoke followed by Assign. |
+| **D11** | "Board override" and "soft-stop approval" contradict the exclusion of multi-level approvals | Budget overruns only warn Managers; they do not block expenses or introduce approval tiers. | Adheres to Section 2.2. |
+| **D12** | Missing exchange rate source for BR-11 | Manager configures exchange rates with effective dates in `exchange_rates`. Without an active rate, amounts are displayed separately by currency. | Serves as the explicit conversion policy required by BR-11. |
+| **D13** | Red threshold is `>100%` in `UC14` but `≥100%` in IA | Standardized red alert when `Budget Utilization` $\ge 100\%$. | At 100%, the budget is fully exhausted with zero remainder. |
+| **D14** | Notification channels not yet specified | P0 uses in-system notifications. Email is a post-pilot enhancement. | Eliminates external email infrastructure dependencies during the 14-day pilot. |
+| **D15** | `UC21` compares usage quantity, but `license_usage` has no quantity field; missing data representation undefined | For `Per User` metric, usage quantity is the count of distinct employees with `Active` records in the latest period. Absence of records evaluates to `Unknown`; indeterminate status is `Not Evaluated`. `Unknown` is not counted as `Inactive` in `UC20`. | Enables BR-14 and BR-15 using existing data schema. |
+| **D16** | Inconsistent API path conventions; behavior on import row errors undefined | All APIs use `/api/v1/` prefix. If an import file contains any invalid row, reject the entire import and return a list of row-level errors. | Unified API contract; prevents partial or corrupted data loading. |
