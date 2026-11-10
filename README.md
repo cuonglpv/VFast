@@ -1,68 +1,83 @@
-# VFast – Software License Management, Usage Analytics & Budget Optimization
+# VFast
 
-VFast helps a company plan its software license budget, see who is assigned each license and who really uses it, judge cost efficiency, and find where to cut waste. It works across many providers (Microsoft, Google, Adobe, JetBrains, Oracle, OpenAI, Anthropic, AWS, VPN, specialized software) and every license model: seat, concurrent, device, core/server, consumption, enterprise.
+VFast is a software license management, usage analytics, and budget optimization platform. It brings licenses from every provider (Microsoft, Google, Adobe, JetBrains, Oracle, OpenAI, Anthropic, AWS, VPN, specialized software) and every license model into one place, shows who holds each license and who really uses it, compares the budget plan with what was bought, assigned, and used, and tells each manager at month end which seats were wasted — **without ever assigning, revoking, or changing anything on a provider**.
 
-VFast only reads, analyzes, warns, and recommends. It never assigns, revokes, buys, renews, or changes a subscription on a provider, so every connection needs read-only access.
+## 1. Requirements — Research, Use Cases, and INVEST
 
-Status: draft awaiting team confirmation (2026-11-10).
+Requirements are derived top-down: business problem → stakeholders → goals → license models and data sources → epics → use cases → user stories. Each story is reviewed with INVEST and has Given/When/Then acceptance criteria.
 
-## 1. Mind map
+### 1.1 Top-down problem analysis
+
+License and usage data are scattered across each provider's admin portal, and every provider counts in its own unit: seats, sessions, devices, cores, tokens, or contract terms. Nobody can say what the company owns, who uses it, or how far reality is from the budget plan.
+
+| Goal | Measured by |
+|---|---|
+| G1 Centralize licenses | Every license from every provider listed with publisher, model, quantity, cost, and expiry in one table |
+| G2 Know who uses what | Every assigned seat has exactly one status: `Active`, `Inactive`, `No activity`, or `Not monitored` |
+| G3 Measure automatically | License, assignment, and usage data refresh daily for providers with an API |
+| G4 Express waste as money | Underutilized accounts and their annual cost on one screen |
+| G5 Plan and reconcile the budget | Planned, Purchased, Assigned, Used, and Actual cost compared per unit and license |
+| G6 Act every month | A month-end list of unused seats per unit, with a recorded decision for each |
+| G7 Trustworthy figures | Numbers match across screens; missing data is `Unknown`, never zero |
+
+What makes this project different:
+
+1. **One model for every license** — each license is a combination of three axes (measurement archetype, commercial term, collection method) and one of four archetypes: Allocation, Concurrent, Metered, Capacity. A new provider needs a connector, not new analysis logic.
+2. **Budget reconciliation chain** — Planned → Purchased → Assigned → Used → Actual cost; each gap is a different problem with a different fix.
+3. **Missing data is not guessed** — a failed sync is `Unknown`, never usage 0, so it never creates a false waste warning.
+4. **Read-only by design** — every provider connection only reads; decisions stay with people.
+
+Full analysis, license-model research, data-source feasibility, scope, and risks: [Top-down research](docs/01-research-top-down.md).
+
+### 1.2 Mind map
 
 ![VFast mind map](docs/mindmap.png)
 
-The four bold branches are the screens in the current phase. Editable source: [`docs/mindmap/vfast.xmind`](docs/mindmap/vfast.xmind) (open with XMind); `docs/mindmap.png` is exported from it.
+The five bold branches hold the use cases. Editable source: [`docs/mindmap/vfast.xmind`](docs/mindmap/vfast.xmind) (open with XMind); `docs/mindmap.png` is exported from it.
 
-## 2. Problem
-
-License and usage data are scattered across each provider's system, which causes five problems:
-
-1. No central system for license information and cost.
-2. Hard to tell who is assigned a license and whether they really use it.
-3. No automatic way to measure usage, consumption, and cost efficiency.
-4. Hard to compare the planned budget with licenses purchased, assigned, and actually used.
-5. No data to find surplus or inefficient licenses and to plan budget optimization.
-
-## 3. Roles
-
-| Role | Responsibility |
-|---|---|
-| **Manager** | Plans license purchases for their unit (how many people, how much money); monitors licenses, usage, and budget; reviews month-end warnings |
-| **Admin** | Administers the system: accounts and roles, data-source configuration, sync monitoring; can view every unit |
-| **Staff** | A license holder; sees only their own licenses and usage status |
-| **Scheduler** | System actor: collects data daily, normalizes it, computes metrics, runs the month-end check |
-
-## 4. Use cases
+### 1.3 Use cases
 
 ![VFast use case diagram](docs/diagrams/out/uc_vfast.png)
 
-| ID | Use case | Screen | Primary actor |
-|---|---|---|---|
-| UC01 | View License Overview Metrics | License Management | Manager |
-| UC02 | View License List | License Management | Manager |
-| UC03 | View License Detail | License Management | Manager |
-| UC04 | View Analytics KPIs | Analytics | Manager |
-| UC05 | View Application Usage | Analytics | Manager |
-| UC06 | View Spend by Department | Analytics | Manager |
-| UC07 | View Subscription Usage by Month | Analytics | Manager |
-| UC08 | View Budget Overview | Budget | Manager |
-| UC09 | Manage Budget Plan | Budget | Manager |
-| UC10 | Manage Budget Lines | Budget | Manager |
-| UC11 | View Budget vs Actual | Budget | Manager |
-| UC12 | Review Month-end Warnings | Warnings | Manager, Scheduler |
-| UC13 | View My Licenses | My Licenses | Staff |
-| UC14 | Login / Logout | Login | Admin, Manager, Staff |
+| Role | Use cases |
+|---|---|
+| **Employee** (every employee) | UC13 View My Licenses · UC14 Login / Logout |
+| **Staff** (license management team) | UC01–UC03 view licenses · UC16 Manage Licenses · UC17 Import License Data |
+| **Manager** (unit manager) | UC01–UC03 License Management · UC04–UC07 Analytics · UC08–UC11 Budget · UC12 Review Month-end Warnings |
+| **Admin** | Everything a Manager can do, for every unit · UC15 Manage Users and Roles |
 
-The diagram shows the primary actors from this table. Admin can also view UC01–UC12 across every unit without editing plans or recording warning decisions, and every role can open UC13 for their own licenses; the Admin part is a proposal awaiting confirmation (section 4 of the project definition). Not yet specified: account management and data-source configuration for Admin, Staff confirming they still need a license, license declaration, manual data import, advanced optimization.
+Admin inherits Manager; Manager and Staff inherit Employee. Diagram source: [`docs/diagrams/out/uc_vfast.drawio`](docs/diagrams/out/uc_vfast.drawio) (open with draw.io).
 
-Diagram source: [`docs/diagrams/out/uc_vfast.drawio`](docs/diagrams/out/uc_vfast.drawio) (open with draw.io); the PNG and SVG are exported from it.
+Role × feature matrix, 18 business rules, and the specification of every use case: [Use cases](docs/02-use-cases.md).
 
-## 5. Key design points
+### 1.4 INVEST requirements
 
-- **One model for every license:** three independent axes (measurement archetype, commercial term, collection method) and four archetypes: Allocation, Concurrent, Metered, Capacity. Adding a provider needs a connector, not new analysis logic.
-- **Budget reconciliation chain:** Planned → Purchased → Assigned → Used → Actual cost, per unit and per license. Each gap is a different problem.
-- **Shared statuses:** Active, Inactive, No activity, Not monitored, Unassigned, with a 60-day inactivity threshold. Missing data is `Unknown`, never zero.
-- **Data collection:** one connector per license. Microsoft 365 uses the Graph API; a provider without a usage API gets a self-written API that returns simulated data, marked `simulated`. Sync runs daily and is read-only.
+The backlog contains **17 user stories (74 story points)**, one per use case (USxx implements UCxx). Every story passes the INVEST review and has Given/When/Then acceptance criteria.
+
+| Criterion | Meaning in VFast |
+|---|---|
+| **Independent** | Each story produces a demonstrable outcome; viewing stories run on seeded data without waiting for connectors. |
+| **Negotiable** | Layout and implementation may change while outcome, permissions, and business rules stay fixed. |
+| **Valuable** | Each story names the benefit for one role: Manager, Staff, Admin, or Employee. |
+| **Estimable** | Inputs, outputs, roles, data scope, and failure outcomes are explicit; every story is estimated in points. |
+| **Small** | One capability per story; the largest (month-end warnings, data import) are 8 points. |
+| **Testable** | Every story has observable criteria, including rules that tie figures across screens. |
+
+```text
+US01–US03   License Management: overview, list, detail          Manager, Staff
+US04–US07   Analytics: KPIs, application usage, spend, by month  Manager
+US08–US11   Budget: overview, plan, lines, budget vs actual       Manager
+US12        Month-end warnings and decisions                      Manager
+US13        My licenses                                           Employee
+US14        Login / logout                                        Every role
+US15        Users and roles                                       Admin
+US16–US17   Manage licenses, import license data                  Staff
+```
+
+Backlog, per-story INVEST review, and acceptance criteria: [INVEST requirements](docs/03-invest-requirements.md).
 
 ## Documentation
 
-- [Project definition](docs/01-project-definition.md) (Vietnamese) — problem, goals, scope, roles and permissions, automation pipeline, unified license model, data collection, specifications of UC01–UC14, success criteria, open questions
+- [Top-down research](docs/01-research-top-down.md) — problem, stakeholders, goals, license models, data sources, process, scope, risks
+- [Use cases](docs/02-use-cases.md) — actors, role × feature matrix, business rules, use case diagram, 17 use cases
+- [INVEST requirements](docs/03-invest-requirements.md) — 17 user stories, INVEST review, acceptance criteria
