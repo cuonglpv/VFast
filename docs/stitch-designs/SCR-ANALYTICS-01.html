@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VFast ELMS - Analytics &amp; Health</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface": "#f9f9ff",
+            "inverse-primary": "#a2c9ff",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed-dim": "#b9c7df",
+            "outline": "#717782",
+            "inverse-on-surface": "#ecf1ff",
+            "surface-container-highest": "#d8e3fb",
+            "surface-dim": "#cfdaf2",
+            "primary-fixed": "#d3e4ff",
+            "on-surface": "#111c2d",
+            "primary": "#004f8b",
+            "secondary": "#515f74",
+            "tertiary-fixed-dim": "#93ccff",
+            "surface-container": "#e7eeff",
+            "on-background": "#111c2d",
+            "error": "#ba1a1a",
+            "outline-variant": "#c1c7d3",
+            "background": "#f9f9ff",
+            "inverse-surface": "#263143",
+            "on-error": "#ffffff",
+            "tertiary-container": "#006aa1",
+            "error-container": "#ffdad6",
+            "on-tertiary": "#ffffff",
+            "on-primary-container": "#d4e4ff",
+            "primary-fixed-dim": "#a2c9ff",
+            "on-secondary-fixed-variant": "#3a485b",
+            "on-secondary-fixed": "#0d1c2e",
+            "on-secondary-container": "#57657a",
+            "surface-container-high": "#dee8ff",
+            "primary-container": "#0f67b1",
+            "secondary-fixed": "#d5e3fc",
+            "surface-tint": "#0060a9",
+            "on-tertiary-container": "#cde5ff",
+            "on-surface-variant": "#414751",
+            "on-primary-fixed-variant": "#004881",
+            "surface-bright": "#f9f9ff",
+            "secondary-container": "#d5e3fc",
+            "on-error-container": "#93000a",
+            "on-tertiary-fixed-variant": "#004b73",
+            "surface-container-low": "#f0f3ff",
+            "on-secondary": "#ffffff",
+            "on-primary": "#ffffff",
+            "tertiary-fixed": "#cce5ff",
+            "on-tertiary-fixed": "#001d31",
+            "on-primary-fixed": "#001c38",
+            "tertiary": "#00517d",
+            "surface-variant": "#d8e3fb"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Inter", "sans-serif"],
+            "display": ["Inter", "sans-serif"],
+            "body": ["Inter", "sans-serif"],
+            "label": ["Inter", "sans-serif"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      -webkit-font-smoothing: antialiased;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .custom-border {
+      border-color: #e2e8f0;
+    }
+  </style>
+</head>
+<body class="bg-[#f8fafc] text-on-surface antialiased flex min-h-screen">
+<!-- ==================== 1. SIDE NAVIGATION BAR (SHARED COMPONENT) ==================== -->
+<aside class="fixed top-0 left-0 h-screen w-60 z-30 bg-surface-container-lowest border-r custom-border flex flex-col justify-between p-4">
+<!-- Top Branding & Nav Links -->
+<div>
+<!-- Brand Logo -->
+<div class="px-2 py-3 mb-6">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-white font-bold text-base shadow-sm">
+            V
+          </div>
+<div>
+<div class="font-headline text-base font-bold tracking-tight text-primary">VFast ELMS</div>
+<div class="font-label text-[11px] text-secondary font-medium tracking-tight">Executive Licensing</div>
+</div>
+</div>
+</div>
+<!-- Action Button (CTA) -->
+<button class="w-full mb-6 flex items-center justify-center gap-2 py-2 px-3 bg-surface-container-low hover:bg-surface-container text-primary text-xs font-semibold rounded-lg border custom-border transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Add License</span>
+</button>
+<!-- Navigation Links -->
+<nav class="space-y-1">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="font-label text-sm">Dashboard</span>
+</a>
+<!-- License Management -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">vpn_key</span>
+<span class="font-label text-sm">License Management</span>
+</a>
+<!-- Analytics (ACTIVE TAB - EXACT MATCH) -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary-container text-primary font-semibold" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">insights</span>
+<span class="font-label text-sm">Analytics</span>
+</a>
+<!-- Audit Logs -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<span class="font-label text-sm">Audit Logs</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-label text-sm">Settings</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Footer Meta & Controls -->
+<div class="pt-4 border-t custom-border space-y-2">
+<!-- Status Badge -->
+<div class="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200/60 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-[11px] font-semibold text-emerald-800">System Healthy</span>
+</div>
+<span class="text-[10px] font-mono text-emerald-700">v2.4.0</span>
+</div>
+<!-- Support & Sign Out -->
+<a class="flex items-center gap-3 px-3 py-1.5 rounded-lg text-secondary hover:bg-surface-container-low transition-colors text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded-lg text-secondary hover:bg-surface-container-low transition-colors text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]">logout</span>
+<span>Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- ==================== 2. MAIN LAYOUT WRAPPER ==================== -->
+<div class="flex-1 ml-60 flex flex-col min-h-screen">
+<!-- TOP NAVIGATION BAR (SHARED COMPONENT) -->
+<header class="h-16 bg-surface-container-lowest border-b custom-border sticky top-0 z-20 flex justify-between items-center px-6">
+<!-- Breadcrumb / Location -->
+<div class="flex items-center gap-2">
+<span class="font-headline text-xs font-medium text-secondary">Executive Portal</span>
+<span class="text-secondary/60 text-xs">/</span>
+<span class="font-headline text-sm font-semibold text-on-surface">Analytics &amp; Health</span>
+</div>
+<!-- Right Action Cluster -->
+<div class="flex items-center gap-3">
+<!-- Fiscal Year MUI Select Simulation -->
+<div class="relative">
+<select aria-label="Fiscal Year" class="bg-surface border custom-border text-on-surface text-xs font-semibold rounded-lg pl-3 pr-8 py-1.5 appearance-none focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary cursor-pointer shadow-sm">
+<option>FY 2026</option>
+<option>FY 2025</option>
+<option>FY 2024</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-[16px] text-secondary pointer-events-none">expand_more</span>
+</div>
+<div class="h-5 w-px bg-outline-variant/50 mx-1"></div>
+<!-- Notification Button -->
+<button aria-label="Notifications" class="p-2 text-secondary hover:text-on-surface hover:bg-surface-container-low rounded-lg transition-colors relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
+</button>
+<!-- Help Button -->
+<button aria-label="Help" class="p-2 text-secondary hover:text-on-surface hover:bg-surface-container-low rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+</button>
+<!-- Profile Avatar & Details -->
+<div class="flex items-center gap-2.5 pl-2">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-primary font-bold text-xs flex items-center justify-center border border-primary/20">
+            DN
+          </div>
+<div class="text-left hidden lg:block">
+<div class="text-xs font-semibold text-on-surface leading-tight">Dat Nguyen</div>
+<div class="text-[10px] text-secondary leading-tight">License Admin</div>
+</div>
+</div>
+</div>
+</header>
+<!-- ==================== 3. MAIN DASHBOARD CONTENT ==================== -->
+<main class="p-6 bg-[#f8fafc] flex-1 space-y-6">
+<!-- Page Header with Subtitle & Primary Actions -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="text-xl font-bold text-slate-900 tracking-tight font-headline">Analytics &amp; Health</h1>
+<p class="text-xs text-secondary mt-0.5 font-body">Strategic portfolio health, user activity segmentation, and multi-dimensional cost optimization.</p>
+</div>
+<div class="flex items-center gap-2.5">
+<!-- Outlined Export Button -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border custom-border hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg shadow-sm transition-colors">
+<span class="material-symbols-outlined text-[16px] text-slate-500">file_download</span>
+<span>Export Report</span>
+</button>
+<!-- Primary Ocean Blue Button -->
+<button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-primary-container hover:bg-primary text-white text-xs font-semibold rounded-lg shadow-sm transition-colors">
+<span class="material-symbols-outlined text-[16px]">autorenew</span>
+<span>Run Reclamation Audit</span>
+</button>
+</div>
+</div>
+<!-- KPI HEALTH METRICS (4 CARDS GRID) -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- KPI 1: Total Annual Spend -->
+<div class="bg-surface-container-lowest p-4 rounded-lg border custom-border shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-secondary mb-2">
+<span class="text-xs font-medium font-label">Total Annual Spend</span>
+<span class="material-symbols-outlined text-[18px] text-primary">payments</span>
+</div>
+<div>
+<div class="text-2xl font-bold text-slate-900 font-headline tracking-tight">$1,420,000 <span class="text-xs font-normal text-slate-500">USD</span></div>
+<div class="flex items-center gap-1 mt-1 text-[11px] text-slate-500 font-medium">
+<span class="material-symbols-outlined text-[14px] text-rose-500">trending_up</span>
+<span class="text-rose-600 font-semibold">+3.2%</span> vs approved ceiling
+            </div>
+</div>
+</div>
+<!-- KPI 2: Managed Licenses -->
+<div class="bg-surface-container-lowest p-4 rounded-lg border custom-border shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-secondary mb-2">
+<span class="text-xs font-medium font-label">Managed Licenses</span>
+<span class="material-symbols-outlined text-[18px] text-primary">fact_check</span>
+</div>
+<div>
+<div class="text-2xl font-bold text-slate-900 font-headline tracking-tight">1,284 <span class="text-xs font-normal text-slate-500">Licenses</span></div>
+<div class="text-[11px] text-slate-500 mt-1 font-medium">Across 48 enterprise applications</div>
+</div>
+</div>
+<!-- KPI 3: Underutilized Accounts -->
+<div class="bg-surface-container-lowest p-4 rounded-lg border custom-border shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-secondary mb-2">
+<span class="text-xs font-medium font-label">Underutilized Accounts</span>
+<span class="material-symbols-outlined text-[18px] text-amber-500">warning</span>
+</div>
+<div>
+<div class="text-2xl font-bold text-amber-600 font-headline tracking-tight">312 <span class="text-xs font-normal text-slate-500">Accounts</span></div>
+<div class="inline-block mt-1 px-2 py-0.5 rounded text-[11px] font-semibold text-amber-800 bg-amber-50 border border-amber-200">
+              24.3% of total allocated seats (Warning &gt;15%)
+            </div>
+</div>
+</div>
+<!-- KPI 4: Underutilized License Cost -->
+<div class="bg-surface-container-lowest p-4 rounded-lg border custom-border shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-secondary mb-2">
+<span class="text-xs font-medium font-label">Underutilized License Cost</span>
+<span class="material-symbols-outlined text-[18px] text-rose-500">savings</span>
+</div>
+<div>
+<div class="text-2xl font-bold text-rose-600 font-headline tracking-tight">$285,600 <span class="text-xs font-normal text-slate-500">USD / yr</span></div>
+<div class="inline-block mt-1 px-2 py-0.5 rounded text-[11px] font-semibold text-rose-800 bg-rose-50 border border-rose-200">
+              20.1% wasted spend target for reclamation
+            </div>
+</div>
+</div>
+</section>
+<!-- MIDDLE SECTION GRID: APPLICATION USAGE OPTIMIZATION & SPEND BY DEPARTMENT -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+<!-- LEFT CARD (COL 7): Application Usage Optimization Stacked Bar Chart -->
+<div class="lg:col-span-7 bg-surface-container-lowest p-5 rounded-lg border custom-border shadow-sm flex flex-col justify-between">
+<div>
+<!-- Header & Toggle -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b custom-border">
+<div>
+<h2 class="text-sm font-bold text-slate-900 font-headline">Application Usage Optimization</h2>
+<p class="text-[11px] text-secondary mt-0.5">Seat distribution segmented by 60-day historical activity</p>
+</div>
+<!-- MUI ToggleButtonGroup Simulation -->
+<div class="inline-flex rounded-md border custom-border bg-surface p-0.5">
+<button class="px-2.5 py-1 text-[11px] font-semibold rounded bg-white text-primary shadow-xs border custom-border">Top 5</button>
+<button class="px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:text-slate-900">Top 10</button>
+<button class="px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:text-slate-900">Top 20</button>
+</div>
+</div>
+<!-- Chart Legends -->
+<div class="flex items-center gap-4 py-3 text-[11px] text-secondary">
+<span class="flex items-center gap-1.5 font-medium">
+<span class="w-2.5 h-2.5 rounded-xs bg-[#4CAF50]"></span> Actively used
+              </span>
+<span class="flex items-center gap-1.5 font-medium">
+<span class="w-2.5 h-2.5 rounded-xs bg-[#9E9E9E]"></span> Inactive (&gt;60 days)
+              </span>
+<span class="flex items-center gap-1.5 font-medium">
+<span class="w-2.5 h-2.5 rounded-xs bg-[#FF9800]"></span> Never used
+              </span>
+</div>
+<!-- Stacked Bars List -->
+<div class="space-y-4 pt-1">
+<!-- Item 1: Microsoft 365 -->
+<div>
+<div class="flex justify-between items-center text-xs mb-1.5">
+<div class="flex items-center gap-2">
+<span class="font-semibold text-slate-900">Microsoft 365</span>
+<span class="text-[10px] text-slate-500 font-mono">500 seats</span>
+</div>
+<div class="text-[11px] font-semibold text-slate-700">78% active (390 seats)</div>
+</div>
+<!-- Stacked Progress Bar -->
+<div class="h-3 w-full bg-slate-100 rounded-sm overflow-hidden flex" title="390 Active | 65 Inactive | 45 Never Used">
+<div class="h-full bg-[#4CAF50] transition-all" style="width: 78%;"></div>
+<div class="h-full bg-[#9E9E9E] transition-all" style="width: 13%;"></div>
+<div class="h-full bg-[#FF9800] transition-all" style="width: 9%;"></div>
+</div>
+<div class="flex justify-between text-[10px] text-slate-500 mt-1 font-mono">
+<span>390 Actively Used</span>
+<span>65 Inactive &gt;60d</span>
+<span class="text-amber-700 font-medium">45 Never Used</span>
+</div>
+</div>
+<!-- Item 2: Slack Enterprise -->
+<div>
+<div class="flex justify-between items-center text-xs mb-1.5">
+<div class="flex items-center gap-2">
+<span class="font-semibold text-slate-900">Slack Enterprise</span>
+<span class="text-[10px] text-slate-500 font-mono">450 seats</span>
+</div>
+<div class="text-[11px] font-semibold text-slate-700">82% active (370 seats)</div>
+</div>
+<div class="h-3 w-full bg-slate-100 rounded-sm overflow-hidden flex" title="370 Active | 50 Inactive | 30 Never Used">
+<div class="h-full bg-[#4CAF50] transition-all" style="width: 82.2%;"></div>
+<div class="h-full bg-[#9E9E9E] transition-all" style="width: 11.1%;"></div>
+<div class="h-full bg-[#FF9800] transition-all" style="width: 6.7%;"></div>
+</div>
+<div class="flex justify-between text-[10px] text-slate-500 mt-1 font-mono">
+<span>370 Actively Used</span>
+<span>50 Inactive &gt;60d</span>
+<span class="text-amber-700 font-medium">30 Never Used</span>
+</div>
+</div>
+<!-- Item 3: GitHub Enterprise -->
+<div>
+<div class="flex justify-between items-center text-xs mb-1.5">
+<div class="flex items-center gap-2">
+<span class="font-semibold text-slate-900">GitHub Enterprise</span>
+<span class="text-[10px] text-slate-500 font-mono">300 seats</span>
+</div>
+<div class="text-[11px] font-semibold text-slate-700">78% active (235 seats)</div>
+</div>
+<div class="h-3 w-full bg-slate-100 rounded-sm overflow-hidden flex" title="235 Active | 40 Inactive | 25 Never Used">
+<div class="h-full bg-[#4CAF50] transition-all" style="width: 78.3%;"></div>
+<div class="h-full bg-[#9E9E9E] transition-all" style="width: 13.3%;"></div>
+<div class="h-full bg-[#FF9800] transition-all" style="width: 8.4%;"></div>
+</div>
+<div class="flex justify-between text-[10px] text-slate-500 mt-1 font-mono">
+<span>235 Actively Used</span>
+<span>40 Inactive &gt;60d</span>
+<span class="text-amber-700 font-medium">25 Never Used</span>
+</div>
+</div>
+<!-- Item 4: Jira Software -->
+<div>
+<div class="flex justify-between items-center text-xs mb-1.5">
+<div class="flex items-center gap-2">
+<span class="font-semibold text-slate-900">Jira Software</span>
+<span class="text-[10px] text-slate-500 font-mono">255 seats</span>
+</div>
+<div class="text-[11px] font-semibold text-slate-700">78% active (200 seats)</div>
+</div>
+<div class="h-3 w-full bg-slate-100 rounded-sm overflow-hidden flex" title="200 Active | 35 Inactive | 20 Never Used">
+<div class="h-full bg-[#4CAF50] transition-all" style="width: 78.4%;"></div>
+<div class="h-full bg-[#9E9E9E] transition-all" style="width: 13.7%;"></div>
+<div class="h-full bg-[#FF9800] transition-all" style="width: 7.9%;"></div>
+</div>
+<div class="flex justify-between text-[10px] text-slate-500 mt-1 font-mono">
+<span>200 Actively Used</span>
+<span>35 Inactive &gt;60d</span>
+<span class="text-amber-700 font-medium">20 Never Used</span>
+</div>
+</div>
+<!-- Item 5: Zoom Business -->
+<div>
+<div class="flex justify-between items-center text-xs mb-1.5">
+<div class="flex items-center gap-2">
+<span class="font-semibold text-slate-900">Zoom Business</span>
+<span class="text-[10px] text-slate-500 font-mono">202 seats</span>
+</div>
+<div class="text-[11px] font-semibold text-slate-700">80% active (162 seats)</div>
+</div>
+<div class="h-3 w-full bg-slate-100 rounded-sm overflow-hidden flex" title="162 Active | 25 Inactive | 15 Never Used">
+<div class="h-full bg-[#4CAF50] transition-all" style="width: 80.2%;"></div>
+<div class="h-full bg-[#9E9E9E] transition-all" style="width: 12.4%;"></div>
+<div class="h-full bg-[#FF9800] transition-all" style="width: 7.4%;"></div>
+</div>
+<div class="flex justify-between text-[10px] text-slate-500 mt-1 font-mono">
+<span>162 Actively Used</span>
+<span>25 Inactive &gt;60d</span>
+<span class="text-amber-700 font-medium">15 Never Used</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Summary Strip -->
+<div class="mt-4 pt-3 border-t custom-border flex items-center justify-between text-[11px] text-slate-600 bg-slate-50 -mx-5 -mb-5 px-5 py-2.5 rounded-b-lg">
+<span>Aggregated Top 5 Seats: <strong>1,707 licenses</strong></span>
+<span class="font-medium text-primary cursor-pointer hover:underline">View Full App Breakdown →</span>
+</div>
+</div>
+<!-- RIGHT CARD (COL 5): Spend by Department Donut Chart -->
+<div class="lg:col-span-5 bg-surface-container-lowest p-5 rounded-lg border custom-border shadow-sm flex flex-col justify-between">
+<div>
+<!-- Header -->
+<div class="pb-3 border-b custom-border">
+<h2 class="text-sm font-bold text-slate-900 font-headline">Spend by Department</h2>
+<p class="text-[11px] text-secondary mt-0.5">Annualized software expenditure allocation</p>
+</div>
+<!-- Donut Visual + Center Metatag -->
+<div class="my-5 flex justify-center items-center">
+<div class="relative w-44 h-44 flex items-center justify-center">
+<!-- SVG Conic Donut Chart -->
+<svg class="w-full h-full -rotate-90" viewbox="0 0 36 36">
+<!-- Background Circle -->
+<circle class="stroke-slate-100" cx="18" cy="18" fill="none" r="14.5" stroke-width="4.2"></circle>
+<!-- Segment 1: Engineering 40.8% (#0f67b1) -->
+<circle cx="18" cy="18" fill="none" r="14.5" stroke="#0f67b1" stroke-dasharray="37.1 53.9" stroke-dashoffset="0" stroke-width="4.2"></circle>
+<!-- Segment 2: Sales & BD 22.5% (#1e293b) -->
+<circle cx="18" cy="18" fill="none" r="14.5" stroke="#1e293b" stroke-dasharray="20.5 70.5" stroke-dashoffset="-37.1" stroke-width="4.2"></circle>
+<!-- Segment 3: Tech Support 12.7% (#0d9488) -->
+<circle cx="18" cy="18" fill="none" r="14.5" stroke="#0d9488" stroke-dasharray="11.5 79.5" stroke-dashoffset="-57.6" stroke-width="4.2"></circle>
+<!-- Segment 4: Accounting 9.9% (#0284c7) -->
+<circle cx="18" cy="18" fill="none" r="14.5" stroke="#0284c7" stroke-dasharray="9.0 82.0" stroke-dashoffset="-69.1" stroke-width="4.2"></circle>
+<!-- Segment 5: Marketing 8.5% (#64748b) -->
+<circle cx="18" cy="18" fill="none" r="14.5" stroke="#64748b" stroke-dasharray="7.7 83.3" stroke-dashoffset="-78.1" stroke-width="4.2"></circle>
+<!-- Segment 6: HR 5.6% (#4f46e5) -->
+<circle cx="18" cy="18" fill="none" r="14.5" stroke="#4f46e5" stroke-dasharray="5.1 85.9" stroke-dashoffset="-85.8" stroke-width="4.2"></circle>
+</svg>
+<!-- Centered Label -->
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="text-xs font-medium text-secondary">Total Spend</span>
+<span class="text-lg font-bold text-slate-900 tracking-tight font-headline">$1.42M</span>
+</div>
+</div>
+</div>
+<!-- Department Breakdown List -->
+<div class="space-y-2 text-xs">
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#0f67b1]"></span>
+<span class="text-slate-800 font-medium">Engineering &amp; Product</span>
+</span>
+<span class="font-mono text-slate-900 font-semibold">$580,000 <span class="text-slate-500 font-normal">(40.8%)</span></span>
+</div>
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#1e293b]"></span>
+<span class="text-slate-800 font-medium">Sales &amp; BD</span>
+</span>
+<span class="font-mono text-slate-900 font-semibold">$320,000 <span class="text-slate-500 font-normal">(22.5%)</span></span>
+</div>
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#0d9488]"></span>
+<span class="text-slate-800 font-medium">Tech Support</span>
+</span>
+<span class="font-mono text-slate-900 font-semibold">$180,000 <span class="text-slate-500 font-normal">(12.7%)</span></span>
+</div>
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#0284c7]"></span>
+<span class="text-slate-800 font-medium">Accounting &amp; Finance</span>
+</span>
+<span class="font-mono text-slate-900 font-semibold">$140,000 <span class="text-slate-500 font-normal">(9.9%)</span></span>
+</div>
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#64748b]"></span>
+<span class="text-slate-800 font-medium">Marketing &amp; Creative</span>
+</span>
+<span class="font-mono text-slate-900 font-semibold">$120,000 <span class="text-slate-500 font-normal">(8.5%)</span></span>
+</div>
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#4f46e5]"></span>
+<span class="text-slate-800 font-medium">HR &amp; Operations</span>
+</span>
+<span class="font-mono text-slate-900 font-semibold">$80,000 <span class="text-slate-500 font-normal">(5.6%)</span></span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- BOTTOM SECTION: 12-MONTH COMPARATIVE DYNAMICS (FULL WIDTH) -->
+<section class="bg-surface-container-lowest p-5 rounded-lg border custom-border shadow-sm">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b custom-border">
+<div>
+<h2 class="text-sm font-bold text-slate-900 font-headline">Subscription Usage 12-Month Comparative Dynamics</h2>
+<p class="text-[11px] text-secondary mt-0.5">Comparison of deployed seat status composition vs unassigned inventory across 12 months (Jan - Dec)</p>
+</div>
+<!-- Filter / Legend Bar -->
+<div class="flex flex-wrap items-center gap-3 text-[11px] text-slate-600">
+<span class="text-slate-400 font-semibold uppercase text-[10px] tracking-wider">Group 1:</span>
+<span class="flex items-center gap-1 font-medium"><span class="w-2 h-2 rounded-xs bg-[#4CAF50]"></span> Active</span>
+<span class="flex items-center gap-1 font-medium"><span class="w-2 h-2 rounded-xs bg-[#FF9800]"></span> Inactive</span>
+<span class="flex items-center gap-1 font-medium"><span class="w-2 h-2 rounded-xs bg-[#616161]"></span> No activity</span>
+<span class="flex items-center gap-1 font-medium"><span class="w-2 h-2 rounded-xs bg-[#3F51B5]"></span> Not monitored</span>
+<span class="h-3 w-px bg-slate-300"></span>
+<span class="text-slate-400 font-semibold uppercase text-[10px] tracking-wider">Group 2:</span>
+<span class="flex items-center gap-1 font-medium"><span class="w-2 h-2 rounded-xs bg-[#E91E63]"></span> Unassigned</span>
+</div>
+</div>
+<!-- 12-Month Dual Stacked Chart Visualization -->
+<div class="pt-6 pb-2">
+<div class="h-56 w-full flex items-end justify-between gap-2 px-2 relative">
+<!-- Background Horizontal Grid lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-40">
+<div class="border-b custom-border border-dashed w-full h-0"></div>
+<div class="border-b custom-border border-dashed w-full h-0"></div>
+<div class="border-b custom-border border-dashed w-full h-0"></div>
+<div class="border-b custom-border border-dashed w-full h-0"></div>
+<div class="border-b custom-border w-full h-0"></div>
+</div>
+<!-- Month 1: Jan -->
+<div class="flex-1 flex flex-col items-center h-full justify-end z-10">
+<div class="w-full flex items-end justify-center gap-1 h-[85%]">
+<!-- Deployed Stack -->
+<div class="w-3.5 sm:w-4 flex flex-col justify-end h-[68%] rounded-xs overflow-hidden" title="Jan: 720 Active, 80 Inactive, 40 No Activity, 20 Not Monitored">
+<div class="bg-[#3F51B5] h-[5%]"></div>
+<div class="bg-[#616161] h-[8%]"></div>
+<div class="bg-[#FF9800] h-[15%]"></div>
+<div class="bg-[#4CAF50] h-[72%]"></div>
+</div>
+<!-- Unassigned Bar -->
+<div class="w-3 sm:w-3.5 bg-[#E91E63] h-[36%] rounded-xs" title="Jan: 220 Unassigned"></div>
+</div>
+<span class="text-[10px] font-medium text-slate-500 mt-2">Jan</span>
+</div>
+<!-- Month 2: Feb -->
+<div class="flex-1 flex flex-col items-center h-full justify-end z-10">
+<div class="w-full flex items-end justify-center gap-1 h-[85%]">
+<div class="w-3.5 sm:w-4 flex flex-col justify-end h-[70%] rounded-xs overflow-hidden">
+<div class="bg-[#3F51B5] h-[5%]"></div>
+<div class="bg-[#616161] h-[8%]"></div>
+<div class="bg-[#FF9800] h-[14%]"></div>
+<div class="bg-[#4CAF50] h-[73%]"></div>
+</div>
+<div class="w-3 sm:w-3.5 bg-[#E91E63] h-[33%] rounded-xs"></div>
+</div>
+<span class="text-[10px] font-medium text-slate-500 mt-2">Feb</span>
+</div>
+<!-- Month 3: Mar -->
+<div class="flex-1 flex flex-col items-center h-full justify-end z-10">
+<div class="w-full flex items-end justify-center gap-1 h-[85%]">
+<div class="w-3.5 sm:w-4 flex flex-col justify-end h-[72%] rounded-xs overflow-hidden">
+<div class="bg-[#3F51B5] h-[4%]"></div>
+<div class="bg-[#616161] h-[7%]"></div>
+<div class="bg-[#FF9800] h-[14%]"></div>
+<div class="bg-[#4CAF50] h-[75%]"></div>
+</div>
+<div class="w-3 sm:w-3.5 bg-[#E91E63] h-[30%] rounded-xs"></div>
+</div>
+<span class="text-[10px] font-medium text-slate-500 mt-2">Mar</span>
+</div>
+<!-- Month 4: Apr -->
+<div class="flex-1 flex flex-col items-center h-full justify-end z-10">
+<div class="w-full flex items-end justify-center gap-1 h-[85%]">
+<div class="w-3.5 sm:w-4 flex flex-col justify-end h-[75%] rounded-xs overflow-hidden">
+<div class="bg-[#3F51B5] h-[4%]"></div>
+<div class="bg-[#616161] h-[7%]"></div>
+<div class="bg-[#FF9800] h-[13%]"></div>
+<div class="bg-[#4CAF50] h-[76%]"></div>
+</div>
+<div class="w-3 sm:w-3.5 bg-[#E91E63] h-[28%] rounded-xs"></div>
+</div>
+<span class="text-[10px] font-medium text-slate-500 mt-2">Apr</span>
+</div>
+<!-- Month 5: May -->
+<div class="flex-1 flex flex-col items-center h-full justify-end z-10">
+<div class="w-full flex items-end justify-center gap-1 h-[85%]">
+<div class="w-3.5 sm:w-4 flex flex-col justify-end h-[77%] rounded-xs overflow-hidden">
+<div class="bg-[#3F51B5] h-[4%]"></div>
+<div class="bg-[#616161] h-[6%]"></div>
+<div class="bg-[#FF9800] h-[12%]"></div>
+<div class="bg-[#4CAF50] h-[78%]"></div>
+</div>
+<div class="w-3 sm:w-3.5 bg-[#E91E63] h-[25%] rounded-xs"></div>
+</div>
+<span class="text-[10px] font-medium text-slate-500 mt-2">May</span>
+</div>
+<!-- Month 6: Jun -->
+<div class="flex-1 flex flex-col items-center h-full justify-end z-10">
+<div class="w-full flex items-end justify-center gap-1 h-[85%]">
+<div class="w-3.5 sm:w-4 flex flex-col justify-end h-[79%] rounded-xs overflow-hidden">
+<div class="bg-[#3F51B5] h-[3%]"></div>
+<div class="bg-[#616161] h-[6%]"></div>
+<div class="bg-[#FF9800] h-[12%]"></div>
+<div class="bg-[#4CAF50] h-[79%]"></div>
+</div>
+<div class="w-3 sm:w-3.5 bg-[#E91E63] h-[22%] rounded-xs"></div>
+</div>
+<span class="text-[10px] font-medium text-slate-500 mt-2">Jun</span>
+</div>
+<!-- Month 7: Jul -->
+<div class="flex-1 flex flex-col items-center h-full justify-end z-10">
+<div class="w-full flex items-end justify-center gap-1 h-[85%]">
+<div class="w-3.5 sm:w-4 flex flex-col justify-end h-[81%] rounded-xs overflow-hidden">
+<div class="bg-[#3F51B5] h-[3%]"></div>
+<div class="bg-[#616161] h-[5%]"></div>
+<div class="bg-[#FF9800] h-[11%]"></div>
+<div class="bg-[#4CAF50] h-[81%]"></div>
+</div>
+<div class="w-3 sm:w-3.5 bg-[#E91E63] h-[20%] rounded-xs"></div>
+</div>
+<span class="text-[10px] font-medium text-slate-500 mt-2">Jul</span>
+</div>
+<!-- Month 8: Aug -->
+<div class="flex-1 flex flex-col items-center h-full justify-end z-10">
+<div class="w-full flex items-end justify-center gap-1 h-[85%]">
+<div class="w-3.5 sm:w-4 flex flex-col justify-end h-[83%] rounded-xs overflow-hidden">
+<div class="bg-[#3F51B5] h-[3%]"></div>
+<div class="bg-[#616161] h-[5%]"></div>
+<div class="bg-[#FF9800] h-[10%]"></div>
+<div class="bg-[#4CAF50] h-[82%]"></div>
+</div>
+<div class="w-3 sm:w-3.5 bg-[#E91E63] h-[18%] rounded-xs"></div>
+</div>
+<span class="text-[10px] font-medium text-slate-500 mt-2">Aug</span>
+</div>
+<!-- Month 9: Sep -->
+<div class="flex-1 flex flex-col items-center h-full justify-end z-10">
+<div class="w-full flex items-end justify-center gap-1 h-[85%]">
+<div class="w-3.5 sm:w-4 flex flex-col justify-end h-[86%] rounded-xs overflow-hidden">
+<div class="bg-[#3F51B5] h-[3%]"></div>
+<div class="bg-[#616161] h-[5%]"></div>
+<div class="bg-[#FF9800] h-[10%]"></div>
+<div class="bg-[#4CAF50] h-[82%]"></div>
+</div>
+<div class="w-3 sm:w-3.5 bg-[#E91E63] h-[16%] rounded-xs"></div>
+</div>
+<span class="text-[10px] font-medium text-slate-500 mt-2">Sep</span>
+</div>
+<!-- Month 10: Oct -->
+<div class="flex-1 flex flex-col items-center h-full justify-end z-10">
+<div class="w-full flex items-end justify-center gap-1 h-[85%]">
+<div class="w-3.5 sm:w-4 flex flex-col justify-end h-[88%] rounded-xs overflow-hidden">
+<div class="bg-[#3F51B5] h-[2%]"></div>
+<div class="bg-[#616161] h-[4%]"></div>
+<div class="bg-[#FF9800] h-[9%]"></div>
+<div class="bg-[#4CAF50] h-[85%]"></div>
+</div>
+<div class="w-3 sm:w-3.5 bg-[#E91E63] h-[14%] rounded-xs"></div>
+</div>
+<span class="text-[10px] font-medium text-slate-500 mt-2">Oct</span>
+</div>
+<!-- Month 11: Nov -->
+<div class="flex-1 flex flex-col items-center h-full justify-end z-10">
+<div class="w-full flex items-end justify-center gap-1 h-[85%]">
+<div class="w-3.5 sm:w-4 flex flex-col justify-end h-[91%] rounded-xs overflow-hidden">
+<div class="bg-[#3F51B5] h-[2%]"></div>
+<div class="bg-[#616161] h-[4%]"></div>
+<div class="bg-[#FF9800] h-[9%]"></div>
+<div class="bg-[#4CAF50] h-[85%]"></div>
+</div>
+<div class="w-3 sm:w-3.5 bg-[#E91E63] h-[12%] rounded-xs"></div>
+</div>
+<span class="text-[10px] font-medium text-slate-500 mt-2">Nov</span>
+</div>
+<!-- Month 12: Dec -->
+<div class="flex-1 flex flex-col items-center h-full justify-end z-10">
+<div class="w-full flex items-end justify-center gap-1 h-[85%]">
+<div class="w-3.5 sm:w-4 flex flex-col justify-end h-[94%] rounded-xs overflow-hidden">
+<div class="bg-[#3F51B5] h-[2%]"></div>
+<div class="bg-[#616161] h-[4%]"></div>
+<div class="bg-[#FF9800] h-[8%]"></div>
+<div class="bg-[#4CAF50] h-[86%]"></div>
+</div>
+<div class="w-3 sm:w-3.5 bg-[#E91E63] h-[10%] rounded-xs"></div>
+</div>
+<span class="text-[10px] font-medium text-slate-500 mt-2 font-bold text-slate-800">Dec</span>
+</div>
+</div>
+</div>
+<!-- Executive Takeaway Banner -->
+<div class="mt-4 p-3 rounded-lg bg-[#f0f9ff] border border-[#bae6fd] flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px] text-[#0369a1] shrink-0">lightbulb</span>
+<div class="text-xs text-[#0369a1]">
+<span class="font-bold">Key Management Insight:</span> Active utilization increased by <span class="font-semibold">+34.6%</span> while Unassigned inventory dropped from 220 to 70 seats. Estimated capital reclaimed: <span class="font-semibold text-slate-900">$82,400</span>.
+          </div>
+</div>
+</section>
+</main>
+</div>
+</body></html>
