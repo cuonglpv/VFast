@@ -44,8 +44,8 @@ There are four roles. One diagram per actor shows every use case that actor can 
 | Role | Use cases |
 |---|---|
 | **Employee** (every employee) | UC23 View My Licenses · UC24 Login / Logout |
-| **Staff** (license management team) | UC01–UC04 License Management · UC07 Manage Expenses · UC23, UC24 |
-| **Manager** (manager of a P&L or a department) | UC05, UC06, UC08, UC09 Budget · UC10–UC14 Optimization · UC15–UC18 Analytics · UC23, UC24 |
+| **Staff** (reports to a Manager; hands-on data entry) | UC01–UC04 License Management · UC07 Manage Expenses · UC23, UC24 |
+| **Manager** (manager of a P&L or a department; plans and decides) | UC05, UC06, UC08, UC09 Budget · UC10–UC14 Optimization · UC15–UC18 Analytics · UC23, UC24 |
 | **Admin** (system operator) | UC19–UC22 User & Organization (users, P&Ls and departments, roles, permissions) · UC23, UC24 |
 
 | | |
@@ -55,9 +55,41 @@ There are four roles. One diagram per actor shows every use case that actor can 
 
 Diagram sources are draw.io files in [`docs/diagrams/out/`](docs/diagrams/out/). Role × feature matrix, 18 business rules, and the specification of all 24 use cases: [Use cases](docs/02-use-cases.md).
 
-### 1.4 INVEST requirements
+### 1.4 Roles and permissions
 
-The backlog contains **24 user stories (89 story points)**, one per use case (USxx implements UCxx). Every story passes the INVEST review and has Given/When/Then acceptance criteria.
+There are four roles; each account has exactly one. Every account belongs to a real employee, matched by company email.
+
+| Role | Who | Responsibility | Data scope |
+|---|---|---|---|
+| **Employee** | Every employee of the group | Sees the licenses assigned to them and whether they are recorded as used | Own licenses only, without price or cost |
+| **Staff** | License management team member, reports to a Manager | Hands-on work: enters and corrects license data, holders and usage where there is no connector, and expenses | Every license and expense; no budget, no dashboards |
+| **Manager** | Manager of a P&L (subsidiary) or a department | Plans the budget, monitors spending, reviews waste, decides on recommendations | Only the P&Ls or departments assigned to them |
+| **Admin** | System operator | Users, P&Ls and departments, roles, permissions | Access settings only; no license, budget, or cost data |
+
+| Capability | Admin | Manager | Staff | Employee |
+|---|---|---|---|---|
+| Software catalog, vendors | — | — | Create / edit | — |
+| License entitlements, contracts | — | — | Create / edit | — |
+| License holders and usage (where there is no connector) | — | — | Create / edit / import | — |
+| Expenses and invoices | — | — | Create / edit / import | — |
+| Budget plan | — | Create / edit, own units | — | — |
+| Cost allocation, budget monitoring, forecast | — | Read, own units | — | — |
+| Unused, inactive, overuse detection | — | Read, own units | — | — |
+| Cost optimization, recommendations | — | Read / decide, own units | — | — |
+| License, financial, compliance, optimization dashboards | — | Read, own units | — | — |
+| Users, roles, permissions | Create / edit | — | — | — |
+| P&Ls and departments | Create / edit | — | — | — |
+| My licenses | Read own | Read own | Read own | Read own |
+
+- The backend enforces every cell of this table and the data scope; hiding a button in the interface is not enough, and a call outside the role returns `403`.
+- VFast never writes to a provider: "edit" here changes data in VFast only.
+- Every change to license data, expenses, budgets, recommendations, and access is recorded with who, old value, new value, and time.
+
+Staff and Manager compared, and the full role × feature matrix with the business rules: [Use cases](docs/02-use-cases.md#staff-and-manager).
+
+### 1.5 INVEST requirements
+
+The backlog contains **24 user stories (92 story points)**, one per use case (USxx implements UCxx). Every story passes the INVEST review and has Given/When/Then acceptance criteria.
 
 | Criterion | Meaning in VFast |
 |---|---|
@@ -65,7 +97,7 @@ The backlog contains **24 user stories (89 story points)**, one per use case (US
 | **Negotiable** | Layout and implementation may change while outcome, permissions, and business rules stay fixed. |
 | **Valuable** | Each story names the benefit for one role: Employee, Staff, Manager, or Admin. |
 | **Estimable** | Inputs, outputs, roles, data scope, and failure outcomes are explicit; every story is estimated in points. |
-| **Small** | One mind-map leaf per story; no story exceeds 5 points. |
+| **Small** | One mind-map leaf per story; only US03 (entitlements plus manual usage entry) reaches 8 points. |
 | **Testable** | Every story has observable criteria, including rules that tie figures across screens. |
 
 ```text

@@ -116,7 +116,7 @@ For Microsoft 365, the Graph v1.0 endpoints below cover the first phase. They mu
 | Activity per user | `GET /reports/getOffice365ActiveUserDetail(period='D30')` |
 | Last sign-in | `GET /users?$select=signInActivity` |
 
-Graph does not provide prices, cost, P&L, or monthly history: prices and cost come from Staff (import or manual entry), units from HR data, and history from a daily snapshot kept by VFast.
+Graph does not provide prices, cost, P&L, or monthly history: prices and cost come from Staff (import or manual entry), assignments and usage of licenses without a connector also come from Staff (UC03), units from HR data, and history from a daily snapshot kept by VFast.
 
 **Risks to check early:** admin permissions needed to call each API; report delay and history limits; usage reports that anonymize user names by default; `signInActivity` requiring a paid Entra ID plan; API rate limits.
 

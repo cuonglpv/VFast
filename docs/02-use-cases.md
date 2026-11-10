@@ -11,7 +11,7 @@ Product name: **VFast — Enterprise License Management System**. Use cases foll
 | Actor | Description |
 |---|---|
 | `EMPLOYEE` | Every employee of the company. Sees only the licenses assigned to them and whether they are recorded as used |
-| `STAFF` | Member of the license management team. Views and edits license information (catalog, vendors, entitlements, contracts) and enters expenses |
+| `STAFF` | Member of the license management team who reports to a Manager. Does the hands-on work: enters and edits license information (catalog, vendors, entitlements, contracts) and expenses |
 | `MANAGER` | Manager of a unit (a P&L or a department). Mainly uses dashboards and analytics; plans and monitors the unit's budget; reviews optimization results. Sees license data and cost through the dashboards |
 | `ADMIN` | Operates the system: users, roles, permissions, and the P&L / department tree. Has no access to license, budget, or cost data |
 | License providers | External systems (Microsoft Graph and other provider APIs, logs, exports). VFast only reads from them |
@@ -19,6 +19,19 @@ Product name: **VFast — Enterprise License Management System**. Use cases foll
 Every account belongs to a real employee (matched by company email), so View My Licenses and Login / Logout belong to every role.
 
 **Organization.** The group has several P&Ls (subsidiaries); each P&L has departments. In this document a *unit* is a P&L or a department. A Manager is assigned to one or more units and sees only their data; budgets, cost allocation, and data scope follow units.
+
+## Staff and Manager
+
+Staff work under a Manager. Staff do the hands-on work: they enter and correct the data. The Manager uses that data to plan, monitor, and decide. The two roles share no business use case.
+
+| | Staff | Manager |
+|---|---|---|
+| Position | License management team member, reports to a Manager | Manager of a P&L or a department |
+| Kind of work | Hands-on data entry and correction | Planning, monitoring, and decisions |
+| Works on | Software catalog, vendors, entitlements, license holders and usage where there is no connector, contracts, expenses and invoices (UC01–UC04, UC07) | Budget plans, cost allocation, budget monitoring and forecast, optimization, recommendations, dashboards (UC05, UC06, UC08–UC18) |
+| Typical day | Add a new contract, update seat quantities and prices, enter who holds a license and their last activity, import an expense file, attach invoices | Check budget utilization, review unused and inactive seats, accept or reject a recommendation |
+| Data scope | Every license and expense; no budget, no dashboards | Only their units; license data and cost through dashboards; never edits license data or expenses |
+| Output | Correct, complete source data | Budget plans and decisions on recommendations |
 
 ## Role × feature matrix
 
@@ -129,9 +142,10 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 #### UC03 Manage License Entitlements
 
 - **Actor:** Staff
-- **Main flow:** open a product → entitlement lines (Plan, Archetype, Unit, Quantity or quota, Assigned, Active, Valid from–to, Source) → add a line: plan, archetype (BR-02), unit (seat, slot, token, core…), quantity or quota, validity, unit price, billing cycle, currency → edit → end a line → import lines from a CSV template
-- **Alternative:** negative quantity, end before start, or missing currency → field errors; a value from a connector → edit needs a reason and keeps the original (BR-14); CSV with an invalid row → whole file rejected with the error rows
-- **Result:** Purchased quantity and price per line; Assigned and Active come from connectors (BR-01)
+- **Main flow (entitlement):** open a product → entitlement lines (Plan, Archetype, Unit, Quantity or quota, Assigned, Active, Valid from–to, Source) → add a line: plan, archetype (BR-02), unit (seat, slot, token, core…), quantity or quota, validity, unit price, billing cycle, currency → edit → end a line → import lines from a CSV template
+- **Main flow (assignment and usage, for a line without a connector):** open a line → holders table (User, Assigned date, Last active, Source) → add or remove a holder by employee email → enter the last activity date per holder; for Concurrent, Metered, and Capacity lines enter the peak sessions, consumption, or deployed units per period → or import a CSV template for the line's archetype → preview rows to add, update, reject → confirm → see the entry history (who, when, file, rows)
+- **Alternative:** negative quantity, end before start, or missing currency → field errors; a value from a connector → edit needs a reason and keeps the original (BR-14); CSV with an invalid row → whole file rejected with the error rows; holder email not matched to an employee → stored with the provider identity and `Unknown department`; the line already has a connector for assignments or usage → manual entry of that data is refused (one primary source, BR-14); a period entered twice → replaced, no duplicate
+- **Result:** Purchased quantity and price per line; Assigned and usage come from connectors or, where there is none, from Staff entry with source `manual` or `import` (BR-14). A line with neither stays `Not monitored` (BR-03)
 
 #### UC04 Manage Contracts
 

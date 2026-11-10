@@ -12,7 +12,7 @@ Each story is small enough to implement and test independently. Authentication, 
 | Negotiable | Layout and implementation details may change while the outcome, permissions, and business rules stay fixed. |
 | Valuable | Every story names the benefit for one role: Employee, Staff, Manager, or Admin. |
 | Estimable | Inputs, outputs, roles, data scope, and failure outcomes are explicit; each story has a story-point estimate. |
-| Small | One mind-map leaf per story; no story exceeds 5 points. |
+| Small | One mind-map leaf per story; only US03 reaches 8 points, every other story is 5 or less. |
 | Testable | Every story has observable Given/When/Then criteria, including rules that tie figures across screens. |
 
 ## Product backlog
@@ -24,7 +24,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | **License Management** | | | | | |
 | US01 | As a Staff member, I want to maintain one software catalog for every provider so that everyone talks about the same products. | Single catalog | US24 | M | 5 |
 | US02 | As a Staff member, I want to record vendors and how their data is collected so that every product and contract has an owner. | Vendor master data | US24 | M | 2 |
-| US03 | As a Staff member, I want to record entitlement lines with archetype, quantity, and price so that purchased quantities and costs are known. | Purchased baseline | US01, US02 | M | 5 |
+| US03 | As a Staff member, I want to record entitlement lines with archetype, quantity, and price, and — where no connector exists — who holds each license and their usage, so that purchased, assigned, and used quantities are known. | Purchased and usage baseline | US01, US02 | M | 8 |
 | US04 | As a Staff member, I want to record contracts with renewal date and notice period so that renewals are never missed. | Renewal control | US02, US03 | M | 3 |
 | **Budget Management** | | | | | |
 | US05 | As a Manager, I want to plan my unit's yearly license budget with planned quantity and cost per license so that spending has a target. | Planning | US03, US20 | M | 5 |
@@ -52,7 +52,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US23 | As an employee, I want to see the licenses assigned to me and whether I am recorded as using them so that I can tell my manager when I no longer need one. | Self-service | US24 | M | 2 |
 | US24 | As any user, I want to log in and out and land on the screen of my role so that only I see my data. | Protected access | Seeded accounts | M | 3 |
 
-**Total:** 24 stories, 89 points. Must-have: 21 stories (76 points); forecast, cost optimization, and the optimization dashboard are Should-have.
+**Total:** 24 stories, 92 points. Must-have: 21 stories (79 points); forecast, cost optimization, and the optimization dashboard are Should-have.
 
 ## Per-story INVEST review
 
@@ -62,7 +62,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 |---|---|---|---|---|---|---|---|
 | US01 | PASS | PASS | PASS | PASS | PASS | PASS | Duplicate rule and inactive rule are explicit. |
 | US02 | PASS | PASS | PASS | PASS | PASS | PASS | Simple master data; inactive rule explicit. |
-| US03 | PASS | PASS | PASS | PASS | PASS | PASS | Archetype per line (BR-02); connector values protected (BR-14). Splits into: form, CSV import. |
+| US03 | PASS | PASS | PASS | PASS | PASS | PASS | Largest story (8). Archetype per line (BR-02); connector values protected and one primary source per data type (BR-14). Splits into: entitlement form, entitlement CSV, holders and usage form, usage CSV per archetype. |
 | US04 | PASS | PASS | PASS | PASS | PASS | PASS | "Renewal soon" and "Notice period passed" are testable with a fixed date. |
 | US05 | PASS | PASS | PASS | PASS | PASS | PASS | One plan per unit and year; `Draft`/`Active` (BR-08). |
 | US06 | PASS | PASS | PASS | PASS | PASS | PASS | Split rule BR-06; total ties to the financial dashboard. |
@@ -109,6 +109,9 @@ Format: **Given** context, **When** action, **Then** observable result.
 2. Given a negative quantity, an end date before the start, or no currency, then field errors are returned.
 3. Given a quantity that comes from a connector, when Staff edits it, then a reason is required and the original value is kept beside the edit.
 4. Given a CSV with one invalid row, when imported, then no line is created and the error row is listed.
+5. Given a line without a connector, when Staff adds 3 holders by email with their last activity dates, then Assigned shows 3 and each holder's status follows BR-03 with source `manual`.
+6. Given a line whose assignments come from a connector, when Staff tries to add a holder by hand, then it is refused.
+7. Given a usage CSV for a Metered line, then the preview shows rows to add, update, and reject before anything is written; importing the same period again creates no duplicate.
 
 #### AC-US04 Contracts
 
