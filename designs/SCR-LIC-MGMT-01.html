@@ -3,15 +3,15 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>VFast ELMS - License Management</title>
-<!-- Material Symbols Outlined -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Google Fonts Inter -->
+<title>VFast ELMS - License Management (SCR-LIC-MGMT-01)</title>
+<!-- Inter Google Font -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with Plugins -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
     tailwind.config = {
@@ -19,53 +19,53 @@
       theme: {
         extend: {
           "colors": {
-            "on-primary-fixed-variant": "#004881",
-            "tertiary": "#00517d",
-            "surface": "#f9f9ff",
-            "tertiary-container": "#006aa1",
-            "secondary-container": "#d5e3fc",
-            "surface-container-low": "#f0f3ff",
-            "primary": "#004f8b",
-            "secondary-fixed-dim": "#b9c7df",
-            "on-tertiary-container": "#cde5ff",
-            "surface-container-lowest": "#ffffff",
-            "on-secondary-fixed-variant": "#3a485b",
-            "primary-fixed": "#d3e4ff",
-            "on-secondary": "#ffffff",
-            "surface-variant": "#d8e3fb",
-            "surface-bright": "#f9f9ff",
-            "on-tertiary-fixed-variant": "#004b73",
-            "on-secondary-container": "#57657a",
-            "surface-container": "#e7eeff",
-            "tertiary-fixed": "#cce5ff",
-            "surface-tint": "#0060a9",
-            "on-background": "#111c2d",
-            "secondary": "#515f74",
-            "on-primary": "#ffffff",
-            "outline-variant": "#c1c7d3",
-            "secondary-fixed": "#d5e3fc",
-            "outline": "#717782",
-            "on-error-container": "#93000a",
-            "inverse-primary": "#a2c9ff",
-            "background": "#f9f9ff",
-            "primary-container": "#0f67b1",
             "on-primary-container": "#d4e4ff",
-            "on-surface": "#111c2d",
-            "on-tertiary-fixed": "#001d31",
-            "on-secondary-fixed": "#0d1c2e",
-            "on-error": "#ffffff",
-            "surface-container-high": "#dee8ff",
-            "on-tertiary": "#ffffff",
-            "surface-dim": "#cfdaf2",
-            "on-surface-variant": "#414751",
-            "tertiary-fixed-dim": "#93ccff",
-            "error-container": "#ffdad6",
-            "surface-container-highest": "#d8e3fb",
-            "on-primary-fixed": "#001c38",
-            "inverse-on-surface": "#ecf1ff",
-            "inverse-surface": "#263143",
+            "secondary-fixed-dim": "#b9c7df",
+            "outline-variant": "#c1c7d3",
+            "surface-variant": "#d8e3fb",
+            "tertiary": "#00517d",
+            "on-background": "#111c2d",
             "primary-fixed-dim": "#a2c9ff",
-            "error": "#ba1a1a"
+            "on-secondary": "#ffffff",
+            "background": "#f8fafc",
+            "surface-dim": "#cfdaf2",
+            "on-secondary-fixed-variant": "#3a485b",
+            "surface-container": "#e7eeff",
+            "on-error-container": "#93000a",
+            "on-primary": "#ffffff",
+            "primary-fixed": "#d3e4ff",
+            "inverse-primary": "#a2c9ff",
+            "surface-tint": "#0060a9",
+            "error-container": "#ffdad6",
+            "on-primary-fixed": "#001c38",
+            "on-secondary-container": "#57657a",
+            "tertiary-fixed": "#cce5ff",
+            "surface": "#ffffff",
+            "on-error": "#ffffff",
+            "on-primary-fixed-variant": "#004881",
+            "tertiary-fixed-dim": "#93ccff",
+            "on-tertiary-container": "#cde5ff",
+            "on-secondary-fixed": "#0d1c2e",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-high": "#dee8ff",
+            "secondary-container": "#d5e3fc",
+            "on-tertiary-fixed": "#001d31",
+            "error": "#ba1a1a",
+            "inverse-surface": "#263143",
+            "primary": "#0f67b1",
+            "on-tertiary-fixed-variant": "#004b73",
+            "secondary-fixed": "#d5e3fc",
+            "surface-container-highest": "#d8e3fb",
+            "surface-bright": "#f9f9ff",
+            "tertiary-container": "#006aa1",
+            "surface-container-low": "#f0f3ff",
+            "on-surface-variant": "#414751",
+            "on-tertiary": "#ffffff",
+            "primary-container": "#0f67b1",
+            "outline": "#e2e8f0",
+            "on-surface": "#0f172a",
+            "secondary": "#475569",
+            "inverse-on-surface": "#ecf1ff"
           },
           "borderRadius": {
             "DEFAULT": "0.25rem",
@@ -83,713 +83,626 @@
       },
     }
   </script>
-<style>
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      line-height: 1;
-      display: inline-block;
-      vertical-align: middle;
-    }
-  </style>
 </head>
-<body class="bg-background text-on-surface font-body antialiased min-h-screen flex">
-<!-- ================= LEFT SIDEBAR (Shared Component: SideNavBar) ================= -->
-<aside class="fixed top-0 left-0 h-screen w-60 z-30 bg-surface-container-lowest border-r border-outline-variant flex flex-col justify-between">
-<!-- Top Branding & Navigation -->
-<div>
-<!-- Brand Header -->
-<div class="h-16 flex items-center gap-3 px-5 border-b border-outline-variant/60">
-<div class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-on-primary font-bold text-base shadow-sm">
-<span class="material-symbols-outlined text-[20px]" data-icon="vpn_key">vpn_key</span>
+<body class="bg-background text-on-surface font-body min-h-screen antialiased flex">
+<!-- LEFT SIDEBAR (SideNavBar Shared Component adherence) -->
+<aside class="fixed top-0 left-0 h-screen w-60 z-30 bg-surface-container-lowest border-r border-outline flex flex-col justify-between p-4">
+<!-- Brand Anchor & Top Nav Group -->
+<div class="flex flex-col gap-6">
+<!-- Brand Logo / Header -->
+<div class="flex items-center gap-3 px-2 pt-1">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary shadow-sm shrink-0">
+<span class="material-symbols-outlined text-2xl" data-icon="vpn_key">vpn_key</span>
 </div>
 <div class="flex flex-col">
-<span class="font-headline text-base font-bold tracking-tight text-primary">VFast ELMS</span>
-<span class="font-label text-[11px] text-secondary tracking-normal">Enterprise Licensing</span>
+<span class="font-headline text-lg font-bold tracking-tight text-primary leading-tight">VFast ELMS</span>
+<span class="font-label text-xs text-secondary font-medium tracking-wide">Enterprise Licensing</span>
 </div>
 </div>
 <!-- Quick Action CTA -->
-<div class="px-4 pt-4 pb-2">
-<button class="w-full flex items-center justify-center gap-2 py-2 px-3 bg-primary text-on-primary rounded-lg text-xs font-medium hover:bg-primary-container transition-colors shadow-sm">
-<span class="material-symbols-outlined text-[16px]" data-icon="add">add</span>
+<button class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-[#0d5999] text-on-primary py-2 px-3 rounded-lg font-label text-sm font-medium transition-colors shadow-none">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
 <span>Add License</span>
 </button>
-</div>
-<!-- Main Navigation Menu -->
-<nav class="p-3 space-y-1">
-<div class="px-2 py-1.5 text-[10px] font-semibold text-secondary uppercase tracking-wider font-label">Main Navigation</div>
-<!-- Tab 1: Dashboard -->
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors" href="#">
-<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
-<span class="font-label text-sm">Dashboard</span>
+<!-- Navigation Tabs (IA Contract Itemization) -->
+<nav aria-label="Main Navigation" class="flex flex-col gap-1.5">
+<!-- Item 1: License Management (ACTIVE) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary-container text-primary font-semibold text-sm transition-colors" href="#license-management">
+<span class="material-symbols-outlined text-xl" data-icon="vpn_key">vpn_key</span>
+<span>License Management</span>
 </a>
-<!-- Tab 2: License Management (Active) -->
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary-container text-on-secondary-container font-medium" href="#">
-<span class="material-symbols-outlined text-[20px]" data-icon="vpn_key" style="font-variation-settings: 'FILL' 1;">vpn_key</span>
-<span class="font-label text-sm text-primary font-semibold">License Management</span>
+<!-- Item 2: Analytics Hub -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-low transition-colors font-medium text-sm" href="#analytics">
+<span class="material-symbols-outlined text-xl" data-icon="insights">insights</span>
+<span>Analytics Hub</span>
 </a>
-<!-- Tab 3: Analytics -->
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors" href="#">
-<span class="material-symbols-outlined text-[20px]" data-icon="insights">insights</span>
-<span class="font-label text-sm">Analytics</span>
-</a>
-<!-- Tab 4: Audit Logs -->
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors" href="#">
-<span class="material-symbols-outlined text-[20px]" data-icon="history">history</span>
-<span class="font-label text-sm">Audit Logs</span>
-</a>
-<!-- Tab 5: Settings -->
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors" href="#">
-<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
-<span class="font-label text-sm">Settings</span>
+<!-- Item 3: User Management (Admin) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-low transition-colors font-medium text-sm" href="#user-management">
+<span class="material-symbols-outlined text-xl" data-icon="manage_accounts">manage_accounts</span>
+<span>User Management (Admin)</span>
 </a>
 </nav>
 </div>
-<!-- Sidebar Footer -->
-<div class="p-3 border-t border-outline-variant/60 space-y-1">
-<div class="px-3 py-2 rounded-lg bg-surface-container-low/60 border border-outline-variant/40 mb-2">
-<div class="flex items-center justify-between text-[11px] text-secondary font-medium">
-<span>Enterprise Tenant</span>
-<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800">Active</span>
+<!-- Sidebar Bottom Status & Utility Tabs -->
+<div class="flex flex-col gap-3 pt-4 border-t border-outline">
+<!-- Tenant Status Chip -->
+<div class="bg-surface-container-low border border-outline rounded-lg px-3 py-2 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+<span class="font-label text-xs font-semibold text-on-surface">Enterprise Tenant</span>
 </div>
-<div class="text-[10px] text-outline mt-0.5 font-mono">v2.4.0 • Region US-East</div>
+<span class="text-[10px] font-semibold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">Active</span>
 </div>
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors" href="#">
-<span class="material-symbols-outlined text-[18px]" data-icon="help">help</span>
-<span class="font-label text-xs">Support &amp; Docs</span>
+<!-- Footer Action Links -->
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low text-sm font-medium transition-colors" href="#support">
+<span class="material-symbols-outlined text-lg" data-icon="help">help</span>
+<span>Support &amp; Docs</span>
 </a>
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors" href="#">
-<span class="material-symbols-outlined text-[18px]" data-icon="logout">logout</span>
-<span class="font-label text-xs">Sign Out</span>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low text-sm font-medium transition-colors" href="#logout">
+<span class="material-symbols-outlined text-lg" data-icon="logout">logout</span>
+<span>Sign Out</span>
 </a>
+</div>
 </div>
 </aside>
-<!-- ================= MAIN CONTAINER ================= -->
-<div class="w-[calc(100%-15rem)] ml-auto flex flex-col min-h-screen">
-<!-- Top App Bar (Shared Component: TopNavBar) -->
-<header class="sticky top-0 h-16 bg-surface-container-lowest border-b border-outline-variant z-20 px-6 flex items-center justify-between">
-<!-- Left: Breadcrumbs -->
-<div class="flex items-center gap-2">
-<span class="font-headline text-sm font-medium text-secondary">Executive Portal</span>
-<span class="text-outline-variant text-xs">/</span>
-<span class="font-headline text-sm font-semibold text-primary">License Management</span>
+<!-- MAIN VIEWPORT WRAPPER (Offset for w-60 sidebar) -->
+<div class="flex-1 ml-60 flex flex-col min-h-screen bg-background">
+<!-- TOP APP BAR (TopNavBar Shared Component adherence) -->
+<header class="h-16 bg-surface-container-lowest border-b border-outline px-8 flex items-center justify-between sticky top-0 z-20">
+<!-- Breadcrumb Navigation -->
+<div class="flex items-center gap-3">
+<span class="font-headline text-sm font-medium text-secondary">Executive Portal / License Management</span>
+<span class="text-xs font-mono font-medium px-2 py-0.5 rounded bg-surface-container text-primary border border-outline-variant">SCR-LIC-MGMT-01</span>
 </div>
-<!-- Right: Search Bar & Actions -->
+<!-- Trailing Controls Cluster -->
 <div class="flex items-center gap-4">
-<!-- MUI-Style Search Box -->
+<!-- Quick Search Input Field -->
 <div class="relative w-72">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-secondary" data-icon="search">search</span>
-<input class="w-full pl-9 pr-4 py-1.5 text-xs bg-surface-container-low border border-outline-variant rounded-md text-on-surface placeholder-secondary focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all" placeholder="Search software, publisher, tags..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-secondary text-lg" data-icon="search">search</span>
+<input class="w-full bg-surface text-sm pl-9 pr-4 py-1.5 rounded-lg border border-outline placeholder:text-secondary focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all font-body text-on-surface" placeholder="Search licenses, publishers..." type="text"/>
 </div>
-<!-- Trailing Icon Actions -->
-<div class="flex items-center gap-1 border-l border-outline-variant pl-3">
-<button class="relative p-2 text-secondary hover:bg-surface-container-low rounded-lg transition-colors" title="Notifications">
-<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
-<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full ring-2 ring-white"></span>
+<div class="h-5 w-px bg-outline"></div>
+<!-- Notification Button -->
+<button aria-label="Notifications" class="p-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors relative" type="button">
+<span class="material-symbols-outlined text-xl" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full ring-2 ring-surface"></span>
 </button>
-<button class="p-2 text-secondary hover:bg-surface-container-low rounded-lg transition-colors" title="Help">
-<span class="material-symbols-outlined text-[20px]" data-icon="help_outline">help_outline</span>
+<!-- Help Button -->
+<button aria-label="Help &amp; Documentation" class="p-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors" type="button">
+<span class="material-symbols-outlined text-xl" data-icon="help_outline">help_outline</span>
 </button>
-</div>
-<!-- User Profile Pill -->
-<div class="flex items-center gap-2.5 pl-2 border-l border-outline-variant">
-<div class="w-8 h-8 rounded-full bg-primary-fixed text-primary font-semibold flex items-center justify-center text-xs border border-primary/20">
+<!-- Profile Avatar & Details -->
+<div class="flex items-center gap-3 pl-2 border-l border-outline">
+<div class="w-9 h-9 rounded-full bg-primary-container text-on-primary font-bold text-xs flex items-center justify-center tracking-wider" title="DN Dat Nguyen avatar">
             DN
           </div>
 <div class="flex flex-col text-left">
-<span class="font-label text-xs font-semibold text-on-surface leading-tight">Dat Nguyen</span>
-<span class="font-label text-[10px] text-secondary">License Admin</span>
+<span class="font-headline text-xs font-semibold text-on-surface leading-tight">Dat Nguyen</span>
+<span class="text-[11px] text-secondary font-medium leading-tight">Chief IT Architect</span>
 </div>
 </div>
 </div>
 </header>
-<!-- Page Main Content Canvas -->
-<main class="p-6 bg-background space-y-6 flex-1">
-<!-- Page Header -->
-<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+<!-- MAIN SCROLLABLE CONTENT CANVAS -->
+<main class="p-8 flex flex-col gap-6 max-w-[1600px] w-full mx-auto">
+<!-- SECTION 1: TOP 3-CARD STATISTICAL BENTO GRID (12 Columns, Height 300px) -->
+<section class="grid grid-cols-12 gap-6 h-auto xl:h-[300px]">
+<!-- Card 1: Total Licenses (Cols 1-3, span 3) -->
+<article class="col-span-12 xl:col-span-3 bg-surface border border-outline rounded-xl p-5 flex flex-col justify-between shadow-none">
 <div>
-<h1 class="font-headline text-2xl font-bold text-on-surface">License Management</h1>
-<p class="font-body text-xs text-secondary mt-0.5">Software license inventory, category allocation, and active utilization across the enterprise.</p>
-</div>
-<div class="flex items-center gap-2.5">
-<button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 border border-outline-variant bg-surface-container-lowest text-secondary text-xs font-medium rounded-md hover:bg-surface-container-low hover:text-on-surface transition-colors shadow-none">
-<span class="material-symbols-outlined text-[16px]" data-icon="file_download">file_download</span>
-<span>Export Report</span>
-</button>
-<button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-primary text-on-primary text-xs font-medium rounded-md hover:bg-primary-container transition-colors shadow-sm">
-<span class="material-symbols-outlined text-[16px]" data-icon="add">add</span>
-<span>+ Add License</span>
+<div class="flex items-center justify-between mb-3">
+<h2 class="font-headline text-sm font-semibold text-secondary uppercase tracking-wider">Total Licenses</h2>
+<button class="text-secondary hover:text-on-surface" title="Overview of active enterprise seats and license volume">
+<span class="material-symbols-outlined text-lg" data-icon="info">info</span>
 </button>
 </div>
-</div>
-<!-- Top Section Grid: 3 MUI Cards (Total Licenses, Category Chart, Top 5 Usage) -->
-<div class="grid grid-cols-12 gap-5">
-<!-- Card 1: Total Licenses (Col 3 of 12) -->
-<div class="col-span-12 lg:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col justify-between shadow-none h-[300px]">
-<div>
-<div class="flex items-center justify-between">
-<span class="font-headline text-xs font-semibold text-secondary uppercase tracking-wider">Total Licenses</span>
-<span class="material-symbols-outlined text-[18px] text-outline" data-icon="info">info</span>
-</div>
-<div class="mt-4">
-<div class="font-headline text-3xl font-bold text-on-surface tracking-tight">1,284</div>
-<div class="flex items-center gap-1.5 mt-1.5 text-xs text-emerald-600 font-semibold">
-<span class="material-symbols-outlined text-[16px]" data-icon="trending_up">trending_up</span>
-<span>+4.5% vs last month</span>
-</div>
-</div>
-</div>
-<div class="space-y-3 pt-3 border-t border-outline-variant/60">
-<div class="flex items-center justify-between text-xs">
-<span class="text-secondary flex items-center gap-1.5">
-<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                Active Entitlements
+<!-- Value & Month-over-Month Delta Chip -->
+<div class="flex items-baseline gap-3 mb-4">
+<span class="font-headline text-4xl font-bold text-on-surface tracking-tight">1,284</span>
+<span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+<span class="material-symbols-outlined text-xs" data-icon="trending_up">trending_up</span>
+                +4.5% MoM
               </span>
-<span class="font-semibold text-on-surface">1,142 <span class="text-secondary font-normal">(88.9%)</span></span>
 </div>
-<div class="flex items-center justify-between text-xs">
+<!-- Metrics Breakdown -->
+<div class="space-y-2 text-xs">
+<div class="flex items-center justify-between text-secondary">
+<span>Active Entitlements</span>
+<span class="font-semibold text-on-surface">1,142 (88.9%)</span>
+</div>
+<div class="flex items-center justify-between">
 <span class="text-secondary">Expiring in ≤ 30 Days</span>
-<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium border border-amber-300 bg-amber-50 text-amber-700">
-                18 licenses
-              </span>
-</div>
-<div class="w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden">
-<div class="bg-primary h-full rounded-full" style="width: 88.9%;"></div>
+<span class="font-semibold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">18 Licenses</span>
 </div>
 </div>
 </div>
-<!-- Card 2: Category Distribution Chart (Col 5 of 12) -->
-<div class="col-span-12 lg:col-span-5 bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col justify-between shadow-none h-[300px]">
-<div>
+<!-- Seat Utilization Progress -->
+<div class="pt-3 border-t border-outline">
+<div class="flex justify-between items-center text-xs mb-1.5">
+<span class="text-secondary font-medium">Overall Seat Utilization</span>
+<span class="font-semibold text-primary">88.9%</span>
+</div>
+<div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+<div class="bg-primary h-2 rounded-full transition-all duration-500" style="width: 88.9%"></div>
+</div>
+</div>
+</article>
+<!-- Card 2: Category Breakdown (Cols 4-7, span 4) -->
+<article class="col-span-12 xl:col-span-4 bg-surface border border-outline rounded-xl p-5 flex flex-col justify-between shadow-none">
 <div class="flex items-center justify-between">
-<div>
-<h3 class="font-headline text-sm font-semibold text-on-surface">Category Distribution</h3>
-<p class="font-body text-[11px] text-secondary">By allocated software count</p>
+<h2 class="font-headline text-sm font-semibold text-secondary uppercase tracking-wider">Category Breakdown</h2>
+<button class="text-secondary hover:text-on-surface" title="Distribution of allocated software subscriptions across verticals">
+<span class="material-symbols-outlined text-lg" data-icon="info">info</span>
+</button>
 </div>
-<span class="material-symbols-outlined text-[18px] text-outline" data-icon="pie_chart">pie_chart</span>
-</div>
-</div>
-<div class="grid grid-cols-12 items-center gap-3 my-auto">
-<!-- Donut Visual (SVG) -->
-<div class="col-span-5 flex justify-center items-center">
-<div class="relative w-32 h-32">
-<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
-<!-- Background Ring -->
-<circle cx="18" cy="18" fill="none" r="14" stroke="#f0f3ff" stroke-width="4"></circle>
-<!-- 1. Dev & DevOps (32%) -->
-<circle cx="18" cy="18" fill="none" r="14" stroke="#0f67b1" stroke-dasharray="32 68" stroke-dashoffset="0" stroke-width="4"></circle>
-<!-- 2. Productivity (28%) -->
-<circle cx="18" cy="18" fill="none" r="14" stroke="#38bdf8" stroke-dasharray="28 72" stroke-dashoffset="-32" stroke-width="4"></circle>
-<!-- 3. Communication (18%) -->
-<circle cx="18" cy="18" fill="none" r="14" stroke="#64748b" stroke-dasharray="18 82" stroke-dashoffset="-60" stroke-width="4"></circle>
-<!-- 4. Design & Creative (12%) -->
-<circle cx="18" cy="18" fill="none" r="14" stroke="#94a3b8" stroke-dasharray="12 88" stroke-dashoffset="-78" stroke-width="4"></circle>
-<!-- 5. Security & Compliance (7%) -->
-<circle cx="18" cy="18" fill="none" r="14" stroke="#4f46e5" stroke-dasharray="7 93" stroke-dashoffset="-90" stroke-width="4"></circle>
-<!-- 6. Other (3%) -->
-<circle cx="18" cy="18" fill="none" r="14" stroke="#06b6d4" stroke-dasharray="3 97" stroke-dashoffset="-97" stroke-width="4"></circle>
+<!-- Donut Chart & Legend Visual -->
+<div class="flex items-center justify-center gap-6 my-auto">
+<!-- SVG Donut Chart (DataLabels: false, clean aesthetic) -->
+<div class="relative w-36 h-36 flex items-center justify-center shrink-0">
+<svg aria-label="Category distribution donut chart" class="w-full h-full -rotate-90 transform" viewbox="0 0 100 100">
+<!-- Utilities 3% -->
+<circle cx="50" cy="50" fill="transparent" r="38" stroke="#e2e8f0" stroke-dasharray="238.76" stroke-dashoffset="0" stroke-width="14"></circle>
+<!-- Security 7% -->
+<circle cx="50" cy="50" fill="transparent" r="38" stroke="#cbd5e1" stroke-dasharray="238.76" stroke-dashoffset="7.16" stroke-width="14"></circle>
+<!-- Design 12% -->
+<circle cx="50" cy="50" fill="transparent" r="38" stroke="#94a3b8" stroke-dasharray="238.76" stroke-dashoffset="23.87" stroke-width="14"></circle>
+<!-- Communication 18% -->
+<circle cx="50" cy="50" fill="transparent" r="38" stroke="#64748b" stroke-dasharray="238.76" stroke-dashoffset="52.52" stroke-width="14"></circle>
+<!-- Productivity 28% -->
+<circle cx="50" cy="50" fill="transparent" r="38" stroke="#38bdf8" stroke-dasharray="238.76" stroke-dashoffset="95.50" stroke-width="14"></circle>
+<!-- Dev & DevOps 32% -->
+<circle cx="50" cy="50" fill="transparent" r="38" stroke="#0f67b1" stroke-dasharray="238.76" stroke-dashoffset="162.35" stroke-width="14"></circle>
 </svg>
+<!-- Donut Center Label -->
 <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-<span class="text-xs font-bold text-on-surface">1,284</span>
-<span class="text-[9px] text-secondary font-medium uppercase tracking-tight">Total</span>
+<span class="font-headline text-lg font-bold text-on-surface leading-tight">1,284</span>
+<span class="text-[10px] font-medium uppercase tracking-wider text-secondary">Total</span>
 </div>
 </div>
-</div>
-<!-- Legend Grid -->
-<div class="col-span-7 grid grid-cols-1 gap-1.5 text-xs">
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-1.5 truncate">
+<!-- Legend Columns -->
+<div class="grid grid-cols-1 gap-1.5 text-xs">
+<div class="flex items-center gap-2">
 <span class="w-2.5 h-2.5 rounded-sm bg-[#0f67b1] shrink-0"></span>
-<span class="truncate text-on-surface">Dev &amp; DevOps</span>
+<span class="text-secondary">Dev &amp; DevOps</span>
+<span class="font-semibold text-on-surface ml-auto pl-2">32%</span>
 </div>
-<span class="font-medium text-secondary text-[11px]">32% (411)</span>
-</div>
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-1.5 truncate">
+<div class="flex items-center gap-2">
 <span class="w-2.5 h-2.5 rounded-sm bg-[#38bdf8] shrink-0"></span>
-<span class="truncate text-on-surface">Productivity &amp; Office</span>
+<span class="text-secondary">Productivity</span>
+<span class="font-semibold text-on-surface ml-auto pl-2">28%</span>
 </div>
-<span class="font-medium text-secondary text-[11px]">28% (360)</span>
-</div>
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-1.5 truncate">
+<div class="flex items-center gap-2">
 <span class="w-2.5 h-2.5 rounded-sm bg-[#64748b] shrink-0"></span>
-<span class="truncate text-on-surface">Communication</span>
+<span class="text-secondary">Communication</span>
+<span class="font-semibold text-on-surface ml-auto pl-2">18%</span>
 </div>
-<span class="font-medium text-secondary text-[11px]">18% (231)</span>
-</div>
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-1.5 truncate">
+<div class="flex items-center gap-2">
 <span class="w-2.5 h-2.5 rounded-sm bg-[#94a3b8] shrink-0"></span>
-<span class="truncate text-on-surface">Design &amp; Creative</span>
+<span class="text-secondary">Design</span>
+<span class="font-semibold text-on-surface ml-auto pl-2">12%</span>
 </div>
-<span class="font-medium text-secondary text-[11px]">12% (154)</span>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-sm bg-[#cbd5e1] shrink-0"></span>
+<span class="text-secondary">Security</span>
+<span class="font-semibold text-on-surface ml-auto pl-2">7%</span>
 </div>
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-1.5 truncate">
-<span class="w-2.5 h-2.5 rounded-sm bg-[#4f46e5] shrink-0"></span>
-<span class="truncate text-on-surface">Security &amp; Compliance</span>
-</div>
-<span class="font-medium text-secondary text-[11px]">7% (90)</span>
-</div>
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-1.5 truncate">
-<span class="w-2.5 h-2.5 rounded-sm bg-[#06b6d4] shrink-0"></span>
-<span class="truncate text-on-surface">Other</span>
-</div>
-<span class="font-medium text-secondary text-[11px]">3% (38)</span>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-sm bg-[#e2e8f0] shrink-0"></span>
+<span class="text-secondary">Utilities</span>
+<span class="font-semibold text-on-surface ml-auto pl-2">3%</span>
 </div>
 </div>
 </div>
-<div class="text-[10px] text-secondary border-t border-outline-variant/60 pt-2 flex justify-between items-center">
-<span>Aggregated across 6 departments</span>
-<a class="text-primary hover:underline font-medium" href="#">View Breakdown →</a>
+<div class="text-[11px] font-medium text-secondary text-center pt-2 border-t border-outline">
+            Across 6 Active Architecture Verticals
+          </div>
+</article>
+<!-- Card 3: Top 5 App Usage (Cols 8-12, span 5) -->
+<article class="col-span-12 xl:col-span-5 bg-surface border border-outline rounded-xl p-5 flex flex-col justify-between shadow-none">
+<div class="flex items-center justify-between mb-1">
+<h2 class="font-headline text-sm font-semibold text-secondary uppercase tracking-wider">Top 5 App Usage</h2>
+<span class="bg-surface-container-low text-secondary border border-outline text-[11px] font-medium px-2 py-0.5 rounded">Threshold: 75% active ratio</span>
 </div>
-</div>
-<!-- Card 3: Top 5 Usage Widget (Col 4 of 12) -->
-<div class="col-span-12 lg:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col justify-between shadow-none h-[300px]">
-<div>
-<div class="flex items-center justify-between">
-<div>
-<h3 class="font-headline text-sm font-semibold text-on-surface">Top 5 Application Usage</h3>
-<p class="font-body text-[11px] text-secondary">Ranked by active seat ratio</p>
-</div>
-<span class="material-symbols-outlined text-[18px] text-outline" data-icon="bar_chart">bar_chart</span>
-</div>
-</div>
-<!-- 5 Ranked Items -->
+<!-- Ranked List with MUI LinearProgress Style Bars -->
 <div class="space-y-2.5 py-1">
-<!-- 1. Microsoft 365 -->
+<!-- App 1 -->
 <div>
-<div class="flex justify-between text-xs mb-1">
-<span class="font-medium text-on-surface truncate">1. Microsoft 365 Enterprise</span>
-<span class="text-secondary font-mono text-[11px]">94% (470/500)</span>
+<div class="flex justify-between items-center text-xs mb-1">
+<span class="font-medium text-on-surface">1. Microsoft 365</span>
+<span class="text-secondary"><strong class="text-on-surface font-semibold">94% Active</strong> (470/500 seats)</span>
 </div>
-<div class="w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden">
-<div class="bg-[#0f67b1] h-full rounded-full" style="width: 94%;"></div>
+<div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+<div class="bg-primary h-1.5 rounded-full" style="width: 94%"></div>
 </div>
 </div>
-<!-- 2. Slack Enterprise -->
+<!-- App 2 -->
 <div>
-<div class="flex justify-between text-xs mb-1">
-<span class="font-medium text-on-surface truncate">2. Slack Enterprise Grid</span>
-<span class="text-secondary font-mono text-[11px]">91% (410/450)</span>
+<div class="flex justify-between items-center text-xs mb-1">
+<span class="font-medium text-on-surface">2. Slack Grid</span>
+<span class="text-secondary"><strong class="text-on-surface font-semibold">91% Active</strong> (410/450 seats)</span>
 </div>
-<div class="w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden">
-<div class="bg-[#0ea5e9] h-full rounded-full" style="width: 91%;"></div>
+<div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+<div class="bg-primary h-1.5 rounded-full" style="width: 91%"></div>
 </div>
 </div>
-<!-- 3. GitHub Enterprise -->
+<!-- App 3 -->
 <div>
-<div class="flex justify-between text-xs mb-1">
-<span class="font-medium text-on-surface truncate">3. GitHub Enterprise</span>
-<span class="text-secondary font-mono text-[11px]">88% (264/300)</span>
+<div class="flex justify-between items-center text-xs mb-1">
+<span class="font-medium text-on-surface">3. GitHub Enterprise</span>
+<span class="text-secondary"><strong class="text-on-surface font-semibold">88% Active</strong> (264/300 seats)</span>
 </div>
-<div class="w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden">
-<div class="bg-[#0284c7] h-full rounded-full" style="width: 88%;"></div>
+<div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+<div class="bg-primary h-1.5 rounded-full" style="width: 88%"></div>
 </div>
 </div>
-<!-- 4. Jira & Confluence -->
+<!-- App 4 -->
 <div>
-<div class="flex justify-between text-xs mb-1">
-<span class="font-medium text-on-surface truncate">4. Jira Software &amp; Confluence</span>
-<span class="text-secondary font-mono text-[11px]">85% (255/300)</span>
+<div class="flex justify-between items-center text-xs mb-1">
+<span class="font-medium text-on-surface">4. Jira Software</span>
+<span class="text-secondary"><strong class="text-on-surface font-semibold">85% Active</strong> (255/300 seats)</span>
 </div>
-<div class="w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden">
-<div class="bg-[#38bdf8] h-full rounded-full" style="width: 85%;"></div>
+<div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+<div class="bg-primary h-1.5 rounded-full" style="width: 85%"></div>
 </div>
 </div>
-<!-- 5. Zoom Business -->
+<!-- App 5 -->
 <div>
-<div class="flex justify-between text-xs mb-1">
-<span class="font-medium text-on-surface truncate">5. Zoom Business</span>
-<span class="text-secondary font-mono text-[11px]">81% (202/250)</span>
+<div class="flex justify-between items-center text-xs mb-1">
+<span class="font-medium text-on-surface">5. Zoom Business</span>
+<span class="text-secondary"><strong class="text-on-surface font-semibold">81% Active</strong> (202/250 seats)</span>
 </div>
-<div class="w-full bg-surface-container-low h-1.5 rounded-full overflow-hidden">
-<div class="bg-[#60a5fa] h-full rounded-full" style="width: 81%;"></div>
-</div>
-</div>
-</div>
-<div class="text-[10px] text-secondary border-t border-outline-variant/60 pt-2 flex justify-between items-center">
-<span>Threshold limit: 75% active ratio</span>
-<span class="text-emerald-600 font-medium">All Healthy</span>
+<div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+<div class="bg-primary h-1.5 rounded-full" style="width: 81%"></div>
 </div>
 </div>
 </div>
-<!-- ================= BOTTOM SECTION: DATA GRID ================= -->
-<div class="space-y-3">
-<!-- Filter Toolbar -->
-<div class="flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest p-3.5 rounded-lg border border-outline-variant shadow-none">
-<!-- Left Filters -->
-<div class="flex items-center flex-wrap gap-2.5">
-<!-- Search Field -->
-<div class="relative w-72">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[16px] text-secondary" data-icon="search">search</span>
-<input class="w-full pl-8 pr-3 py-1.5 text-xs bg-surface-container-lowest border border-outline-variant rounded-md text-on-surface placeholder-secondary focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" placeholder="Search software name, publisher..." type="text"/>
+<div class="text-[11px] font-medium text-emerald-700 flex items-center gap-1.5 pt-1">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+            All 5 apps exceed target engagement baseline
+          </div>
+</article>
+</section>
+<!-- SECTION 2: ACTION & FILTER CONTROLS BAR -->
+<section class="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-2">
+<!-- Left Filter Clustered Inputs -->
+<div class="flex flex-wrap items-center gap-3">
+<!-- Text Search Filter -->
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-secondary text-lg" data-icon="filter_list">filter_list</span>
+<input class="w-full bg-surface text-sm pl-9 pr-3 py-2 rounded-lg border border-outline placeholder:text-secondary focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-on-surface" placeholder="Search licenses, publishers..." type="text"/>
 </div>
 <!-- Category Select -->
 <div class="relative">
-<select class="appearance-none bg-surface-container-lowest border border-outline-variant rounded-md py-1.5 pl-3 pr-8 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary cursor-pointer">
+<select class="bg-surface text-sm py-2 pl-3 pr-8 rounded-lg border border-outline text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary appearance-none font-medium cursor-pointer">
 <option>All Categories</option>
-<option>Development &amp; DevOps</option>
-<option>Productivity &amp; Office</option>
+<option>Dev &amp; DevOps</option>
+<option>Productivity</option>
 <option>Communication</option>
-<option>Design &amp; Creative</option>
-<option>Security &amp; Compliance</option>
+<option>Design</option>
+<option>Infrastructure</option>
 </select>
-<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-[16px] text-secondary pointer-events-none" data-icon="expand_more">expand_more</span>
+<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-secondary text-base pointer-events-none" data-icon="expand_more">expand_more</span>
 </div>
-<!-- Compliance Status Select -->
+<!-- Compliance Select -->
 <div class="relative">
-<select class="appearance-none bg-surface-container-lowest border border-outline-variant rounded-md py-1.5 pl-3 pr-8 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary cursor-pointer">
+<select class="bg-surface text-sm py-2 pl-3 pr-8 rounded-lg border border-outline text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary appearance-none font-medium cursor-pointer">
 <option>All Statuses</option>
 <option>Compliant</option>
 <option>At Risk</option>
 <option>Over-allocated</option>
 </select>
-<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-[16px] text-secondary pointer-events-none" data-icon="expand_more">expand_more</span>
+<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-secondary text-base pointer-events-none" data-icon="expand_more">expand_more</span>
 </div>
-<!-- Filter Trigger Button -->
-<button class="inline-flex items-center gap-1.5 px-3 py-1.5 border border-outline-variant rounded-md text-xs font-medium text-primary hover:bg-surface-container-low transition-colors">
-<span class="material-symbols-outlined text-[16px]" data-icon="filter_list">filter_list</span>
-<span>Filter</span>
-</button>
 </div>
-<!-- Right Grid Tools -->
-<div class="flex items-center gap-2">
-<button class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs text-secondary hover:text-on-surface border border-outline-variant rounded-md hover:bg-surface-container-low transition-colors" title="Export to CSV">
-<span class="material-symbols-outlined text-[16px]" data-icon="download">download</span>
+<!-- Right Action Triggers -->
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 bg-surface hover:bg-surface-container-low text-secondary border border-outline px-4 py-2 rounded-lg font-medium text-sm transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="file_download">file_download</span>
 <span>Export CSV</span>
 </button>
-<button class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs text-secondary hover:text-on-surface border border-outline-variant rounded-md hover:bg-surface-container-low transition-colors" title="Column Visibility">
-<span class="material-symbols-outlined text-[16px]" data-icon="view_column">view_column</span>
-<span>Columns</span>
-</button>
-<button class="p-1.5 text-secondary hover:text-on-surface border border-outline-variant rounded-md hover:bg-surface-container-low transition-colors" title="Density Toggle">
-<span class="material-symbols-outlined text-[16px]" data-icon="density_medium">density_medium</span>
+<button class="flex items-center gap-2 bg-primary hover:bg-[#0d5999] text-on-primary px-4 py-2 rounded-lg font-medium text-sm transition-colors shadow-none">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+<span>+ Add License</span>
 </button>
 </div>
-</div>
-<!-- TableContainer (MUI Data Grid Paper) -->
-<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-none">
+</section>
+<!-- SECTION 3: LICENSE DATA GRID (Strict 9 Core Columns MUI Table) -->
+<section class="bg-surface rounded-xl border border-outline overflow-hidden shadow-none">
 <div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
+<table aria-label="License Management Data Grid" class="w-full text-left border-collapse">
 <thead>
-<tr class="bg-surface-container-low/70 border-b border-outline-variant text-[11px] font-semibold text-secondary uppercase tracking-wider">
-<th class="py-3 px-4">License Name</th>
-<th class="py-3 px-4">Publisher Name</th>
-<th class="py-3 px-4">License Type</th>
-<th class="py-3 px-4">Compliance Status</th>
-<th class="py-3 px-4 text-right">Purchased</th>
-<th class="py-3 px-4 text-center">Entitlement</th>
-<th class="py-3 px-4 text-center">Active Users</th>
-<th class="py-3 px-4 text-center">Total Users</th>
-<th class="py-3 px-4">Expiry Date</th>
-<th class="py-3 px-4 text-right">Actions</th>
+<tr class="bg-[#f8fafc] border-b border-outline text-[11px] font-semibold tracking-wider text-secondary uppercase">
+<th class="py-3.5 px-4 font-semibold" scope="col">LICENSE NAME</th>
+<th class="py-3.5 px-4 font-semibold" scope="col">PUBLISHER</th>
+<th class="py-3.5 px-4 font-semibold" scope="col">LICENSE TYPE</th>
+<th class="py-3.5 px-4 font-semibold" scope="col">COMPLIANCE</th>
+<th class="py-3.5 px-4 font-semibold text-right" scope="col">PURCHASED</th>
+<th class="py-3.5 px-4 font-semibold text-right" scope="col">ENTITLEMENT</th>
+<th class="py-3.5 px-4 font-semibold text-right" scope="col">ACTIVE USERS</th>
+<th class="py-3.5 px-4 font-semibold" scope="col">TOTAL USERS</th>
+<th class="py-3.5 px-4 font-semibold" scope="col">EXPIRY DATE</th>
 </tr>
 </thead>
-<tbody class="divide-y divide-outline-variant/50 text-xs">
-<!-- Row 1: Microsoft 365 Enterprise -->
-<tr class="hover:bg-surface-container-low/40 transition-colors">
-<td class="py-3 px-4 font-medium text-on-surface">
+<tbody class="divide-y divide-outline text-sm">
+<!-- ROW 1: Microsoft 365 Enterprise -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-3.5 px-4">
 <div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-xs shrink-0">
-                        MS
-                      </div>
-<div>
-<div class="font-semibold text-on-surface">Microsoft 365 Enterprise</div>
-<div class="text-[11px] text-secondary font-mono">E5-SKU-9921</div>
+<div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">
+                      MS
+                    </div>
+<div class="flex flex-col">
+<span class="font-medium text-on-surface leading-tight">Microsoft 365 Enterprise</span>
+<span class="text-xs text-secondary font-mono leading-tight">E5-SKU-9921</span>
 </div>
 </div>
 </td>
-<td class="py-3 px-4 text-secondary">Microsoft Corporation</td>
-<td class="py-3 px-4">
-<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] border border-outline-variant text-secondary bg-surface-container-low font-normal">
-                      SaaS Subscription
-                    </span>
+<td class="py-3.5 px-4 text-secondary font-medium">Microsoft Corporation</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border border-outline bg-surface text-secondary">
+                    SaaS Subscription
+                  </span>
 </td>
-<td class="py-3 px-4">
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      Compliant
-                    </span>
+                    Compliant
+                  </span>
 </td>
-<td class="py-3 px-4 font-mono text-right text-on-surface font-medium">$180,000</td>
-<td class="py-3 px-4 text-center text-secondary">500 seats</td>
-<td class="py-3 px-4 text-center font-semibold text-on-surface">470</td>
-<td class="py-3 px-4 text-center">
-<div class="flex items-center justify-center gap-2">
-<span class="font-mono text-[11px] text-secondary">470 / 500</span>
-<div class="w-12 bg-surface-container-low h-1.5 rounded-full overflow-hidden">
-<div class="bg-primary h-full rounded-full" style="width: 94%;"></div>
+<td class="py-3.5 px-4 text-right font-medium text-on-surface">$180,000</td>
+<td class="py-3.5 px-4 text-right text-secondary">500 seats</td>
+<td class="py-3.5 px-4 text-right font-semibold text-on-surface">470</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col gap-1 w-32">
+<div class="flex justify-between text-xs font-medium">
+<span class="text-on-surface">470 / 500</span>
+<span class="text-primary font-semibold">94%</span>
+</div>
+<div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+<div class="bg-primary h-1.5 rounded-full" style="width: 94%"></div>
 </div>
 </div>
 </td>
-<td class="py-3 px-4 font-mono text-secondary">2027-05-31</td>
-<td class="py-3 px-4 text-right">
-<button class="p-1 text-secondary hover:text-on-surface rounded hover:bg-surface-container-low transition-colors">
-<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
-</button>
-</td>
+<td class="py-3.5 px-4 text-secondary font-mono text-xs">2027-05-31</td>
 </tr>
-<!-- Row 2: Slack Enterprise Grid -->
-<tr class="hover:bg-surface-container-low/40 transition-colors">
-<td class="py-3 px-4 font-medium text-on-surface">
+<!-- ROW 2: Slack Enterprise Grid -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-3.5 px-4">
 <div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs shrink-0">
-                        SL
-                      </div>
-<div>
-<div class="font-semibold text-on-surface">Slack Enterprise Grid</div>
-<div class="text-[11px] text-secondary font-mono">SLK-ENT-8840</div>
+<div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 font-bold text-xs flex items-center justify-center shrink-0">
+                      SL
+                    </div>
+<div class="flex flex-col">
+<span class="font-medium text-on-surface leading-tight">Slack Enterprise Grid</span>
+<span class="text-xs text-secondary font-mono leading-tight">SLK-ENT-8840</span>
 </div>
 </div>
 </td>
-<td class="py-3 px-4 text-secondary">Salesforce, Inc.</td>
-<td class="py-3 px-4">
-<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] border border-outline-variant text-secondary bg-surface-container-low font-normal">
-                      SaaS Subscription
-                    </span>
+<td class="py-3.5 px-4 text-secondary font-medium">Salesforce, Inc.</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border border-outline bg-surface text-secondary">
+                    SaaS Subscription
+                  </span>
 </td>
-<td class="py-3 px-4">
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      Compliant
-                    </span>
+                    Compliant
+                  </span>
 </td>
-<td class="py-3 px-4 font-mono text-right text-on-surface font-medium">$68,400</td>
-<td class="py-3 px-4 text-center text-secondary">450 seats</td>
-<td class="py-3 px-4 text-center font-semibold text-on-surface">410</td>
-<td class="py-3 px-4 text-center">
-<div class="flex items-center justify-center gap-2">
-<span class="font-mono text-[11px] text-secondary">410 / 450</span>
-<div class="w-12 bg-surface-container-low h-1.5 rounded-full overflow-hidden">
-<div class="bg-[#0ea5e9] h-full rounded-full" style="width: 91%;"></div>
+<td class="py-3.5 px-4 text-right font-medium text-on-surface">$68,400</td>
+<td class="py-3.5 px-4 text-right text-secondary">450 seats</td>
+<td class="py-3.5 px-4 text-right font-semibold text-on-surface">410</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col gap-1 w-32">
+<div class="flex justify-between text-xs font-medium">
+<span class="text-on-surface">410 / 450</span>
+<span class="text-primary font-semibold">91%</span>
+</div>
+<div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+<div class="bg-primary h-1.5 rounded-full" style="width: 91%"></div>
 </div>
 </div>
 </td>
-<td class="py-3 px-4 font-mono text-secondary">2026-12-15</td>
-<td class="py-3 px-4 text-right">
-<button class="p-1 text-secondary hover:text-on-surface rounded hover:bg-surface-container-low transition-colors">
-<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
-</button>
-</td>
+<td class="py-3.5 px-4 text-secondary font-mono text-xs">2026-12-15</td>
 </tr>
-<!-- Row 3: GitHub Enterprise -->
-<tr class="hover:bg-surface-container-low/40 transition-colors">
-<td class="py-3 px-4 font-medium text-on-surface">
+<!-- ROW 3: GitHub Enterprise -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-3.5 px-4">
 <div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded bg-slate-100 text-slate-800 flex items-center justify-center font-bold text-xs shrink-0">
-                        GH
-                      </div>
-<div>
-<div class="font-semibold text-on-surface">GitHub Enterprise</div>
-<div class="text-[11px] text-secondary font-mono">GHE-ORG-7712</div>
+<div class="w-8 h-8 rounded-lg bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center shrink-0">
+                      GH
+                    </div>
+<div class="flex flex-col">
+<span class="font-medium text-on-surface leading-tight">GitHub Enterprise</span>
+<span class="text-xs text-secondary font-mono leading-tight">GHE-ORG-7712</span>
 </div>
 </div>
 </td>
-<td class="py-3 px-4 text-secondary">GitHub (Microsoft)</td>
-<td class="py-3 px-4">
-<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] border border-outline-variant text-secondary bg-surface-container-low font-normal">
-                      Enterprise Agreement
-                    </span>
+<td class="py-3.5 px-4 text-secondary font-medium">GitHub (Microsoft)</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border border-outline bg-surface text-secondary">
+                    Enterprise Agreement
+                  </span>
 </td>
-<td class="py-3 px-4">
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      Compliant
-                    </span>
+                    Compliant
+                  </span>
 </td>
-<td class="py-3 px-4 font-mono text-right text-on-surface font-medium">$63,360</td>
-<td class="py-3 px-4 text-center text-secondary">300 seats</td>
-<td class="py-3 px-4 text-center font-semibold text-on-surface">264</td>
-<td class="py-3 px-4 text-center">
-<div class="flex items-center justify-center gap-2">
-<span class="font-mono text-[11px] text-secondary">264 / 300</span>
-<div class="w-12 bg-surface-container-low h-1.5 rounded-full overflow-hidden">
-<div class="bg-[#0284c7] h-full rounded-full" style="width: 88%;"></div>
+<td class="py-3.5 px-4 text-right font-medium text-on-surface">$63,360</td>
+<td class="py-3.5 px-4 text-right text-secondary">300 seats</td>
+<td class="py-3.5 px-4 text-right font-semibold text-on-surface">264</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col gap-1 w-32">
+<div class="flex justify-between text-xs font-medium">
+<span class="text-on-surface">264 / 300</span>
+<span class="text-primary font-semibold">88%</span>
+</div>
+<div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+<div class="bg-primary h-1.5 rounded-full" style="width: 88%"></div>
 </div>
 </div>
 </td>
-<td class="py-3 px-4 font-mono text-secondary">2027-03-31</td>
-<td class="py-3 px-4 text-right">
-<button class="p-1 text-secondary hover:text-on-surface rounded hover:bg-surface-container-low transition-colors">
-<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
-</button>
-</td>
+<td class="py-3.5 px-4 text-secondary font-mono text-xs">2027-03-31</td>
 </tr>
-<!-- Row 4: Jira Software & Confluence -->
-<tr class="hover:bg-surface-container-low/40 transition-colors">
-<td class="py-3 px-4 font-medium text-on-surface">
+<!-- ROW 4: Jira Software & Confluence -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-3.5 px-4">
 <div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs shrink-0">
-                        JR
-                      </div>
-<div>
-<div class="font-semibold text-on-surface">Jira Software &amp; Confluence</div>
-<div class="text-[11px] text-secondary font-mono">ATLAS-CLOUD-300</div>
+<div class="w-8 h-8 rounded-lg bg-sky-100 text-sky-800 font-bold text-xs flex items-center justify-center shrink-0">
+                      JR
+                    </div>
+<div class="flex flex-col">
+<span class="font-medium text-on-surface leading-tight">Jira Software &amp; Confluence</span>
+<span class="text-xs text-secondary font-mono leading-tight">ATLAS-CLOUD-300</span>
 </div>
 </div>
 </td>
-<td class="py-3 px-4 text-secondary">Atlassian</td>
-<td class="py-3 px-4">
-<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] border border-outline-variant text-secondary bg-surface-container-low font-normal">
-                      SaaS Subscription
-                    </span>
+<td class="py-3.5 px-4 text-secondary font-medium">Atlassian</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border border-outline bg-surface text-secondary">
+                    SaaS Subscription
+                  </span>
 </td>
-<td class="py-3 px-4">
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-300">
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
 <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                      At Risk
-                    </span>
+                    At Risk
+                  </span>
 </td>
-<td class="py-3 px-4 font-mono text-right text-on-surface font-medium">$45,000</td>
-<td class="py-3 px-4 text-center text-secondary">300 seats</td>
-<td class="py-3 px-4 text-center font-semibold text-on-surface">255</td>
-<td class="py-3 px-4 text-center">
-<div class="flex items-center justify-center gap-2">
-<span class="font-mono text-[11px] text-amber-700 font-medium">285 / 300</span>
-<div class="w-12 bg-surface-container-low h-1.5 rounded-full overflow-hidden">
-<div class="bg-amber-500 h-full rounded-full" style="width: 95%;"></div>
+<td class="py-3.5 px-4 text-right font-medium text-on-surface">$45,000</td>
+<td class="py-3.5 px-4 text-right text-secondary">300 seats</td>
+<td class="py-3.5 px-4 text-right font-semibold text-on-surface">255</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col gap-1 w-32">
+<div class="flex justify-between text-xs font-medium">
+<span class="text-on-surface">285 / 300</span>
+<span class="text-amber-600 font-semibold">95%</span>
+</div>
+<div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+<div class="bg-amber-500 h-1.5 rounded-full" style="width: 95%"></div>
 </div>
 </div>
 </td>
-<td class="py-3 px-4 font-mono text-secondary">2026-11-30</td>
-<td class="py-3 px-4 text-right">
-<button class="p-1 text-secondary hover:text-on-surface rounded hover:bg-surface-container-low transition-colors">
-<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
-</button>
-</td>
+<td class="py-3.5 px-4 text-secondary font-mono text-xs">2026-11-30</td>
 </tr>
-<!-- Row 5: Figma Enterprise -->
-<tr class="hover:bg-surface-container-low/40 transition-colors">
-<td class="py-3 px-4 font-medium text-on-surface">
+<!-- ROW 5: Figma Enterprise -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-3.5 px-4">
 <div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-xs shrink-0">
-                        FG
-                      </div>
-<div>
-<div class="font-semibold text-on-surface">Figma Enterprise</div>
-<div class="text-[11px] text-secondary font-mono">FIG-DESIGN-75</div>
+<div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 font-bold text-xs flex items-center justify-center shrink-0">
+                      FG
+                    </div>
+<div class="flex flex-col">
+<span class="font-medium text-on-surface leading-tight">Figma Enterprise</span>
+<span class="text-xs text-secondary font-mono leading-tight">FIG-DESIGN-75</span>
 </div>
 </div>
 </td>
-<td class="py-3 px-4 text-secondary">Figma, Inc.</td>
-<td class="py-3 px-4">
-<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] border border-outline-variant text-secondary bg-surface-container-low font-normal">
-                      SaaS Subscription
-                    </span>
+<td class="py-3.5 px-4 text-secondary font-medium">Figma, Inc.</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border border-outline bg-surface text-secondary">
+                    SaaS Subscription
+                  </span>
 </td>
-<td class="py-3 px-4">
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-red-50 text-red-700 border border-red-200">
-<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                      Over-allocated
-                    </span>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                    Over-allocated
+                  </span>
 </td>
-<td class="py-3 px-4 font-mono text-right text-on-surface font-medium">$36,000</td>
-<td class="py-3 px-4 text-center text-secondary">75 seats</td>
-<td class="py-3 px-4 text-center font-semibold text-red-600">82</td>
-<td class="py-3 px-4 text-center">
-<div class="flex items-center justify-center gap-2">
-<span class="font-mono text-[11px] text-red-600 font-semibold">82 / 75</span>
-<div class="w-12 bg-surface-container-low h-1.5 rounded-full overflow-hidden">
-<div class="bg-red-500 h-full rounded-full" style="width: 100%;"></div>
+<td class="py-3.5 px-4 text-right font-medium text-on-surface">$36,000</td>
+<td class="py-3.5 px-4 text-right text-secondary">75 seats</td>
+<td class="py-3.5 px-4 text-right font-semibold text-rose-600">82</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col gap-1 w-32">
+<div class="flex justify-between text-xs font-medium">
+<span class="text-rose-600 font-medium">82 / 75</span>
+<span class="text-rose-600 font-bold">109%</span>
+</div>
+<div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+<div class="bg-rose-500 h-1.5 rounded-full" style="width: 100%"></div>
 </div>
 </div>
 </td>
-<td class="py-3 px-4 font-mono text-secondary">2027-08-15</td>
-<td class="py-3 px-4 text-right">
-<button class="p-1 text-secondary hover:text-on-surface rounded hover:bg-surface-container-low transition-colors">
-<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
-</button>
-</td>
+<td class="py-3.5 px-4 text-secondary font-mono text-xs">2027-08-15</td>
 </tr>
-<!-- Row 6: Datadog Pro -->
-<tr class="hover:bg-surface-container-low/40 transition-colors">
-<td class="py-3 px-4 font-medium text-on-surface">
+<!-- ROW 6: Datadog Pro -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-3.5 px-4">
 <div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded bg-purple-50 text-purple-700 flex items-center justify-center font-bold text-xs shrink-0">
-                        DD
-                      </div>
-<div>
-<div class="font-semibold text-on-surface">Datadog Pro</div>
-<div class="text-[11px] text-secondary font-mono">DD-INFRA-PRO</div>
+<div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-800 font-bold text-xs flex items-center justify-center shrink-0">
+                      DD
+                    </div>
+<div class="flex flex-col">
+<span class="font-medium text-on-surface leading-tight">Datadog Pro</span>
+<span class="text-xs text-secondary font-mono leading-tight">DD-INFRA-PRO</span>
 </div>
 </div>
 </td>
-<td class="py-3 px-4 text-secondary">Datadog, Inc.</td>
-<td class="py-3 px-4">
-<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] border border-outline-variant text-secondary bg-surface-container-low font-normal">
-                      Consumption / SaaS
-                    </span>
+<td class="py-3.5 px-4 text-secondary font-medium">Datadog, Inc.</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border border-outline bg-surface text-secondary">
+                    Consumption / SaaS
+                  </span>
 </td>
-<td class="py-3 px-4">
-<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      Compliant
-                    </span>
+                    Compliant
+                  </span>
 </td>
-<td class="py-3 px-4 font-mono text-right text-on-surface font-medium">$54,000</td>
-<td class="py-3 px-4 text-center text-secondary">120 seats</td>
-<td class="py-3 px-4 text-center font-semibold text-on-surface">114</td>
-<td class="py-3 px-4 text-center">
-<div class="flex items-center justify-center gap-2">
-<span class="font-mono text-[11px] text-secondary">114 / 120</span>
-<div class="w-12 bg-surface-container-low h-1.5 rounded-full overflow-hidden">
-<div class="bg-[#0f67b1] h-full rounded-full" style="width: 95%;"></div>
+<td class="py-3.5 px-4 text-right font-medium text-on-surface">$54,000</td>
+<td class="py-3.5 px-4 text-right text-secondary">120 seats</td>
+<td class="py-3.5 px-4 text-right font-semibold text-on-surface">114</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col gap-1 w-32">
+<div class="flex justify-between text-xs font-medium">
+<span class="text-on-surface">114 / 120</span>
+<span class="text-primary font-semibold">95%</span>
+</div>
+<div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+<div class="bg-primary h-1.5 rounded-full" style="width: 95%"></div>
 </div>
 </div>
 </td>
-<td class="py-3 px-4 font-mono text-secondary">2027-02-28</td>
-<td class="py-3 px-4 text-right">
-<button class="p-1 text-secondary hover:text-on-surface rounded hover:bg-surface-container-low transition-colors">
-<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
-</button>
-</td>
+<td class="py-3.5 px-4 text-secondary font-mono text-xs">2027-02-28</td>
 </tr>
 </tbody>
 </table>
 </div>
-<!-- MUI TablePagination Footer -->
-<div class="flex flex-col sm:flex-row items-center justify-between px-4 py-3 border-t border-outline-variant text-xs text-secondary gap-3 bg-surface-container-lowest">
-<div>
-              Showing <span class="font-semibold text-on-surface">1-6</span> of <span class="font-semibold text-on-surface">48</span> licenses
-            </div>
+<!-- MUI TABLE PAGINATION FOOTER -->
+<div class="px-6 py-3 border-t border-outline flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-secondary">
 <div class="flex items-center gap-4">
-<div class="flex items-center gap-2">
+<span>Showing <strong>1-6</strong> of <strong>48</strong> licenses</span>
+<div class="flex items-center gap-1.5">
 <span>Rows per page:</span>
-<select class="border border-outline-variant rounded px-2 py-1 text-xs bg-surface-container-lowest text-on-surface focus:outline-none focus:ring-1 focus:ring-primary">
-<option selected="">10</option>
+<select class="bg-surface border border-outline rounded px-2 py-1 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary">
+<option>10</option>
 <option>25</option>
 <option>50</option>
-<option>100</option>
 </select>
+</div>
 </div>
 <!-- Pagination Controls -->
 <div class="flex items-center gap-1">
-<button class="p-1 rounded text-outline hover:bg-surface-container-low disabled:opacity-40 disabled:hover:bg-transparent" disabled="" title="Previous page">
-<span class="material-symbols-outlined text-[18px]" data-icon="chevron_left">chevron_left</span>
+<button class="p-1 rounded text-secondary hover:bg-surface-container-low disabled:opacity-40" disabled="" title="Previous page">
+<span class="material-symbols-outlined text-base" data-icon="chevron_left">chevron_left</span>
 </button>
-<button class="w-7 h-7 rounded text-xs font-semibold bg-secondary-container text-primary flex items-center justify-center">
-                  1
-                </button>
-<button class="w-7 h-7 rounded text-xs text-secondary hover:bg-surface-container-low flex items-center justify-center transition-colors">
-                  2
-                </button>
-<button class="w-7 h-7 rounded text-xs text-secondary hover:bg-surface-container-low flex items-center justify-center transition-colors">
-                  3
-                </button>
-<span class="text-secondary px-1">...</span>
-<button class="w-7 h-7 rounded text-xs text-secondary hover:bg-surface-container-low flex items-center justify-center transition-colors">
-                  5
-                </button>
-<button class="p-1 rounded text-secondary hover:bg-surface-container-low hover:text-on-surface transition-colors" title="Next page">
-<span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+<button class="w-7 h-7 rounded bg-primary text-on-primary font-semibold text-xs flex items-center justify-center">1</button>
+<button class="w-7 h-7 rounded hover:bg-surface-container-low text-secondary font-medium text-xs flex items-center justify-center">2</button>
+<button class="w-7 h-7 rounded hover:bg-surface-container-low text-secondary font-medium text-xs flex items-center justify-center">3</button>
+<button class="w-7 h-7 rounded hover:bg-surface-container-low text-secondary font-medium text-xs flex items-center justify-center">4</button>
+<button class="w-7 h-7 rounded hover:bg-surface-container-low text-secondary font-medium text-xs flex items-center justify-center">5</button>
+<button class="p-1 rounded text-secondary hover:bg-surface-container-low" title="Next page">
+<span class="material-symbols-outlined text-base" data-icon="chevron_right">chevron_right</span>
 </button>
 </div>
 </div>
-</div>
-</div>
-</div>
+</section>
 </main>
 </div>
 </body></html>

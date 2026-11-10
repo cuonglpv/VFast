@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VFast ELMS - Budget Analytics</title>
+<!-- Inter Google Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with forms & container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-variant": "#d8e3fb",
+            "on-tertiary-container": "#cde5ff",
+            "on-primary-fixed-variant": "#004881",
+            "surface-container-low": "#f0f3ff",
+            "surface-container-highest": "#d8e3fb",
+            "primary-fixed-dim": "#a2c9ff",
+            "on-primary-container": "#d4e4ff",
+            "surface": "#f9f9ff",
+            "outline-variant": "#c1c7d3",
+            "on-primary-fixed": "#001c38",
+            "tertiary-fixed": "#cce5ff",
+            "inverse-surface": "#263143",
+            "on-error-container": "#93000a",
+            "on-tertiary-fixed-variant": "#004b73",
+            "secondary-container": "#d5e3fc",
+            "secondary-fixed-dim": "#b9c7df",
+            "on-error": "#ffffff",
+            "on-primary": "#ffffff",
+            "inverse-on-surface": "#ecf1ff",
+            "secondary-fixed": "#d5e3fc",
+            "outline": "#717782",
+            "on-tertiary-fixed": "#001d31",
+            "secondary": "#515f74",
+            "on-secondary-container": "#57657a",
+            "tertiary-container": "#006aa1",
+            "tertiary-fixed-dim": "#93ccff",
+            "on-surface": "#111c2d",
+            "surface-bright": "#f9f9ff",
+            "primary-fixed": "#d3e4ff",
+            "surface-container-high": "#dee8ff",
+            "surface-container-lowest": "#ffffff",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "background": "#f9f9ff",
+            "on-secondary": "#ffffff",
+            "tertiary": "#00517d",
+            "primary-container": "#0f67b1",
+            "on-background": "#111c2d",
+            "on-tertiary": "#ffffff",
+            "on-secondary-fixed-variant": "#3a485b",
+            "inverse-primary": "#a2c9ff",
+            "surface-container": "#e7eeff",
+            "surface-dim": "#cfdaf2",
+            "primary": "#004f8b",
+            "on-secondary-fixed": "#0d1c2e",
+            "surface-tint": "#0060a9",
+            "on-surface-variant": "#414751"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Inter", "sans-serif"],
+            "display": ["Inter", "sans-serif"],
+            "body": ["Inter", "sans-serif"],
+            "label": ["Inter", "sans-serif"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      -webkit-font-smoothing: antialiased;
+    }
+    .material-symbols-outlined {
+      font-size: 20px;
+      line-height: 1;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .font-variation-fill {
+      font-variation-settings: 'FILL' 1;
+    }
+  </style>
+</head>
+<body class="bg-[#f8fafc] text-[#0f172a] min-h-screen flex antialiased">
+<!-- ========================================================================= -->
+<!-- LEFT SIDEBAR (SideNavBar Shared Component Specification)                 -->
+<!-- ========================================================================= -->
+<aside class="fixed top-0 left-0 h-screen w-60 z-30 bg-surface-container-lowest border-r border-[#e2e8f0] flex flex-col justify-between p-4">
+<!-- Brand & Navigation Cluster -->
+<div>
+<!-- Brand Header -->
+<div class="flex items-center gap-3 px-2 py-3 mb-6 border-b border-[#e2e8f0]">
+<div class="w-9 h-9 rounded-lg bg-[#0f67b1] flex items-center justify-center text-white font-bold text-base shadow-sm">
+<span class="material-symbols-outlined font-variation-fill">verified_user</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline text-base font-bold tracking-tight text-[#0f67b1]">VFast ELMS</span>
+<span class="text-[11px] text-[#475569] font-medium leading-tight">Enterprise Licensing</span>
+</div>
+</div>
+<!-- Main Navigation Menu -->
+<nav class="space-y-1">
+<!-- Dashboard / Overview -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#475569] hover:bg-[#f0f3ff] transition-colors text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[#475569]">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- License Management -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#475569] hover:bg-[#f0f3ff] transition-colors text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[#475569]">vpn_key</span>
+<span>License Management</span>
+</a>
+<!-- Analytics Hub (ACTIVE) -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-[#eff6ff] text-[#0f67b1] font-semibold border-l-[3px] border-[#0f67b1] rounded-l-none text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-[#0f67b1] font-variation-fill">insights</span>
+<span>Analytics</span>
+</a>
+<!-- Audit Logs / User Management -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#475569] hover:bg-[#f0f3ff] transition-colors text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[#475569]">history</span>
+<span>Audit Logs</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#475569] hover:bg-[#f0f3ff] transition-colors text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[#475569]">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Sidebar Section -->
+<div class="space-y-4 pt-4 border-t border-[#e2e8f0]">
+<!-- Tenant Status Tag -->
+<div class="px-3 py-2 bg-[#f8fafc] rounded-lg border border-[#e2e8f0] flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-xs font-medium text-[#475569]">Enterprise Active</span>
+</div>
+<span class="text-[10px] font-semibold text-slate-400">US-EAST</span>
+</div>
+<!-- Secondary Links -->
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#475569] hover:bg-[#f0f3ff] transition-colors text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[#475569]">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#475569] hover:bg-red-50 hover:text-red-700 transition-colors text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[#475569] group-hover:text-red-700">logout</span>
+<span>Sign Out</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- MAIN CONTENT CONTAINER (TopBar + Page Canvas)                             -->
+<!-- ========================================================================= -->
+<div class="ml-60 flex-1 flex flex-col min-w-0">
+<!-- Top App Bar (TopNavBar Shared Component) -->
+<header class="h-16 bg-surface-container-lowest border-b border-[#e2e8f0] px-8 flex justify-between items-center sticky top-0 z-20">
+<!-- Breadcrumb Path -->
+<div class="flex items-center gap-2 text-sm text-[#475569]">
+<span class="hover:text-slate-900 cursor-pointer transition-colors">Executive Portal</span>
+<span class="text-slate-400">/</span>
+<span class="hover:text-slate-900 cursor-pointer transition-colors">Analytics</span>
+<span class="text-slate-400">/</span>
+<span class="text-[#0f172a] font-semibold">Budget Analytics</span>
+</div>
+<!-- Right Hand Actions Toolbar -->
+<div class="flex items-center gap-4">
+<!-- Search Input with MUI Aesthetic -->
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none">search</span>
+<input class="w-full bg-[#f8fafc] text-xs text-slate-900 rounded-lg pl-9 pr-3 py-2 border border-[#e2e8f0] focus:outline-none focus:ring-1 focus:ring-[#0f67b1] focus:border-[#0f67b1] transition-all placeholder:text-slate-400" placeholder="Search budget, cost centers..." type="text"/>
+</div>
+<div class="h-5 w-[1px] bg-[#e2e8f0]"></div>
+<!-- Notification Icon with Badge -->
+<button class="relative p-2 rounded-lg text-[#475569] hover:bg-[#f0f3ff] transition-colors" title="Notifications">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
+</button>
+<!-- Help Icon -->
+<button class="p-2 rounded-lg text-[#475569] hover:bg-[#f0f3ff] transition-colors" title="Help &amp; Documentation">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="h-5 w-[1px] bg-[#e2e8f0]"></div>
+<!-- User Profile Pill -->
+<div class="flex items-center gap-3 pl-1">
+<div class="w-9 h-9 rounded-full bg-[#d5e3fc] border border-[#a2c9ff] flex items-center justify-center font-semibold text-[#004881] text-xs shadow-xs" title="Dat Nguyen avatar">
+            DN
+          </div>
+<div class="hidden xl:flex flex-col text-left">
+<span class="text-xs font-semibold text-[#0f172a] leading-tight">Dat Nguyen</span>
+<span class="text-[11px] text-[#475569]">Chief IT Architect</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Body Content Canvas -->
+<main class="flex-1 p-8 space-y-6">
+<!-- ===================================================================== -->
+<!-- TOP CONTROLS & SUB-TABS HEADER                                         -->
+<!-- ===================================================================== -->
+<section class="flex flex-col gap-4">
+<!-- Title Banner & Actions Row -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+<div>
+<h1 class="text-2xl font-bold tracking-tight text-[#0f172a] font-headline">Budget Analytics</h1>
+<p class="text-sm text-[#475569] mt-0.5">Capital allocation, expenditure burn-rate, and reclamation forecasts.</p>
+</div>
+<!-- Controls Toolbar -->
+<div class="flex items-center gap-3 flex-wrap">
+<!-- Fiscal Year Dropdown -->
+<div class="relative">
+<div class="flex items-center gap-2 bg-white border border-[#e2e8f0] hover:border-slate-400 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-800 shadow-xs cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-slate-500 text-base">calendar_today</span>
+<span>FY 2026</span>
+<span class="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
+</div>
+</div>
+<!-- Currency Toggle: Segmented Control -->
+<div class="bg-[#f1f5f9] p-1 rounded-lg border border-[#e2e8f0] flex items-center text-xs">
+<button class="bg-white text-slate-900 font-semibold px-2.5 py-1 rounded shadow-xs transition-all flex items-center gap-1">
+<span>USD ($)</span>
+</button>
+<button class="text-slate-500 hover:text-slate-900 font-medium px-2.5 py-1 rounded transition-colors flex items-center gap-1">
+<span>VND (₫)</span>
+</button>
+</div>
+<!-- Set Monthly Budget Action Button -->
+<button class="bg-[#0f67b1] hover:bg-[#0c538e] text-white px-4 py-2 rounded-lg text-xs font-semibold shadow-xs flex items-center gap-2 transition-all">
+<span class="material-symbols-outlined text-base">tune</span>
+<span>Set Monthly Budget</span>
+</button>
+</div>
+</div>
+<!-- Sub-Navigation Tabs Row -->
+<div class="border-b border-[#e2e8f0] flex items-center gap-2">
+<button class="text-slate-500 hover:text-slate-800 font-medium text-sm px-4 py-2.5 transition-colors border-b-2 border-transparent">
+            License Health
+          </button>
+<button class="text-[#0f67b1] font-semibold text-sm px-4 py-2.5 border-b-2 border-[#0f67b1] flex items-center gap-1.5">
+<span>Budget Analytics</span>
+</button>
+</div>
+</section>
+<!-- ===================================================================== -->
+<!-- TOP 4 BUDGET KPIS GRID                                                -->
+<!-- ===================================================================== -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+<!-- KPI 1: Remaining Budget -->
+<div class="bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-5 flex flex-col justify-between shadow-xs">
+<div>
+<div class="flex items-center justify-between text-slate-600 mb-1">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Remaining Budget</span>
+<span class="material-symbols-outlined text-slate-400 text-base cursor-help" title="Unspent cash balance in the current calendar month">info</span>
+</div>
+<p class="text-xs text-[#475569]">Current calendar month unspent cash</p>
+</div>
+<div class="mt-4 flex items-baseline justify-between">
+<span class="text-3xl font-bold tracking-tight text-[#0f172a]">$28,400</span>
+<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+              23.7% Left
+            </span>
+</div>
+</div>
+<!-- KPI 2: Next Month Renewals -->
+<div class="bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-5 flex flex-col justify-between shadow-xs">
+<div>
+<div class="flex items-center justify-between text-slate-600 mb-1">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Next Month Renewals</span>
+<span class="material-symbols-outlined text-slate-400 text-base cursor-help" title="Proportion of budget scheduled for renewal contracts">info</span>
+</div>
+<p class="text-xs text-[#475569]">Committed to recurring contracts due next month</p>
+</div>
+<div class="mt-4">
+<div class="flex items-baseline justify-between">
+<span class="text-3xl font-bold tracking-tight text-[#0f172a]">72.5%</span>
+<span class="bg-amber-50 text-amber-800 border border-amber-200 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+                High Renewal Load
+              </span>
+</div>
+<div class="mt-3 pt-2.5 border-t border-[#f1f5f9] flex items-center justify-end">
+<a class="text-[#0f67b1] text-xs font-semibold hover:underline flex items-center gap-1 group" href="#">
+<span>View Renewals (6)</span>
+<span class="material-symbols-outlined text-xs transition-transform group-hover:translate-x-0.5">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- KPI 3: Budget Consumed -->
+<div class="bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-5 flex flex-col justify-between shadow-xs">
+<div>
+<div class="flex items-center justify-between text-slate-600 mb-1">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Budget Consumed</span>
+<span class="material-symbols-outlined text-slate-400 text-base cursor-help" title="Actual fiscal burn rate compared to approved ceiling">info</span>
+</div>
+<p class="text-xs text-[#475569]">Year-to-date expenditure vs approved ceiling</p>
+</div>
+<div class="mt-4 flex items-baseline justify-between">
+<span class="text-3xl font-bold tracking-tight text-[#0f172a]">77.8%</span>
+<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+              -$45k Surplus
+            </span>
+</div>
+</div>
+<!-- KPI 4: Recoverable Waste -->
+<div class="bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-5 flex flex-col justify-between shadow-xs">
+<div>
+<div class="flex items-center justify-between text-slate-600 mb-1">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Recoverable Waste</span>
+<span class="material-symbols-outlined text-slate-400 text-base cursor-help" title="Identified unallocated and unassigned software licenses">info</span>
+</div>
+<p class="text-xs text-[#475569]">Capital tied up in inactive &amp; unassigned seats</p>
+</div>
+<div class="mt-4">
+<div class="flex items-baseline justify-between">
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-bold tracking-tight text-[#0f172a]">$23,800</span>
+<span class="text-xs font-medium text-slate-500">/ mo</span>
+</div>
+<span class="bg-amber-50 text-amber-800 border border-amber-200 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+                312 Idle Seats
+              </span>
+</div>
+<div class="mt-3 pt-2.5 border-t border-[#f1f5f9] flex items-center justify-end">
+<a class="text-[#0f67b1] text-xs font-semibold hover:underline flex items-center gap-1 group" href="#">
+<span>Reclaim Seats</span>
+<span class="material-symbols-outlined text-xs transition-transform group-hover:translate-x-0.5">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- ===================================================================== -->
+<!-- MIDDLE SECTION CHARTS (Two Cards, Col 6 and Col 6)                    -->
+<!-- ===================================================================== -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Left Card: Budget by Category (Col 6 of 12) -->
+<div class="lg:col-span-6 bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-6 shadow-xs flex flex-col">
+<!-- Card Header & Legend -->
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-1.5">
+<h2 class="text-base font-bold text-[#0f172a]">Budget by Category</h2>
+<span class="material-symbols-outlined text-slate-400 text-base cursor-help" title="Allocated budget cap vs actual run rate per enterprise department">info</span>
+</div>
+<!-- Legend Indicators -->
+<div class="flex items-center gap-4 text-xs font-medium text-[#475569]">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-[#0f67b1]"></span>
+<span>Allocated Budget</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-[#10b981]"></span>
+<span>Actual Spend</span>
+</div>
+</div>
+</div>
+<!-- Clean Horizontal Bar Chart Comparison (Zero on-chart labels) -->
+<div class="flex-1 flex flex-col justify-between space-y-4">
+<!-- Category 1: Dev & DevOps ($460k / $410k of $500k max) -->
+<div class="space-y-1">
+<div class="flex justify-between text-xs font-semibold text-slate-700">
+<span>Dev &amp; DevOps</span>
+<span class="text-slate-400 font-normal">$410k / $460k</span>
+</div>
+<div class="relative w-full h-5 bg-[#f8fafc] rounded-md overflow-hidden flex flex-col justify-center gap-0.5 p-0.5 border border-slate-100">
+<!-- Allocated Bar -->
+<div class="h-1.5 bg-[#0f67b1] rounded-sm" style="width: 92%;"></div>
+<!-- Actual Bar -->
+<div class="h-1.5 bg-[#10b981] rounded-sm" style="width: 82%;"></div>
+</div>
+</div>
+<!-- Category 2: Productivity ($380k / $360k) -->
+<div class="space-y-1">
+<div class="flex justify-between text-xs font-semibold text-slate-700">
+<span>Productivity</span>
+<span class="text-slate-400 font-normal">$360k / $380k</span>
+</div>
+<div class="relative w-full h-5 bg-[#f8fafc] rounded-md overflow-hidden flex flex-col justify-center gap-0.5 p-0.5 border border-slate-100">
+<div class="h-1.5 bg-[#0f67b1] rounded-sm" style="width: 76%;"></div>
+<div class="h-1.5 bg-[#10b981] rounded-sm" style="width: 72%;"></div>
+</div>
+</div>
+<!-- Category 3: Security ($220k / $190k) -->
+<div class="space-y-1">
+<div class="flex justify-between text-xs font-semibold text-slate-700">
+<span>Security</span>
+<span class="text-slate-400 font-normal">$190k / $220k</span>
+</div>
+<div class="relative w-full h-5 bg-[#f8fafc] rounded-md overflow-hidden flex flex-col justify-center gap-0.5 p-0.5 border border-slate-100">
+<div class="h-1.5 bg-[#0f67b1] rounded-sm" style="width: 44%;"></div>
+<div class="h-1.5 bg-[#10b981] rounded-sm" style="width: 38%;"></div>
+</div>
+</div>
+<!-- Category 4: Cloud & Infra ($180k / $165k) -->
+<div class="space-y-1">
+<div class="flex justify-between text-xs font-semibold text-slate-700">
+<span>Cloud &amp; Infra</span>
+<span class="text-slate-400 font-normal">$165k / $180k</span>
+</div>
+<div class="relative w-full h-5 bg-[#f8fafc] rounded-md overflow-hidden flex flex-col justify-center gap-0.5 p-0.5 border border-slate-100">
+<div class="h-1.5 bg-[#0f67b1] rounded-sm" style="width: 36%;"></div>
+<div class="h-1.5 bg-[#10b981] rounded-sm" style="width: 33%;"></div>
+</div>
+</div>
+<!-- Category 5: Collaboration ($140k / $135k) -->
+<div class="space-y-1">
+<div class="flex justify-between text-xs font-semibold text-slate-700">
+<span>Collaboration</span>
+<span class="text-slate-400 font-normal">$135k / $140k</span>
+</div>
+<div class="relative w-full h-5 bg-[#f8fafc] rounded-md overflow-hidden flex flex-col justify-center gap-0.5 p-0.5 border border-slate-100">
+<div class="h-1.5 bg-[#0f67b1] rounded-sm" style="width: 28%;"></div>
+<div class="h-1.5 bg-[#10b981] rounded-sm" style="width: 27%;"></div>
+</div>
+</div>
+<!-- Category 6: Design ($90k / $82k) -->
+<div class="space-y-1">
+<div class="flex justify-between text-xs font-semibold text-slate-700">
+<span>Design</span>
+<span class="text-slate-400 font-normal">$82k / $90k</span>
+</div>
+<div class="relative w-full h-5 bg-[#f8fafc] rounded-md overflow-hidden flex flex-col justify-center gap-0.5 p-0.5 border border-slate-100">
+<div class="h-1.5 bg-[#0f67b1] rounded-sm" style="width: 18%;"></div>
+<div class="h-1.5 bg-[#10b981] rounded-sm" style="width: 16.4%;"></div>
+</div>
+</div>
+<!-- Calibrated Horizontal X-Axis ($0, $100k, $200k, $300k, $400k, $500k USD) -->
+<div class="pt-3 border-t border-[#e2e8f0] relative">
+<div class="flex justify-between text-[11px] text-slate-400 font-medium">
+<span>$0</span>
+<span>$100k</span>
+<span>$200k</span>
+<span>$300k</span>
+<span>$400k</span>
+<span>$500k</span>
+</div>
+<!-- Vertical subtle gridline marks -->
+<div class="absolute top-0 left-0 right-0 h-1 flex justify-between pointer-events-none">
+<div class="w-[1px] h-1.5 bg-slate-300"></div>
+<div class="w-[1px] h-1.5 bg-slate-300"></div>
+<div class="w-[1px] h-1.5 bg-slate-300"></div>
+<div class="w-[1px] h-1.5 bg-slate-300"></div>
+<div class="w-[1px] h-1.5 bg-slate-300"></div>
+<div class="w-[1px] h-1.5 bg-slate-300"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Card: Historical Spend Trend (Col 6 of 12) -->
+<div class="lg:col-span-6 bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-6 shadow-xs flex flex-col">
+<!-- Card Header & Legend -->
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-1.5">
+<h2 class="text-base font-bold text-[#0f172a]">Historical Spend Trend</h2>
+<span class="material-symbols-outlined text-slate-400 text-base cursor-help" title="Monthly spend telemetry tracked against corporate budget thresholds">info</span>
+</div>
+<!-- Legend on top-right -->
+<div class="flex items-center gap-4 text-xs font-medium text-[#475569]">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-0.5 bg-[#0f67b1]"></span>
+<span>Actual Spend</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 border-b-2 border-dashed border-[#94a3b8]"></span>
+<span>Monthly Ceiling ($120k)</span>
+</div>
+</div>
+</div>
+<!-- SVG Chart Container across 12 months with calibrated Y-axis and zero on-chart text labels -->
+<div class="flex-1 flex flex-col justify-end">
+<div class="flex h-56 w-full gap-2">
+<!-- Y-Axis Labels ($0 to $130k scale) -->
+<div class="flex flex-col justify-between text-[11px] text-slate-400 font-medium py-1 text-right w-10 shrink-0">
+<span>$120k</span>
+<span>$90k</span>
+<span>$60k</span>
+<span>$30k</span>
+<span>$0</span>
+</div>
+<!-- Main SVG Area Graph Canvas -->
+<div class="relative flex-1 h-full">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 550 200">
+<defs>
+<lineargradient id="oceanBlueGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#0f67b1" stop-opacity="0.25"></stop>
+<stop offset="100%" stop-color="#0f67b1" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Horizontal Gridlines ($0, $30k, $60k, $90k, $120k) -->
+<line stroke="#f1f5f9" stroke-width="1" x1="0" x2="550" y1="185" y2="185"></line>
+<line stroke="#f1f5f9" stroke-width="1" x1="0" x2="550" y1="140" y2="140"></line>
+<line stroke="#f1f5f9" stroke-width="1" x1="0" x2="550" y1="95" y2="95"></line>
+<line stroke="#f1f5f9" stroke-width="1" x1="0" x2="550" y1="50" y2="50"></line>
+<line stroke="#f1f5f9" stroke-width="1" x1="0" x2="550" y1="15" y2="15"></line>
+<!-- Constant Dashed Horizontal Line for Monthly Budget Ceiling ($120k) at y=15 -->
+<line stroke="#94a3b8" stroke-dasharray="4,4" stroke-width="1.5" x1="0" x2="550" y1="15" y2="15"></line>
+<!-- Gradient Area under Actual Spend -->
+<polygon fill="url(#oceanBlueGradient)" points="
+                    0,185
+                    0,110
+                    50,105
+                    100,85
+                    150,92
+                    200,68
+                    250,75
+                    300,55
+                    350,60
+                    400,42
+                    450,48
+                    500,32
+                    550,38
+                    550,185"></polygon>
+<!-- Actual Spend Smooth Polyline -->
+<polyline fill="none" points="0,110 50,105 100,85 150,92 200,68 250,75 300,55 350,60 400,42 450,48 500,32 550,38" stroke="#0f67b1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></polyline>
+<!-- Subtle point dots on the curve for interactive visual anchor -->
+<circle cx="0" cy="110" fill="#ffffff" r="3" stroke="#0f67b1" stroke-width="2"></circle>
+<circle cx="50" cy="105" fill="#ffffff" r="3" stroke="#0f67b1" stroke-width="2"></circle>
+<circle cx="100" cy="85" fill="#ffffff" r="3" stroke="#0f67b1" stroke-width="2"></circle>
+<circle cx="150" cy="92" fill="#ffffff" r="3" stroke="#0f67b1" stroke-width="2"></circle>
+<circle cx="200" cy="68" fill="#ffffff" r="3" stroke="#0f67b1" stroke-width="2"></circle>
+<circle cx="250" cy="75" fill="#ffffff" r="3" stroke="#0f67b1" stroke-width="2"></circle>
+<circle cx="300" cy="55" fill="#ffffff" r="3" stroke="#0f67b1" stroke-width="2"></circle>
+<circle cx="350" cy="60" fill="#ffffff" r="3" stroke="#0f67b1" stroke-width="2"></circle>
+<circle cx="400" cy="42" fill="#ffffff" r="3" stroke="#0f67b1" stroke-width="2"></circle>
+<circle cx="450" cy="48" fill="#ffffff" r="3" stroke="#0f67b1" stroke-width="2"></circle>
+<circle cx="500" cy="32" fill="#ffffff" r="3" stroke="#0f67b1" stroke-width="2"></circle>
+<circle cx="550" cy="38" fill="#ffffff" r="3" stroke="#0f67b1" stroke-width="2"></circle>
+</svg>
+</div>
+</div>
+<!-- X-Axis Labels (Jan to Dec) aligned cleanly -->
+<div class="flex justify-between pl-12 pr-1 pt-2 border-t border-[#e2e8f0] text-[11px] text-slate-400 font-medium">
+<span>Jan</span>
+<span>Feb</span>
+<span>Mar</span>
+<span>Apr</span>
+<span>May</span>
+<span>Jun</span>
+<span>Jul</span>
+<span>Aug</span>
+<span>Sep</span>
+<span>Oct</span>
+<span>Nov</span>
+<span>Dec</span>
+</div>
+</div>
+</div>
+</section>
+<!-- ===================================================================== -->
+<!-- BOTTOM SUMMARY AUDIT DRAWER (High Signal Enterprise Table)           -->
+<!-- ===================================================================== -->
+<section class="bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-5 shadow-xs">
+<div class="flex items-center justify-between pb-4 border-b border-[#e2e8f0]">
+<div>
+<h3 class="text-sm font-bold text-[#0f172a]">Active Cost Center Allocations</h3>
+<p class="text-xs text-[#475569]">Direct breakdown of approved seat quotas and real-time reconciliation.</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-xs font-semibold text-[#0f67b1] hover:bg-[#eff6ff] px-3 py-1.5 rounded-lg border border-[#d5e3fc] transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">download</span>
+<span>Export CSV</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-xs text-slate-600 mt-2">
+<thead class="bg-[#f8fafc] text-slate-500 uppercase tracking-wider font-semibold border-b border-[#e2e8f0]">
+<tr>
+<th class="py-2.5 px-3">Cost Center / Domain</th>
+<th class="py-2.5 px-3">Quarterly Cap</th>
+<th class="py-2.5 px-3">Burned to Date</th>
+<th class="py-2.5 px-3">Forecasted Variance</th>
+<th class="py-2.5 px-3 text-right">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-3 px-3 font-medium text-slate-900 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                  CC-1049 (Core Engineering)
+                </td>
+<td class="py-3 px-3">$320,000</td>
+<td class="py-3 px-3 font-semibold text-slate-800">$278,400</td>
+<td class="py-3 px-3 text-emerald-600 font-medium">+$41,600 (Under budget)</td>
+<td class="py-3 px-3 text-right">
+<span class="bg-emerald-50 text-emerald-700 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-emerald-200">Optimal</span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-3 px-3 font-medium text-slate-900 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                  CC-2081 (Cloud Security Infrastructure)
+                </td>
+<td class="py-3 px-3">$180,000</td>
+<td class="py-3 px-3 font-semibold text-slate-800">$172,900</td>
+<td class="py-3 px-3 text-amber-600 font-medium">-$7,100 (Near Ceiling)</td>
+<td class="py-3 px-3 text-right">
+<span class="bg-amber-50 text-amber-800 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-amber-200">Review</span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-3 px-3 font-medium text-slate-900 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-teal-500"></span>
+                  CC-3392 (Data Platforms &amp; AI Workspace)
+                </td>
+<td class="py-3 px-3">$140,000</td>
+<td class="py-3 px-3 font-semibold text-slate-800">$109,200</td>
+<td class="py-3 px-3 text-emerald-600 font-medium">+$30,800 (Under budget)</td>
+<td class="py-3 px-3 text-right">
+<span class="bg-emerald-50 text-emerald-700 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-emerald-200">Optimal</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+</div>
+</body></html>
