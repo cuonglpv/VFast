@@ -1,6 +1,6 @@
-# VFast – Enterprise License Management System
+# Enterprise License Management System (ELMS) — team VFast
 
-VFast brings software licenses from every provider (Microsoft, Google, Adobe, JetBrains, Oracle, OpenAI, Anthropic, AWS, VPN, specialized software) and every license model into one place. It keeps the catalog, vendors, entitlements, contracts, and expenses; plans and monitors the license budget; detects unused, inactive, and overused licenses; turns them into recommendations with evidence; and shows everything on dashboards — **without ever assigning, revoking, or changing anything on a provider**.
+ELMS brings software licenses from every provider (Microsoft, Google, Adobe, JetBrains, Oracle, OpenAI, Anthropic, AWS, VPN, specialized software) and every license model into one place. It keeps the catalog, vendors, entitlements, contracts, and expenses; plans and monitors the license budget; detects unused, inactive, and overused licenses; turns them into recommendations with evidence; and shows everything on dashboards — **without ever assigning, revoking, or changing anything on a provider**.
 
 ## 1. Requirements — Research, Use Cases, and INVEST
 
@@ -8,7 +8,7 @@ Requirements are derived top-down: business problem → stakeholders → goals �
 
 ### 1.1 Mind map
 
-![VFast mind map](docs/mindmap.png)
+![ELMS mind map](docs/mindmap.png)
 
 The map has five branches: **License Management** (catalog & entitlement), **Budget Management** (planning & cost allocation, spending & monitoring), **Optimization** (detection, savings & recommendation), **Analytics** (four dashboards), and **User & Organization**. Each of the 22 leaves is one use case (UC01–UC22, in branch order); UC23 View My Licenses and UC24 Login / Logout are self-service use cases every role has.
 
@@ -33,7 +33,7 @@ What makes this project different:
 1. **One model for every license** — each license is a combination of three axes (measurement archetype, commercial term, collection method) and one of four archetypes: Allocation, Concurrent, Metered, Capacity.
 2. **Budget reconciliation chain** — Planned → Purchased → Assigned → Used → Actual cost; each gap is a different problem with a different fix.
 3. **Missing data is not guessed** — a failed sync is `Unknown`, never usage 0, so it never creates a false waste finding.
-4. **Decisions stay with people** — every recommendation shows evidence and a saving, and a Manager accepts or rejects it; VFast only reads from providers.
+4. **Decisions stay with people** — every recommendation shows evidence and a saving, and a Manager accepts or rejects it; ELMS only reads from providers.
 
 Full analysis, license-model research, data-source feasibility, scope, and risks: [Top-down research](docs/01-research-top-down.md).
 
@@ -82,7 +82,7 @@ There are four roles; each account has exactly one. Every account belongs to a r
 | My licenses | Read own | Read own | Read own | Read own |
 
 - The backend enforces every cell of this table and the data scope; hiding a button in the interface is not enough, and a call outside the role returns `403`.
-- VFast never writes to a provider: "edit" here changes data in VFast only.
+- ELMS never writes to a provider: "edit" here changes data in ELMS only.
 - Every change to license data, expenses, budgets, recommendations, and access is recorded with who, old value, new value, and time.
 
 Staff and Manager compared, and the full role × feature matrix with the business rules: [Use cases](docs/02-use-cases.md#staff-and-manager).
@@ -91,7 +91,7 @@ Staff and Manager compared, and the full role × feature matrix with the busines
 
 The backlog contains **24 user stories (92 story points)**, one per use case (USxx implements UCxx). Every story passes the INVEST review and has Given/When/Then acceptance criteria.
 
-| Criterion | Meaning in VFast |
+| Criterion | Meaning in ELMS |
 |---|---|
 | **Independent** | Each story produces a demonstrable outcome; analytics and detection stories run on seeded data without waiting for connectors. |
 | **Negotiable** | Layout and implementation may change while outcome, permissions, and business rules stay fixed. |

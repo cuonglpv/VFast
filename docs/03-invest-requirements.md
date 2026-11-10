@@ -1,4 +1,4 @@
-# INVEST Requirements & Acceptance Criteria — VFast
+# INVEST Requirements & Acceptance Criteria — ELMS
 
 > Design status: TARGET
 
@@ -250,7 +250,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 - Only Admin, Manager, Staff, and Employee have accounts; every API requires login because per-user usage is sensitive.
 - Admin manages access only: license, budget, cost, and optimization APIs return `403` for Admin.
 - The API, not the client, enforces roles, permissions, and data scope (BR-16, BR-17).
-- VFast never writes to a provider (BR-01); every connector uses read-only access.
+- ELMS never writes to a provider (BR-01); every connector uses read-only access.
 - Missing data is `Unknown`, never 0 (BR-04); every figure carries its source and confidence (BR-14).
 - Figures tie across screens: cost allocation total = financial dashboard spend by department; detection counts = optimization dashboard; overuse list = compliance dashboard.
 - Every change to master data, expenses, budgets, recommendations, and access is recorded (BR-15).

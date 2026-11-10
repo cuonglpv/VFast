@@ -4,7 +4,7 @@
 >
 > Implementation status: NOT STARTED
 
-Product name: **VFast — Enterprise License Management System**. Use cases follow the five branches of the [mind map](mindmap.png): License Management, Budget Management, Optimization, Analytics, User & Organization.
+System: **Enterprise License Management System (ELMS)**, built by team VFast. Use cases follow the five branches of the [mind map](mindmap.png): License Management, Budget Management, Optimization, Analytics, User & Organization.
 
 ## Actors / roles
 
@@ -14,7 +14,7 @@ Product name: **VFast — Enterprise License Management System**. Use cases foll
 | `STAFF` | Member of the license management team who reports to a Manager. Does the hands-on work: enters and edits license information (catalog, vendors, entitlements, contracts) and expenses |
 | `MANAGER` | Manager of a unit (a P&L or a department). Mainly uses dashboards and analytics; plans and monitors the unit's budget; reviews optimization results. Sees license data and cost through the dashboards |
 | `ADMIN` | Operates the system: users, roles, permissions, and the P&L / department tree. Has no access to license, budget, or cost data |
-| License providers | External systems (Microsoft Graph and other provider APIs, logs, exports). VFast only reads from them |
+| License providers | External systems (Microsoft Graph and other provider APIs, logs, exports). ELMS only reads from them |
 
 Every account belongs to a real employee (matched by company email), so View My Licenses and Login / Logout belong to every role.
 
@@ -53,7 +53,7 @@ Menus and buttons are hidden when the user lacks permission, but the API enforce
 
 | ID | Rule |
 |---|---|
-| BR-01 | VFast is read-only toward providers. It never assigns, revokes, buys, renews, or changes a subscription; "Assigned" is data read from the provider. |
+| BR-01 | ELMS is read-only toward providers. It never assigns, revokes, buys, renews, or changes a subscription; "Assigned" is data read from the provider. |
 | BR-02 | A license is described by three axes: measurement archetype (Allocation, Concurrent, Metered, Capacity), commercial term, and collection method. Each entitlement line has exactly one archetype. |
 | BR-03 | Every assigned seat has exactly one status: `Active` (activity in the last 60 days), `Inactive` (active before, nothing in the last 60 days), `No activity` (a usage source exists but no activity was ever recorded), `Not monitored` (no usage source). A purchased seat without a holder is `Unassigned`. |
 | BR-04 | Missing data is `Unknown`, never 0. `Not monitored` is never counted as `Inactive` or as waste. |
@@ -65,7 +65,7 @@ Menus and buttons are hidden when the user lacks permission, but the API enforce
 | BR-10 | An expense has a date, amount, currency, license, unit, and an optional invoice file (PDF or image, at most 10 MB). An expense can be edited until its month is closed; afterwards only a correcting entry is allowed. |
 | BR-11 | A forecast is a projection, never presented as actual cost: it uses the run rate of the last 3 closed months, known renewals, and active plan lines, and shows the method used. |
 | BR-12 | **Detection runs daily.** Unused = `Unassigned` seats; inactive = `Inactive` + `No activity`; overuse per BR-07. A result shows its evidence (count, last activity, data date) and its monthly cost. |
-| BR-13 | **Recommendations need evidence and a decision.** A recommendation (reduce seats, downgrade plan, cancel, reassign) shows its evidence and estimated yearly saving. Status: `Proposed` → `Accepted` or `Rejected` (reason required) → `Done`. VFast never carries it out on the provider (BR-01). |
+| BR-13 | **Recommendations need evidence and a decision.** A recommendation (reduce seats, downgrade plan, cancel, reassign) shows its evidence and estimated yearly saving. Status: `Proposed` → `Accepted` or `Rejected` (reason required) → `Done`. ELMS never carries it out on the provider (BR-01). |
 | BR-14 | Every figure carries its source (`api`, `import`, `manual`) and confidence. A value from a connector cannot be overwritten silently: an edit needs a reason and keeps the original value. |
 | BR-15 | Every change to license data, expenses, budgets, recommendations, users, departments, roles, and permissions is recorded with who, old value, new value, and time. Licenses, vendors, and contracts are never deleted, only marked inactive. |
 | BR-16 | Data scope comes from the server on every request: a Manager sees the units assigned to them, and license data and cost only through dashboards; Staff sees every license and expense but no budget; Admin sees users, roles, permissions, and the P&L / department tree, but no license, budget, or cost data; an Employee sees only their own licenses, without price or cost. |
