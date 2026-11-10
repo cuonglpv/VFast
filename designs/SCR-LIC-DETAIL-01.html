@@ -131,32 +131,22 @@
 <span>Add License</span>
 </button>
 </div>
-<!-- Navigation Links -->
+<!-- Navigation Links: 3-Pillar IA Contract -->
 <nav class="space-y-1">
-<!-- Dashboard -->
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-150" href="#">
-<span class="material-symbols-outlined text-[20px]">dashboard</span>
-<span class="font-label text-sm">Dashboard</span>
-</a>
-<!-- License Management (ACTIVE per page intent) -->
+<!-- Item 1: License Management (ACTIVE) -->
 <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary-container text-on-secondary-container font-medium" href="#">
 <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">vpn_key</span>
 <span class="font-label text-sm font-semibold">License Management</span>
 </a>
-<!-- Analytics -->
+<!-- Item 2: Analytics Hub (inactive) -->
 <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-150" href="#">
 <span class="material-symbols-outlined text-[20px]">insights</span>
-<span class="font-label text-sm">Analytics</span>
+<span class="font-label text-sm">Analytics Hub</span>
 </a>
-<!-- Audit Logs -->
+<!-- Item 3: User Management (Admin) (inactive) -->
 <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-150" href="#">
-<span class="material-symbols-outlined text-[20px]">history</span>
-<span class="font-label text-sm">Audit Logs</span>
-</a>
-<!-- Settings -->
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-150" href="#">
-<span class="material-symbols-outlined text-[20px]">settings</span>
-<span class="font-label text-sm">Settings</span>
+<span class="material-symbols-outlined text-[20px]">manage_accounts</span>
+<span class="font-label text-sm">User Management (Admin)</span>
 </a>
 </nav>
 </div>
@@ -207,69 +197,30 @@
         </div>
 <div class="flex flex-col text-left">
 <span class="text-xs font-semibold text-on-surface leading-tight">Dat Nguyen</span>
-<span class="text-[10px] text-secondary">License Admin</span>
+<span class="text-[10px] text-secondary">Chief IT Architect</span>
 </div>
 </div>
 </div>
 </header>
 <!-- Base Page Content Container -->
 <main class="ml-60 pt-20 p-6 min-h-screen overflow-y-auto">
-<!-- Top Header -->
+<!-- Page Header -->
 <div class="flex items-center justify-between mb-6">
 <div>
 <h1 class="text-2xl font-bold font-headline text-slate-900 tracking-tight">License Management</h1>
-<p class="text-xs text-slate-500 font-medium mt-0.5">Centralized procurement tracking, seating allocation, and automated compliance</p>
 </div>
 <div class="flex items-center gap-2">
 <button class="px-3 py-1.5 bg-white border border-[#e2e8f0] rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 shadow-sm">
 <span class="material-symbols-outlined text-[16px]">file_download</span>
-          Export Report
-        </button>
+Export Report
+</button>
 <button class="px-3 py-1.5 bg-[#0f67b1] text-white rounded-lg text-xs font-medium hover:bg-[#0c538e] flex items-center gap-1.5 shadow-sm">
 <span class="material-symbols-outlined text-[16px]">add</span>
-          New Assignment
-        </button>
+Add License
+</button>
 </div>
 </div>
-<!-- Summary Metrics Cards -->
-<div class="grid grid-cols-3 gap-5 mb-6">
-<!-- Metric 1 -->
-<div class="p-4 bg-white rounded-xl border border-[#e2e8f0] shadow-sm flex items-center justify-between">
-<div>
-<span class="text-xs text-slate-500 font-medium">Total Enterprise Licenses</span>
-<div class="text-2xl font-bold text-slate-900 mt-1">1,284</div>
-<span class="text-[11px] text-emerald-600 font-medium flex items-center gap-1 mt-0.5">
-<span class="material-symbols-outlined text-[13px]">arrow_upward</span> +4.2% from last quarter
-          </span>
-</div>
-<div class="w-10 h-10 rounded-lg bg-sky-50 text-[#0f67b1] flex items-center justify-center">
-<span class="material-symbols-outlined text-[22px]">workspace_premium</span>
-</div>
-</div>
-<!-- Metric 2 -->
-<div class="p-4 bg-white rounded-xl border border-[#e2e8f0] shadow-sm flex items-center justify-between">
-<div>
-<span class="text-xs text-slate-500 font-medium">Category Breakdown</span>
-<div class="text-2xl font-bold text-slate-900 mt-1">14 Vendors</div>
-<span class="text-[11px] text-slate-500 font-medium mt-0.5">Cloud SaaS, Dev Tools, Infra</span>
-</div>
-<div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-<span class="material-symbols-outlined text-[22px]">donut_large</span>
-</div>
-</div>
-<!-- Metric 3 -->
-<div class="p-4 bg-white rounded-xl border border-[#e2e8f0] shadow-sm flex items-center justify-between">
-<div>
-<span class="text-xs text-slate-500 font-medium">Top 5 App Usage</span>
-<div class="text-2xl font-bold text-slate-900 mt-1">91.8%</div>
-<span class="text-[11px] text-emerald-600 font-medium mt-0.5">Optimal Seat Utilization</span>
-</div>
-<div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-<span class="material-symbols-outlined text-[22px]">bar_chart</span>
-</div>
-</div>
-</div>
-<!-- License Inventory Table -->
+<!-- License Data Grid (9 Columns per IA §4.2) -->
 <div class="bg-white rounded-xl border border-[#e2e8f0] shadow-sm overflow-hidden">
 <div class="p-4 border-b border-[#e2e8f0] flex items-center justify-between bg-white">
 <div class="flex items-center gap-3">
@@ -280,107 +231,106 @@
 <button class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100">
 <span class="material-symbols-outlined text-[18px]">filter_list</span>
 </button>
-<button class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100">
-<span class="material-symbols-outlined text-[18px]">view_column</span>
-</button>
 </div>
 </div>
-<table class="w-full text-left text-xs">
-<thead class="bg-slate-50 text-slate-500 font-semibold border-b border-[#e2e8f0]">
+<div class="overflow-x-auto">
+<table class="w-full text-left text-xs border-collapse">
+<thead class="bg-slate-50 text-slate-500 font-semibold border-b border-[#e2e8f0] text-[11px] uppercase tracking-wider">
 <tr>
-<th class="py-3 px-4">SOFTWARE PRODUCT</th>
-<th class="py-3 px-4">VENDOR</th>
-<th class="py-3 px-4">CONTRACT TYPE</th>
-<th class="py-3 px-4">TOTAL COST</th>
-<th class="py-3 px-4">CAPACITY</th>
-<th class="py-3 px-4">UTILIZATION</th>
-<th class="py-3 px-4 text-right">STATUS</th>
+<th class="py-3 px-4">License Name</th>
+<th class="py-3 px-4">Publisher</th>
+<th class="py-3 px-4">License Type</th>
+<th class="py-3 px-4">Compliance</th>
+<th class="py-3 px-4 text-right">Purchased</th>
+<th class="py-3 px-4 text-right">Entitlement</th>
+<th class="py-3 px-4 text-right">Active Users</th>
+<th class="py-3 px-4">Total Users</th>
+<th class="py-3 px-4">Expiry Date</th>
 </tr>
 </thead>
 <tbody class="divide-y divide-slate-100">
-<!-- Row 1: Selected & Highlighted with Ocean Blue border and soft blue background -->
-<tr class="bg-sky-50/60 border-l-4 border-l-[#0f67b1] font-medium transition-colors cursor-pointer">
+<!-- Row 1: Microsoft 365 (selected/highlighted row - this is the open drawer) -->
+<tr class="bg-sky-50/60 border-l-4 border-l-[#0f67b1] font-medium cursor-pointer">
 <td class="py-3.5 px-4">
 <div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[#0f67b1] text-[18px]">verified</span>
-<span class="text-slate-900 font-semibold">Microsoft 365 Enterprise</span>
+<div class="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0">MS</div>
+<div>
+<span class="text-slate-900 font-semibold block leading-tight">Microsoft 365 Enterprise</span>
+<span class="text-[11px] text-slate-400 font-mono">E5-SKU-9921</span>
+</div>
 </div>
 </td>
 <td class="py-3.5 px-4 text-slate-600">Microsoft Corporation</td>
-<td class="py-3.5 px-4 text-slate-600">SaaS Subscription</td>
-<td class="py-3.5 px-4 text-slate-900 font-semibold">$180,000</td>
-<td class="py-3.5 px-4 text-slate-700">500 seats</td>
-<td class="py-3.5 px-4">
-<div class="flex items-center gap-2">
-<div class="w-20 bg-slate-200 h-1.5 rounded-full overflow-hidden">
-<div class="bg-[#0f67b1] h-full" style="width: 94%;"></div>
-</div>
-<span class="text-[11px] text-slate-700 font-medium">470 / 500</span>
-</div>
-</td>
-<td class="py-3.5 px-4 text-right">
-<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Active</span>
-</td>
+<td class="py-3.5 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium border border-slate-200 bg-white text-slate-600">SaaS Subscription</span></td>
+<td class="py-3.5 px-4"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Compliant</span></td>
+<td class="py-3.5 px-4 text-right font-medium text-slate-900">$180,000</td>
+<td class="py-3.5 px-4 text-right text-slate-600">500 seats</td>
+<td class="py-3.5 px-4 text-right font-semibold text-slate-900">470</td>
+<td class="py-3.5 px-4 text-sm text-slate-900 font-medium">470 / 500</td>
+<td class="py-3.5 px-4 text-slate-500 font-mono text-[11px]">2027-05-31</td>
 </tr>
-<!-- Row 2 -->
-<tr class="hover:bg-slate-50/70 text-slate-600">
-<td class="py-3.5 px-4 font-semibold text-slate-800">Slack Business+</td>
-<td class="py-3.5 px-4">Salesforce / Slack</td>
-<td class="py-3.5 px-4">Annual SaaS</td>
-<td class="py-3.5 px-4 text-slate-900 font-semibold">$45,000</td>
-<td class="py-3.5 px-4">300 seats</td>
+<!-- Row 2: Slack Enterprise Grid -->
+<tr class="hover:bg-slate-50/70">
 <td class="py-3.5 px-4">
 <div class="flex items-center gap-2">
-<div class="w-20 bg-slate-200 h-1.5 rounded-full overflow-hidden">
-<div class="bg-[#0f67b1] h-full" style="width: 86%;"></div>
+<div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 font-bold text-xs flex items-center justify-center shrink-0">SL</div>
+<div>
+<span class="text-slate-800 font-semibold block leading-tight">Slack Enterprise Grid</span>
+<span class="text-[11px] text-slate-400 font-mono">SLK-ENT-8840</span>
 </div>
-<span class="text-[11px] text-slate-700">258 / 300</span>
 </div>
 </td>
-<td class="py-3.5 px-4 text-right">
-<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Active</span>
-</td>
+<td class="py-3.5 px-4 text-slate-600">Salesforce, Inc.</td>
+<td class="py-3.5 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium border border-slate-200 bg-white text-slate-600">SaaS Subscription</span></td>
+<td class="py-3.5 px-4"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Compliant</span></td>
+<td class="py-3.5 px-4 text-right font-medium text-slate-900">$68,400</td>
+<td class="py-3.5 px-4 text-right text-slate-600">450 seats</td>
+<td class="py-3.5 px-4 text-right font-semibold text-slate-900">410</td>
+<td class="py-3.5 px-4 text-sm text-slate-900 font-medium">410 / 450</td>
+<td class="py-3.5 px-4 text-slate-500 font-mono text-[11px]">2026-12-15</td>
 </tr>
-<!-- Row 3 -->
-<tr class="hover:bg-slate-50/70 text-slate-600">
-<td class="py-3.5 px-4 font-semibold text-slate-800">GitHub Enterprise Cloud</td>
-<td class="py-3.5 px-4">GitHub Inc.</td>
-<td class="py-3.5 px-4">Multi-year</td>
-<td class="py-3.5 px-4 text-slate-900 font-semibold">$52,800</td>
-<td class="py-3.5 px-4">220 seats</td>
+<!-- Row 3: GitHub Enterprise -->
+<tr class="hover:bg-slate-50/70">
 <td class="py-3.5 px-4">
 <div class="flex items-center gap-2">
-<div class="w-20 bg-slate-200 h-1.5 rounded-full overflow-hidden">
-<div class="bg-[#0f67b1] h-full" style="width: 98%;"></div>
+<div class="w-7 h-7 rounded-lg bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center shrink-0">GH</div>
+<div>
+<span class="text-slate-800 font-semibold block leading-tight">GitHub Enterprise</span>
+<span class="text-[11px] text-slate-400 font-mono">GHE-ORG-7712</span>
 </div>
-<span class="text-[11px] text-slate-700">216 / 220</span>
 </div>
 </td>
-<td class="py-3.5 px-4 text-right">
-<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Active</span>
-</td>
+<td class="py-3.5 px-4 text-slate-600">GitHub (Microsoft)</td>
+<td class="py-3.5 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium border border-slate-200 bg-white text-slate-600">Enterprise Agreement</span></td>
+<td class="py-3.5 px-4"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Compliant</span></td>
+<td class="py-3.5 px-4 text-right font-medium text-slate-900">$63,360</td>
+<td class="py-3.5 px-4 text-right text-slate-600">300 seats</td>
+<td class="py-3.5 px-4 text-right font-semibold text-slate-900">264</td>
+<td class="py-3.5 px-4 text-sm text-slate-900 font-medium">264 / 300</td>
+<td class="py-3.5 px-4 text-slate-500 font-mono text-[11px]">2027-03-31</td>
 </tr>
-<!-- Row 4 -->
-<tr class="hover:bg-slate-50/70 text-slate-600">
-<td class="py-3.5 px-4 font-semibold text-slate-800">Figma Enterprise Org</td>
-<td class="py-3.5 px-4">Figma Inc.</td>
-<td class="py-3.5 px-4">Annual SaaS</td>
-<td class="py-3.5 px-4 text-slate-900 font-semibold">$38,000</td>
-<td class="py-3.5 px-4">60 seats</td>
+<tr class="hover:bg-slate-50/70">
 <td class="py-3.5 px-4">
 <div class="flex items-center gap-2">
-<div class="w-20 bg-slate-200 h-1.5 rounded-full overflow-hidden">
-<div class="bg-[#0f67b1] h-full" style="width: 90%;"></div>
+<div class="w-7 h-7 rounded-lg bg-sky-100 text-sky-800 font-bold text-xs flex items-center justify-center shrink-0">JR</div>
+<div>
+<span class="text-slate-800 font-semibold block leading-tight">Jira Software &amp; Confluence</span>
+<span class="text-[11px] text-slate-400 font-mono">ATLAS-CLOUD-300</span>
 </div>
-<span class="text-[11px] text-slate-700">54 / 60</span>
 </div>
 </td>
-<td class="py-3.5 px-4 text-right">
-<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Active</span>
-</td>
+<td class="py-3.5 px-4 text-slate-600">Atlassian</td>
+<td class="py-3.5 px-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium border border-slate-200 bg-white text-slate-600">SaaS Subscription</span></td>
+<td class="py-3.5 px-4"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>At Risk</span></td>
+<td class="py-3.5 px-4 text-right font-medium text-slate-900">$45,000</td>
+<td class="py-3.5 px-4 text-right text-slate-600">300 seats</td>
+<td class="py-3.5 px-4 text-right font-semibold text-slate-900">255</td>
+<td class="py-3.5 px-4 text-sm text-slate-900 font-medium">285 / 300</td>
+<td class="py-3.5 px-4 text-slate-500 font-mono text-[11px]">2026-11-30</td>
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 </main>
 <!-- ========================================================================= -->
