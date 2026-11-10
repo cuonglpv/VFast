@@ -9,17 +9,18 @@
 Hệ thống ELMS phân định rõ trách nhiệm giữa **3 Tác nhân con người** và **1 Tác nhân hệ thống tự động**:
 
 ```mermaid
-classDiagram
-    class HumanActors {
-        <<Tác nhân Con người>>
-        +Manager (Quản trị Toàn diện & Phê duyệt)
-        +Staff (Nạp Dữ liệu Usage & Expense)
-        +Employee (Tra cứu & Gửi yêu cầu)
-    }
-    class SystemActors {
-        <<Tác nhân Hệ thống>>
-        +LifecycleNotificationSystem (Hệ thống quét lịch ngầm)
-    }
+flowchart TD
+    subgraph HumanActors ["Tác nhân Con người (Human Actors)"]
+        direction TB
+        Manager["Manager (Quản trị Toàn diện & Phê duyệt)"]
+        Staff["Staff (Nạp Dữ liệu Usage & Expense)"]
+        Employee["Employee (Tra cứu & Gửi yêu cầu)"]
+    end
+
+    subgraph SystemActors ["Tác nhân Hệ thống (System Actors)"]
+        direction TB
+        LifecycleNotificationSystem["LifecycleNotificationSystem (Hệ thống quét lịch ngầm)"]
+    end
 ```
 
 1. **Manager (Quản lý cấp cao / Quản trị viên hệ thống):**
@@ -94,29 +95,29 @@ Sơ đồ theo chuẩn UML: tác nhân là hình người, một khung ranh gi�
 
 ### 3.0. Tổng quan
 
-![VFast ELMS use case overview](diagrams/out/uc_overview.png)
+![VFast ELMS use case overview](./diagrams/out/uc_overview.png)
 
 ### 3.1. Manager (Quản trị & Ra Quyết định)
 
 #### Manager (1/2) — License, Cấp phát, Vòng đời
 
-![Manager use cases, licenses](diagrams/out/uc_manager_license.png)
+![Manager use cases, licenses](./diagrams/out/uc_manager_license.png)
 
 #### Manager (2/2) — Ngân sách, Tối ưu hóa, Phân tích, Quản trị
 
-![Manager use cases, budget and analytics](diagrams/out/uc_manager_finance.png)
+![Manager use cases, budget and analytics](./diagrams/out/uc_manager_finance.png)
 
 ### 3.2. Staff & Employee
 
 #### Staff (Nạp dữ liệu)
 
-![Staff use cases](diagrams/out/uc_staff.png)
+![Staff use cases](./diagrams/out/uc_staff.png)
 
 #### Employee (Tự phục vụ)
 
-![Employee use cases](diagrams/out/uc_employee.png)
+![Employee use cases](./diagrams/out/uc_employee.png)
 
-Mã nguồn sơ đồ: [`diagrams/ve_elms.py`](diagrams/ve_elms.py); mỗi sơ đồ có thêm bản SVG và file draw.io chỉnh sửa được trong [`diagrams/out/`](diagrams/out/).
+Mã nguồn sơ đồ: [`./diagrams/ve_elms.py`](./diagrams/ve_elms.py); mỗi sơ đồ có thêm bản SVG và file draw.io chỉnh sửa được trong [`./diagrams/out/`](./diagrams/out/).
 
 ---
 
@@ -164,13 +165,12 @@ sequenceDiagram
         UI->>API: POST /api/v1/license-requests/REQ-201/approve
         API->>DB: UPDATE status='Approved' WHERE status='Pending'
         API->>DB: INSERT into audit_logs (Action='APPROVE_REQUEST')
-        
         Mgr->>UI: Chọn Entitlement nguồn & Nhấn Cấp phát (UC09)
         UI->>API: POST /api/v1/assignments (EmployeeId, EntitlementId, RequestId)
         API->>DB: Bắt đầu Transaction, khóa request và entitlement (SELECT FOR UPDATE)
         API->>DB: Kiểm tra request Approved, không cấp trùng, Available > 0
         API->>DB: INSERT into license_assignments (Status='Active')
-        API->>DB: UPDATE license_entitlements SET allocated_quantity += 1
+        API->>DB: UPDATE license_entitlements SET allocated_quantity = allocated_quantity + 1
         API->>DB: UPDATE license_requests SET status='Fulfilled'
         API->>DB: INSERT into audit_logs (Action='ASSIGN_LICENSE')
         API->>DB: Commit Transaction
@@ -204,12 +204,10 @@ sequenceDiagram
     API->>DB: Lưu file vào Storage & INSERT into expenses
     API->>DB: Ghi log tạo bởi Staff (created_by)
     API-->>UI: Nạp dữ liệu thành công!
-
     Stf->>UI: Nạp dữ liệu mức độ sử dụng License Usage (UC31, UC32)
     UI->>API: POST /api/v1/license-usage
     API->>DB: INSERT into license_usage
     API-->>UI: Cập nhật usage thành công!
-
     Mgr->>UI: Truy cập Dashboard Quản trị & Đối soát (UC24)
     UI->>API: GET /api/v1/dashboards/financial
     API->>DB: Tổng hợp Actual Spending vs Budget
@@ -344,7 +342,9 @@ sequenceDiagram
 - **Luồng sự kiện chính:**
   1. Manager thiết lập ngân sách phần mềm theo năm tài chính và theo phòng ban (`UC12`).
   2. Hệ thống tổng hợp tự động các khoản chi phí thực tế (`Expense`) phát sinh trong kỳ:
+
      $$\text{Actual Spending} = \sum \text{Expense Amount}$$
+
      Chỉ tính các khoản đã chi trong kỳ của đúng ngân sách đó. Khoản khác loại tiền tệ chỉ được cộng khi có tỷ giá hiệu lực (BR-11, D12); nếu không có thì hiển thị riêng. `Committed Spending` là chỉ số P1 hiển thị riêng, không tính vào các công thức bên dưới (D4).
   3. Hệ thống tính toán các chỉ số:
      - $\text{Remaining Budget} = \text{Total Budget} - \text{Actual Spending}$
