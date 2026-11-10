@@ -4,608 +4,477 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>VFast ELMS - Analytics &amp; Health</title>
-<!-- Material Symbols Outlined -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Inter Font -->
+<!-- Fonts & Material Symbols -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS CDN -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
       theme: {
         extend: {
-          "colors": {
-            "surface-container": "#e7eeff",
-            "outline-variant": "#c1c7d3",
-            "surface-dim": "#cfdaf2",
+          colors: {
+            "on-surface": "#111c2d",
             "on-primary-fixed-variant": "#004881",
-            "surface-container-low": "#f0f3ff",
-            "on-secondary": "#ffffff",
-            "on-background": "#111c2d",
-            "primary": "#0f67b1",
-            "on-tertiary": "#ffffff",
-            "on-tertiary-container": "#cde5ff",
-            "on-error": "#ffffff",
-            "error-container": "#ffdad6",
-            "surface-variant": "#d8e3fb",
-            "on-secondary-fixed-variant": "#3a485b",
-            "surface-tint": "#0060a9",
-            "primary-fixed": "#d3e4ff",
-            "outline": "#717782",
-            "on-tertiary-fixed-variant": "#004b73",
-            "on-tertiary-fixed": "#001d31",
-            "secondary": "#475569",
-            "on-surface-variant": "#414751",
-            "surface-container-highest": "#d8e3fb",
-            "tertiary": "#00517d",
-            "secondary-fixed": "#d5e3fc",
-            "surface": "#ffffff",
-            "on-secondary-fixed": "#0d1c2e",
-            "background": "#f8fafc",
-            "on-primary": "#ffffff",
-            "primary-fixed-dim": "#a2c9ff",
-            "on-primary-fixed": "#001c38",
-            "inverse-on-surface": "#ecf1ff",
-            "inverse-surface": "#263143",
-            "tertiary-fixed-dim": "#93ccff",
-            "surface-bright": "#f9f9ff",
-            "error": "#ba1a1a",
             "secondary-fixed-dim": "#b9c7df",
-            "on-error-container": "#93000a",
-            "on-primary-container": "#d4e4ff",
-            "surface-container-lowest": "#ffffff",
-            "on-secondary-container": "#57657a",
-            "surface-container-high": "#dee8ff",
-            "tertiary-fixed": "#cce5ff",
             "inverse-primary": "#a2c9ff",
-            "secondary-container": "#d5e3fc",
+            "surface-variant": "#d8e3fb",
+            "surface-container-high": "#dee8ff",
+            "on-error-container": "#93000a",
+            "primary": "#004f8b",
+            "on-surface-variant": "#414751",
+            "outline": "#717782",
+            "surface-dim": "#cfdaf2",
+            "tertiary": "#00517d",
+            "surface-container": "#e7eeff",
             "tertiary-container": "#006aa1",
             "primary-container": "#0f67b1",
-            "on-surface": "#0f172a"
+            "primary-fixed": "#d3e4ff",
+            "on-secondary-container": "#57657a",
+            "background": "#f9f9ff",
+            "on-primary": "#ffffff",
+            "on-tertiary-fixed-variant": "#004b73",
+            "surface": "#f9f9ff",
+            "secondary-fixed": "#d5e3fc",
+            "on-tertiary-fixed": "#001d31",
+            "surface-container-highest": "#d8e3fb",
+            "tertiary-fixed": "#cce5ff",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed": "#0d1c2e",
+            "tertiary-fixed-dim": "#93ccff",
+            "surface-bright": "#f9f9ff",
+            "on-tertiary": "#ffffff",
+            "surface-tint": "#0060a9",
+            "inverse-surface": "#263143",
+            "surface-container-low": "#f0f3ff",
+            "secondary-container": "#d5e3fc",
+            "on-background": "#111c2d",
+            "on-primary-container": "#d4e4ff",
+            "on-secondary": "#ffffff",
+            "on-error": "#ffffff",
+            "on-secondary-fixed-variant": "#3a485b",
+            "secondary": "#515f74",
+            "primary-fixed-dim": "#a2c9ff",
+            "on-primary-fixed": "#001c38",
+            "on-tertiary-container": "#cde5ff",
+            "error": "#ba1a1a",
+            "inverse-on-surface": "#ecf1ff",
+            "error-container": "#ffdad6",
+            "outline-variant": "#c1c7d3"
           },
-          "borderRadius": {
+          borderRadius: {
             "DEFAULT": "0.25rem",
             "lg": "0.5rem",
             "xl": "0.75rem",
             "full": "9999px"
           },
-          "fontFamily": {
-            "headline": ["Inter", "sans-serif"],
-            "display": ["Inter", "sans-serif"],
-            "body": ["Inter", "sans-serif"],
-            "label": ["Inter", "sans-serif"]
+          fontFamily: {
+            headline: ["Inter", "sans-serif"],
+            display: ["Inter", "sans-serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Inter", "sans-serif"]
           }
         },
       },
     }
   </script>
 <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f8fafc;
-      color: #0f172a;
-      -webkit-font-smoothing: antialiased;
-    }
     .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
       font-size: 20px;
       line-height: 1;
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
     }
-    /* Minimal MUI Tooltip simulation */
-    .mui-tooltip-trigger {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
     }
-    .mui-tooltip-trigger .mui-tooltip-content {
-      visibility: hidden;
-      opacity: 0;
-      transition: opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1), transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-      transform: translateY(4px);
-      pointer-events: none;
-      position: absolute;
-      bottom: calc(100% + 6px);
-      left: 50%;
-      transform-origin: center bottom;
-      z-index: 50;
-      white-space: normal;
-      width: max-content;
-      max-width: 240px;
-    }
-    .mui-tooltip-trigger:hover .mui-tooltip-content {
-      visibility: visible;
-      opacity: 1;
-      transform: translateY(0) translateX(-50%);
-    }
-    /* MUI Ripple & Hover simulation */
-    .mui-btn-transition {
-      transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    body {
+      font-family: 'Inter', sans-serif;
     }
   </style>
 </head>
-<body class="bg-background text-on-surface antialiased flex min-h-screen">
-<!-- ==================== SIDE NAVBAR (JSON SOURCE OF TRUTH) ==================== -->
-<aside class="fixed top-0 left-0 h-screen w-60 z-30 bg-surface-container-lowest border-r border-[#e2e8f0]">
-<div class="flex flex-col justify-between h-full p-4 w-60">
-<!-- Top Brand & Nav Links -->
+<body class="bg-[#f8fafc] text-on-surface antialiased min-h-screen flex flex-col font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Left Sidebar (Fixed 240px) -->
+<aside class="fixed left-0 top-0 h-screen w-60 bg-surface-container-lowest border-r border-[#e2e8f0] flex flex-col justify-between p-4 z-40 shadow-sm">
 <div class="flex flex-col gap-6">
 <!-- Brand Header -->
 <div class="flex items-center gap-3 px-2 pt-1">
-<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-base shadow-sm">
-<span class="material-symbols-outlined text-white" style="font-size: 20px;">vpn_key</span>
+<div class="w-9 h-9 rounded-lg bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-white" style="font-size: 22px;">verified_user</span>
 </div>
-<div>
-<h1 class="font-headline text-lg font-bold tracking-tight text-primary leading-tight">VFast ELMS</h1>
-<p class="font-label text-xs text-secondary leading-none">Enterprise Licensing</p>
+<div class="flex flex-col">
+<span class="font-headline text-base font-bold text-on-surface tracking-tight leading-none">VFast ELMS</span>
+<span class="text-xs text-secondary mt-1 font-medium">Enterprise Licensing</span>
 </div>
 </div>
-<!-- Primary CTA from JSON -->
-<div class="px-1">
-<button class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-[#0d5999] text-white py-2 px-3 rounded-lg text-sm font-medium shadow-sm mui-btn-transition">
-<span class="material-symbols-outlined" style="font-size: 18px;">add</span>
-<span>Add License</span>
-</button>
-</div>
-<!-- Navigation Tabs: 3-Pillar IA Contract (Analytics Hub Active) -->
-<nav class="flex flex-col gap-1">
-<!-- Item 1: License Management (inactive) -->
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-150" href="#">
-<span class="material-symbols-outlined">vpn_key</span>
-<span class="font-label text-sm font-medium">License Management</span>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-1.5 mt-2">
+<!-- 1. License Management -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-slate-50 hover:text-on-surface transition-colors duration-150 text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[#64748b]">vpn_key</span>
+<span>License Management</span>
 </a>
-<!-- Item 2: Analytics Hub (ACTIVE) -->
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary-container text-on-secondary-container font-medium transition-colors duration-150" href="#">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">insights</span>
-<span class="font-label text-sm font-semibold text-[#0f67b1]">Analytics Hub</span>
+<!-- 2. Analytics Hub (ACTIVE) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-surface-container-high text-primary font-semibold text-sm transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-primary fill">insights</span>
+<span>Analytics Hub</span>
 </a>
-<!-- Item 3: User Management (Admin) (inactive) -->
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-150" href="#">
-<span class="material-symbols-outlined">manage_accounts</span>
-<span class="font-label text-sm font-medium">User Management (Admin)</span>
+<!-- 3. User Management -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-slate-50 hover:text-on-surface transition-colors duration-150 text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[#64748b]">manage_accounts</span>
+<span>User Management</span>
 </a>
 </nav>
 </div>
-<!-- Footer Navigation from JSON -->
-<div class="border-t border-[#e2e8f0] pt-4 flex flex-col gap-1">
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-150" href="#">
-<span class="material-symbols-outlined">help</span>
-<span class="font-label text-sm font-medium">Support</span>
+<!-- Sidebar Footer -->
+<div class="flex flex-col gap-3 pt-4 border-t border-[#f1f5f9]">
+<!-- Tenant Status Badge -->
+<div class="bg-slate-50 border border-[#e2e8f0] rounded-lg p-2.5 flex flex-col gap-1">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="text-[11px] font-semibold text-slate-700 tracking-wide uppercase">VFast Enterprise</span>
+</div>
+<span class="text-[11px] text-secondary font-medium">US-East (Virginia)</span>
+</div>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-2.5 px-2 py-1.5 text-xs font-medium text-secondary hover:text-on-surface rounded-md hover:bg-slate-50 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">help_outline</span>
+<span>Support &amp; Docs</span>
 </a>
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-150" href="#">
-<span class="material-symbols-outlined">logout</span>
-<span class="font-label text-sm font-medium">Sign Out</span>
+<a class="flex items-center gap-2.5 px-2 py-1.5 text-xs font-medium text-secondary hover:text-error rounded-md hover:bg-red-50/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">logout</span>
+<span>Sign Out</span>
 </a>
 </div>
 </div>
 </aside>
-<!-- ==================== MAIN CONTENT WRAPPER ==================== -->
-<div class="flex-1 ml-60 min-h-screen flex flex-col bg-background">
-<!-- ==================== TOP NAVBAR (JSON SOURCE OF TRUTH) ==================== -->
-<header class="sticky top-0 z-20 h-16 bg-surface-container-lowest border-b border-[#e2e8f0] flex items-center justify-between px-8">
-<!-- Breadcrumb / Location -->
-<div class="flex items-center gap-2">
-<span class="font-headline text-xs font-medium text-secondary">Executive Portal</span>
-<span class="text-xs text-slate-300">/</span>
-<span class="font-headline text-xs font-semibold text-primary">Analytics &amp; Health</span>
+<!-- Top App Bar (Docked, 64px, with pl-60) -->
+<header class="fixed top-0 left-0 right-0 h-16 bg-surface-container-lowest border-b border-[#e2e8f0] pl-60 z-30 shadow-sm flex items-center justify-between px-8">
+<!-- Breadcrumb & Screen ID Badge -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1.5 text-sm font-medium text-secondary">
+<span>Executive Portal</span>
+<span class="text-slate-400">/</span>
+<span class="text-on-surface font-semibold">Analytics &amp; Health</span>
 </div>
-<!-- Right Action Cluster -->
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold tracking-wide bg-surface-container text-primary border border-surface-container-highest">
+        SCR-ANALYTICS-01
+      </span>
+</div>
+<!-- Right Global Actions & User Profile -->
 <div class="flex items-center gap-4">
-<!-- Compact Search -->
+<!-- Search Input -->
 <div class="relative w-64">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="font-size: 18px;">search</span>
-<input class="w-full bg-slate-50 border border-[#e2e8f0] rounded-lg pl-9 pr-3 py-1.5 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:bg-white transition-all" placeholder="Search analytics..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+<input class="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-[#e2e8f0] rounded-lg focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary text-on-surface placeholder-slate-400 transition" placeholder="Global system search..." type="text"/>
 </div>
-<!-- Trailing Icon Actions -->
-<button aria-label="Notifications" class="relative p-2 rounded-lg text-secondary hover:bg-surface-container-low mui-btn-transition">
-<span class="material-symbols-outlined" style="font-size: 20px;">notifications</span>
-<span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary"></span>
+<!-- Icon Actions -->
+<div class="flex items-center gap-1 border-r border-[#e2e8f0] pr-3">
+<button class="relative p-2 text-secondary hover:text-on-surface hover:bg-slate-100 rounded-lg transition-colors" title="Notifications">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full ring-2 ring-white"></span>
 </button>
-<button aria-label="Help" class="p-2 rounded-lg text-secondary hover:bg-surface-container-low mui-btn-transition">
-<span class="material-symbols-outlined" style="font-size: 20px;">help_outline</span>
+<button class="p-2 text-secondary hover:text-on-surface hover:bg-slate-100 rounded-lg transition-colors" title="Help">
+<span class="material-symbols-outlined">help_outline</span>
 </button>
-<div class="h-5 w-px bg-[#e2e8f0]"></div>
-<!-- User Profile Avatar DN -->
-<div class="flex items-center gap-2.5 pl-1 cursor-pointer">
-<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-xs font-bold ring-1 ring-[#e2e8f0]" title="DN Dat Nguyen avatar">
-            DN
-          </div>
-<div class="hidden xl:flex flex-col text-left">
-<span class="text-xs font-medium text-on-surface leading-tight">Dat Nguyen</span>
-<span class="text-[10px] text-secondary leading-tight">Chief IT Architect</span>
+</div>
+<!-- User Profile Pill -->
+<div class="flex items-center gap-3 pl-1">
+<div class="w-8 h-8 rounded-full bg-primary-container text-white flex items-center justify-center font-bold text-xs shadow-sm">
+          DN
+        </div>
+<div class="flex flex-col text-left">
+<span class="text-xs font-semibold text-on-surface leading-tight">Dat Nguyen</span>
+<span class="text-[10px] text-secondary leading-none">Chief IT Architect</span>
 </div>
 </div>
 </div>
 </header>
-<!-- ==================== BODY CONTENT CANVAS ==================== -->
-<main class="p-8 max-w-7xl w-full mx-auto space-y-6">
-<!-- 1. PAGE HEADER ROW -->
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-<!-- Title & Info Tooltip (Strictly NO raw subtitle text) -->
+<!-- Main Content Canvas -->
+<main class="ml-60 pt-20 p-8 flex-1 flex flex-col gap-6 max-w-[1600px]">
+<!-- Page Header & Action Controls -->
+<section class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 <div class="flex items-center gap-2">
-<h2 class="text-2xl font-bold text-slate-900 tracking-tight font-headline">Analytics &amp; Health</h2>
-<div class="mui-tooltip-trigger">
-<button aria-label="Analytics &amp; Health Info" class="text-slate-400 hover:text-slate-600 p-0.5 rounded-full hover:bg-slate-100 transition-colors">
-<span class="material-symbols-outlined" style="font-size: 18px;">info</span>
+<h1 class="font-headline text-2xl font-bold tracking-tight text-on-surface">Analytics &amp; Health</h1>
+<button class="text-slate-400 hover:text-secondary transition-colors" title="Aggregated usage, health metrics, and expenditure optimization across enterprise tiers">
+<span class="material-symbols-outlined text-[19px]">info</span>
 </button>
-<div class="mui-tooltip-content bg-slate-900 text-white text-xs rounded py-1 px-2.5 shadow-lg leading-relaxed">
-              Strategic portfolio health, user activity segmentation, and multi-dimensional cost optimization.
-            </div>
 </div>
-</div>
-<!-- Right Header Action Controls -->
-<div class="flex items-center gap-2.5">
-<!-- Export Report Outlined Button -->
-<button class="inline-flex items-center gap-1.5 px-3 py-2 border border-[#e2e8f0] bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg shadow-sm mui-btn-transition">
-<span class="material-symbols-outlined" style="font-size: 16px;">file_download</span>
+<div class="flex items-center gap-3">
+<!-- Export Report -->
+<button class="border border-[#e2e8f0] text-secondary bg-surface-container-lowest text-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-slate-50 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">download</span>
 <span>Export Report</span>
 </button>
-<!-- FY 2026 Dropdown Select -->
+<!-- Year Selector -->
 <div class="relative">
-<button class="inline-flex items-center gap-2 px-3 py-2 border border-[#e2e8f0] bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg shadow-sm mui-btn-transition">
-<span class="material-symbols-outlined" style="font-size: 16px;">calendar_today</span>
+<button class="border border-[#e2e8f0] text-on-surface bg-surface-container-lowest text-sm font-medium px-3.5 py-2 rounded-lg flex items-center gap-2 hover:bg-slate-50 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-slate-500 text-[18px]">calendar_today</span>
 <span>FY 2026</span>
-<span class="material-symbols-outlined" style="font-size: 16px;">expand_more</span>
+<span class="material-symbols-outlined text-slate-400 text-[18px] ml-1">expand_more</span>
 </button>
 </div>
-<!-- Run Reclamation Audit Contained Button -->
-<button class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-primary hover:bg-[#0d5999] text-white text-xs font-medium rounded-lg shadow-sm mui-btn-transition">
-<span class="material-symbols-outlined" style="font-size: 16px;">autorenew</span>
+<!-- Primary Action -->
+<button class="bg-[#0f67b1] hover:bg-[#0c538e] text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 shadow-sm transition-colors active:scale-98">
+<span class="material-symbols-outlined text-[18px]">sync</span>
 <span>Run Reclamation Audit</span>
 </button>
 </div>
+</section>
+<!-- Top 4 Health KPI Cards -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+<!-- Card 1: Total Annual Spend -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-[#e2e8f0] shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-secondary">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-600">Total Annual Spend</span>
+<span class="material-symbols-outlined text-slate-400 text-[18px] cursor-help" title="Total current committed contractual spend">info</span>
 </div>
-<!-- 2. TOP 4 KPI HEALTH CARDS -->
-<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-<!-- KPI 1: Total Annual Spend -->
-<div class="bg-white border border-[#e2e8f0] rounded-lg p-5 flex flex-col justify-between shadow-none hover:border-slate-300 transition-colors">
-<div class="flex items-center justify-between mb-2">
-<span class="text-xs font-medium text-secondary">Total Annual Spend</span>
-<div class="mui-tooltip-trigger">
-<button aria-label="Spend tooltip" class="text-slate-400 hover:text-slate-600 transition-colors">
-<span class="material-symbols-outlined" style="font-size: 18px;">info</span>
-</button>
-<div class="mui-tooltip-content bg-slate-900 text-white text-xs rounded py-1 px-2.5 shadow-lg">
-                Total annualized cash outlay. +3.2% vs approved ceiling.
-              </div>
-</div>
-</div>
-<div class="mt-1">
-<div class="text-2xl font-bold text-slate-900 font-headline tracking-tight">$1,420,000 <span class="text-xs font-normal text-secondary">USD</span></div>
-</div>
-</div>
-<!-- KPI 2: Managed Licenses -->
-<div class="bg-white border border-[#e2e8f0] rounded-lg p-5 flex flex-col justify-between shadow-none hover:border-slate-300 transition-colors">
-<div class="flex items-center justify-between mb-2">
-<span class="text-xs font-medium text-secondary">Managed Licenses</span>
-<div class="mui-tooltip-trigger">
-<button aria-label="Licenses tooltip" class="text-slate-400 hover:text-slate-600 transition-colors">
-<span class="material-symbols-outlined" style="font-size: 18px;">info</span>
-</button>
-<div class="mui-tooltip-content bg-slate-900 text-white text-xs rounded py-1 px-2.5 shadow-lg">
-                Total centrally tracked software volume across 48 enterprise applications.
-              </div>
-</div>
-</div>
-<div class="mt-1">
-<div class="text-2xl font-bold text-slate-900 font-headline tracking-tight">1,284 <span class="text-xs font-normal text-secondary">Licenses</span></div>
-</div>
-</div>
-<!-- KPI 3: Underutilized Accounts -->
-<div class="bg-white border border-[#e2e8f0] rounded-lg p-5 flex flex-col justify-between shadow-none hover:border-slate-300 transition-colors">
-<div class="flex items-center justify-between mb-2">
-<span class="text-xs font-medium text-secondary">Underutilized Accounts</span>
-<div class="mui-tooltip-trigger">
-<button aria-label="Underutilized tooltip" class="text-slate-400 hover:text-slate-600 transition-colors">
-<span class="material-symbols-outlined" style="font-size: 18px;">info</span>
-</button>
-<div class="mui-tooltip-content bg-slate-900 text-white text-xs rounded py-1 px-2.5 shadow-lg">
-                Inactive &gt;60d or zero usage. Threshold: &gt;15%.
-              </div>
-</div>
-</div>
-<div class="mt-1">
-<div class="text-2xl font-bold text-slate-900 font-headline tracking-tight">312 <span class="text-sm font-semibold text-amber-700">(24.3%)</span></div>
-<div class="mt-2 flex items-center">
-<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-<span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
-                Warning &gt;15%
-              </span>
+<div class="mt-3">
+<div class="font-headline text-2xl font-bold text-on-surface tracking-tight">$1,420,000 USD</div>
+<div class="flex items-center gap-1.5 mt-2 text-xs font-medium text-slate-600">
+<span class="material-symbols-outlined text-amber-600 text-[16px]">trending_up</span>
+<span class="text-slate-700 font-semibold">+3.2%</span>
+<span class="text-slate-500">vs approved ceiling</span>
 </div>
 </div>
 </div>
-<!-- KPI 4: Underutilized License Cost -->
-<div class="bg-white border border-[#e2e8f0] rounded-lg p-5 flex flex-col justify-between shadow-none hover:border-slate-300 transition-colors">
-<div class="flex items-center justify-between mb-2">
-<span class="text-xs font-medium text-secondary">Underutilized License Cost</span>
-<div class="mui-tooltip-trigger">
-<button aria-label="Wasted cost tooltip" class="text-slate-400 hover:text-slate-600 transition-colors">
-<span class="material-symbols-outlined" style="font-size: 18px;">info</span>
-</button>
-<div class="mui-tooltip-content bg-slate-900 text-white text-xs rounded py-1 px-2.5 shadow-lg">
-                20.1% wasted spend target for reclamation.
-              </div>
+<!-- Card 2: Managed Licenses -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-[#e2e8f0] shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-secondary">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-600">Managed Licenses</span>
+<span class="material-symbols-outlined text-slate-400 text-[18px] cursor-help" title="Active inventory across vendors">info</span>
+</div>
+<div class="mt-3">
+<div class="font-headline text-2xl font-bold text-on-surface tracking-tight">1,284 Licenses</div>
+<div class="flex items-center gap-1.5 mt-2 text-xs font-medium text-slate-500">
+<span class="material-symbols-outlined text-primary text-[16px]">category</span>
+<span>Across 48 enterprise vendors</span>
 </div>
 </div>
-<div class="mt-1">
-<div class="text-2xl font-bold text-slate-900 font-headline tracking-tight">$285,600 <span class="text-xs font-normal text-secondary">USD / yr</span></div>
-<div class="mt-2 flex items-center">
-<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-primary border border-blue-200">
-<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                Target Reclamation
-              </span>
+</div>
+<!-- Card 3: Underutilized Accounts -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-[#e2e8f0] shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-secondary">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-600">Underutilized Accounts</span>
+<span class="material-symbols-outlined text-slate-400 text-[18px] cursor-help" title="Inactive for &gt;60 days or zero logins">info</span>
+</div>
+<div class="mt-3">
+<div class="font-headline text-2xl font-bold text-on-surface tracking-tight">312 <span class="text-base font-medium text-slate-500">(24.3%)</span></div>
+<div class="mt-2">
+<span class="inline-flex items-center gap-1 bg-[#fff7ed] text-[#c2410c] border border-[#ffedd5] font-semibold text-[11px] px-2.5 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-[#ea580c]"></span>
+              Warning &gt;15%
+            </span>
+</div>
+</div>
+</div>
+<!-- Card 4: Underutilized License Cost -->
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-[#e2e8f0] shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-secondary">
+<span class="text-xs font-semibold uppercase tracking-wider text-slate-600">Underutilized License Cost</span>
+<span class="material-symbols-outlined text-slate-400 text-[18px] cursor-help" title="Annualized savings recoverable upon deprovisioning">info</span>
+</div>
+<div class="mt-3">
+<div class="font-headline text-2xl font-bold text-[#b45309] tracking-tight">$285,600 USD <span class="text-xs font-medium text-slate-500">/ yr</span></div>
+<div class="mt-2">
+<span class="inline-flex items-center gap-1 bg-[#eff6ff] text-[#1d4ed8] border border-[#dbeafe] font-semibold text-[11px] px-2.5 py-0.5 rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-[#2563eb]"></span>
+              Target Reclamation
+            </span>
 </div>
 </div>
 </div>
 </section>
-<!-- 3. MIDDLE SECTION: TWO HORIZONTAL BAR CHARTS -->
-<section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-<!-- Left Card (Col 7): Application Usage Optimization -->
-<div class="lg:col-span-7 bg-white border border-[#e2e8f0] rounded-lg p-5 flex flex-col justify-between shadow-none">
+<!-- Middle Section: Two Horizontal Bar Charts (Col 7 and Col 5) -->
+<section class="grid grid-cols-12 gap-6">
+<!-- Left Card: Application Usage Optimization (Col 7) -->
+<div class="col-span-12 lg:col-span-7 bg-surface-container-lowest p-6 rounded-xl border border-[#e2e8f0] shadow-sm flex flex-col justify-between">
 <div>
-<!-- Header Row -->
-<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#e2e8f0] gap-3">
-<div class="flex items-center gap-2">
-<h3 class="text-sm font-semibold text-slate-900 font-headline">Application Usage Optimization</h3>
-<div class="mui-tooltip-trigger">
-<button aria-label="Usage info" class="text-slate-400 hover:text-slate-600 transition-colors">
-<span class="material-symbols-outlined" style="font-size: 18px;">info</span>
-</button>
-<div class="mui-tooltip-content bg-slate-900 text-white text-xs rounded py-1 px-2.5 shadow-lg">
-                    Seat distribution segmented by 60-day historical user activity across key SaaS applications.
-                  </div>
+<!-- Header & Filter Toggle -->
+<div class="flex items-center justify-between pb-3 border-b border-[#f1f5f9]">
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline text-base font-bold text-on-surface">Application Usage Optimization</h2>
+<span class="material-symbols-outlined text-slate-400 text-[18px] cursor-help" title="Distribution of assigned seats across enterprise tiers">info</span>
 </div>
-</div>
-<!-- MUI ToggleButtonGroup -->
-<div class="inline-flex rounded-md border border-[#e2e8f0] p-0.5 bg-slate-50 text-[11px] font-medium text-slate-600">
-<button class="px-2.5 py-1 rounded bg-white text-primary font-semibold shadow-xs">Top 5</button>
-<button class="px-2.5 py-1 hover:text-slate-900 transition-colors">Top 10</button>
-<button class="px-2.5 py-1 hover:text-slate-900 transition-colors">Top 20</button>
+<!-- Toggle Group -->
+<div class="inline-flex rounded-lg bg-slate-100 p-0.5 border border-slate-200 text-xs font-medium text-secondary">
+<button class="px-2.5 py-1 rounded-md bg-white text-primary font-semibold shadow-xs">Top 5</button>
+<button class="px-2.5 py-1 rounded-md hover:text-on-surface transition-colors">Top 10</button>
+<button class="px-2.5 py-1 rounded-md hover:text-on-surface transition-colors">Top 20</button>
 </div>
 </div>
 <!-- Legend -->
-<div class="flex items-center gap-4 pt-3 pb-4 text-xs">
+<div class="flex items-center gap-5 mt-4 text-xs font-medium text-slate-600">
 <div class="flex items-center gap-1.5">
-<span class="w-2.5 h-2.5 rounded-xs" style="background-color: #4CAF50;"></span>
-<span class="text-slate-600 text-[11px]">Actively used</span>
-</div>
-<div class="flex items-center gap-1.5">
-<span class="w-2.5 h-2.5 rounded-xs" style="background-color: #9E9E9E;"></span>
-<span class="text-slate-600 text-[11px]">Inactive (&gt;60d)</span>
+<span class="w-3 h-3 rounded-xs bg-[#4CAF50]"></span>
+<span>Actively used</span>
 </div>
 <div class="flex items-center gap-1.5">
-<span class="w-2.5 h-2.5 rounded-xs" style="background-color: #FF9800;"></span>
-<span class="text-slate-600 text-[11px]">Never used</span>
+<span class="w-3 h-3 rounded-xs bg-[#9E9E9E]"></span>
+<span>Inactive &gt;60d</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-xs bg-[#FF9800]"></span>
+<span>Never used</span>
 </div>
 </div>
-<!-- Chart Visualization Area with Reference Gridlines -->
-<div class="relative pt-2 pb-2">
-<!-- Light Hairline Reference Gridlines (0, 100, 200, 300, 400, 500) -->
-<div class="absolute inset-y-0 left-[140px] right-0 flex justify-between pointer-events-none z-0">
-<div class="w-px h-full border-r border-dashed border-slate-100"></div>
-<div class="w-px h-full border-r border-dashed border-slate-100"></div>
-<div class="w-px h-full border-r border-dashed border-slate-100"></div>
-<div class="w-px h-full border-r border-dashed border-slate-100"></div>
-<div class="w-px h-full border-r border-dashed border-slate-100"></div>
-<div class="w-px h-full border-r border-slate-200"></div>
+<!-- Chart Area: Horizontal Stacked Bars with ZERO on-chart numbers -->
+<div class="mt-6 relative">
+<!-- Calibrated Vertical Grid Lines -->
+<div class="absolute inset-0 left-36 right-0 flex justify-between pointer-events-none z-0">
+<div class="h-full border-r border-dashed border-[#e2e8f0]"></div>
+<div class="h-full border-r border-dashed border-[#e2e8f0]"></div>
+<div class="h-full border-r border-dashed border-[#e2e8f0]"></div>
+<div class="h-full border-r border-dashed border-[#e2e8f0]"></div>
+<div class="h-full border-r border-dashed border-[#e2e8f0]"></div>
+<div class="h-full border-r border-dashed border-[#e2e8f0]"></div>
 </div>
-<!-- Bar Items Stack -->
-<div class="relative z-10 space-y-4">
-<!-- App 1: Microsoft 365 (Total 500: 390 [78%], 65 [13%], 45 [9%]) -->
-<div class="flex items-center text-xs">
-<div class="w-[140px] shrink-0 font-medium text-slate-800 truncate pr-3 flex items-center justify-between">
-<span>Microsoft 365</span>
-<span class="text-[10px] text-slate-400 font-mono">500</span>
-</div>
-<div class="flex-1 relative group py-1 cursor-pointer">
-<!-- Tooltip on hover -->
-<div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[11px] rounded py-1 px-2.5 whitespace-nowrap shadow-md pointer-events-none">
-                      Actively used: 390 (78%) | Inactive: 65 (13%) | Never used: 45 (9%)
-                    </div>
-<!-- Stacked Bar (Max width = 500/500 = 100%) -->
-<div class="h-5 w-full flex rounded-full overflow-hidden bg-slate-100 transition-transform group-hover:scale-y-110">
-<div class="h-full" style="width: 78%; background-color: #4CAF50;"></div>
-<div class="h-full" style="width: 13%; background-color: #9E9E9E;"></div>
-<div class="h-full" style="width: 9%; background-color: #FF9800;"></div>
+<!-- App Bar Rows -->
+<div class="flex flex-col gap-5 relative z-10">
+<!-- Microsoft 365 (Total 500) -->
+<div class="flex items-center gap-3">
+<span class="w-32 text-xs font-medium text-slate-700 truncate text-right">Microsoft 365</span>
+<div class="flex-1 h-5 bg-slate-100 rounded overflow-hidden flex" title="Microsoft 365: Active 78%, Inactive 13%, Never used 9%">
+<div class="h-full bg-[#4CAF50] hover:brightness-105 transition-all" style="width: 78%;"></div>
+<div class="h-full bg-[#9E9E9E] hover:brightness-105 transition-all" style="width: 13%;"></div>
+<div class="h-full bg-[#FF9800] hover:brightness-105 transition-all" style="width: 9%;"></div>
 </div>
 </div>
-</div>
-<!-- App 2: Slack Enterprise (Total 450: 370 [82%], 50 [11%], 30 [7%]) -> Total width 90% of 500 -->
-<div class="flex items-center text-xs">
-<div class="w-[140px] shrink-0 font-medium text-slate-800 truncate pr-3 flex items-center justify-between">
-<span>Slack Enterprise</span>
-<span class="text-[10px] text-slate-400 font-mono">450</span>
-</div>
-<div class="flex-1 relative group py-1 cursor-pointer">
-<div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[11px] rounded py-1 px-2.5 whitespace-nowrap shadow-md pointer-events-none">
-                      Actively used: 370 (82%) | Inactive: 50 (11%) | Never used: 30 (7%)
-                    </div>
-<div class="h-5 flex rounded-full overflow-hidden bg-slate-100 transition-transform group-hover:scale-y-110" style="width: 90%;">
-<div class="h-full" style="width: 82.2%; background-color: #4CAF50;"></div>
-<div class="h-full" style="width: 11.1%; background-color: #9E9E9E;"></div>
-<div class="h-full" style="width: 6.7%; background-color: #FF9800;"></div>
+<!-- Slack Enterprise (Total 450) -->
+<div class="flex items-center gap-3">
+<span class="w-32 text-xs font-medium text-slate-700 truncate text-right">Slack Enterprise</span>
+<div class="flex-1 h-5 flex">
+<div class="h-5 bg-slate-100 rounded overflow-hidden flex" style="width: 90%;" title="Slack Enterprise: Active 82%, Inactive 11%, Never used 7%">
+<div class="h-full bg-[#4CAF50] hover:brightness-105 transition-all" style="width: 82%;"></div>
+<div class="h-full bg-[#9E9E9E] hover:brightness-105 transition-all" style="width: 11%;"></div>
+<div class="h-full bg-[#FF9800] hover:brightness-105 transition-all" style="width: 7%;"></div>
 </div>
 </div>
 </div>
-<!-- App 3: GitHub Enterprise (Total 300: 235 [78%], 40 [14%], 25 [8%]) -> Total width 60% of 500 -->
-<div class="flex items-center text-xs">
-<div class="w-[140px] shrink-0 font-medium text-slate-800 truncate pr-3 flex items-center justify-between">
-<span>GitHub Enterprise</span>
-<span class="text-[10px] text-slate-400 font-mono">300</span>
-</div>
-<div class="flex-1 relative group py-1 cursor-pointer">
-<div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[11px] rounded py-1 px-2.5 whitespace-nowrap shadow-md pointer-events-none">
-                      Actively used: 235 (78%) | Inactive: 40 (14%) | Never used: 25 (8%)
-                    </div>
-<div class="h-5 flex rounded-full overflow-hidden bg-slate-100 transition-transform group-hover:scale-y-110" style="width: 60%;">
-<div class="h-full" style="width: 78.3%; background-color: #4CAF50;"></div>
-<div class="h-full" style="width: 13.3%; background-color: #9E9E9E;"></div>
-<div class="h-full" style="width: 8.4%; background-color: #FF9800;"></div>
+<!-- GitHub Enterprise (Total 300) -->
+<div class="flex items-center gap-3">
+<span class="w-32 text-xs font-medium text-slate-700 truncate text-right">GitHub Enterprise</span>
+<div class="flex-1 h-5 flex">
+<div class="h-5 bg-slate-100 rounded overflow-hidden flex" style="width: 60%;" title="GitHub Enterprise: Active 78%, Inactive 14%, Never used 8%">
+<div class="h-full bg-[#4CAF50] hover:brightness-105 transition-all" style="width: 78%;"></div>
+<div class="h-full bg-[#9E9E9E] hover:brightness-105 transition-all" style="width: 14%;"></div>
+<div class="h-full bg-[#FF9800] hover:brightness-105 transition-all" style="width: 8%;"></div>
 </div>
 </div>
 </div>
-<!-- App 4: Jira Software (Total 255: 200 [78%], 35 [14%], 20 [8%]) -> Total width 51% of 500 -->
-<div class="flex items-center text-xs">
-<div class="w-[140px] shrink-0 font-medium text-slate-800 truncate pr-3 flex items-center justify-between">
-<span>Jira Software</span>
-<span class="text-[10px] text-slate-400 font-mono">255</span>
-</div>
-<div class="flex-1 relative group py-1 cursor-pointer">
-<div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[11px] rounded py-1 px-2.5 whitespace-nowrap shadow-md pointer-events-none">
-                      Actively used: 200 (78%) | Inactive: 35 (14%) | Never used: 20 (8%)
-                    </div>
-<div class="h-5 flex rounded-full overflow-hidden bg-slate-100 transition-transform group-hover:scale-y-110" style="width: 51%;">
-<div class="h-full" style="width: 78.4%; background-color: #4CAF50;"></div>
-<div class="h-full" style="width: 13.7%; background-color: #9E9E9E;"></div>
-<div class="h-full" style="width: 7.9%; background-color: #FF9800;"></div>
+<!-- Jira Software (Total 255) -->
+<div class="flex items-center gap-3">
+<span class="w-32 text-xs font-medium text-slate-700 truncate text-right">Jira Software</span>
+<div class="flex-1 h-5 flex">
+<div class="h-5 bg-slate-100 rounded overflow-hidden flex" style="width: 51%;" title="Jira Software: Active 78%, Inactive 14%, Never used 8%">
+<div class="h-full bg-[#4CAF50] hover:brightness-105 transition-all" style="width: 78%;"></div>
+<div class="h-full bg-[#9E9E9E] hover:brightness-105 transition-all" style="width: 14%;"></div>
+<div class="h-full bg-[#FF9800] hover:brightness-105 transition-all" style="width: 8%;"></div>
 </div>
 </div>
 </div>
-<!-- App 5: Zoom Business (Total 202: 162 [80%], 25 [12%], 15 [8%]) -> Total width 40.4% of 500 -->
-<div class="flex items-center text-xs">
-<div class="w-[140px] shrink-0 font-medium text-slate-800 truncate pr-3 flex items-center justify-between">
-<span>Zoom Business</span>
-<span class="text-[10px] text-slate-400 font-mono">202</span>
-</div>
-<div class="flex-1 relative group py-1 cursor-pointer">
-<div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[11px] rounded py-1 px-2.5 whitespace-nowrap shadow-md pointer-events-none">
-                      Actively used: 162 (80%) | Inactive: 25 (12%) | Never used: 15 (8%)
-                    </div>
-<div class="h-5 flex rounded-full overflow-hidden bg-slate-100 transition-transform group-hover:scale-y-110" style="width: 40.4%;">
-<div class="h-full" style="width: 80.2%; background-color: #4CAF50;"></div>
-<div class="h-full" style="width: 12.4%; background-color: #9E9E9E;"></div>
-<div class="h-full" style="width: 7.4%; background-color: #FF9800;"></div>
+<!-- Zoom Business (Total 202) -->
+<div class="flex items-center gap-3">
+<span class="w-32 text-xs font-medium text-slate-700 truncate text-right">Zoom Business</span>
+<div class="flex-1 h-5 flex">
+<div class="h-5 bg-slate-100 rounded overflow-hidden flex" style="width: 40.4%;" title="Zoom Business: Active 80%, Inactive 12%, Never used 8%">
+<div class="h-full bg-[#4CAF50] hover:brightness-105 transition-all" style="width: 80%;"></div>
+<div class="h-full bg-[#9E9E9E] hover:brightness-105 transition-all" style="width: 12%;"></div>
+<div class="h-full bg-[#FF9800] hover:brightness-105 transition-all" style="width: 8%;"></div>
 </div>
 </div>
 </div>
 </div>
-<!-- Horizontal X-Axis with Reference Ticks [0, 100, 200, 300, 400, 500] -->
-<div class="ml-[140px] pt-3 flex justify-between text-[10px] font-mono text-slate-400 border-t border-slate-200 mt-2">
+<!-- Calibrated Bottom Numeric X-Axis -->
+<div class="ml-35 pl-3 flex justify-between pt-3 border-t border-[#cbd5e1] text-[11px] font-semibold text-slate-500">
 <span>0</span>
 <span>100</span>
 <span>200</span>
 <span>300</span>
 <span>400</span>
-<span>500 users</span>
+<span>500</span>
 </div>
 </div>
 </div>
 <!-- Footer Link -->
-<div class="pt-3 border-t border-[#e2e8f0] flex justify-end">
-<a class="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-[#0d5999] transition-colors" href="#">
+<div class="pt-4 mt-2 border-t border-[#f1f5f9] flex justify-end">
+<a class="text-xs font-semibold text-primary hover:underline flex items-center gap-1 group" href="#">
 <span>View Full App Breakdown</span>
-<span class="material-symbols-outlined" style="font-size: 14px;">arrow_forward</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
 </a>
 </div>
 </div>
-<!-- Right Card (Col 5): Spend by Department (Strictly Horizontal Bar Chart) -->
-<div class="lg:col-span-5 bg-white border border-[#e2e8f0] rounded-lg p-5 flex flex-col justify-between shadow-none">
+<!-- Right Card: Spend by Department (Col 5) -->
+<div class="col-span-12 lg:col-span-5 bg-surface-container-lowest p-6 rounded-xl border border-[#e2e8f0] shadow-sm flex flex-col justify-between">
 <div>
-<!-- Header Row -->
-<div class="flex items-center justify-between pb-4 border-b border-[#e2e8f0]">
-<div class="flex items-center gap-2">
-<h3 class="text-sm font-semibold text-slate-900 font-headline">Spend by Department</h3>
-<div class="mui-tooltip-trigger">
-<button aria-label="Spend dept info" class="text-slate-400 hover:text-slate-600 transition-colors">
-<span class="material-symbols-outlined" style="font-size: 18px;">info</span>
-</button>
-<div class="mui-tooltip-content bg-slate-900 text-white text-xs rounded py-1 px-2.5 shadow-lg">
-                    Annualized software expenditure allocation broken down by organizational unit. Total spend: $1.42M.
-                  </div>
+<!-- Header -->
+<div class="flex items-center justify-between pb-3 border-b border-[#f1f5f9]">
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline text-base font-bold text-on-surface">Spend by Department</h2>
+<span class="material-symbols-outlined text-slate-400 text-[18px] cursor-help" title="Budgetary breakdown allocated by cost center">info</span>
+</div>
+<span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">Max: $600k</span>
+</div>
+<!-- Chart Area: Horizontal Single Bars in Ocean Blue with ZERO numbers on bars -->
+<div class="mt-6 relative">
+<!-- Calibrated Vertical Grid Lines -->
+<div class="absolute inset-0 left-36 right-0 flex justify-between pointer-events-none z-0">
+<div class="h-full border-r border-dashed border-[#e2e8f0]"></div>
+<div class="h-full border-r border-dashed border-[#e2e8f0]"></div>
+<div class="h-full border-r border-dashed border-[#e2e8f0]"></div>
+<div class="h-full border-r border-dashed border-[#e2e8f0]"></div>
+<div class="h-full border-r border-dashed border-[#e2e8f0]"></div>
+</div>
+<!-- Dept Rows -->
+<div class="flex flex-col gap-4 relative z-10">
+<!-- Engineering & Product ($580k / ~96.6%) -->
+<div class="flex items-center gap-3">
+<span class="w-36 text-xs font-medium text-slate-700 truncate text-right">Engineering &amp; Product</span>
+<div class="flex-1 h-4 flex">
+<div class="h-4 bg-[#0f67b1] rounded-xs hover:brightness-110 transition-all cursor-pointer" style="width: 96.6%;" title="Engineering &amp; Product: $580,000"></div>
 </div>
 </div>
-<span class="text-[11px] font-semibold text-slate-500 font-mono">Max: $600k</span>
-</div>
-<!-- Visualization: Crisp Horizontal Bars in Ocean Blue (#0f67b1) -->
-<div class="relative pt-4 pb-2">
-<!-- Reference Gridlines for [$0, $150k, $300k, $450k, $600k] -->
-<div class="absolute inset-y-0 left-[125px] right-0 flex justify-between pointer-events-none z-0">
-<div class="w-px h-full border-r border-dashed border-slate-100"></div>
-<div class="w-px h-full border-r border-dashed border-slate-100"></div>
-<div class="w-px h-full border-r border-dashed border-slate-100"></div>
-<div class="w-px h-full border-r border-dashed border-slate-100"></div>
-<div class="w-px h-full border-r border-slate-200"></div>
-</div>
-<div class="relative z-10 space-y-3.5">
-<!-- 1. Engineering & Product: $580k (96.6% of $600k) -->
-<div class="flex items-center text-xs">
-<span class="w-[125px] shrink-0 text-slate-700 truncate pr-2 text-[11px] font-medium" title="Engineering &amp; Product">Eng &amp; Product</span>
-<div class="flex-1 relative group py-0.5 cursor-pointer">
-<div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[11px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                      $580,000 USD (40.8% of total spend)
-                    </div>
-<div class="h-4.5 bg-slate-100 rounded-r-md overflow-hidden">
-<div class="h-full bg-primary rounded-r-md transition-all duration-300 group-hover:bg-[#0d5999]" style="width: 96.6%;"></div>
+<!-- Sales & BD ($320k / ~53.3%) -->
+<div class="flex items-center gap-3">
+<span class="w-36 text-xs font-medium text-slate-700 truncate text-right">Sales &amp; BD</span>
+<div class="flex-1 h-4 flex">
+<div class="h-4 bg-[#0f67b1] rounded-xs hover:brightness-110 transition-all cursor-pointer" style="width: 53.3%;" title="Sales &amp; BD: $320,000"></div>
 </div>
 </div>
-</div>
-<!-- 2. Sales & BD: $320k (53.3% of $600k) -->
-<div class="flex items-center text-xs">
-<span class="w-[125px] shrink-0 text-slate-700 truncate pr-2 text-[11px] font-medium" title="Sales &amp; BD">Sales &amp; BD</span>
-<div class="flex-1 relative group py-0.5 cursor-pointer">
-<div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[11px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                      $320,000 USD (22.5% of total spend)
-                    </div>
-<div class="h-4.5 bg-slate-100 rounded-r-md overflow-hidden">
-<div class="h-full bg-primary rounded-r-md transition-all duration-300 group-hover:bg-[#0d5999]" style="width: 53.3%;"></div>
+<!-- Tech Support ($180k / 30%) -->
+<div class="flex items-center gap-3">
+<span class="w-36 text-xs font-medium text-slate-700 truncate text-right">Tech Support</span>
+<div class="flex-1 h-4 flex">
+<div class="h-4 bg-[#0f67b1] rounded-xs hover:brightness-110 transition-all cursor-pointer" style="width: 30%;" title="Tech Support: $180,000"></div>
 </div>
 </div>
-</div>
-<!-- 3. Tech Support: $180k (30.0% of $600k) -->
-<div class="flex items-center text-xs">
-<span class="w-[125px] shrink-0 text-slate-700 truncate pr-2 text-[11px] font-medium" title="Tech Support">Tech Support</span>
-<div class="flex-1 relative group py-0.5 cursor-pointer">
-<div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[11px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                      $180,000 USD (12.7% of total spend)
-                    </div>
-<div class="h-4.5 bg-slate-100 rounded-r-md overflow-hidden">
-<div class="h-full bg-primary rounded-r-md transition-all duration-300 group-hover:bg-[#0d5999]" style="width: 30%;"></div>
+<!-- Accounting & Finance ($140k / 23.3%) -->
+<div class="flex items-center gap-3">
+<span class="w-36 text-xs font-medium text-slate-700 truncate text-right">Accounting &amp; Finance</span>
+<div class="flex-1 h-4 flex">
+<div class="h-4 bg-[#0f67b1] rounded-xs hover:brightness-110 transition-all cursor-pointer" style="width: 23.3%;" title="Accounting &amp; Finance: $140,000"></div>
 </div>
 </div>
+<!-- Marketing & Creative ($120k / 20%) -->
+<div class="flex items-center gap-3">
+<span class="w-36 text-xs font-medium text-slate-700 truncate text-right">Marketing &amp; Creative</span>
+<div class="flex-1 h-4 flex">
+<div class="h-4 bg-[#0f67b1] rounded-xs hover:brightness-110 transition-all cursor-pointer" style="width: 20%;" title="Marketing &amp; Creative: $120,000"></div>
 </div>
-<!-- 4. Accounting & Finance: $140k (23.3% of $600k) -->
-<div class="flex items-center text-xs">
-<span class="w-[125px] shrink-0 text-slate-700 truncate pr-2 text-[11px] font-medium" title="Accounting &amp; Finance">Accounting &amp; Fin</span>
-<div class="flex-1 relative group py-0.5 cursor-pointer">
-<div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[11px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                      $140,000 USD (9.9% of total spend)
-                    </div>
-<div class="h-4.5 bg-slate-100 rounded-r-md overflow-hidden">
-<div class="h-full bg-primary rounded-r-md transition-all duration-300 group-hover:bg-[#0d5999]" style="width: 23.3%;"></div>
+</div>
+<!-- HR & Operations ($80k / 13.3%) -->
+<div class="flex items-center gap-3">
+<span class="w-36 text-xs font-medium text-slate-700 truncate text-right">HR &amp; Operations</span>
+<div class="flex-1 h-4 flex">
+<div class="h-4 bg-[#0f67b1] rounded-xs hover:brightness-110 transition-all cursor-pointer" style="width: 13.3%;" title="HR &amp; Operations: $80,000"></div>
 </div>
 </div>
 </div>
-<!-- 5. Marketing & Creative: $120k (20.0% of $600k) -->
-<div class="flex items-center text-xs">
-<span class="w-[125px] shrink-0 text-slate-700 truncate pr-2 text-[11px] font-medium" title="Marketing &amp; Creative">Marketing &amp; Cre</span>
-<div class="flex-1 relative group py-0.5 cursor-pointer">
-<div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[11px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                      $120,000 USD (8.5% of total spend)
-                    </div>
-<div class="h-4.5 bg-slate-100 rounded-r-md overflow-hidden">
-<div class="h-full bg-primary rounded-r-md transition-all duration-300 group-hover:bg-[#0d5999]" style="width: 20%;"></div>
-</div>
-</div>
-</div>
-<!-- 6. HR & Operations: $80k (13.3% of $600k) -->
-<div class="flex items-center text-xs">
-<span class="w-[125px] shrink-0 text-slate-700 truncate pr-2 text-[11px] font-medium" title="HR &amp; Operations">HR &amp; Operations</span>
-<div class="flex-1 relative group py-0.5 cursor-pointer">
-<div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[11px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                      $80,000 USD (5.6% of total spend)
-                    </div>
-<div class="h-4.5 bg-slate-100 rounded-r-md overflow-hidden">
-<div class="h-full bg-primary rounded-r-md transition-all duration-300 group-hover:bg-[#0d5999]" style="width: 13.3%;"></div>
-</div>
-</div>
-</div>
-</div>
-<!-- Horizontal X-Axis with Reference Currency Ticks [$0, $150k, $300k, $450k, $600k] -->
-<div class="ml-[125px] pt-3 flex justify-between text-[10px] font-mono text-slate-400 border-t border-slate-200 mt-2">
+<!-- Calibrated Currency X-Axis -->
+<div class="ml-39 pl-2 flex justify-between pt-3 border-t border-[#cbd5e1] text-[11px] font-semibold text-slate-500">
 <span>$0</span>
 <span>$150k</span>
 <span>$300k</span>
@@ -614,65 +483,56 @@
 </div>
 </div>
 </div>
-<!-- Bottom Summary Stat -->
-<div class="pt-3 border-t border-[#e2e8f0] flex items-center justify-between text-xs text-secondary">
-<span>Engineering represents <strong>40.8%</strong></span>
-<span class="font-mono text-[11px]">Total: $1.42M</span>
+<!-- Footer Summary -->
+<div class="pt-4 mt-2 border-t border-[#f1f5f9] text-xs text-secondary font-medium">
+          Engineering represents <span class="font-semibold text-slate-800">40.8%</span> of portfolio spend. Total: <span class="font-semibold text-slate-800">$1.42M</span>
 </div>
 </div>
 </section>
-<!-- 4. BOTTOM SECTION: SUBSCRIPTION USAGE (FULL-WIDTH 12-COL MUI CARD) -->
-<section class="bg-white border border-[#e2e8f0] rounded-lg p-5 shadow-none">
-<!-- Header & Group Legend -->
-<div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-[#e2e8f0] gap-4">
+<!-- Bottom Section: Subscription Usage 12-Month Dynamics (Full-Width Card) -->
+<section class="bg-surface-container-lowest p-6 rounded-xl border border-[#e2e8f0] shadow-sm flex flex-col gap-6">
+<!-- Card Header & Dual Group Legend -->
+<div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-[#f1f5f9] gap-4">
 <div class="flex items-center gap-2">
-<h3 class="text-sm font-semibold text-slate-900 font-headline">Subscription Usage</h3>
-<div class="mui-tooltip-trigger">
-<button aria-label="Subscription usage tooltip" class="text-slate-400 hover:text-slate-600 transition-colors">
-<span class="material-symbols-outlined" style="font-size: 18px;">info</span>
-</button>
-<div class="mui-tooltip-content bg-slate-900 text-white text-xs rounded py-1 px-2.5 shadow-lg">
-                Comparison of deployed seat status composition vs unassigned inventory across 12 calendar months.
-              </div>
+<h2 class="font-headline text-base font-bold text-on-surface">Subscription Usage</h2>
+<span class="material-symbols-outlined text-slate-400 text-[18px] cursor-help" title="12-month trajectory of allocated licenses vs unallocated buffer pool">info</span>
+</div>
+<!-- Dual-group clear legend -->
+<div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-medium">
+<!-- Group 1: Deployed -->
+<div class="flex items-center gap-3 border-r border-[#e2e8f0] pr-5">
+<span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Deployed:</span>
+<div class="flex items-center gap-1.5 text-slate-700">
+<span class="w-2.5 h-2.5 rounded-xs bg-[#4CAF50]"></span>
+<span>Active</span>
+</div>
+<div class="flex items-center gap-1.5 text-slate-700">
+<span class="w-2.5 h-2.5 rounded-xs bg-[#FF9800]"></span>
+<span>Inactive</span>
+</div>
+<div class="flex items-center gap-1.5 text-slate-700">
+<span class="w-2.5 h-2.5 rounded-xs bg-[#475569]"></span>
+<span>No activity</span>
+</div>
+<div class="flex items-center gap-1.5 text-slate-700">
+<span class="w-2.5 h-2.5 rounded-xs bg-[#2196F3]"></span>
+<span>Not monitored</span>
 </div>
 </div>
-<!-- Grouped Legend -->
-<div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs">
+<!-- Group 2: Inventory -->
 <div class="flex items-center gap-3">
-<span class="text-[11px] font-bold text-slate-700">Group 1 (Deployed):</span>
-<div class="flex items-center gap-1">
-<span class="w-2.5 h-2.5 rounded-xs" style="background-color: #4CAF50;"></span>
-<span class="text-[11px] text-slate-600">Active</span>
-</div>
-<div class="flex items-center gap-1">
-<span class="w-2.5 h-2.5 rounded-xs" style="background-color: #FF9800;"></span>
-<span class="text-[11px] text-slate-600">Inactive</span>
-</div>
-<div class="flex items-center gap-1">
-<span class="w-2.5 h-2.5 rounded-xs" style="background-color: #616161;"></span>
-<span class="text-[11px] text-slate-600">No activity</span>
-</div>
-<div class="flex items-center gap-1">
-<span class="w-2.5 h-2.5 rounded-xs" style="background-color: #3F51B5;"></span>
-<span class="text-[11px] text-slate-600">Not monitored</span>
-</div>
-</div>
-<div class="h-3.5 w-px bg-[#e2e8f0]"></div>
-<div class="flex items-center gap-2">
-<span class="text-[11px] font-bold text-slate-700">Group 2 (Inventory):</span>
-<div class="flex items-center gap-1">
-<span class="w-2.5 h-2.5 rounded-xs" style="background-color: #E91E63;"></span>
-<span class="text-[11px] text-slate-600">Unassigned</span>
+<span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Inventory:</span>
+<div class="flex items-center gap-1.5 text-slate-700">
+<span class="w-2.5 h-2.5 rounded-xs bg-[#E91E63]"></span>
+<span>Unassigned</span>
 </div>
 </div>
 </div>
 </div>
-<!-- 12-Month Dual-Column Grouped Bar Chart Area -->
-<div class="relative pt-6 pb-2">
-<!-- Chart Grid Container -->
-<div class="h-64 flex">
-<!-- Vertical Y-Axis (0 to 1250 seats) -->
-<div class="w-12 shrink-0 h-full flex flex-col justify-between text-right pr-2 text-[10px] font-mono text-slate-400 select-none pb-5">
+<!-- Chart Canvas (Zero on-chart numbers, high data density, calibrated axes) -->
+<div class="relative w-full h-72 flex">
+<!-- Calibrated Y-Axis on Left -->
+<div class="w-12 h-60 flex flex-col justify-between text-right pr-3 text-[11px] font-semibold text-slate-400 select-none">
 <span>1250</span>
 <span>1000</span>
 <span>750</span>
@@ -680,270 +540,163 @@
 <span>250</span>
 <span>0</span>
 </div>
-<!-- Visualization Canvas with Gridlines & Columns -->
-<div class="flex-1 relative h-full flex flex-col justify-between">
-<!-- Subtle Horizontal Reference Gridlines -->
-<div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-5">
-<div class="w-full border-b border-slate-200"></div>
-<div class="w-full border-b border-dashed border-slate-100"></div>
-<div class="w-full border-b border-dashed border-slate-100"></div>
-<div class="w-full border-b border-dashed border-slate-100"></div>
-<div class="w-full border-b border-dashed border-slate-100"></div>
-<div class="w-full border-b border-slate-200"></div>
+<!-- Plot Area -->
+<div class="relative flex-1 h-60 border-l border-[#cbd5e1]">
+<!-- Horizontal Hairline Dashed Gridlines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
+<div class="w-full border-t border-dashed border-[#e2e8f0]"></div>
+<div class="w-full border-t border-dashed border-[#e2e8f0]"></div>
+<div class="w-full border-t border-dashed border-[#e2e8f0]"></div>
+<div class="w-full border-t border-dashed border-[#e2e8f0]"></div>
+<div class="w-full border-t border-dashed border-[#e2e8f0]"></div>
+<div class="w-full border-t border-slate-300"></div>
 </div>
-<!-- 12 Calendar Month Columns Container -->
-<div class="relative z-10 h-full flex items-end justify-between px-2 pb-5">
-<!-- Jan (Deployed ~980 seats [78% height], Unassigned ~220 seats [17% height]) -->
-<div class="flex flex-col items-center flex-1 group">
-<div class="flex items-end gap-1 h-56 w-full justify-center">
-<!-- Bar 1: Stacked Deployed (Active 650, Inactive 180, No activity 100, Not monitored 50) -->
-<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-sm overflow-hidden bg-slate-100 cursor-pointer relative group/b1" style="height: 78%;">
-<div class="w-full" style="height: 66%; background-color: #4CAF50;"></div>
-<div class="w-full" style="height: 18%; background-color: #FF9800;"></div>
-<div class="w-full" style="height: 10%; background-color: #616161;"></div>
-<div class="w-full" style="height: 6%; background-color: #3F51B5;"></div>
-<div class="invisible group-hover/b1:visible opacity-0 group-hover/b1:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Jan Deployed: 980 seats (Act: 650, Inact: 180, None: 100, Unmon: 50)
-                      </div>
+<!-- 12 Month Dual-Column Bars Container -->
+<div class="relative h-full flex justify-between items-end px-2 md:px-4">
+<!-- Jan -->
+<div class="flex items-end gap-1 group cursor-pointer" title="Jan: Deployed 1000, Unassigned 280">
+<!-- Col 1: Deployed Stacked (Total 1000 => 80% height of 1250) -->
+<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-xs overflow-hidden" style="height: 80%;">
+<div class="w-full bg-[#4CAF50]" style="height: 70%;"></div>
+<div class="w-full bg-[#FF9800]" style="height: 15%;"></div>
+<div class="w-full bg-[#475569]" style="height: 9%;"></div>
+<div class="w-full bg-[#2196F3]" style="height: 6%;"></div>
 </div>
-<!-- Bar 2: Unassigned (220 seats) -->
-<div class="w-3.5 sm:w-4 rounded-t-sm cursor-pointer relative group/b2" style="height: 17.6%; background-color: #E91E63;">
-<div class="invisible group-hover/b2:visible opacity-0 group-hover/b2:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Jan Inventory: 220 Unassigned
-                      </div>
-</div>
-</div>
-<span class="text-[11px] font-medium text-slate-500 mt-2">Jan</span>
+<!-- Col 2: Unassigned Inventory (280 => 22.4% height) -->
+<div class="w-3.5 sm:w-4 bg-[#E91E63] rounded-t-xs hover:brightness-110 transition-all" style="height: 22.4%;"></div>
 </div>
 <!-- Feb -->
-<div class="flex flex-col items-center flex-1 group">
-<div class="flex items-end gap-1 h-56 w-full justify-center">
-<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-sm overflow-hidden bg-slate-100 cursor-pointer relative group/b1" style="height: 79%;">
-<div class="w-full" style="height: 67%; background-color: #4CAF50;"></div>
-<div class="w-full" style="height: 17%; background-color: #FF9800;"></div>
-<div class="w-full" style="height: 10%; background-color: #616161;"></div>
-<div class="w-full" style="height: 6%; background-color: #3F51B5;"></div>
-<div class="invisible group-hover/b1:visible opacity-0 group-hover/b1:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Feb Deployed: 990 seats
-                      </div>
+<div class="flex items-end gap-1 group cursor-pointer" title="Feb: Deployed 1020, Unassigned 260">
+<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-xs overflow-hidden" style="height: 81.6%;">
+<div class="w-full bg-[#4CAF50]" style="height: 71%;"></div>
+<div class="w-full bg-[#FF9800]" style="height: 14%;"></div>
+<div class="w-full bg-[#475569]" style="height: 9%;"></div>
+<div class="w-full bg-[#2196F3]" style="height: 6%;"></div>
 </div>
-<div class="w-3.5 sm:w-4 rounded-t-sm cursor-pointer relative group/b2" style="height: 16%; background-color: #E91E63;">
-<div class="invisible group-hover/b2:visible opacity-0 group-hover/b2:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Feb Inventory: 200 Unassigned
-                      </div>
-</div>
-</div>
-<span class="text-[11px] font-medium text-slate-500 mt-2">Feb</span>
+<div class="w-3.5 sm:w-4 bg-[#E91E63] rounded-t-xs hover:brightness-110 transition-all" style="height: 20.8%;"></div>
 </div>
 <!-- Mar -->
-<div class="flex flex-col items-center flex-1 group">
-<div class="flex items-end gap-1 h-56 w-full justify-center">
-<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-sm overflow-hidden bg-slate-100 cursor-pointer relative group/b1" style="height: 82%;">
-<div class="w-full" style="height: 68%; background-color: #4CAF50;"></div>
-<div class="w-full" style="height: 17%; background-color: #FF9800;"></div>
-<div class="w-full" style="height: 9%; background-color: #616161;"></div>
-<div class="w-full" style="height: 6%; background-color: #3F51B5;"></div>
-<div class="invisible group-hover/b1:visible opacity-0 group-hover/b1:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Mar Deployed: 1,025 seats
-                      </div>
+<div class="flex items-end gap-1 group cursor-pointer" title="Mar: Deployed 1050, Unassigned 230">
+<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-xs overflow-hidden" style="height: 84%;">
+<div class="w-full bg-[#4CAF50]" style="height: 73%;"></div>
+<div class="w-full bg-[#FF9800]" style="height: 13%;"></div>
+<div class="w-full bg-[#475569]" style="height: 8%;"></div>
+<div class="w-full bg-[#2196F3]" style="height: 6%;"></div>
 </div>
-<div class="w-3.5 sm:w-4 rounded-t-sm cursor-pointer relative group/b2" style="height: 15%; background-color: #E91E63;">
-<div class="invisible group-hover/b2:visible opacity-0 group-hover/b2:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Mar Inventory: 185 Unassigned
-                      </div>
-</div>
-</div>
-<span class="text-[11px] font-medium text-slate-500 mt-2">Mar</span>
+<div class="w-3.5 sm:w-4 bg-[#E91E63] rounded-t-xs hover:brightness-110 transition-all" style="height: 18.4%;"></div>
 </div>
 <!-- Apr -->
-<div class="flex flex-col items-center flex-1 group">
-<div class="flex items-end gap-1 h-56 w-full justify-center">
-<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-sm overflow-hidden bg-slate-100 cursor-pointer relative group/b1" style="height: 80%;">
-<div class="w-full" style="height: 67%; background-color: #4CAF50;"></div>
-<div class="w-full" style="height: 18%; background-color: #FF9800;"></div>
-<div class="w-full" style="height: 9%; background-color: #616161;"></div>
-<div class="w-full" style="height: 6%; background-color: #3F51B5;"></div>
-<div class="invisible group-hover/b1:visible opacity-0 group-hover/b1:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Apr Deployed: 1,000 seats
-                      </div>
+<div class="flex items-end gap-1 group cursor-pointer" title="Apr: Deployed 1080, Unassigned 200">
+<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-xs overflow-hidden" style="height: 86.4%;">
+<div class="w-full bg-[#4CAF50]" style="height: 74%;"></div>
+<div class="w-full bg-[#FF9800]" style="height: 13%;"></div>
+<div class="w-full bg-[#475569]" style="height: 7%;"></div>
+<div class="w-full bg-[#2196F3]" style="height: 6%;"></div>
 </div>
-<div class="w-3.5 sm:w-4 rounded-t-sm cursor-pointer relative group/b2" style="height: 16%; background-color: #E91E63;">
-<div class="invisible group-hover/b2:visible opacity-0 group-hover/b2:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Apr Inventory: 200 Unassigned
-                      </div>
-</div>
-</div>
-<span class="text-[11px] font-medium text-slate-500 mt-2">Apr</span>
+<div class="w-3.5 sm:w-4 bg-[#E91E63] rounded-t-xs hover:brightness-110 transition-all" style="height: 16%;"></div>
 </div>
 <!-- May -->
-<div class="flex flex-col items-center flex-1 group">
-<div class="flex items-end gap-1 h-56 w-full justify-center">
-<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-sm overflow-hidden bg-slate-100 cursor-pointer relative group/b1" style="height: 83%;">
-<div class="w-full" style="height: 70%; background-color: #4CAF50;"></div>
-<div class="w-full" style="height: 16%; background-color: #FF9800;"></div>
-<div class="w-full" style="height: 9%; background-color: #616161;"></div>
-<div class="w-full" style="height: 5%; background-color: #3F51B5;"></div>
-<div class="invisible group-hover/b1:visible opacity-0 group-hover/b1:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        May Deployed: 1,040 seats
-                      </div>
+<div class="flex items-end gap-1 group cursor-pointer" title="May: Deployed 1100, Unassigned 180">
+<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-xs overflow-hidden" style="height: 88%;">
+<div class="w-full bg-[#4CAF50]" style="height: 75%;"></div>
+<div class="w-full bg-[#FF9800]" style="height: 12%;"></div>
+<div class="w-full bg-[#475569]" style="height: 7%;"></div>
+<div class="w-full bg-[#2196F3]" style="height: 6%;"></div>
 </div>
-<div class="w-3.5 sm:w-4 rounded-t-sm cursor-pointer relative group/b2" style="height: 14%; background-color: #E91E63;">
-<div class="invisible group-hover/b2:visible opacity-0 group-hover/b2:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        May Inventory: 175 Unassigned
-                      </div>
-</div>
-</div>
-<span class="text-[11px] font-medium text-slate-500 mt-2">May</span>
+<div class="w-3.5 sm:w-4 bg-[#E91E63] rounded-t-xs hover:brightness-110 transition-all" style="height: 14.4%;"></div>
 </div>
 <!-- Jun -->
-<div class="flex flex-col items-center flex-1 group">
-<div class="flex items-end gap-1 h-56 w-full justify-center">
-<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-sm overflow-hidden bg-slate-100 cursor-pointer relative group/b1" style="height: 85%;">
-<div class="w-full" style="height: 71%; background-color: #4CAF50;"></div>
-<div class="w-full" style="height: 16%; background-color: #FF9800;"></div>
-<div class="w-full" style="height: 8%; background-color: #616161;"></div>
-<div class="w-full" style="height: 5%; background-color: #3F51B5;"></div>
-<div class="invisible group-hover/b1:visible opacity-0 group-hover/b1:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Jun Deployed: 1,060 seats
-                      </div>
+<div class="flex items-end gap-1 group cursor-pointer" title="Jun: Deployed 1130, Unassigned 150">
+<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-xs overflow-hidden" style="height: 90.4%;">
+<div class="w-full bg-[#4CAF50]" style="height: 76%;"></div>
+<div class="w-full bg-[#FF9800]" style="height: 12%;"></div>
+<div class="w-full bg-[#475569]" style="height: 7%;"></div>
+<div class="w-full bg-[#2196F3]" style="height: 5%;"></div>
 </div>
-<div class="w-3.5 sm:w-4 rounded-t-sm cursor-pointer relative group/b2" style="height: 13%; background-color: #E91E63;">
-<div class="invisible group-hover/b2:visible opacity-0 group-hover/b2:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Jun Inventory: 160 Unassigned
-                      </div>
-</div>
-</div>
-<span class="text-[11px] font-medium text-slate-500 mt-2">Jun</span>
+<div class="w-3.5 sm:w-4 bg-[#E91E63] rounded-t-xs hover:brightness-110 transition-all" style="height: 12%;"></div>
 </div>
 <!-- Jul -->
-<div class="flex flex-col items-center flex-1 group">
-<div class="flex items-end gap-1 h-56 w-full justify-center">
-<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-sm overflow-hidden bg-slate-100 cursor-pointer relative group/b1" style="height: 88%;">
-<div class="w-full" style="height: 72%; background-color: #4CAF50;"></div>
-<div class="w-full" style="height: 15%; background-color: #FF9800;"></div>
-<div class="w-full" style="height: 8%; background-color: #616161;"></div>
-<div class="w-full" style="height: 5%; background-color: #3F51B5;"></div>
-<div class="invisible group-hover/b1:visible opacity-0 group-hover/b1:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Jul Deployed: 1,100 seats
-                      </div>
+<div class="flex items-end gap-1 group cursor-pointer" title="Jul: Deployed 1160, Unassigned 125">
+<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-xs overflow-hidden" style="height: 92.8%;">
+<div class="w-full bg-[#4CAF50]" style="height: 77%;"></div>
+<div class="w-full bg-[#FF9800]" style="height: 11%;"></div>
+<div class="w-full bg-[#475569]" style="height: 7%;"></div>
+<div class="w-full bg-[#2196F3]" style="height: 5%;"></div>
 </div>
-<div class="w-3.5 sm:w-4 rounded-t-sm cursor-pointer relative group/b2" style="height: 11%; background-color: #E91E63;">
-<div class="invisible group-hover/b2:visible opacity-0 group-hover/b2:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Jul Inventory: 140 Unassigned
-                      </div>
-</div>
-</div>
-<span class="text-[11px] font-medium text-slate-500 mt-2">Jul</span>
+<div class="w-3.5 sm:w-4 bg-[#E91E63] rounded-t-xs hover:brightness-110 transition-all" style="height: 10%;"></div>
 </div>
 <!-- Aug -->
-<div class="flex flex-col items-center flex-1 group">
-<div class="flex items-end gap-1 h-56 w-full justify-center">
-<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-sm overflow-hidden bg-slate-100 cursor-pointer relative group/b1" style="height: 87%;">
-<div class="w-full" style="height: 72%; background-color: #4CAF50;"></div>
-<div class="w-full" style="height: 15%; background-color: #FF9800;"></div>
-<div class="w-full" style="height: 8%; background-color: #616161;"></div>
-<div class="w-full" style="height: 5%; background-color: #3F51B5;"></div>
-<div class="invisible group-hover/b1:visible opacity-0 group-hover/b1:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Aug Deployed: 1,090 seats
-                      </div>
+<div class="flex items-end gap-1 group cursor-pointer" title="Aug: Deployed 1180, Unassigned 105">
+<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-xs overflow-hidden" style="height: 94.4%;">
+<div class="w-full bg-[#4CAF50]" style="height: 78%;"></div>
+<div class="w-full bg-[#FF9800]" style="height: 11%;"></div>
+<div class="w-full bg-[#475569]" style="height: 6%;"></div>
+<div class="w-full bg-[#2196F3]" style="height: 5%;"></div>
 </div>
-<div class="w-3.5 sm:w-4 rounded-t-sm cursor-pointer relative group/b2" style="height: 12%; background-color: #E91E63;">
-<div class="invisible group-hover/b2:visible opacity-0 group-hover/b2:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Aug Inventory: 150 Unassigned
-                      </div>
-</div>
-</div>
-<span class="text-[11px] font-medium text-slate-500 mt-2">Aug</span>
+<div class="w-3.5 sm:w-4 bg-[#E91E63] rounded-t-xs hover:brightness-110 transition-all" style="height: 8.4%;"></div>
 </div>
 <!-- Sep -->
-<div class="flex flex-col items-center flex-1 group">
-<div class="flex items-end gap-1 h-56 w-full justify-center">
-<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-sm overflow-hidden bg-slate-100 cursor-pointer relative group/b1" style="height: 90%;">
-<div class="w-full" style="height: 73%; background-color: #4CAF50;"></div>
-<div class="w-full" style="height: 14%; background-color: #FF9800;"></div>
-<div class="w-full" style="height: 8%; background-color: #616161;"></div>
-<div class="w-full" style="height: 5%; background-color: #3F51B5;"></div>
-<div class="invisible group-hover/b1:visible opacity-0 group-hover/b1:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Sep Deployed: 1,125 seats
-                      </div>
+<div class="flex items-end gap-1 group cursor-pointer" title="Sep: Deployed 1200, Unassigned 90">
+<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-xs overflow-hidden" style="height: 96%;">
+<div class="w-full bg-[#4CAF50]" style="height: 79%;"></div>
+<div class="w-full bg-[#FF9800]" style="height: 10%;"></div>
+<div class="w-full bg-[#475569]" style="height: 6%;"></div>
+<div class="w-full bg-[#2196F3]" style="height: 5%;"></div>
 </div>
-<div class="w-3.5 sm:w-4 rounded-t-sm cursor-pointer relative group/b2" style="height: 10%; background-color: #E91E63;">
-<div class="invisible group-hover/b2:visible opacity-0 group-hover/b2:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Sep Inventory: 125 Unassigned
-                      </div>
-</div>
-</div>
-<span class="text-[11px] font-medium text-slate-500 mt-2">Sep</span>
+<div class="w-3.5 sm:w-4 bg-[#E91E63] rounded-t-xs hover:brightness-110 transition-all" style="height: 7.2%;"></div>
 </div>
 <!-- Oct -->
-<div class="flex flex-col items-center flex-1 group">
-<div class="flex items-end gap-1 h-56 w-full justify-center">
-<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-sm overflow-hidden bg-slate-100 cursor-pointer relative group/b1" style="height: 93%;">
-<div class="w-full" style="height: 74%; background-color: #4CAF50;"></div>
-<div class="w-full" style="height: 14%; background-color: #FF9800;"></div>
-<div class="w-full" style="height: 7%; background-color: #616161;"></div>
-<div class="w-full" style="height: 5%; background-color: #3F51B5;"></div>
-<div class="invisible group-hover/b1:visible opacity-0 group-hover/b1:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Oct Deployed: 1,160 seats
-                      </div>
+<div class="flex items-end gap-1 group cursor-pointer" title="Oct: Deployed 1215, Unassigned 80">
+<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-xs overflow-hidden" style="height: 97.2%;">
+<div class="w-full bg-[#4CAF50]" style="height: 80%;"></div>
+<div class="w-full bg-[#FF9800]" style="height: 10%;"></div>
+<div class="w-full bg-[#475569]" style="height: 6%;"></div>
+<div class="w-full bg-[#2196F3]" style="height: 4%;"></div>
 </div>
-<div class="w-3.5 sm:w-4 rounded-t-sm cursor-pointer relative group/b2" style="height: 9%; background-color: #E91E63;">
-<div class="invisible group-hover/b2:visible opacity-0 group-hover/b2:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Oct Inventory: 110 Unassigned
-                      </div>
-</div>
-</div>
-<span class="text-[11px] font-medium text-slate-500 mt-2">Oct</span>
+<div class="w-3.5 sm:w-4 bg-[#E91E63] rounded-t-xs hover:brightness-110 transition-all" style="height: 6.4%;"></div>
 </div>
 <!-- Nov -->
-<div class="flex flex-col items-center flex-1 group">
-<div class="flex items-end gap-1 h-56 w-full justify-center">
-<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-sm overflow-hidden bg-slate-100 cursor-pointer relative group/b1" style="height: 97%;">
-<div class="w-full" style="height: 75%; background-color: #4CAF50;"></div>
-<div class="w-full" style="height: 13%; background-color: #FF9800;"></div>
-<div class="w-full" style="height: 7%; background-color: #616161;"></div>
-<div class="w-full" style="height: 5%; background-color: #3F51B5;"></div>
-<div class="invisible group-hover/b1:visible opacity-0 group-hover/b1:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Nov Deployed: 1,215 seats
-                      </div>
+<div class="flex items-end gap-1 group cursor-pointer" title="Nov: Deployed 1230, Unassigned 75">
+<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-xs overflow-hidden" style="height: 98.4%;">
+<div class="w-full bg-[#4CAF50]" style="height: 81%;"></div>
+<div class="w-full bg-[#FF9800]" style="height: 9%;"></div>
+<div class="w-full bg-[#475569]" style="height: 6%;"></div>
+<div class="w-full bg-[#2196F3]" style="height: 4%;"></div>
 </div>
-<div class="w-3.5 sm:w-4 rounded-t-sm cursor-pointer relative group/b2" style="height: 7.2%; background-color: #E91E63;">
-<div class="invisible group-hover/b2:visible opacity-0 group-hover/b2:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Nov Inventory: 90 Unassigned
-                      </div>
+<div class="w-3.5 sm:w-4 bg-[#E91E63] rounded-t-xs hover:brightness-110 transition-all" style="height: 6%;"></div>
 </div>
+<!-- Dec -->
+<div class="flex items-end gap-1 group cursor-pointer" title="Dec: Deployed 1250, Unassigned 70">
+<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-xs overflow-hidden" style="height: 100%;">
+<div class="w-full bg-[#4CAF50]" style="height: 82%;"></div>
+<div class="w-full bg-[#FF9800]" style="height: 9%;"></div>
+<div class="w-full bg-[#475569]" style="height: 5%;"></div>
+<div class="w-full bg-[#2196F3]" style="height: 4%;"></div>
 </div>
-<span class="text-[11px] font-medium text-slate-500 mt-2">Nov</span>
-</div>
-<!-- Dec (Current Month) -->
-<div class="flex flex-col items-center flex-1 group">
-<div class="flex items-end gap-1 h-56 w-full justify-center">
-<div class="w-3.5 sm:w-4 flex flex-col-reverse rounded-t-sm overflow-hidden bg-slate-100 cursor-pointer relative group/b1 ring-2 ring-primary ring-offset-1" style="height: 98%;">
-<div class="w-full" style="height: 76%; background-color: #4CAF50;"></div>
-<div class="w-full" style="height: 13%; background-color: #FF9800;"></div>
-<div class="w-full" style="height: 6%; background-color: #616161;"></div>
-<div class="w-full" style="height: 5%; background-color: #3F51B5;"></div>
-<div class="invisible group-hover/b1:visible opacity-0 group-hover/b1:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Dec Deployed: 1,225 seats (Active: 931, Inactive: 159, None: 74, Unmon: 61)
-                      </div>
-</div>
-<div class="w-3.5 sm:w-4 rounded-t-sm cursor-pointer relative group/b2" style="height: 4.8%; background-color: #E91E63;">
-<div class="invisible group-hover/b2:visible opacity-0 group-hover/b2:opacity-100 transition-all absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-30 bg-slate-900 text-white text-[10px] rounded py-1 px-2 whitespace-nowrap shadow-md pointer-events-none">
-                        Dec Inventory: 59 Unassigned
-                      </div>
+<div class="w-3.5 sm:w-4 bg-[#E91E63] rounded-t-xs hover:brightness-110 transition-all" style="height: 5.6%;"></div>
 </div>
 </div>
-<span class="text-[11px] font-bold text-primary mt-2">Dec</span>
+<!-- Calibrated Bottom X-Axis Months -->
+<div class="w-full flex justify-between items-center pt-2 px-3 sm:px-5 text-[11px] font-semibold text-slate-500">
+<span>Jan</span>
+<span>Feb</span>
+<span>Mar</span>
+<span>Apr</span>
+<span>May</span>
+<span>Jun</span>
+<span>Jul</span>
+<span>Aug</span>
+<span>Sep</span>
+<span>Oct</span>
+<span>Nov</span>
+<span>Dec</span>
 </div>
 </div>
 </div>
-</div>
-</div>
-<!-- Footnote / Chú thích (Strictly replacing large callout box) -->
-<div class="pt-3 border-t border-[#e2e8f0] text-[11px] text-slate-500 leading-relaxed">
-          * Chú thích: Cột 1 biểu thị các trạng thái bản quyền đã cấp phát (Active, Inactive, No activity, Not monitored); Cột 2 biểu thị tồn kho chưa cấp phát (Unassigned).
-        </div>
+<!-- Footnote replacing large callout box -->
+<div class="pt-2 text-[11px] text-slate-500 italic border-t border-[#f1f5f9]">
+        * Chú thích: Cột 1 biểu thị các trạng thái bản quyền đã cấp phát (Active, Inactive, No activity, Not monitored); Cột 2 biểu thị tồn kho chưa cấp phát (Unassigned).
+      </div>
 </section>
 </main>
-</div>
 </body></html>

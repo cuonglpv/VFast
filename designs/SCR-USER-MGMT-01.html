@@ -6,12 +6,12 @@
 <title>VFast ELMS - User Management</title>
 <!-- Material Symbols Outlined -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Inter Google Font -->
+<!-- Inter Font -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS with Forms & Container Plugins -->
+<!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
     tailwind.config = {
@@ -19,53 +19,53 @@
       theme: {
         extend: {
           "colors": {
-            "secondary-fixed": "#d5e3fc",
-            "surface": "#f9f9ff",
-            "on-primary-fixed": "#001c38",
-            "surface-variant": "#d8e3fb",
-            "surface-container-low": "#f0f3ff",
-            "surface-bright": "#f9f9ff",
-            "outline-variant": "#c1c7d3",
-            "inverse-primary": "#a2c9ff",
-            "on-tertiary-fixed-variant": "#004b73",
-            "surface-container-highest": "#d8e3fb",
-            "secondary": "#515f74",
-            "on-error": "#ffffff",
-            "primary-container": "#0f67b1",
-            "on-surface-variant": "#414751",
-            "on-primary": "#ffffff",
-            "on-secondary": "#ffffff",
-            "on-error-container": "#93000a",
-            "primary-fixed-dim": "#a2c9ff",
-            "error": "#ba1a1a",
-            "secondary-fixed-dim": "#b9c7df",
-            "on-primary-fixed-variant": "#004881",
-            "on-secondary-container": "#57657a",
-            "primary": "#004f8b",
-            "on-background": "#111c2d",
-            "tertiary-container": "#006aa1",
-            "on-tertiary-fixed": "#001d31",
-            "surface-tint": "#0060a9",
-            "on-surface": "#111c2d",
-            "on-primary-container": "#d4e4ff",
-            "tertiary-fixed": "#cce5ff",
             "surface-container-high": "#dee8ff",
-            "surface-container": "#e7eeff",
-            "error-container": "#ffdad6",
-            "surface-dim": "#cfdaf2",
+            "on-primary": "#ffffff",
+            "background": "#f8fafc",
             "surface-container-lowest": "#ffffff",
-            "background": "#f9f9ff",
-            "secondary-container": "#d5e3fc",
             "tertiary": "#00517d",
-            "inverse-surface": "#263143",
-            "tertiary-fixed-dim": "#93ccff",
-            "on-tertiary-container": "#cde5ff",
-            "primary-fixed": "#d3e4ff",
+            "on-surface-variant": "#414751",
+            "surface-container-low": "#f0f3ff",
+            "primary-fixed-dim": "#a2c9ff",
+            "on-surface": "#0f172a",
+            "on-primary-fixed-variant": "#004881",
             "on-secondary-fixed-variant": "#3a485b",
-            "outline": "#717782",
+            "error": "#ba1a1a",
+            "on-error": "#ffffff",
+            "surface-bright": "#f9f9ff",
+            "tertiary-fixed-dim": "#93ccff",
+            "on-secondary": "#ffffff",
+            "on-background": "#111c2d",
+            "on-tertiary": "#ffffff",
             "inverse-on-surface": "#ecf1ff",
+            "surface-container-highest": "#d8e3fb",
+            "on-tertiary-fixed": "#001d31",
+            "outline-variant": "#c1c7d3",
+            "primary-fixed": "#d3e4ff",
+            "on-error-container": "#93000a",
+            "surface-variant": "#f1f5f9",
+            "surface": "#ffffff",
+            "tertiary-container": "#006aa1",
+            "secondary": "#475569",
+            "on-secondary-container": "#57657a",
+            "on-primary-container": "#d4e4ff",
+            "inverse-surface": "#263143",
+            "surface-tint": "#0060a9",
+            "secondary-fixed-dim": "#b9c7df",
+            "tertiary-fixed": "#cce5ff",
+            "outline": "#e2e8f0",
+            "error-container": "#ffdad6",
+            "secondary-container": "#d5e3fc",
+            "on-tertiary-container": "#cde5ff",
+            "primary": "#0f67b1",
+            "secondary-fixed": "#d5e3fc",
+            "surface-container": "#e7eeff",
+            "primary-container": "#0f67b1",
+            "on-tertiary-fixed-variant": "#004b73",
             "on-secondary-fixed": "#0d1c2e",
-            "on-tertiary": "#ffffff"
+            "inverse-primary": "#a2c9ff",
+            "on-primary-fixed": "#001c38",
+            "surface-dim": "#cfdaf2"
           },
           "borderRadius": {
             "DEFAULT": "0.25rem",
@@ -74,621 +74,517 @@
             "full": "9999px"
           },
           "fontFamily": {
-            "headline": ["Inter", "sans-serif"],
-            "display": ["Inter", "sans-serif"],
-            "body": ["Inter", "sans-serif"],
-            "label": ["Inter", "sans-serif"]
+            "headline": ["Inter"],
+            "display": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"]
           }
         },
-      }
+      },
     }
   </script>
-<style>
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      display: inline-block;
-      vertical-align: middle;
-      line-height: 1;
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-    }
-  </style>
 </head>
-<body class="bg-background text-on-surface antialiased min-h-screen">
-<!-- ========================================================================= -->
-<!-- 1. LEFT SIDE NAVIGATION DRAWER (Shared Components Anchor: SideNavBar)      -->
-<!-- ========================================================================= -->
-<aside class="fixed top-0 left-0 h-screen w-60 z-30 bg-surface-container-lowest border-r border-outline-variant flex flex-col justify-between p-4">
-<!-- Top Segment: Brand & Primary Links -->
-<div class="flex flex-col gap-6">
-<!-- Brand Header -->
-<div class="flex items-center gap-3 px-2 pt-1 pb-2">
-<div class="w-9 h-9 rounded-lg bg-primary-container text-on-primary flex items-center justify-center shadow-sm">
-<span class="material-symbols-outlined text-[20px]" data-icon="vpn_key">vpn_key</span>
+<body class="bg-background text-on-surface font-body antialiased selection:bg-primary-fixed selection:text-primary min-h-screen">
+<!-- ============================================================== -->
+<!-- 1. FIXED LEFT SIDEBAR (Shared Component: SideNavBar)            -->
+<!-- ============================================================== -->
+<aside class="fixed left-0 top-0 h-screen w-60 bg-surface-container-lowest border-r border-outline flex flex-col justify-between p-4 z-30 shadow-xs">
+<!-- Top Brand & Navigation Pillar -->
+<div class="space-y-6">
+<!-- Brand Logo Header -->
+<div class="flex items-center gap-3 px-1 py-1">
+<div class="p-2 bg-sky-50 rounded-lg flex items-center justify-center text-primary shadow-xs">
+<span class="material-symbols-outlined text-2xl" data-icon="vpn_key">vpn_key</span>
 </div>
 <div>
-<span class="font-headline text-lg font-bold tracking-tight text-primary block leading-tight">VFast ELMS</span>
-<span class="text-xs text-secondary font-medium tracking-wide">Enterprise Licensing</span>
+<h1 class="font-headline text-base font-bold text-on-surface tracking-tight leading-none">VFast ELMS</h1>
+<p class="font-body text-xs text-slate-500 mt-1">Enterprise Licensing</p>
 </div>
 </div>
-<!-- Quick Action / Add License Primary Action -->
-<div class="px-1">
-<button class="w-full flex items-center justify-center gap-2 py-2 px-3 bg-primary text-on-primary rounded-lg text-sm font-medium hover:bg-tertiary transition-colors duration-150 shadow-sm">
-<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
-<span>Add License</span>
-</button>
-</div>
-<!-- Main Navigation Items: 3-Pillar IA Contract -->
-<nav class="flex flex-col gap-1">
-<!-- Item 1: License Management (inactive) -->
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-150" href="#">
-<span class="material-symbols-outlined text-[20px]" data-icon="vpn_key">vpn_key</span>
-<span class="font-label text-sm font-medium">License Management</span>
+<!-- Navigation Links (IA 3-Pillar Architecture) -->
+<nav aria-label="Main Navigation" class="space-y-1">
+<!-- Tab 1: License Management -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-150 text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="vpn_key">vpn_key</span>
+<span>License Management</span>
 </a>
-<!-- Item 2: Analytics Hub (inactive) -->
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-150" href="#">
-<span class="material-symbols-outlined text-[20px]" data-icon="insights">insights</span>
-<span class="font-label text-sm font-medium">Analytics Hub</span>
+<!-- Tab 2: Analytics Hub -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-150 text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="insights">insights</span>
+<span>Analytics Hub</span>
 </a>
-<!-- Item 3: User Management (Admin) (ACTIVE) -->
-<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary-container text-on-secondary-container font-medium transition-colors duration-150" href="#">
-<span class="material-symbols-outlined text-[20px] text-primary" data-icon="manage_accounts">manage_accounts</span>
-<span class="font-label text-sm font-semibold text-primary">User Management (Admin)</span>
+<!-- Tab 3: User Management (Admin) - ACTIVE -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sky-100 text-primary font-semibold text-sm shadow-xs transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="manage_accounts">manage_accounts</span>
+<span>User Management</span>
 </a>
 </nav>
 </div>
-<!-- Bottom Segment: Tenant Status & Footer Actions -->
-<div class="flex flex-col gap-3 pt-4 border-t border-outline-variant">
-<!-- Enterprise Tenant Active Indicator Badge -->
-<div class="px-3 py-2 rounded-lg bg-surface-container-low flex items-center justify-between">
-<div class="flex items-center gap-2 overflow-hidden">
-<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-<div class="truncate">
-<p class="text-xs font-semibold text-on-surface truncate">VFast Global Core</p>
-<p class="text-[10px] text-secondary">Tenant Isolation: ON</p>
+<!-- Sidebar Footer -->
+<div class="space-y-4 pt-4 border-t border-outline">
+<!-- Tenant Status Card -->
+<div class="bg-slate-50 border border-outline rounded-lg p-3 space-y-1.5">
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-slate-700">VFast Global Core</span>
+<span class="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-100"></span>
+</div>
+<div class="flex items-center gap-1.5 text-[11px] text-slate-500">
+<span class="material-symbols-outlined text-xs text-emerald-600" data-icon="verified_user">verified_user</span>
+<span>Tenant Isolation: ON</span>
 </div>
 </div>
-<span class="material-symbols-outlined text-secondary text-base" data-icon="verified_user">verified_user</span>
-</div>
-<!-- Support & Sign Out -->
-<div class="flex flex-col gap-1">
-<a class="flex items-center gap-3 px-3 py-1.5 rounded-lg text-secondary hover:bg-surface-container-low text-sm font-medium transition-colors" href="#">
-<span class="material-symbols-outlined text-[18px]" data-icon="help">help</span>
-<span>Support</span>
+<!-- Secondary Links -->
+<div class="space-y-1 text-sm">
+<a class="flex items-center gap-2.5 px-2 py-1.5 rounded-md text-secondary hover:bg-surface-container-low transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-base" data-icon="help_outline">help_outline</span>
+<span>Support &amp; Docs</span>
 </a>
-<a class="flex items-center gap-3 px-3 py-1.5 rounded-lg text-secondary hover:bg-surface-container-low text-sm font-medium transition-colors" href="#">
-<span class="material-symbols-outlined text-[18px]" data-icon="logout">logout</span>
+<a class="flex items-center gap-2.5 px-2 py-1.5 rounded-md text-slate-500 hover:text-error hover:bg-red-50 transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-base" data-icon="logout">logout</span>
 <span>Sign Out</span>
 </a>
 </div>
 </div>
 </aside>
-<!-- ========================================================================= -->
-<!-- 2. TOP APP BAR DOCKED NAVIGATION (Shared Components Anchor: TopNavBar)     -->
-<!-- ========================================================================= -->
-<header class="fixed top-0 right-0 h-16 w-[calc(100%-15rem)] bg-surface-container-lowest border-b border-outline-variant z-20 px-8 flex justify-between items-center">
-<!-- Breadcrumb & Portal Identifier -->
-<div class="flex items-center gap-2">
-<span class="font-headline text-sm font-medium text-secondary">Executive Portal</span>
-<span class="text-outline-variant text-sm">/</span>
-<span class="font-headline text-base font-semibold text-primary">User Management</span>
-<span class="ml-3 px-2 py-0.5 text-[11px] font-mono font-medium rounded-full bg-surface-container-high text-secondary">SCR-USER-MGMT-01</span>
+<!-- ============================================================== -->
+<!-- 2. TOP APP BAR (Shared Component: TopNavBar)                  -->
+<!-- ============================================================== -->
+<header class="h-16 bg-surface-container-lowest border-b border-outline fixed top-0 right-0 left-60 z-20 flex items-center justify-between px-8 shadow-xs">
+<!-- Left Breadcrumb & System Badge -->
+<div class="flex items-center gap-3">
+<nav class="flex items-center gap-2 text-sm text-secondary font-medium">
+<span>Executive Portal</span>
+<span class="text-slate-300">/</span>
+<span class="text-on-surface font-semibold">User Management</span>
+</nav>
+<span class="bg-surface-variant text-secondary text-xs font-mono px-2 py-0.5 rounded border border-slate-200">
+        [SCR-USER-MGMT-01]
+      </span>
 </div>
-<!-- Right Controls: Global Search, Icons, Monogram Avatar -->
-<div class="flex items-center gap-4">
+<!-- Center-Right Global Search & Notifications & User Monogram -->
+<div class="flex items-center gap-5">
 <!-- Search Input Container -->
-<div class="relative w-64">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-sm pointer-events-none" data-icon="search">search</span>
-<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-9 pr-3 py-1.5 text-xs text-on-surface placeholder:text-secondary focus:outline-none focus:border-primary transition-all" placeholder="Global command / license..." type="text"/>
+<div class="relative w-80">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-lg pointer-events-none" data-icon="search">search</span>
+<input class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-1.5 text-sm text-on-surface placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="Global search users, roles, tenants..." type="text"/>
 </div>
-<!-- Icon Actions -->
-<div class="flex items-center gap-1">
-<button class="relative p-2 text-secondary hover:bg-surface-container-low rounded-lg transition-colors" title="Notifications">
-<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
-<span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error"></span>
+<!-- Action Icons -->
+<div class="flex items-center gap-1 border-r border-outline pr-4">
+<button aria-label="Notifications" class="relative p-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-150">
+<span class="material-symbols-outlined text-xl" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full ring-2 ring-white"></span>
 </button>
-<button class="p-2 text-secondary hover:bg-surface-container-low rounded-lg transition-colors" title="Help">
-<span class="material-symbols-outlined text-[20px]" data-icon="help_outline">help_outline</span>
+<button aria-label="Help" class="p-2 rounded-lg text-secondary hover:bg-surface-container-low transition-colors duration-150">
+<span class="material-symbols-outlined text-xl" data-icon="help_outline">help_outline</span>
 </button>
 </div>
-<!-- Divider -->
-<div class="h-6 w-px bg-outline-variant"></div>
-<!-- Monogram User Profile -->
+<!-- User Monogram Profile Block -->
 <div class="flex items-center gap-3 cursor-pointer pl-1">
-<div class="w-8 h-8 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-semibold text-xs border border-primary/20">
+<div class="w-9 h-9 rounded-full bg-primary text-white font-bold flex items-center justify-center text-sm shadow-xs">
           DN
         </div>
-<div class="hidden lg:block text-left">
-<div class="text-xs font-semibold text-on-surface leading-tight">Dat Nguyen</div>
-<div class="text-[10px] text-secondary font-medium">Chief IT Architect</div>
+<div class="text-left">
+<p class="text-sm font-semibold text-on-surface leading-tight">Dat Nguyen</p>
+<p class="text-xs text-slate-500">Chief IT Architect</p>
 </div>
-<span class="material-symbols-outlined text-secondary text-xs" data-icon="expand_more">expand_more</span>
 </div>
 </div>
 </header>
-<!-- ========================================================================= -->
-<!-- 3. MAIN CONTENT CANVAS (Responsive Desktop Canvas)                        -->
-<!-- ========================================================================= -->
+<!-- ============================================================== -->
+<!-- 3. MAIN CONTENT AREA                                           -->
+<!-- ============================================================== -->
 <main class="ml-60 pt-20 p-8 min-h-screen bg-background">
-<div class="max-w-[1440px] mx-auto flex flex-col gap-6">
-<!-- ===================================================================== -->
-<!-- TOP 4 IDENTITY KPIS                                                   -->
-<!-- ===================================================================== -->
-<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+<!-- Page Title Header with Direct CTA Stack -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-outline gap-4 mb-6">
+<div>
+<h2 class="text-2xl font-bold text-on-surface tracking-tight font-headline">User Management</h2>
+<p class="text-sm text-slate-500 mt-1">Directory administration, multi-tenant RBAC permissions, and seat entitlement assignments.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors shadow-xs">
+<span class="material-symbols-outlined text-base" data-icon="file_download">file_download</span>
+<span>Export CSV</span>
+</button>
+<button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-[#0c538f] rounded-lg shadow-sm transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="person_add">person_add</span>
+<span>+ Add User</span>
+</button>
+</div>
+</div>
+<!-- 4. TOP 4 IDENTITY KPIS -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
 <!-- KPI 1: Total Users -->
-<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col justify-between">
-<div class="flex items-start justify-between">
-<span class="text-xs font-semibold text-secondary uppercase tracking-wider">Total Users</span>
-<span class="material-symbols-outlined text-outline-variant hover:text-secondary cursor-pointer text-sm" data-icon="info" title="Cumulative accounts across all corporate tenants">info</span>
+<div class="bg-white border border-outline rounded-xl p-5 shadow-xs flex flex-col justify-between">
+<div class="flex items-center justify-between text-secondary">
+<span class="text-sm font-medium">Total Users</span>
+<span class="material-symbols-outlined text-lg text-slate-400 cursor-help" data-icon="info">info</span>
 </div>
 <div class="flex items-baseline justify-between mt-3">
-<span class="text-3xl font-bold font-headline text-on-surface tracking-tight">850</span>
-<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
-<span class="material-symbols-outlined text-[14px]" data-icon="trending_up">trending_up</span>
-              +5.2% MoM
-            </span>
+<span class="text-3xl font-bold text-on-surface tracking-tight">850</span>
+<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1">
+            +5.2% MoM
+          </span>
 </div>
 </div>
 <!-- KPI 2: Active Users -->
-<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col justify-between">
-<div class="flex items-start justify-between">
-<span class="text-xs font-semibold text-secondary uppercase tracking-wider">Active Users</span>
-<span class="material-symbols-outlined text-outline-variant hover:text-secondary cursor-pointer text-sm" data-icon="info" title="Users authenticated in the past 30 days">info</span>
+<div class="bg-white border border-outline rounded-xl p-5 shadow-xs flex flex-col justify-between">
+<div class="flex items-center justify-between text-secondary">
+<span class="text-sm font-medium">Active Users</span>
+<span class="material-symbols-outlined text-lg text-slate-400 cursor-help" data-icon="info">info</span>
 </div>
 <div class="flex items-baseline justify-between mt-3">
-<span class="text-3xl font-bold font-headline text-on-surface tracking-tight">92.0%</span>
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-container-high text-secondary">
-              782 Active
-            </span>
+<span class="text-3xl font-bold text-on-surface tracking-tight">92.0%</span>
+<span class="bg-slate-100 text-slate-700 border border-slate-200 text-xs px-2 py-0.5 rounded-full font-medium">
+            782 Active
+          </span>
 </div>
 </div>
 <!-- KPI 3: Tenants -->
-<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col justify-between">
-<div class="flex items-start justify-between">
-<span class="text-xs font-semibold text-secondary uppercase tracking-wider">Tenants</span>
-<span class="material-symbols-outlined text-outline-variant hover:text-secondary cursor-pointer text-sm" data-icon="info" title="Autonomous infrastructure segments">info</span>
+<div class="bg-white border border-outline rounded-xl p-5 shadow-xs flex flex-col justify-between">
+<div class="flex items-center justify-between text-secondary">
+<span class="text-sm font-medium">Tenants</span>
+<span class="material-symbols-outlined text-lg text-slate-400 cursor-help" data-icon="info">info</span>
 </div>
 <div class="flex items-baseline justify-between mt-3">
-<span class="text-3xl font-bold font-headline text-on-surface tracking-tight">12</span>
-<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-container-high text-secondary">
-<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
-              Isolation Active
-            </span>
+<span class="text-3xl font-bold text-on-surface tracking-tight">12</span>
+<span class="bg-sky-50 text-primary border border-sky-200 text-xs px-2 py-0.5 rounded-full font-medium">
+            Isolation Active
+          </span>
 </div>
 </div>
 <!-- KPI 4: Privileged Roles -->
-<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 flex flex-col justify-between">
-<div class="flex items-start justify-between">
+<div class="bg-white border border-outline rounded-xl p-5 shadow-xs flex flex-col justify-between">
 <div>
-<span class="text-xs font-semibold text-secondary uppercase tracking-wider block">Privileged Roles</span>
-<span class="text-[11px] text-secondary mt-0.5 block">Admin &amp; Manager accounts</span>
+<div class="flex items-center justify-between text-secondary">
+<span class="text-sm font-medium">Privileged Roles</span>
+<span class="material-symbols-outlined text-lg text-slate-400 cursor-help" data-icon="info">info</span>
 </div>
-<span class="material-symbols-outlined text-outline-variant hover:text-secondary cursor-pointer text-sm" data-icon="info" title="Accounts with elevated licensing and security credentials">info</span>
+<p class="text-xs text-slate-500 mt-0.5">Admin &amp; Manager accounts</p>
 </div>
 <div class="flex items-baseline justify-between mt-3">
-<span class="text-3xl font-bold font-headline text-on-surface tracking-tight">14</span>
-<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700">
-              4 Admins, 10 Mgrs
-            </span>
+<span class="text-3xl font-bold text-on-surface tracking-tight">14</span>
+<span class="bg-amber-50 text-amber-800 border border-amber-200 text-xs px-2 py-0.5 rounded-full font-medium">
+            4 Admins, 10 Mgrs
+          </span>
 </div>
 </div>
 </section>
-<!-- ===================================================================== -->
-<!-- HEADER FILTERS & ACTIONS TOOLBAR                                     -->
-<!-- ===================================================================== -->
-<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-none">
-<!-- Left Filter Group -->
-<div class="flex flex-wrap items-center gap-3 flex-1 min-w-[320px]">
-<!-- Quick Search -->
+<!-- 5. HEADER FILTERS TOOLBAR -->
+<div class="bg-white p-4 rounded-xl border border-outline mb-6 flex flex-wrap items-center justify-between gap-4 shadow-xs">
+<!-- Left Filters Group -->
+<div class="flex flex-wrap items-center gap-3 flex-1">
+<!-- Search -->
 <div class="relative w-72">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-sm pointer-events-none" data-icon="search">search</span>
-<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-9 pr-3 py-2 text-xs text-on-surface placeholder:text-secondary focus:outline-none focus:border-primary transition-all" placeholder="Search name, email, employee ID..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-lg pointer-events-none" data-icon="search">search</span>
+<input class="w-full border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-sm bg-white focus:outline-none focus:border-primary transition-colors placeholder:text-slate-400" placeholder="Search name, email, employee ID..." type="text"/>
 </div>
-<!-- Tenant Select Dropdown -->
-<div class="relative">
-<select class="appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg pl-3 pr-8 py-2 text-xs font-medium text-on-surface focus:outline-none focus:border-primary cursor-pointer">
-<option value="all">All Tenants</option>
-<option value="vn">HQ - Vietnam</option>
-<option value="na">North America Branch</option>
-<option value="eu">EU Operations</option>
+<!-- Tenant Dropdown -->
+<select class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-700 focus:outline-none focus:border-primary">
+<option>All Tenants</option>
+<option>HQ - Vietnam</option>
+<option>North America Branch</option>
+<option>EU Operations</option>
 </select>
-<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-base" data-icon="arrow_drop_down">arrow_drop_down</span>
-</div>
-<!-- Role Select Dropdown -->
-<div class="relative">
-<select class="appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg pl-3 pr-8 py-2 text-xs font-medium text-on-surface focus:outline-none focus:border-primary cursor-pointer">
-<option value="all">All Roles</option>
-<option value="admin">Admin</option>
-<option value="manager">Manager</option>
-<option value="staff">Staff</option>
-<option value="employee">Employee</option>
+<!-- Role Dropdown -->
+<select class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-700 focus:outline-none focus:border-primary">
+<option>All Roles</option>
+<option>Admin</option>
+<option>Manager</option>
+<option>Staff</option>
+<option>Employee</option>
 </select>
-<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-base" data-icon="arrow_drop_down">arrow_drop_down</span>
-</div>
-<!-- Status Select Dropdown -->
-<div class="relative">
-<select class="appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg pl-3 pr-8 py-2 text-xs font-medium text-on-surface focus:outline-none focus:border-primary cursor-pointer">
-<option value="all">All Statuses</option>
-<option value="active">Active</option>
-<option value="suspended">Suspended</option>
-<option value="deactivated">Deactivated</option>
+<!-- Status Dropdown -->
+<select class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white text-slate-700 focus:outline-none focus:border-primary">
+<option>All Statuses</option>
+<option>Active</option>
+<option>Suspended</option>
+<option>Deactivated</option>
 </select>
-<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-base" data-icon="arrow_drop_down">arrow_drop_down</span>
 </div>
-</div>
-<!-- Right Action Buttons -->
+<!-- Right Actions Group -->
 <div class="flex items-center gap-3">
-<!-- Export CSV Outlined Button -->
-<button class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-outline-variant hover:bg-surface-container-low text-xs font-semibold text-secondary transition-colors">
-<span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+<button class="border border-slate-300 text-slate-700 rounded-lg px-3.5 py-2 text-sm font-medium hover:bg-slate-50 flex items-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="file_download">file_download</span>
 <span>Export CSV</span>
 </button>
-<!-- Primary + Add User Button -->
-<button class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-tertiary text-on-primary text-xs font-semibold transition-colors shadow-sm">
-<span class="material-symbols-outlined text-sm" data-icon="person_add">person_add</span>
-<span>Add User</span>
+<button class="bg-primary text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-[#0c538f] flex items-center gap-1.5 shadow-xs transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="person_add">person_add</span>
+<span>+ Add User</span>
 </button>
 </div>
-</section>
-<!-- ===================================================================== -->
-<!-- 4. USER & TENANT DATA GRID (9 Core Columns)                           -->
-<!-- ===================================================================== -->
-<section class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-none">
+</div>
+<!-- 6. USER & TENANT DATA GRID (9 Core Columns) -->
+<div class="bg-white border border-outline rounded-xl overflow-hidden shadow-xs">
 <div class="overflow-x-auto">
 <table class="w-full text-left border-collapse">
 <thead>
-<tr class="bg-surface-container-low border-b border-outline-variant text-[11px] font-semibold text-secondary uppercase tracking-wider">
-<th class="py-3.5 px-4 font-semibold" scope="col">User Profile</th>
-<th class="py-3.5 px-4 font-semibold" scope="col">Tenant / Org</th>
-<th class="py-3.5 px-4 font-semibold" scope="col">Assigned Role</th>
-<th class="py-3.5 px-4 font-semibold text-center" scope="col">Allocated Licenses</th>
-<th class="py-3.5 px-4 font-semibold" scope="col">Department</th>
-<th class="py-3.5 px-4 font-semibold" scope="col">Account Status</th>
-<th class="py-3.5 px-4 font-semibold" scope="col">Last Active</th>
-<th class="py-3.5 px-4 font-semibold" scope="col">Created Date</th>
-<th class="py-3.5 px-4 font-semibold text-right" scope="col">Actions</th>
+<tr class="bg-slate-50 border-b border-outline text-xs font-semibold text-slate-500 uppercase tracking-wider">
+<th class="px-5 py-3.5" scope="col">USER PROFILE</th>
+<th class="px-4 py-3.5" scope="col">TENANT / ORG</th>
+<th class="px-4 py-3.5" scope="col">ASSIGNED ROLE</th>
+<th class="px-4 py-3.5" scope="col">ALLOCATED LICENSES</th>
+<th class="px-4 py-3.5" scope="col">DEPARTMENT</th>
+<th class="px-4 py-3.5" scope="col">ACCOUNT STATUS</th>
+<th class="px-4 py-3.5" scope="col">LAST ACTIVE</th>
+<th class="px-4 py-3.5" scope="col">CREATED DATE</th>
+<th class="px-4 py-3.5 text-right" scope="col">ACTIONS</th>
 </tr>
 </thead>
-<tbody class="divide-y divide-outline-variant text-xs text-on-surface">
-<!-- ROW 1: Dat Nguyen -->
-<tr class="hover:bg-surface-container-low/50 transition-colors">
-<td class="py-3.5 px-4 whitespace-nowrap">
+<tbody class="divide-y divide-outline text-sm">
+<!-- Row 1: Dat Nguyen -->
+<tr class="hover:bg-slate-50/70 transition-colors">
+<td class="px-5 py-4 whitespace-nowrap">
 <div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-blue-100 text-primary flex items-center justify-center font-bold text-xs">
-                      DN
-                    </div>
+<div class="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">DN</div>
 <div>
-<span class="font-semibold text-on-surface block leading-tight">Dat Nguyen</span>
-<span class="text-[11px] text-secondary">d.nguyen@vfast.corp</span>
+<div class="font-bold text-on-surface leading-tight">Dat Nguyen</div>
+<div class="text-xs text-slate-500">d.nguyen@vfast.corp</div>
 </div>
 </div>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center px-2 py-0.5 rounded border border-outline-variant text-secondary text-[11px] font-medium bg-surface-container-lowest">
-                    HQ - Vietnam
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="border border-slate-300 rounded-md px-2.5 py-1 text-xs text-slate-700 bg-white font-medium">HQ - Vietnam</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-fixed text-primary border border-primary/20">
-                    Admin
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="bg-blue-50 text-primary border border-blue-200 font-semibold px-2.5 py-0.5 rounded-full text-xs">Admin</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-center">
-<span class="inline-block px-2 py-0.5 rounded-md bg-surface-container text-on-secondary-container font-medium text-xs">
-                    5 Licenses
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="text-xs font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded">5 Licenses</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-secondary font-medium">
-                  Engineering
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    Active
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap text-slate-700 text-sm">Engineering</td>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  Active
+                </span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap font-mono text-secondary text-[11px]">
-                  2026-11-10 09:30
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap font-mono text-secondary text-[11px]">
-                  2024-01-15
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-right">
+<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-secondary">2026-11-10 09:30</td>
+<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-slate-500">2024-01-15</td>
+<td class="px-4 py-4 whitespace-nowrap text-right text-slate-400">
 <div class="inline-flex items-center gap-1">
-<button class="p-1 rounded text-secondary hover:text-primary hover:bg-surface-container transition-colors" title="Edit Role &amp; Tenant">
-<span class="material-symbols-outlined text-base" data-icon="tune">tune</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-primary transition-colors" title="Edit Role &amp; Tenant">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
 </button>
-<button class="p-1 rounded text-secondary hover:text-error hover:bg-surface-container transition-colors" title="Suspend/Activate">
-<span class="material-symbols-outlined text-base" data-icon="block">block</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-amber-600 transition-colors" title="Suspend User">
+<span class="material-symbols-outlined text-lg" data-icon="block">block</span>
 </button>
-<button class="p-1 rounded text-secondary hover:text-on-surface hover:bg-surface-container transition-colors" title="More options">
-<span class="material-symbols-outlined text-base" data-icon="more_vert">more_vert</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-slate-700 transition-colors" title="More Options">
+<span class="material-symbols-outlined text-lg" data-icon="more_vert">more_vert</span>
 </button>
 </div>
 </td>
 </tr>
-<!-- ROW 2: Sarah Jenkins -->
-<tr class="hover:bg-surface-container-low/50 transition-colors">
-<td class="py-3.5 px-4 whitespace-nowrap">
+<!-- Row 2: Sarah Jenkins -->
+<tr class="hover:bg-slate-50/70 transition-colors">
+<td class="px-5 py-4 whitespace-nowrap">
 <div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs">
-                      SJ
-                    </div>
+<div class="w-8 h-8 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center">SJ</div>
 <div>
-<span class="font-semibold text-on-surface block leading-tight">Sarah Jenkins</span>
-<span class="text-[11px] text-secondary">s.jenkins@vfast.corp</span>
+<div class="font-bold text-on-surface leading-tight">Sarah Jenkins</div>
+<div class="text-xs text-slate-500">s.jenkins@vfast.corp</div>
 </div>
 </div>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center px-2 py-0.5 rounded border border-outline-variant text-secondary text-[11px] font-medium bg-surface-container-lowest">
-                    North America Branch
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="border border-slate-300 rounded-md px-2.5 py-1 text-xs text-slate-700 bg-white font-medium">North America Branch</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    Manager
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold px-2.5 py-0.5 rounded-full text-xs">Manager</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-center">
-<span class="inline-block px-2 py-0.5 rounded-md bg-surface-container text-on-secondary-container font-medium text-xs">
-                    4 Licenses
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="text-xs font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded">4 Licenses</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-secondary font-medium">
-                  Product &amp; Design
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    Active
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap text-slate-700 text-sm">Product &amp; Design</td>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  Active
+                </span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap font-mono text-secondary text-[11px]">
-                  2026-11-09 17:45
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap font-mono text-secondary text-[11px]">
-                  2024-03-20
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-right">
+<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-secondary">2026-11-09 17:45</td>
+<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-slate-500">2024-03-20</td>
+<td class="px-4 py-4 whitespace-nowrap text-right text-slate-400">
 <div class="inline-flex items-center gap-1">
-<button class="p-1 rounded text-secondary hover:text-primary hover:bg-surface-container transition-colors" title="Edit Role &amp; Tenant">
-<span class="material-symbols-outlined text-base" data-icon="tune">tune</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-primary transition-colors" title="Edit Role &amp; Tenant">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
 </button>
-<button class="p-1 rounded text-secondary hover:text-error hover:bg-surface-container transition-colors" title="Suspend/Activate">
-<span class="material-symbols-outlined text-base" data-icon="block">block</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-amber-600 transition-colors" title="Suspend User">
+<span class="material-symbols-outlined text-lg" data-icon="block">block</span>
 </button>
-<button class="p-1 rounded text-secondary hover:text-on-surface hover:bg-surface-container transition-colors" title="More options">
-<span class="material-symbols-outlined text-base" data-icon="more_vert">more_vert</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-slate-700 transition-colors" title="More Options">
+<span class="material-symbols-outlined text-lg" data-icon="more_vert">more_vert</span>
 </button>
 </div>
 </td>
 </tr>
-<!-- ROW 3: Alex Mercer -->
-<tr class="hover:bg-surface-container-low/50 transition-colors">
-<td class="py-3.5 px-4 whitespace-nowrap">
+<!-- Row 3: Alex Mercer -->
+<tr class="hover:bg-slate-50/70 transition-colors">
+<td class="px-5 py-4 whitespace-nowrap">
 <div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center font-bold text-xs">
-                      AM
-                    </div>
+<div class="w-8 h-8 rounded-full bg-teal-600 text-white font-bold text-xs flex items-center justify-center">AM</div>
 <div>
-<span class="font-semibold text-on-surface block leading-tight">Alex Mercer</span>
-<span class="text-[11px] text-secondary">a.mercer@vfast.corp</span>
+<div class="font-bold text-on-surface leading-tight">Alex Mercer</div>
+<div class="text-xs text-slate-500">a.mercer@vfast.corp</div>
 </div>
 </div>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center px-2 py-0.5 rounded border border-outline-variant text-secondary text-[11px] font-medium bg-surface-container-lowest">
-                    EU Operations
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="border border-slate-300 rounded-md px-2.5 py-1 text-xs text-slate-700 bg-white font-medium">EU Operations</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                    Staff
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="bg-slate-100 text-slate-700 border border-slate-200 font-medium px-2.5 py-0.5 rounded-full text-xs">Staff</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-center">
-<span class="inline-block px-2 py-0.5 rounded-md bg-surface-container text-on-secondary-container font-medium text-xs">
-                    3 Licenses
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="text-xs font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded">3 Licenses</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-secondary font-medium">
-                  Tech Support
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    Active
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap text-slate-700 text-sm">Tech Support</td>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  Active
+                </span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap font-mono text-secondary text-[11px]">
-                  2026-11-10 08:12
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap font-mono text-secondary text-[11px]">
-                  2024-05-10
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-right">
+<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-secondary">2026-11-10 08:12</td>
+<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-slate-500">2024-05-10</td>
+<td class="px-4 py-4 whitespace-nowrap text-right text-slate-400">
 <div class="inline-flex items-center gap-1">
-<button class="p-1 rounded text-secondary hover:text-primary hover:bg-surface-container transition-colors" title="Edit Role &amp; Tenant">
-<span class="material-symbols-outlined text-base" data-icon="tune">tune</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-primary transition-colors" title="Edit Role &amp; Tenant">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
 </button>
-<button class="p-1 rounded text-secondary hover:text-error hover:bg-surface-container transition-colors" title="Suspend/Activate">
-<span class="material-symbols-outlined text-base" data-icon="block">block</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-amber-600 transition-colors" title="Suspend User">
+<span class="material-symbols-outlined text-lg" data-icon="block">block</span>
 </button>
-<button class="p-1 rounded text-secondary hover:text-on-surface hover:bg-surface-container transition-colors" title="More options">
-<span class="material-symbols-outlined text-base" data-icon="more_vert">more_vert</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-slate-700 transition-colors" title="More Options">
+<span class="material-symbols-outlined text-lg" data-icon="more_vert">more_vert</span>
 </button>
 </div>
 </td>
 </tr>
-<!-- ROW 4: Linh Tran -->
-<tr class="hover:bg-surface-container-low/50 transition-colors">
-<td class="py-3.5 px-4 whitespace-nowrap">
+<!-- Row 4: Linh Tran -->
+<tr class="hover:bg-slate-50/70 transition-colors">
+<td class="px-5 py-4 whitespace-nowrap">
 <div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-pink-100 text-pink-700 flex items-center justify-center font-bold text-xs">
-                      LT
-                    </div>
+<div class="w-8 h-8 rounded-full bg-pink-600 text-white font-bold text-xs flex items-center justify-center">LT</div>
 <div>
-<span class="font-semibold text-on-surface block leading-tight">Linh Tran</span>
-<span class="text-[11px] text-secondary">l.tran@vfast.corp</span>
+<div class="font-bold text-on-surface leading-tight">Linh Tran</div>
+<div class="text-xs text-slate-500">l.tran@vfast.corp</div>
 </div>
 </div>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center px-2 py-0.5 rounded border border-outline-variant text-secondary text-[11px] font-medium bg-surface-container-lowest">
-                    HQ - Vietnam
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="border border-slate-300 rounded-md px-2.5 py-1 text-xs text-slate-700 bg-white font-medium">HQ - Vietnam</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border border-slate-300 text-slate-600 bg-surface-container-lowest">
-                    Employee
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="border border-slate-300 text-slate-600 font-medium px-2.5 py-0.5 rounded-full text-xs">Employee</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-center">
-<span class="inline-block px-2 py-0.5 rounded-md bg-surface-container text-on-secondary-container font-medium text-xs">
-                    2 Licenses
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="text-xs font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded">2 Licenses</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-secondary font-medium">
-                  Marketing
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    Active
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap text-slate-700 text-sm">Marketing</td>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  Active
+                </span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap font-mono text-secondary text-[11px]">
-                  2026-11-08 14:20
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap font-mono text-secondary text-[11px]">
-                  2024-07-01
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-right">
+<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-secondary">2026-11-08 14:20</td>
+<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-slate-500">2024-07-01</td>
+<td class="px-4 py-4 whitespace-nowrap text-right text-slate-400">
 <div class="inline-flex items-center gap-1">
-<button class="p-1 rounded text-secondary hover:text-primary hover:bg-surface-container transition-colors" title="Edit Role &amp; Tenant">
-<span class="material-symbols-outlined text-base" data-icon="tune">tune</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-primary transition-colors" title="Edit Role &amp; Tenant">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
 </button>
-<button class="p-1 rounded text-secondary hover:text-error hover:bg-surface-container transition-colors" title="Suspend/Activate">
-<span class="material-symbols-outlined text-base" data-icon="block">block</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-amber-600 transition-colors" title="Suspend User">
+<span class="material-symbols-outlined text-lg" data-icon="block">block</span>
 </button>
-<button class="p-1 rounded text-secondary hover:text-on-surface hover:bg-surface-container transition-colors" title="More options">
-<span class="material-symbols-outlined text-base" data-icon="more_vert">more_vert</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-slate-700 transition-colors" title="More Options">
+<span class="material-symbols-outlined text-lg" data-icon="more_vert">more_vert</span>
 </button>
 </div>
 </td>
 </tr>
-<!-- ROW 5: Michael Vance -->
-<tr class="hover:bg-surface-container-low/50 transition-colors">
-<td class="py-3.5 px-4 whitespace-nowrap">
+<!-- Row 5: Michael Vance -->
+<tr class="hover:bg-slate-50/70 transition-colors">
+<td class="px-5 py-4 whitespace-nowrap">
 <div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs">
-                      MV
-                    </div>
+<div class="w-8 h-8 rounded-full bg-amber-600 text-white font-bold text-xs flex items-center justify-center">MV</div>
 <div>
-<span class="font-semibold text-on-surface block leading-tight">Michael Vance</span>
-<span class="text-[11px] text-secondary">m.vance@vfast.corp</span>
+<div class="font-bold text-on-surface leading-tight">Michael Vance</div>
+<div class="text-xs text-slate-500">m.vance@vfast.corp</div>
 </div>
 </div>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center px-2 py-0.5 rounded border border-outline-variant text-secondary text-[11px] font-medium bg-surface-container-lowest">
-                    North America Branch
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="border border-slate-300 rounded-md px-2.5 py-1 text-xs text-slate-700 bg-white font-medium">North America Branch</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border border-slate-300 text-slate-600 bg-surface-container-lowest">
-                    Employee
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="border border-slate-300 text-slate-600 font-medium px-2.5 py-0.5 rounded-full text-xs">Employee</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-center">
-<span class="inline-block px-2 py-0.5 rounded-md bg-surface-container text-on-secondary-container font-medium text-xs">
-                    3 Licenses
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="text-xs font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded">3 Licenses</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-secondary font-medium">
-                  Sales
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700">
+<td class="px-4 py-4 whitespace-nowrap text-slate-700 text-sm">Sales</td>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="bg-amber-50 text-amber-700 border border-amber-200 text-xs px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5">
 <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                    Suspended
-                  </span>
+                  Suspended
+                </span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap font-mono text-secondary text-[11px]">
-                  2026-09-12 11:05
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap font-mono text-secondary text-[11px]">
-                  2024-02-18
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-right">
+<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-secondary">2026-09-12 11:05</td>
+<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-slate-500">2024-02-18</td>
+<td class="px-4 py-4 whitespace-nowrap text-right text-slate-400">
 <div class="inline-flex items-center gap-1">
-<button class="p-1 rounded text-secondary hover:text-primary hover:bg-surface-container transition-colors" title="Edit Role &amp; Tenant">
-<span class="material-symbols-outlined text-base" data-icon="tune">tune</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-primary transition-colors" title="Edit Role &amp; Tenant">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
 </button>
-<button class="p-1 rounded text-emerald-600 hover:bg-surface-container transition-colors" title="Reactivate Account">
-<span class="material-symbols-outlined text-base" data-icon="check_circle">check_circle</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-emerald-600 transition-colors" title="Activate User">
+<span class="material-symbols-outlined text-lg" data-icon="check_circle">check_circle</span>
 </button>
-<button class="p-1 rounded text-secondary hover:text-on-surface hover:bg-surface-container transition-colors" title="More options">
-<span class="material-symbols-outlined text-base" data-icon="more_vert">more_vert</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-slate-700 transition-colors" title="More Options">
+<span class="material-symbols-outlined text-lg" data-icon="more_vert">more_vert</span>
 </button>
 </div>
 </td>
 </tr>
-<!-- ROW 6: David Rossi -->
-<tr class="hover:bg-surface-container-low/50 transition-colors">
-<td class="py-3.5 px-4 whitespace-nowrap">
+<!-- Row 6: David Rossi -->
+<tr class="hover:bg-slate-50/70 transition-colors">
+<td class="px-5 py-4 whitespace-nowrap">
 <div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-gray-100 text-gray-700 flex items-center justify-center font-bold text-xs">
-                      DR
-                    </div>
+<div class="w-8 h-8 rounded-full bg-slate-600 text-white font-bold text-xs flex items-center justify-center">DR</div>
 <div>
-<span class="font-semibold text-on-surface block leading-tight">David Rossi</span>
-<span class="text-[11px] text-secondary">d.rossi@vfast.corp</span>
+<div class="font-bold text-on-surface leading-tight">David Rossi</div>
+<div class="text-xs text-slate-500">d.rossi@vfast.corp</div>
 </div>
 </div>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center px-2 py-0.5 rounded border border-outline-variant text-secondary text-[11px] font-medium bg-surface-container-lowest">
-                    EU Operations
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="border border-slate-300 rounded-md px-2.5 py-1 text-xs text-slate-700 bg-white font-medium">EU Operations</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border border-slate-300 text-slate-600 bg-surface-container-lowest">
-                    Employee
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="border border-slate-300 text-slate-600 font-medium px-2.5 py-0.5 rounded-full text-xs">Employee</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-center">
-<span class="inline-block px-2 py-0.5 rounded-md bg-surface-container text-on-secondary-container font-medium text-xs">
-                    0 Licenses
-                  </span>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded">0 Licenses</span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-secondary font-medium">
-                  Operations
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap">
-<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-50 text-rose-700">
+<td class="px-4 py-4 whitespace-nowrap text-slate-700 text-sm">Operations</td>
+<td class="px-4 py-4 whitespace-nowrap">
+<span class="bg-rose-50 text-rose-700 border border-rose-200 text-xs px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5">
 <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                    Deactivated
-                  </span>
+                  Deactivated
+                </span>
 </td>
-<td class="py-3.5 px-4 whitespace-nowrap font-mono text-secondary text-[11px]">
-                  2026-08-01 10:00
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap font-mono text-secondary text-[11px]">
-                  2024-04-05
-                </td>
-<td class="py-3.5 px-4 whitespace-nowrap text-right">
+<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-secondary">2026-08-01 10:00</td>
+<td class="px-4 py-4 whitespace-nowrap font-mono text-xs text-slate-500">2024-04-05</td>
+<td class="px-4 py-4 whitespace-nowrap text-right text-slate-400">
 <div class="inline-flex items-center gap-1">
-<button class="p-1 rounded text-secondary hover:text-primary hover:bg-surface-container transition-colors" title="Edit Role &amp; Tenant">
-<span class="material-symbols-outlined text-base" data-icon="tune">tune</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-primary transition-colors" title="Edit Role &amp; Tenant">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
 </button>
-<button class="p-1 rounded text-emerald-600 hover:bg-surface-container transition-colors" title="Reactivate Account">
-<span class="material-symbols-outlined text-base" data-icon="check_circle">check_circle</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-emerald-600 transition-colors" title="Activate User">
+<span class="material-symbols-outlined text-lg" data-icon="check_circle">check_circle</span>
 </button>
-<button class="p-1 rounded text-secondary hover:text-on-surface hover:bg-surface-container transition-colors" title="More options">
-<span class="material-symbols-outlined text-base" data-icon="more_vert">more_vert</span>
+<button class="p-1 rounded hover:bg-slate-100 hover:text-slate-700 transition-colors" title="More Options">
+<span class="material-symbols-outlined text-lg" data-icon="more_vert">more_vert</span>
 </button>
 </div>
 </td>
@@ -696,69 +592,35 @@
 </tbody>
 </table>
 </div>
-<!-- =================================================================== -->
-<!-- TABLE PAGINATION FOOTER (MUI Standard Format)                        -->
-<!-- =================================================================== -->
-<div class="py-3 px-6 bg-surface-container-low border-t border-outline-variant flex flex-wrap items-center justify-between gap-4 text-xs text-secondary font-medium">
-<!-- Item Count Info -->
+<!-- MUI-style Table Pagination -->
+<div class="px-6 py-3.5 bg-white border-t border-outline flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600">
 <div>
-            Showing <span class="font-semibold text-on-surface">1-6</span> of <span class="font-semibold text-on-surface">850</span> users
-          </div>
-<!-- Pagination Controls and Rows Selector -->
+          Showing <span class="font-semibold text-slate-800">1-6</span> of <span class="font-semibold text-slate-800">850</span> users
+        </div>
 <div class="flex items-center gap-6">
-<!-- Rows per page selector -->
 <div class="flex items-center gap-2">
 <span>Rows per page:</span>
-<div class="relative">
-<select class="appearance-none bg-surface-container-lowest border border-outline-variant rounded px-2 py-1 pr-6 text-xs text-on-surface focus:outline-none focus:border-primary cursor-pointer">
-<option value="10">10</option>
-<option value="25">25</option>
-<option value="50">50</option>
-<option value="100">100</option>
+<select class="border border-slate-300 rounded px-2 py-1 text-xs bg-white text-slate-700 focus:outline-none focus:border-primary">
+<option>10</option>
+<option>25</option>
+<option>50</option>
 </select>
-<span class="material-symbols-outlined absolute right-1 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-xs" data-icon="arrow_drop_down">arrow_drop_down</span>
 </div>
-</div>
-<!-- Page Buttons Group -->
 <div class="flex items-center gap-1">
-<!-- First Page -->
-<button class="p-1 rounded hover:bg-surface-container text-secondary disabled:opacity-40" disabled="" title="First Page">
-<span class="material-symbols-outlined text-base" data-icon="first_page">first_page</span>
-</button>
-<!-- Previous Page -->
-<button class="p-1 rounded hover:bg-surface-container text-secondary disabled:opacity-40" disabled="" title="Previous Page">
+<button class="p-1 rounded border border-slate-200 text-slate-400 hover:text-slate-600 disabled:opacity-40" disabled="">
 <span class="material-symbols-outlined text-base" data-icon="chevron_left">chevron_left</span>
 </button>
-<!-- Page 1 (Active) -->
-<button class="w-6 h-6 rounded flex items-center justify-center bg-primary text-on-primary font-semibold text-xs shadow-xs">
-                1
-              </button>
-<!-- Page 2 -->
-<button class="w-6 h-6 rounded flex items-center justify-center text-secondary hover:bg-surface-container text-xs">
-                2
-              </button>
-<!-- Page 3 -->
-<button class="w-6 h-6 rounded flex items-center justify-center text-secondary hover:bg-surface-container text-xs">
-                3
-              </button>
-<!-- Ellipsis -->
-<span class="px-1 text-secondary">...</span>
-<!-- Last Numeric Page (85) -->
-<button class="w-6 h-6 rounded flex items-center justify-center text-secondary hover:bg-surface-container text-xs">
-                85
-              </button>
-<!-- Next Page -->
-<button class="p-1 rounded hover:bg-surface-container text-secondary" title="Next Page">
+<span class="px-2.5 py-1 rounded bg-primary text-white font-semibold text-xs">1</span>
+<button class="px-2.5 py-1 rounded hover:bg-slate-100 text-slate-700 text-xs font-medium">2</button>
+<button class="px-2.5 py-1 rounded hover:bg-slate-100 text-slate-700 text-xs font-medium">3</button>
+<span class="px-1 text-slate-400">...</span>
+<button class="px-2.5 py-1 rounded hover:bg-slate-100 text-slate-700 text-xs font-medium">85</button>
+<button class="p-1 rounded border border-slate-200 text-slate-600 hover:bg-slate-50">
 <span class="material-symbols-outlined text-base" data-icon="chevron_right">chevron_right</span>
 </button>
-<!-- Last Page -->
-<button class="p-1 rounded hover:bg-surface-container text-secondary" title="Last Page">
-<span class="material-symbols-outlined text-base" data-icon="last_page">last_page</span>
-</button>
 </div>
 </div>
 </div>
-</section>
 </div>
 </main>
 </body></html>

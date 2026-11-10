@@ -39,7 +39,7 @@
 
 ### 1. View 1: License Management (`SCR-LIC-MGMT-01`)
 - **Route:** `/manager/licenses`
-- **Stitch Screen ID:** `08699ce8345243e9b701c2fdadcd89ef`
+- **Stitch Screen ID:** `7a00b13751114ba090fc901d8194b8a3`
 - **Files:** `designs/SCR-LIC-MGMT-01.html`, `designs/SCR-LIC-MGMT-01.png`
 - **Key Sections:**
   - **Minimalist 4-Element KPI Header:**
@@ -57,7 +57,7 @@
 
 ### 2. View 1 Drill-Down: License Detail & Granted Accounts Roster (`SCR-LIC-DETAIL-01`)
 - **Route:** `/manager/licenses?drawer=detail&id=ms-365`
-- **Stitch Screen ID:** `68f5e99afdf54b8da3474de141101b6a`
+- **Stitch Screen ID:** `4a56961268e84d7399a66863ead51fb7`
 - **Files:** `designs/SCR-LIC-DETAIL-01.html`, `designs/SCR-LIC-DETAIL-01.png`
 - **Key Sections:**
   - **Presentation:** 640px right-anchored MUI `Drawer` over the License Management dashboard with dimmed backdrop overlay and active row highlight.
@@ -77,7 +77,7 @@
 
 ### 3. View 2A: License Health Analytics (`SCR-ANALYTICS-01`)
 - **Route:** `/manager/analytics` (Health Tab)
-- **Stitch Screen ID:** `30fc56d9d28a4f23a810fc4324717c95`
+- **Stitch Screen ID:** `86a7ad2dddd447ba9514192b0c944be2`
 - **Files:** `designs/SCR-ANALYTICS-01.html`, `designs/SCR-ANALYTICS-01.png`
 - **Key Sections & IA Enhancements:**
   - **Minimalist 4-Element KPI Header:** Total Annual Spend ($1,420,000), Managed Licenses (1,284), Underutilized Accounts (312), Underutilized Cost ($285,600/yr). Subtitles rendered as interactive MUI Info Tooltips.
@@ -98,7 +98,7 @@
 
 ### 4. View 2B: Budget Analytics (`SCR-BUDGET-ANALYTICS-01`)
 - **Route:** `/manager/analytics/budget` (Budget Tab)
-- **Stitch Screen ID:** `88ff5da358dd4f6183999e626b710771`
+- **Stitch Screen ID:** `0f96faffa71d49e4aafb41b0c189aa91`
 - **Files:** `designs/SCR-BUDGET-ANALYTICS-01.html`, `designs/SCR-BUDGET-ANALYTICS-01.png`
 - **Key Sections:**
   - **Minimalist 4-Element Financial KPIs:**
@@ -114,7 +114,7 @@
 
 ### 5. View 3: User Management – Role & Tenant Administration (`SCR-USER-MGMT-01`)
 - **Route:** `/manager/users`
-- **Stitch Screen ID:** `f41d47c99110427db648371c012dbeb7`
+- **Stitch Screen ID:** `a37f968351d74e499f74213c04426a9f`
 - **Files:** `designs/SCR-USER-MGMT-01.html`, `designs/SCR-USER-MGMT-01.png`
 - **Key Sections:**
   - **Minimalist 4-Element Identity KPIs:**
