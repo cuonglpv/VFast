@@ -3,7 +3,7 @@
 ### Subsystem: Enterprise Management & Admin Portal (Unified 3-Pillar Architecture)
 
 > **Document Baseline:** [README.md](../README.md), [docs/01-MVP.md](01-MVP.md), [docs/02-use-cases.md](02-use-cases.md), [docs/03-user-stories.md](03-user-stories.md)  
-> **Architecture Version:** 5.2 – Concise Card & Chart Titles, Minimalist KPI Ergonomics & Renewal Drill-Down  
+> **Architecture Version:** 5.3 – Selective Subtitles, Zero On-Chart Data Labels & Calibrated Bottom Axis Standard  
 > **Target Scope:** Executive Portal focused on **License Management**, **Analytics Hub (Health & Budget Analytics)**, and **Admin User & Tenant Management**  
 > **Git Branch:** `docs/ia-clean-kpi-renewal-detail`
 
@@ -25,14 +25,14 @@
 5. [Detailed View Specification: View 2 – Analytics Hub](#-5-detailed-view-specification-view-2--analytics-hub)
    - **View 2A: License Health Analytics (`SCR-ANALYTICS-01`)**
      - 5.1. [Top 4 KPIs: Spend, Licenses, Idle Accounts, Wasted Spend](#51-top-4-kpis-spend-licenses-idle-accounts-wasted-spend)
-     - 5.2. [Chart: Application Usage (Horizontal Bar)](#52-chart-application-usage-horizontal-bar)
-     - 5.3. [Chart: Department Spend (Horizontal Bar)](#53-chart-department-spend-horizontal-bar)
+     - 5.2. [Chart: Application Usage (Horizontal Bar with Calibrated Bottom Axis)](#52-chart-application-usage-horizontal-bar-with-calibrated-bottom-axis)
+     - 5.3. [Chart: Department Spend (Horizontal Bar with Calibrated Bottom Axis)](#53-chart-department-spend-horizontal-bar-with-calibrated-bottom-axis)
      - 5.4. [Chart: Subscription Dynamics (Dual-Column Bar)](#54-chart-subscription-dynamics-dual-column-bar)
    - **View 2B: Budget Analytics (`SCR-BUDGET-ANALYTICS-01`)**
      - 5.5. [Top Controls & Monthly Budget Trigger](#55-top-controls--monthly-budget-trigger)
      - 5.6. [Top 4 Budget KPIs: Remaining Budget, Next Month Renewals, Consumed, Waste](#56-top-4-budget-kpis-remaining-budget-next-month-renewals-consumed-waste)
      - 5.7. [Upcoming Renewals Drawer (SCR-BUDGET-RENEWALS-01)](#57-upcoming-renewals-drawer-scr-budget-renewals-01)
-     - 5.8. [Chart: Budget by Category (Horizontal Stacked Bar)](#58-chart-budget-by-category-horizontal-stacked-bar)
+     - 5.8. [Chart: Budget by Category (Horizontal Stacked Bar with Bottom Axis)](#58-chart-budget-by-category-horizontal-stacked-bar-with-bottom-axis)
      - 5.9. [Chart: Historical Spend Trend (Area / Line Timeline)](#59-chart-historical-spend-trend-area--line-timeline)
      - 5.10. [Set Monthly Budget Modal (SCR-BUDGET-SET-01)](#510-set-monthly-budget-modal-scr-budget-set-01)
 6. [Detailed View Specification: View 3 – User Management: Role & Tenant Administration](#-6-detailed-view-specification-view-3--user-management-role--tenant-administration)
@@ -42,10 +42,10 @@
    - 6.4. [Edit Role & Tenant Drawer (SCR-USER-EDIT-01)](#64-edit-role--tenant-drawer-scr-user-edit-01)
 7. [UI/UX State Contract, Technical Constraints & Interaction Rules](#-7-uiux-state-contract-technical-constraints--interaction-rules)
    - 7.1. [The 5 Core UI States Contract](#71-the-5-core-ui-states-contract)
-   - 7.2. [Concise Titles & Zero-Bloat Information Minimization Constraint](#72-concise-titles--zero-bloat-information-minimization-constraint)
+   - 7.2. [Zero-Bloat Constraint, Concise Titles & Selective Subtitles](#72-zero-bloat-constraint-concise-titles--selective-subtitles)
    - 7.3. [Icon Integrity Constraint](#73-icon-integrity-constraint)
    - 7.4. [Component Library Standard (@mui/material)](#74-component-library-standard-muimaterial)
-   - 7.5. [Data Visualization Standard (ApexCharts)](#75-data-visualization-standard-apexcharts)
+   - 7.5. [Data Visualization Standard: Zero On-Chart Labels & Calibrated Bottom Axis (ApexCharts)](#75-data-visualization-standard-zero-on-chart-labels--calibrated-bottom-axis-apexcharts)
 8. [Screen-to-API Mapping Matrix](#-8-screen-to-api-mapping-matrix)
 
 ---
@@ -61,10 +61,10 @@ The Information Architecture of the VFast Enterprise License Management System (
 3. **Pillar 3: User Management (`SCR-USER-MGMT-01` & `SCR-USER-EDIT-01`):** Centralized administration portal empowering Admins to oversee multi-tenant boundaries, system roles (`Admin`, `Manager`, `Staff`, `Employee`), active license allocations, and account lifecycle states with strict session invalidation security guards.
 
 ### Core Design Principles
-- **Punchy, Concise Titles:** Card and chart titles are strictly 2 to 4 words, stating immediately and unambiguously what the card conveys (e.g., `Remaining Budget`, `Next Month Renewals`, `Budget by Category`). Verbose or descriptive titles are strictly banned from UI cards and charts.
-- **Clarity over Clutter (Minimalist KPI Standard):** Eliminate distracting walls of secondary text and sub-metrics under primary numbers. All metric cards strictly implement the **"Single Focal Number + Punchy Title + Single Chip + Interactive Tooltip"** layout.
-- **Direct Drill-Down for Actionable Commitments:** Next month renewal commitments feature direct interactive links (`[View Renewals (6) →]`) to inspect every license expiring next month in a dedicated Side Drawer (`SCR-BUDGET-RENEWALS-01`), preventing surprise cash squeezes.
-- **In-Context Direct Manipulation:** Single-license inspection operates via a 640px Side Drawer (`SCR-LIC-DETAIL-01` / `SRC-LIC-ANALYTICS-01`) with top in-place editing controls and granted account rosters.
+- **Selective Subtitles & Clean Visual Hierarchy:** Self-evident titles (`Total Users`, `Total Licenses`, `Annual Spend`) feature **zero subtitle clutter**. Only cards that convey complex domain metrics (e.g., `Next Month Renewals`, `Idle Accounts`) feature a concise 1-line explanatory subtitle or interactive tooltip.
+- **Zero On-Chart Data Labels:** Charts strictly prohibit hardcoded numbers or percentages directly painted on bars, slices, or pieces (`dataLabels: { enabled: false }`). Detailed numbers are discovered dynamically on hover via interactive tooltips.
+- **Calibrated Bottom Numeric Axis:** Every horizontal bar chart provides a calibrated bottom X-axis with subtle hairline gridlines, allowing users to reference scale and approximate quantities at a glance before hovering for exact details.
+- **Direct Drill-Down for Actionable Commitments:** Next month renewal commitments feature direct interactive links (`[View Renewals (6) →]`) to inspect every license expiring next month in a dedicated Side Drawer (`SCR-BUDGET-RENEWALS-01`).
 - **Theme & Design Consistency:** Strict implementation of the minimal **Grey - White - Ocean Blue** theme (`#F8FAFC`, `#FFFFFF`, `#0F67B1`, `#E2E8F0`, `#475569`, `#0F172A`), native `@mui/material` components, and official `@mui/icons-material` symbols across all screens.
 
 ---
@@ -100,8 +100,8 @@ flowchart TD
 
     %% View 1: License Management
     Nav1 --> SCR_LIC_MGMT["SCR-LIC-MGMT-01: License Management (/manager/licenses)"]
-    SCR_LIC_MGMT --> Sub_KPI1["Card: Total Licenses (1,284 | +4.5% MoM)"]
-    SCR_LIC_MGMT --> Sub_Pie["Chart: Category Breakdown (ApexCharts Donut)"]
+    SCR_LIC_MGMT --> Sub_KPI1["Card: Total Licenses (1,284 | +4.5% MoM | No subtitle)"]
+    SCR_LIC_MGMT --> Sub_Pie["Chart: Category Breakdown (ApexCharts Donut | No on-slice labels)"]
     SCR_LIC_MGMT --> Sub_Top5["Widget: Top 5 App Usage (LinearProgress)"]
     SCR_LIC_MGMT --> Sub_Table["Data Grid: Licenses (9 Core Columns)"]
 
@@ -116,35 +116,35 @@ flowchart TD
     Nav2 --> SubNav_Budget["Sub-Tab: Budget Analytics"]
 
     SubNav_Health --> SCR_ANALYTICS["SCR-ANALYTICS-01: License Health (/manager/analytics)"]
-    SCR_ANALYTICS --> Ana_KPI1["Card: Annual Spend ($1.42M | On Budget)"]
-    SCR_ANALYTICS --> Ana_KPI2["Card: Managed Licenses (1,284 | 48 Apps)"]
-    SCR_ANALYTICS --> Ana_KPI3["Card: Idle Accounts (312 | 24.3% Rate)"]
-    SCR_ANALYTICS --> Ana_KPI4["Card: Wasted Spend ($285.6k | 20.1% Leakage)"]
-    SCR_ANALYTICS --> Ana_Chart1["Chart: Application Usage (Horizontal Bar)"]
-    SCR_ANALYTICS --> Ana_Chart2["Chart: Department Spend (Horizontal Bar)"]
-    SCR_ANALYTICS --> Ana_Chart3["Chart: Subscription Dynamics (Dual-Column Bar)"]
+    SCR_ANALYTICS --> Ana_KPI1["Card: Annual Spend ($1.42M | No subtitle)"]
+    SCR_ANALYTICS --> Ana_KPI2["Card: Managed Licenses (1,284 | No subtitle)"]
+    SCR_ANALYTICS --> Ana_KPI3["Card: Idle Accounts (312 | Subtitle: Inactive >60d)"]
+    SCR_ANALYTICS --> Ana_KPI4["Card: Wasted Spend ($285.6k | Subtitle: Recoverable)"]
+    SCR_ANALYTICS --> Ana_Chart1["Chart: Application Usage (Horizontal Bar | Bottom Users Axis | Tooltip-only Data)"]
+    SCR_ANALYTICS --> Ana_Chart2["Chart: Department Spend (Horizontal Bar | Bottom Currency Axis | Tooltip-only Data)"]
+    SCR_ANALYTICS --> Ana_Chart3["Chart: Subscription Dynamics (Dual-Column Bar | Tooltip-only Data)"]
 
     SubNav_Budget --> SCR_BUDGET["SCR-BUDGET-ANALYTICS-01: Budget Analytics (/manager/analytics/budget)"]
     SCR_BUDGET --> Bdg_SetBtn["Header Action: [Set Monthly Budget] Button"]
     Bdg_SetBtn -.->|"Click Trigger"| SCR_BUDGET_SET["SCR-BUDGET-SET-01: Set Monthly Budget Modal"]
-    SCR_BUDGET --> Bdg_KPI1["Card: Remaining Budget ($28,400 | 23.7% Left)"]
-    SCR_BUDGET --> Bdg_KPI2["Card: Next Month Renewals (72.5% | Warning Chip)"]
-    SCR_BUDGET --> Bdg_KPI3["Card: Budget Consumed (77.8% | Surplus Chip)"]
-    SCR_BUDGET --> Bdg_KPI4["Card: Recoverable Waste ($23,800/mo | Idle Chip)"]
+    SCR_BUDGET --> Bdg_KPI1["Card: Remaining Budget ($28,400 | Subtitle: Current Month)"]
+    SCR_BUDGET --> Bdg_KPI2["Card: Next Month Renewals (72.5% | Subtitle: Committed | Warning Chip)"]
+    SCR_BUDGET --> Bdg_KPI3["Card: Budget Consumed (77.8% | Subtitle: YTD Outlay)"]
+    SCR_BUDGET --> Bdg_KPI4["Card: Recoverable Waste ($23,800/mo | Subtitle: 312 Idle Seats)"]
 
     %% Drill-down from Next Month Renewals Card
     Bdg_KPI2 -.->|"Click [View Renewals (6) →]"| SCR_BUDGET_RENEWALS["SCR-BUDGET-RENEWALS-01: Upcoming Renewals Drawer"]
     SCR_BUDGET_RENEWALS -.->|"Click [Inspect License]"| SCR_LIC_DETAIL
 
-    SCR_BUDGET --> Bdg_Chart1["Chart: Budget by Category (Horizontal Stacked Bar)"]
-    SCR_BUDGET --> Bdg_Chart2["Chart: Historical Spend Trend (Area/Line Timeline)"]
+    SCR_BUDGET --> Bdg_Chart1["Chart: Budget by Category (Horizontal Stacked Bar | Bottom Scale Axis)"]
+    SCR_BUDGET --> Bdg_Chart2["Chart: Historical Spend Trend (Area/Line Timeline | Tooltip-only Data)"]
 
     %% View 3: User Management
     Nav3 --> SCR_USER_MGMT["SCR-USER-MGMT-01: User Management (/admin/users)"]
-    SCR_USER_MGMT --> Usr_KPI1["Card: Total Users (850 | +5.2% MoM)"]
-    SCR_USER_MGMT --> Usr_KPI2["Card: Active Users (92.0% | 782 Active)"]
-    SCR_USER_MGMT --> Usr_KPI3["Card: Tenants (12 BUs | Active)"]
-    SCR_USER_MGMT --> Usr_KPI4["Card: Privileged Roles (14 Admins/Mgrs)"]
+    SCR_USER_MGMT --> Usr_KPI1["Card: Total Users (850 | No subtitle)"]
+    SCR_USER_MGMT --> Usr_KPI2["Card: Active Users (92.0% | No subtitle)"]
+    SCR_USER_MGMT --> Usr_KPI3["Card: Tenants (12 | No subtitle)"]
+    SCR_USER_MGMT --> Usr_KPI4["Card: Privileged Roles (14 | Subtitle: Admins & Mgrs)"]
     SCR_USER_MGMT --> Usr_Filters["Controls: Search, Tenant, Role, Status, [+ Add User]"]
     SCR_USER_MGMT --> Usr_Table["Data Grid: Users (9 Core Columns)"]
     Usr_Table -.->|"Row Click / Edit Action"| SCR_USER_EDIT["SCR-USER-EDIT-01: Edit Role & Tenant Drawer"]
@@ -172,31 +172,33 @@ The top section consists of three visual containers organized in a 12-column `@m
 ```
 
 #### 1. Card: Total Licenses (`@mui/material/Card`, Col 1–3)
-- **Card Title:** **`Total Licenses`** (`variant="body2"`, `color="text.secondary"`) with Info Tooltip on right.
+- **Card Title:** **`Total Licenses`** (`variant="body2"`, `color="text.secondary"`). *No subtitle needed (self-evident).*
 - **Hero Number:** **`1,284`** (Large font `variant="h3"`, bold, `color="#0F172A"`).
 - **Single Bottom Chip:** `+4.5% MoM` (`@mui/material/Chip`, `size="small"`, `color="success"`).
-- **Zero Subtitle Clutter:** Secondary breakdown metrics are strictly housed in the Tooltip (`@mui/icons-material/InfoOutlined`):
+- **Interactive Tooltip:** Optional contextual details (`@mui/icons-material/InfoOutlined` on right):
   - *Tooltip Content:* `"Active Entitlements: 1,142 (88.9%) | Expiring in <=30 Days: 18 Licenses | Net Growth: +4.5% vs. previous month."*
 
 #### 2. Chart: Category Breakdown (`ApexCharts Donut`, Col 4–7)
-- **Chart Title:** **`Category Breakdown`** (Clear, concise 2-word header).
+- **Chart Title:** **`Category Breakdown`** (Clear 2-word header). *No subtitle needed.*
+- **Zero On-Chart Numbers Rule:** Slices feature **zero hardcoded numbers or percentages** (`dataLabels: { enabled: false }`). Hovering over a slice displays the exact license count, spend, and percentage in the Tooltip.
 - **Chart Component:** `react-apexcharts` (`type="donut"`).
 - **Chart Options Baseline:**
   ```javascript
   {
     chart: { type: 'donut', height: 260 },
+    dataLabels: { enabled: false }, // Enforce zero labels on slices
     labels: ['Dev & DevOps', 'Productivity', 'Communication', 'Design', 'Security', 'Utilities'],
     series: [32, 28, 18, 12, 7, 3],
     colors: ['#0F67B1', '#0288D1', '#0097A7', '#7B1FA2', '#E64A19', '#757575'],
     legend: { position: 'bottom', fontSize: '12px' },
-    plotOptions: { pie: { donut: { size: '68%' } } }
+    plotOptions: { pie: { donut: { size: '68%' } } },
+    tooltip: { y: { formatter: (val) => `${val}% (${Math.round(val * 12.84)} licenses)` } }
   }
   ```
 - **Interactivity:** Clicking any slice filters the General License Data Grid below (`?category=Development`).
 
 #### 3. Widget: Top 5 App Usage (`@mui/material/Card`, Col 8–12)
-- **Widget Title:** **`Top 5 App Usage`** (Concise title indicating ranked utilization).
-- **Widget Component:** Ranked progress list built using `@mui/material/LinearProgress` and `@mui/material/Typography`.
+- **Widget Title:** **`Top 5 App Usage`** (Concise title).
 - **Ranked Applications:**
   1. **Microsoft 365:** `94% Active` (470/500 users active)
   2. **Slack Grid:** `91% Active` (410/450 users active)
@@ -331,11 +333,12 @@ The Analytics Hub provides comprehensive software telemetry and financial intell
 +-------------------------------------------------------------------------------------------------------+
 |  [ Annual Spend: $1.42M ]  |  [ Managed Licenses: 1,284 ]  |  [ Idle Accounts: 312 ]  |  [ Wasted Spend: $285.6k ]  |
 +-------------------------------------------------------------------------------------------------------+
-|  [ Chart: Application Usage (Horizontal Bar) - Top 5/10/20 ] (Col 1-7)                                 |
+|  [ Chart: Application Usage (Horizontal Bar with Calibrated Bottom Axis) ] (Col 1-7)                  |
 |  Segments: Never Used (Orange) | Inactive >60d (Gray) | Actively Used (Green)                         |
+|  Bottom Axis: [0, 100, 200, 300, 400, 500 users] with hairline gridlines                              |
 +-------------------------------------------------------------------------------------------------------+
-|  [ Chart: Department Spend (Horizontal Bar) ] (Col 8-12)                                              |
-|  Engineering | Sales | Tech Support | Accounting | Marketing | Operations                             |
+|  [ Chart: Department Spend (Horizontal Bar with Calibrated Bottom Axis) ] (Col 8-12)                  |
+|  Bottom Axis: [$0, $150k, $300k, $450k, $600k USD] with hairline gridlines                            |
 +-------------------------------------------------------------------------------------------------------+
 |  [ Chart: Subscription Dynamics (Dual-Column Bar) ] (Full Width Col 1-12)                             |
 |  Col 1 (Stacked): Active | Inactive | No Activity | Not Monitored   vs.   Col 2: Unassigned         |
@@ -344,63 +347,95 @@ The Analytics Hub provides comprehensive software telemetry and financial intell
 
 #### 5.1. Top 4 KPIs: Spend, Licenses, Idle Accounts, Wasted Spend
 
-All 4 KPI cards strictly adhere to concise titles and the Minimalist Card Standard:
+Selective Subtitles Applied: Self-evident cards have **no subtitle**; cards with domain metrics have a short 1-line subtitle:
 
-| Concise Card Title | Hero Value | Single Bottom Chip | Interactive Tooltip Content (`@mui/icons-material/InfoOutlined`) |
-|---|:---:|:---:|---|
-| **Annual Spend** | **`$1,420,000`** | `Within Budget Cap` (Emerald) | *"Approved Annual Ceiling: $1,440,000 USD \| Cash Burn Pace: Normal (77.8% YTD) \| Normalized to fiscal base currency (USD)."* |
-| **Managed Licenses** | **`1,284`** | `48 Active Apps` (Slate) | *"Total portfolio volume: 48 software products centrally tracked under ELMS across SaaS, Perpetual, and Cloud licenses."* |
-| **Idle Accounts** | **`312`** | `24.3% Rate` (Amber) | *"Accounts with zero logins (>60 days) or never accessed since initial provisioning. Priority targets for seat reclamation."* |
-| **Wasted Spend** | **`$285,600`** / yr | `20.1% Leakage` (Crimson) | *"Estimated annual financial outlay tied up in idle or unassigned seats that can be reclaimed during upcoming contract renewals."* |
+| Card Title | Hero Value | Subtitle (Only if Needed) | Single Bottom Chip | Interactive Tooltip Content |
+|---|:---:|---|:---:|---|
+| **Annual Spend** | **`$1,420,000`** | *None (Self-evident)* | `Within Budget Cap` (Emerald) | *"Approved Annual Ceiling: $1,440,000 USD \| Cash Burn Pace: Normal (77.8% YTD) \| Normalized to USD."* |
+| **Managed Licenses** | **`1,284`** | *None (Self-evident)* | `48 Active Apps` (Slate) | *"Total software products tracked under ELMS across SaaS, Perpetual, and Cloud licenses."* |
+| **Idle Accounts** | **`312`** | *Inactive >60d or never used* | `24.3% Rate` (Amber) | *"Accounts with zero logins (>60 days) or never accessed since initial provisioning. Priority reclaim targets."* |
+| **Wasted Spend** | **`$285,600`** / yr | *Recoverable idle seat outlay* | `20.1% Leakage` (Crimson) | *"Estimated annual financial outlay tied up in idle or unassigned seats reclaimable at contract renewal."* |
 
-#### 5.2. Chart: Application Usage (Horizontal Bar)
+---
 
-- **Chart Title:** **`Application Usage`** (Concise 2-word title).
+#### 5.2. Chart: Application Usage (Horizontal Bar with Calibrated Bottom Axis)
+
+- **Chart Title:** **`Application Usage`** (Concise 2-word title). *No subtitle needed.*
+- **Zero On-Chart Data Labels:** Numbers are strictly omitted from bars (`dataLabels: { enabled: false }`).
+- **Calibrated Bottom Reference Axis:** The bottom horizontal X-axis provides an explicit numeric reference scale `[0, 100, 200, 300, 400, 500 users]` with subtle hairline vertical gridlines, allowing immediate reference of scale before hovering for exact details.
 - **Component:** `react-apexcharts` (`type="bar"` horizontal).
 - **Configuration Standard:**
   ```javascript
   {
-    chart: { type: 'bar', height: 350, stacked: true },
-    plotOptions: { bar: { horizontal: true, barHeight: '60%' } },
+    chart: { type: 'bar', height: 350, stacked: true, toolbar: { show: false } },
+    dataLabels: { enabled: false }, // Enforce zero labels on bars
+    plotOptions: { bar: { horizontal: true, barHeight: '55%', borderRadius: 2 } },
     colors: ['#F59E0B', '#9E9E9E', '#10B981'], // Never used (Amber), Inactive (Gray), Actively used (Emerald)
     series: [
       { name: 'Never used', data: [45, 30, 25, 20, 15] },
       { name: 'Inactive (>60 days)', data: [65, 50, 40, 35, 25] },
       { name: 'Actively used', data: [390, 370, 235, 200, 162] }
     ],
-    xaxis: { categories: ['Microsoft 365', 'Slack', 'GitHub', 'Jira', 'Zoom'], title: { text: 'Users' } },
+    xaxis: {
+      categories: ['Microsoft 365', 'Slack', 'GitHub', 'Jira', 'Zoom'],
+      position: 'bottom',
+      min: 0,
+      max: 500,
+      tickAmount: 5, // Ticks at 0, 100, 200, 300, 400, 500
+      labels: { formatter: (val) => `${val}` },
+      title: { text: 'Number of Users', style: { fontSize: '11px', color: '#64748B' } }
+    },
+    grid: { show: true, strokeDashArray: 3, xaxis: { lines: { show: true } }, yaxis: { lines: { show: false } } },
+    tooltip: { shared: true, intersect: false, y: { formatter: (val) => `${val} accounts` } },
     legend: { position: 'top', horizontalAlign: 'left' }
   }
   ```
 - **Controls:** Standard `@mui/material/ToggleButtonGroup` for Top 5 | Top 10 | Top 20 range selection.
 
-#### 5.3. Chart: Department Spend (Horizontal Bar)
+---
 
-- **Chart Title:** **`Department Spend`** (Punchy 2-word title).
+#### 5.3. Chart: Department Spend (Horizontal Bar with Calibrated Bottom Axis)
+
+- **Chart Title:** **`Department Spend`** (Punchy 2-word title). *No subtitle needed.*
+- **Zero On-Chart Data Labels:** Numbers are strictly omitted from bars (`dataLabels: { enabled: false }`).
+- **Calibrated Bottom Reference Axis:** Bottom X-axis calibrated at `[$0, $150k, $300k, $450k, $600k USD]` with hairline vertical gridlines.
 - **Component:** `react-apexcharts` (`type="bar"` horizontal).
 - **Configuration Standard:**
   ```javascript
   {
-    chart: { type: 'bar', height: 320 },
-    plotOptions: { bar: { horizontal: true, barHeight: '55%' } },
+    chart: { type: 'bar', height: 320, toolbar: { show: false } },
+    dataLabels: { enabled: false }, // Enforce zero labels on bars
+    plotOptions: { bar: { horizontal: true, barHeight: '50%', borderRadius: 3 } },
     colors: ['#0F67B1'], // Ocean Blue
     series: [{ name: 'Annual Spend', data: [580000, 320000, 180000, 140000, 120000, 80000] }],
     xaxis: {
       categories: ['Engineering', 'Sales & BD', 'Tech Support', 'Accounting', 'Marketing', 'Operations'],
-      labels: { formatter: (val) => `$${(val / 1000).toFixed(0)}k` }
+      position: 'bottom',
+      min: 0,
+      max: 600000,
+      tickAmount: 4,
+      labels: { formatter: (val) => `$${(val / 1000).toFixed(0)}k` },
+      title: { text: 'Expenditure (USD)', style: { fontSize: '11px', color: '#64748B' } }
     },
+    grid: { show: true, strokeDashArray: 3, xaxis: { lines: { show: true } }, yaxis: { lines: { show: false } } },
     tooltip: { y: { formatter: (val) => `$${val.toLocaleString()} USD` } }
   }
   ```
 
+---
+
 #### 5.4. Chart: Subscription Dynamics (Dual-Column Bar)
 
 - **Chart Title:** **`Subscription Dynamics`** (Punchy 2-word title).
+- **Concise Subtitle / Footnote:** `* Chú thích: Cột 1 biểu thị trạng thái cấp phát; Cột 2 biểu thị tồn kho chưa cấp phát (Unassigned).`
+- **Zero On-Chart Data Labels:** Columns contain **zero text labels** (`dataLabels: { enabled: false }`).
+- **Calibrated Vertical Axis:** Y-axis calibrated from `0` to `1,250 seats` with horizontal hairline gridlines.
 - **Component:** `react-apexcharts` (`type="bar"`).
 - **Configuration Standard:**
   ```javascript
   {
-    chart: { type: 'bar', height: 380, stacked: true },
+    chart: { type: 'bar', height: 380, stacked: true, toolbar: { show: false } },
+    dataLabels: { enabled: false }, // Enforce zero labels on columns
     plotOptions: { bar: { columnWidth: '65%' } },
     series: [
       // Column 1: Stacked allocated composition
@@ -412,6 +447,9 @@ All 4 KPI cards strictly adhere to concise titles and the Minimalist Card Standa
       { name: 'Unassigned', group: 'inventory', data: [220, 200, 180, 160, 140, 120, 110, 100, 90, 80, 75, 70], color: '#EF4444' }
     ],
     xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] },
+    yaxis: { min: 0, max: 1250, tickAmount: 5, labels: { formatter: (val) => `${val}` } },
+    grid: { show: true, strokeDashArray: 3, yaxis: { lines: { show: true } }, xaxis: { lines: { show: false } } },
+    tooltip: { shared: true, y: { formatter: (val) => `${val} seats` } },
     legend: { position: 'top' }
   }
   ```
@@ -429,13 +467,15 @@ All 4 KPI cards strictly adhere to concise titles and the Minimalist Card Standa
 |  [ Top Controls: Fiscal Year Selector | Currency Toggle (USD/VND) | [Set Monthly Budget Button] ]                       |
 +-------------------------------------------------------------------------------------------------------------------------+
 |  [ Remaining Budget: $28,400 ]          |  [ Next Month Renewals: 72.5% ]                                               |
-|  - Chip: 23.7% Left                     |  - Chip: High Load  |  Action: [View Renewals (6) →]                          |
+|  - Subtitle: Current Month              |  - Subtitle: Committed | Action: [View Renewals (6) →]                        |
+|  - Chip: 23.7% Left                     |  - Chip: High Load                                                            |
 +-------------------------------------------------------------------------------------------------------------------------+
 |  [ Budget Consumed: 77.8% ]             |  [ Recoverable Waste: $23,800/mo ]                                            |
-|  - Chip: -$45k Surplus                  |  - Chip: 312 Idle Seats  |  Action: [Reclaim Seats →]                         |
+|  - Subtitle: YTD Outlay                 |  - Subtitle: 312 Idle Seats | Action: [Reclaim Seats →]                       |
+|  - Chip: -$45k Surplus                  |  - Chip: 312 Idle Seats                                                       |
 +-------------------------------------------------------------------------------------------------------------------------+
-|  [ Chart: Budget by Category (Horizontal Stacked Bar) ] (Col 1-6)                                                       |
-|  Compares Allocated Budget vs Actual Spend across 6 Software Categories                                                 |
+|  [ Chart: Budget by Category (Horizontal Stacked Bar with Bottom Currency Axis) ] (Col 1-6)                            |
+|  Bottom Axis: [$0, $100k, $200k, $300k, $400k, $500k USD] with hairline vertical gridlines                             |
 +-------------------------------------------------------------------------------------------------------------------------+
 |  [ Chart: Historical Spend Trend (Area / Line Timeline) ] (Col 7-12)                                                    |
 |  Past 12-24 Months Timeline: Monthly Budget Ceilings vs Actual Incurred Expenses                                       |
@@ -452,25 +492,26 @@ All 4 KPI cards strictly adhere to concise titles and the Minimalist Card Standa
 
 #### 5.6. Top 4 Budget KPIs: Remaining Budget, Next Month Renewals, Consumed, Waste
 
-All 4 cards implement concise, punchy titles and zero sub-metric clutter:
+Selective Subtitles Applied: Cards with financial domain scope have a short 1-line subtitle for clarity:
 
 ##### 1. Card 1: Remaining Budget (`current_month_budget_card`)
 
 ```
 +-------------------------------------------------------------+
 | Remaining Budget                            [ (i) Tooltip ] |
+| Current calendar month unspent cash                         |
 |                                                             |
 | $28,400                                                     |
 |                                                             |
-| [Emerald Chip: 23.7% Balance Remaining]                     |
+| [Emerald Chip: 23.7% Left]                                  |
 +-------------------------------------------------------------+
 ```
 
-- **Card Title:** **`Remaining Budget`** (`variant="body2"`, `color="text.secondary"`) with Tooltip on right.
-- **Hero Value:** **`$28,400`** (Large font `variant="h3"`, bold, `color="#0F172A"`).
+- **Card Title:** **`Remaining Budget`** (`variant="body2"`, `fontWeight=600`).
+- **Selective Subtitle:** *Current calendar month unspent cash* (`variant="caption"`, `color="text.secondary"`).
+- **Hero Value:** **`$28,400`** (`variant="h3"`, bold, `color="#0F172A"`).
 - **Single Footer Chip:** `23.7% Left` (`@mui/material/Chip`, `size="small"`, `color="success"`).
-- **Interactive Tooltip Content:**
-  - *Tooltip Content:* `"Allocated Monthly Budget: $120,000 USD | Actual Spent MTD: $91,600 USD (76.3%) | Billing cycle days remaining: 11 days | Burn Velocity: On Track."*
+- **Tooltip Content:** *"Allocated Monthly Budget: $120,000 USD | Actual Spent MTD: $91,600 USD (76.3%) | Cycle Days Left: 11 Days | Pace: Safe."*
 
 ---
 
@@ -479,6 +520,7 @@ All 4 cards implement concise, punchy titles and zero sub-metric clutter:
 ```
 +-------------------------------------------------------------+
 | Next Month Renewals                         [ (i) Tooltip ] |
+| Committed to recurring contracts due next month             |
 |                                                             |
 | 72.5%                                                       |
 |                                                             |
@@ -488,11 +530,11 @@ All 4 cards implement concise, punchy titles and zero sub-metric clutter:
 +-------------------------------------------------------------+
 ```
 
-- **Card Title:** **`Next Month Renewals`** (`variant="body2"`, `color="text.secondary"`) with Tooltip on right.
-- **Hero Value:** **`72.5%`** (Large font `variant="h3"`, bold, `color="#0F172A"`).
+- **Card Title:** **`Next Month Renewals`** (`variant="body2"`, `fontWeight=600`).
+- **Selective Subtitle:** *Committed to recurring contracts due next month* (`variant="caption"`, `color="text.secondary"`).
+- **Hero Value:** **`72.5%`** (`variant="h3"`, bold, `color="#0F172A"`).
 - **Single Footer Chip:** `High Renewal Load` (`@mui/material/Chip`, `size="small"`, `color="warning"`, Warm Amber `#F59E0B`).
-- **Interactive Tooltip Content:**
-  - *Tooltip Content:* `"Fixed Recurring Renewal Outlay: $87,000 USD | Anticipated Monthly Budget: $120,000 USD | Expiring Subscriptions: 6 Licenses | Uncommitted Discretionary Cash: $33,000 USD (27.5%)."`
+- **Tooltip Content:** *"Fixed Renewal Cash Outlay: $87,000 USD | Anticipated Budget: $120,000 USD | Expiring Subscriptions: 6 Licenses | Discretionary Balance: $33,000 USD (27.5%)."*
 - **Direct Drill-Down Action Link / Button:**
   - Component: `@mui/material/Button` with endIcon `@mui/icons-material/ArrowForward` (`size="small"`, `variant="text"`, `color="primary"`, `sx={{ mt: 1, textTransform: 'none', fontWeight: 600 }}`).
   - Label: **`[View Renewals (6) →]`** (hoặc *Xem chi tiết license tới hạn*).
@@ -505,6 +547,7 @@ All 4 cards implement concise, punchy titles and zero sub-metric clutter:
 ```
 +-------------------------------------------------------------+
 | Budget Consumed                             [ (i) Tooltip ] |
+| Year-to-date expenditure vs approved ceiling                |
 |                                                             |
 | 77.8%                                                       |
 |                                                             |
@@ -512,11 +555,11 @@ All 4 cards implement concise, punchy titles and zero sub-metric clutter:
 +-------------------------------------------------------------+
 ```
 
-- **Card Title:** **`Budget Consumed`** (`variant="body2"`, `color="text.secondary"`) with Tooltip.
-- **Hero Value:** **`77.8%`** (Large font `variant="h3"`, bold).
+- **Card Title:** **`Budget Consumed`** (`variant="body2"`, `fontWeight=600`).
+- **Selective Subtitle:** *Year-to-date expenditure vs approved ceiling* (`variant="caption"`, `color="text.secondary"`).
+- **Hero Value:** **`77.8%`** (`variant="h3"`, bold).
 - **Single Footer Chip:** `-$45k Surplus` (`@mui/material/Chip`, `size="small"`, `color="success"`).
-- **Interactive Tooltip Content:**
-  - *Tooltip Content:* `"Authorized Fiscal Ceiling: $1,440,000 USD | Actual YTD Spend: $1,120,000 USD | Forecast Year-End Variance: 3.1% Favorable Under-Run."*
+- **Tooltip Content:** *"Authorized Fiscal Ceiling: $1,440,000 USD | Actual YTD Spend: $1,120,000 USD | Forecast Year-End Variance: 3.1% Favorable Under-Run."*
 
 ---
 
@@ -525,6 +568,7 @@ All 4 cards implement concise, punchy titles and zero sub-metric clutter:
 ```
 +-------------------------------------------------------------+
 | Recoverable Waste                           [ (i) Tooltip ] |
+| Capital tied up in inactive & unassigned seats              |
 |                                                             |
 | $23,800 / mo                                                |
 |                                                             |
@@ -534,7 +578,8 @@ All 4 cards implement concise, punchy titles and zero sub-metric clutter:
 +-------------------------------------------------------------+
 ```
 
-- **Card Title:** **`Recoverable Waste`** (`variant="body2"`, `color="text.secondary"`) with Tooltip.
+- **Card Title:** **`Recoverable Waste`** (`variant="body2"`, `fontWeight=600`).
+- **Selective Subtitle:** *Capital tied up in inactive & unassigned seats* (`variant="caption"`, `color="text.secondary"`).
 - **Hero Value:** **`$23,800`** / mo (`variant="h3"`, bold).
 - **Single Footer Chip:** `312 Idle Seats` (`@mui/material/Chip`, `size="small"`, `color="warning"`).
 - **Action Link:** Text button `[Reclaim Seats →]` linking directly to filtered `SCR-LIC-MGMT-01?status=underutilized`.
@@ -564,16 +609,19 @@ All 4 cards implement concise, punchy titles and zero sub-metric clutter:
 
 ---
 
-#### 5.8. Chart: Budget by Category (Horizontal Stacked Bar)
+#### 5.8. Chart: Budget by Category (Horizontal Stacked Bar with Bottom Axis)
 
-- **Chart Title:** **`Budget by Category`** (Concise 3-word title).
+- **Chart Title:** **`Budget by Category`** (Concise 3-word title). *No subtitle needed.*
+- **Zero On-Chart Data Labels:** Bars contain **zero hardcoded numbers or percentages** (`dataLabels: { enabled: false }`).
+- **Calibrated Bottom Reference Axis:** Bottom horizontal X-axis calibrated at `[$0, $100k, $200k, $300k, $400k, $500k USD]` with subtle hairline vertical gridlines for instant visual scale estimation before hovering.
 - **Component:** `react-apexcharts` (`type="bar"` horizontal).
 - **Core Purpose:** Compares allocated budget ceilings against actual realized expenditures across software categories.
 - **Configuration Standard:**
   ```javascript
   {
     chart: { type: 'bar', height: 340, toolbar: { show: false } },
-    plotOptions: { bar: { horizontal: true, barHeight: '50%', borderRadius: 4 } },
+    dataLabels: { enabled: false }, // Enforce zero labels on bars
+    plotOptions: { bar: { horizontal: true, barHeight: '50%', borderRadius: 3 } },
     colors: ['#0F67B1', '#10B981'], // Allocated Budget (Ocean Blue), Actual Spend (Emerald Green)
     series: [
       { name: 'Allocated Budget', data: [450000, 380000, 240000, 180000, 120000, 70000] },
@@ -581,9 +629,15 @@ All 4 cards implement concise, punchy titles and zero sub-metric clutter:
     ],
     xaxis: {
       categories: ['Dev & DevOps', 'Productivity', 'Security', 'Cloud & Infra', 'Collaboration', 'Design'],
-      labels: { formatter: (val) => `$${(val / 1000).toFixed(0)}k` }
+      position: 'bottom',
+      min: 0,
+      max: 500000,
+      tickAmount: 5,
+      labels: { formatter: (val) => `$${(val / 1000).toFixed(0)}k` },
+      title: { text: 'Amount (USD)', style: { fontSize: '11px', color: '#64748B' } }
     },
-    tooltip: { y: { formatter: (val) => `$${val.toLocaleString()} USD` } },
+    grid: { show: true, strokeDashArray: 3, xaxis: { lines: { show: true } }, yaxis: { lines: { show: false } } },
+    tooltip: { shared: true, y: { formatter: (val) => `$${val.toLocaleString()} USD` } },
     legend: { position: 'top', horizontalAlign: 'right' }
   }
   ```
@@ -592,13 +646,16 @@ All 4 cards implement concise, punchy titles and zero sub-metric clutter:
 
 #### 5.9. Chart: Historical Spend Trend (Area / Line Timeline)
 
-- **Chart Title:** **`Historical Spend Trend`** (Concise 3-word title).
+- **Chart Title:** **`Historical Spend Trend`** (Concise 3-word title). *No subtitle needed.*
+- **Zero On-Chart Data Labels:** Trend lines contain **zero text labels** (`dataLabels: { enabled: false }`).
+- **Calibrated Left Axis:** Y-axis calibrated at `[$0, $30k, $60k, $90k, $120k]` with horizontal hairline gridlines.
 - **Component:** `react-apexcharts` (`type="area"`).
 - **Core Purpose:** Chronological auditing of monthly budget ceilings versus actual incurred expenditures across past billing cycles (past 12-24 months).
 - **Configuration Standard:**
   ```javascript
   {
     chart: { type: 'area', height: 350, toolbar: { show: false } },
+    dataLabels: { enabled: false }, // Enforce zero labels on area chart
     stroke: { curve: 'smooth', width: [3, 2], dashArray: [0, 5] },
     colors: ['#0F67B1', '#64748B'], // Actual Incurred Spend (Solid Blue), Monthly Budget Ceiling (Dashed Slate)
     series: [
@@ -606,8 +663,10 @@ All 4 cards implement concise, punchy titles and zero sub-metric clutter:
       { name: 'Monthly Budget Ceiling', data: [100000, 100000, 100000, 110000, 110000, 110000, 120000, 120000, 120000, 120000, 120000, 120000] }
     ],
     xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov (Current)', 'Dec'] },
-    yaxis: { labels: { formatter: (val) => `$${(val / 1000).toFixed(0)}k` } },
+    yaxis: { min: 0, max: 130000, tickAmount: 4, labels: { formatter: (val) => `$${(val / 1000).toFixed(0)}k` } },
+    grid: { show: true, strokeDashArray: 3, yaxis: { lines: { show: true } }, xaxis: { lines: { show: false } } },
     fill: { type: ['gradient', 'solid'], gradient: { opacityFrom: 0.35, opacityTo: 0.05 } },
+    tooltip: { shared: true, y: { formatter: (val) => (val !== null ? `$${val.toLocaleString()} USD` : 'Projected') } },
     legend: { position: 'top', horizontalAlign: 'left' }
   }
   ```
@@ -652,14 +711,14 @@ All 4 cards implement concise, punchy titles and zero sub-metric clutter:
 
 ### 6.1. Top 4 Identity KPIs: Users, Active Users, Tenants, Privileged Roles
 
-Each card presents a concise title and clean hero metric with sub-metrics relegated to the Tooltip:
+Selective Subtitles Applied: Self-evident identity cards have **no subtitle**; only `Privileged Roles` has a brief subtitle for security scope:
 
-| Concise Card Title | Hero Value | Single Bottom Chip | Interactive Tooltip Content (`@mui/icons-material/InfoOutlined`) |
-|---|:---:|:---:|---|
-| **Total Users** | **`850`** | `+5.2% MoM` (Emerald) | *"Total registered employee identities across all corporate business units and tenant domains."* |
-| **Active Users** | **`92.0%`** | `782 Active` (Slate) | *"782 employees have authenticated or recorded software telemetry within the last 30 calendar days."* |
-| **Tenants** | **`12`** | `Isolation Active` | *"Independent enterprise subsidiaries and corporate business units managed under unified ELMS."* |
-| **Privileged Roles** | **`14`** | `4 Admins, 10 Mgrs` (Amber) | *"Accounts holding elevated administrative or approval permissions. Subject to audit logging and session guards."* |
+| Card Title | Hero Value | Subtitle (Only if Needed) | Single Bottom Chip | Interactive Tooltip Content |
+|---|:---:|---|:---:|---|
+| **Total Users** | **`850`** | *None (Self-evident)* | `+5.2% MoM` (Emerald) | *"Total registered employee identities across all corporate business units and tenant domains."* |
+| **Active Users** | **`92.0%`** | *None (Self-evident)* | `782 Active` (Slate) | *"782 employees have authenticated or recorded software telemetry within the last 30 calendar days."* |
+| **Tenants** | **`12`** | *None (Self-evident)* | `Isolation Active` | *"Independent enterprise subsidiaries and corporate business units managed under unified ELMS."* |
+| **Privileged Roles** | **`14`** | *Admin & Manager accounts* | `4 Admins, 10 Mgrs` (Amber) | *"Accounts holding elevated administrative or approval permissions. Subject to audit logging and session guards."* |
 
 ---
 
@@ -740,20 +799,22 @@ flowchart TD
 
 ---
 
-### 7.2. Concise Titles & Zero-Bloat Information Minimization Constraint
+### 7.2. Zero-Bloat Constraint, Concise Titles & Selective Subtitles
 
 To maintain executive clarity and high cognitive ergonomics, the interface enforces a strict **Zero-Bloat Information Constraint**:
-1. **Mandatory Concise Title Rule:** Every card title and chart header is strictly restricted to **2 to 4 words** conveying directly what data is represented (e.g., `Remaining Budget`, `Next Month Renewals`, `Budget by Category`, `Historical Spend Trend`). Verbose descriptions (such as "Current Month Remaining Budget Status" or "Multi-Dimensional Historical Spend Trajectory") are strictly banned.
-2. **Subtitles as Interactive Tooltips:** To keep KPI cards and chart headers uncluttered, all secondary descriptive explanations are rendered as interactive tooltips (`@mui/material/Tooltip` paired with `@mui/icons-material/InfoOutlined`).
+1. **Mandatory Concise Title Rule:** Every card title and chart header is strictly restricted to **2 to 3 words** conveying directly what data is represented (e.g., `Remaining Budget`, `Next Month Renewals`, `Budget by Category`, `Historical Spend Trend`).
+2. **Selective Subtitle Rule:**
+   - **Self-Evident Titles:** Cards representing obvious common metrics (`Total Licenses`, `Total Users`, `Annual Spend`, `Department Spend`) must have **no subtitle** under the title.
+   - **Complex Domain Titles:** Cards representing domain-specific formulas or forward-looking commitments (`Next Month Renewals`, `Remaining Budget`, `Budget Consumed`, `Recoverable Waste`, `Idle Accounts`) feature a concise, 1-line subtitle (`variant="caption"`, max 6–8 words) or interactive tooltip explaining the metric's scope.
 3. **High Signal-to-Noise Ratio:** Every rendered field directly supports documented administrative workflows: inventory tracking, cost quantification, seat reclamation, budget limit enforcement, or role/tenant governance.
 
 #### 7.2.1. Strict Rule on Minimalist KPI Cards (Zero Sub-metric Clutter)
 Every metric card across all dashboard views must strictly implement the standard **4-Element Compact Structure**:
-- **Row 1 (Header):** Concise Category Label (`variant="body2"`, `color="text.secondary"`) with Info Tooltip button (`@mui/icons-material/InfoOutlined`) aligned right.
+- **Row 1 (Header):** Concise Category Label (`variant="body2"`, bold) + Optional 1-line Subtitle + Info Tooltip button (`@mui/icons-material/InfoOutlined`) aligned right.
 - **Row 2 (Hero Value):** Single prominent numerical metric (`variant="h3"`, bold, `color="#0F172A"`).
 - **Row 3 (Status Indicator):** Exactly **ONE** concise status chip (`@mui/material/Chip`, `size="small"`).
 - **Row 4 (Optional Action Trigger):** Clean text button (e.g. `[View Renewals (6) →]`).
-- **PROHIBITED:** Displaying walls of secondary bullet points, stacked micro-metrics, or multi-line calculation breakdowns directly in the card body. All secondary operational context must be cleanly encapsulated in the Tooltip.
+- **PROHIBITED:** Displaying walls of secondary bullet points, stacked micro-metrics, or multi-line calculation breakdowns directly in the card body.
 
 ---
 
@@ -793,18 +854,20 @@ All interface elements across all views are implemented using the `@mui/material
 
 ---
 
-### 7.5. Data Visualization Standard: ApexCharts
+### 7.5. Data Visualization Standard: Zero On-Chart Labels & Calibrated Bottom Axis (ApexCharts)
 
-All charts across all views are implemented strictly using `ApexCharts` (`react-apexcharts`):
-1. **Responsive Rendering:** All charts must set `width="100%"` and explicit responsive height breakpoints (`320px` to `380px`).
-2. **Semantic Color Palette:**
+All charts across all views are implemented strictly using `ApexCharts` (`react-apexcharts`) adhering to the **Minimalist Chart Standard**:
+1. **Zero On-Chart Data Labels (`dataLabels: { enabled: false }`):** Numbers and percentages MUST NEVER be painted directly on bars, slices, or columns to prevent visual clutter and information pollution.
+2. **Calibrated Bottom Reference Axis (`xaxis`):** Every horizontal bar chart MUST provide an explicit calibrated numeric scale along the bottom X-axis (e.g., `[0, 100, 200, 300, 400, 500]` for users; `[$0, $150k, $300k, $450k, $600k]` for dollars) with subtle vertical hairline gridlines (`strokeDashArray: 3`), enabling users to eyeball and reference scale before hovering.
+3. **Tooltip-First Dynamic Inspection:** All exact numerical values, segment breakdowns, and percentages are revealed strictly on user hover inside formatted interactive tooltips (`tooltip: { y: { formatter: ... } }`).
+4. **Responsive Rendering:** All charts must set `width="100%"` and explicit responsive height breakpoints (`320px` to `380px`).
+5. **Semantic Color Palette:**
    - Ocean Blue (Primary / Budget Ceiling / Allocated): `#0F67B1`
    - Emerald Green (Active / Compliant / Healthy Budget): `#10B981` / `#4CAF50`
    - Warm Amber (Warning / Never Used / Renewal Alert): `#F59E0B` / `#FF9800`
    - Gray / Slate (Dormant / Inactive >60d / Ceilings): `#9E9E9E` / `#64748B`
    - Crimson / Rose (Unassigned Inventory / Budget Overrun): `#EF4444` / `#E91E63`
    - Indigo / Slate Blue (Not Monitored): `#3F51B5`
-3. **Data Tooltips:** Tooltips format currency figures (`$`, `VND`) and integer user counts cleanly without raw technical keys.
 
 ---
 
@@ -837,4 +900,4 @@ Comprehensive matrix mapping all views, drawers, and administrative actions to b
 
 ---
 
-*This Information Architecture & View Specification document (v5.2) establishes the unified UI/UX contract, @mui/material components, ApexCharts configurations, Concise Title standards, and RESTful API mappings for VFast Enterprise License Management System (ELMS).*
+*This Information Architecture & View Specification document (v5.3) establishes the unified UI/UX contract, @mui/material components, ApexCharts configurations with zero on-chart labels and calibrated bottom axis, and RESTful API mappings for VFast Enterprise License Management System (ELMS).*
