@@ -6,7 +6,15 @@ VFast brings software licenses from every provider (Microsoft, Google, Adobe, Je
 
 Requirements are derived top-down: business problem → stakeholders → goals → license models and data sources → epics (mind map) → use cases → user stories. Each story is reviewed with INVEST and has Given/When/Then acceptance criteria.
 
-### 1.1 Top-down problem analysis
+### 1.1 Mind map
+
+![VFast mind map](docs/mindmap.png)
+
+The map has five branches: **License Management** (catalog & entitlement), **Budget Management** (planning & cost allocation, spending & monitoring), **Optimization** (detection, savings & recommendation), **Analytics** (four dashboards), and **User & Organization**. Each of the 22 leaves is one use case (UC01–UC22, in branch order); UC23 View My Licenses and UC24 Login / Logout are self-service use cases every role has.
+
+Editable source: [`docs/mindmap/vfast.xmind`](docs/mindmap/vfast.xmind) (open with XMind); `docs/mindmap.png` is exported from it.
+
+### 1.2 Top-down problem analysis
 
 License and usage data are scattered across each provider's admin portal, and every provider counts in its own unit: seats, sessions, devices, cores, tokens, or contract terms. Nobody can say what the company owns, who uses it, or how far reality is from the budget plan.
 
@@ -29,34 +37,21 @@ What makes this project different:
 
 Full analysis, license-model research, data-source feasibility, scope, and risks: [Top-down research](docs/01-research-top-down.md).
 
-### 1.2 Mind map
-
-![VFast mind map](docs/mindmap.png)
-
-The map has five branches: **License Management** (catalog & entitlement), **Budget Management** (planning & cost allocation, spending & monitoring), **Optimization** (detection, savings & recommendation), **Analytics** (four dashboards), and **User & Organization**. Each leaf is one use case.
-
-Editable source: [`docs/mindmap/vfast.xmind`](docs/mindmap/vfast.xmind) (open with XMind); `docs/mindmap.png` is exported from it.
-
 ### 1.3 Use cases
 
-There are four roles. Admin inherits Manager; Manager and Staff inherit Employee.
-
-![VFast actors](docs/diagrams/out/uc_actors.png)
+There are four roles. One diagram per actor shows every use case that actor can start; shared use cases (View My Licenses, Login / Logout) appear in each actor's diagram.
 
 | Role | Use cases |
 |---|---|
 | **Employee** (every employee) | UC23 View My Licenses · UC24 Login / Logout |
-| **Staff** (license management team) | UC01–UC04 Catalog & Entitlement · UC07 Manage Expenses |
-| **Manager** (unit manager) | UC05, UC06, UC08, UC09 Budget · UC10–UC14 Optimization · UC15–UC18 Analytics |
-| **Admin** | Every Manager use case, for every unit · UC19–UC22 User & Organization |
-
-Each role has its own diagram so no picture is crowded; Manager is split into budget, optimization, and analytics:
+| **Staff** (license management team) | UC01–UC04 License Management · UC07 Manage Expenses · UC23, UC24 |
+| **Manager** (manager of a P&L or a department) | UC05, UC06, UC08, UC09 Budget · UC10–UC14 Optimization · UC15–UC18 Analytics · UC23, UC24 |
+| **Admin** (system operator) | UC19–UC22 User & Organization (users, P&Ls and departments, roles, permissions) · UC23, UC24 |
 
 | | |
 |---|---|
-| ![Staff](docs/diagrams/out/uc_staff.png) | ![Admin](docs/diagrams/out/uc_admin.png) |
-| ![Manager: budget](docs/diagrams/out/uc_manager_budget.png) | ![Manager: optimization](docs/diagrams/out/uc_manager_optimization.png) |
-| ![Manager: analytics](docs/diagrams/out/uc_manager_analytics.png) | ![Employee](docs/diagrams/out/uc_employee.png) |
+| ![Employee](docs/diagrams/out/uc_employee.png) | ![Staff](docs/diagrams/out/uc_staff.png) |
+| ![Manager](docs/diagrams/out/uc_manager.png) | ![Admin](docs/diagrams/out/uc_admin.png) |
 
 Diagram sources are draw.io files in [`docs/diagrams/out/`](docs/diagrams/out/). Role × feature matrix, 18 business rules, and the specification of all 24 use cases: [Use cases](docs/02-use-cases.md).
 
@@ -78,7 +73,7 @@ US01–US04   License Management: catalog, vendors, entitlements, contracts     
 US05–US09   Budget: plan, cost allocation, expenses, monitoring, forecast       Manager (US07: Staff)
 US10–US14   Optimization: unused, inactive, overuse, savings, recommendations   Manager
 US15–US18   Analytics: license, financial, compliance, optimization dashboards  Manager
-US19–US22   User & Organization: users, departments, roles, permissions         Admin
+US19–US22   User & Organization: users, P&Ls and departments, roles, permissions Admin
 US23–US24   My licenses, login / logout                                         Every role
 ```
 

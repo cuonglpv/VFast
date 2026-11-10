@@ -31,9 +31,9 @@ A company buys software from many providers: Microsoft, Google, Adobe, JetBrains
 
 | Stakeholder | Role in system | Main interest |
 |---|---|---|
-| Unit manager (P&L, department, team) | `MANAGER` | Dashboards and analytics for their unit, budget planning and monitoring, optimization results and recommendations |
+| Manager of a P&L (subsidiary) or a department | `MANAGER` | Dashboards and analytics for their unit, budget planning and monitoring, optimization results and recommendations |
 | License management team member | `STAFF` | Keeping license data correct: software catalog, vendors, entitlements, contracts, and expenses |
-| System administrator | `ADMIN` | Everything a Manager can do for every unit, plus users, departments, roles, and permissions |
+| System administrator | `ADMIN` | Operating the system: users, roles, permissions, and the P&L / department tree; no access to license, budget, or cost data |
 | Every employee of the company | `EMPLOYEE` | Knowing which licenses they hold and whether the system sees them as used |
 | License providers | External systems | Source of license, assignment, usage, and cost data through their APIs, logs, or exports |
 
@@ -161,7 +161,7 @@ The epics are the five branches of the agreed mind map; each leaf is one use cas
 | E3 Optimization | Detection | Unused License Detection (UC10), Inactive Usage Detection (UC11), License Overuse Detection (UC12) |
 | | Savings & Recommendation | Cost Optimization (UC13), Recommendation Management (UC14) |
 | E4 Analytics | Dashboards | License (UC15), Financial (UC16), Compliance (UC17), Optimization (UC18) |
-| E5 User & Organization | Administration | User (UC19), Department (UC20), Role (UC21), Permission Management (UC22) |
+| E5 User & Organization | Administration | User (UC19), P&L and Department (UC20), Role (UC21), Permission Management (UC22) |
 | — Self-service and access | | View My Licenses (UC23), Login / Logout (UC24) |
 
 ## 7. Scope
@@ -189,7 +189,7 @@ The epics are the five branches of the agreed mind map; each leaf is one use cas
 
 - Every provider connection is read-only.
 - Employee identity is matched by company email (for Microsoft 365, `userPrincipalName`).
-- Units (P&L, departments, teams) come from existing HR data; VFast does not create them.
+- The group has several P&Ls (subsidiaries), each with departments. Admin maintains the P&L / department tree in VFast; it can be filled from HR data.
 - The 60-day inactivity threshold is fixed in this phase.
 
 ## 9. Key risks
@@ -209,7 +209,8 @@ The epics are the five branches of the agreed mind map; each leaf is one use cas
 - Which IdP is the source of truth for employee identity?
 - How do P&L and departments relate, and where does HR data come from?
 - For a license bought for the whole company, how is Purchased counted per unit?
-- Who allocates the total budget to each unit before a Manager plans the details? Does a plan need approval?
+- Who allocates the total budget to each P&L or department before a Manager plans the details? Does a plan need approval?
+- A person who operates the system may also be an employee or a senior leader. Should one account have several roles (for example Admin and Manager), or should that person use two accounts?
 - Should the 60-day threshold be configurable?
 
 **Related:** [Use cases](02-use-cases.md) · [INVEST requirements](03-invest-requirements.md)

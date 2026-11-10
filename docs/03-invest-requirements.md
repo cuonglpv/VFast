@@ -45,7 +45,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US18 | As a Manager, I want an optimization dashboard so that I see waste and realized savings. | Savings overview | US10, US11, US14 | S | 3 |
 | **User & Organization** | | | | | |
 | US19 | As an Admin, I want to create, edit, and disable users so that only the right people have access. | Access control | US24 | M | 3 |
-| US20 | As an Admin, I want to maintain the unit tree and assign Managers to units so that data scope and budgets follow the organization. | Organization | US19 | M | 3 |
+| US20 | As an Admin, I want to maintain the P&Ls and their departments and assign Managers to them so that data scope and budgets follow the group's organization. | Organization | US19 | M | 3 |
 | US21 | As an Admin, I want to change the role of a user so that their access matches their job. | Role control | US19 | M | 2 |
 | US22 | As an Admin, I want to adjust which features each role may read or write so that permissions fit the company. | Permission control | US21 | M | 5 |
 | **Self-service** | | | | | |
@@ -135,7 +135,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 1. Given a Staff member, when an expense with amount, currency, license, unit, and a PDF invoice under 10 MB is saved, then it appears with source `manual`.
 2. Given an amount ≤ 0 or a file over 10 MB, then field errors are returned.
 3. Given the month is closed, when an expense of that month is edited, then it is refused and a correcting entry is offered.
-4. Given a Manager of unit A, then only unit A's expenses are listed and editing is refused.
+4. Given a Manager or Employee calls the expense API, then it returns `403`.
 
 #### AC-US08 Budget monitoring
 
@@ -213,8 +213,8 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 #### AC-US20 Departments
 
-1. Given a unit moved under one of its own children, then it is refused.
-2. Given a Manager is assigned to unit A, then after login they see only unit A's data.
+1. Given a department without a P&L, or a P&L placed under a department, then it is refused.
+2. Given a Manager is assigned to P&L A, then after login they see only the data of P&L A and its departments.
 3. Given a unit with an active budget plan, when it is marked inactive, then it is refused.
 
 #### AC-US21 Roles
@@ -245,6 +245,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 ## Cross-cutting acceptance constraints
 
 - Only Admin, Manager, Staff, and Employee have accounts; every API requires login because per-user usage is sensitive.
+- Admin manages access only: license, budget, cost, and optimization APIs return `403` for Admin.
 - The API, not the client, enforces roles, permissions, and data scope (BR-16, BR-17).
 - VFast never writes to a provider (BR-01); every connector uses read-only access.
 - Missing data is `Unknown`, never 0 (BR-04); every figure carries its source and confidence (BR-14).

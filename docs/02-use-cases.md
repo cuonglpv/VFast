@@ -12,26 +12,26 @@ Product name: **VFast — Enterprise License Management System**. Use cases foll
 |---|---|
 | `EMPLOYEE` | Every employee of the company. Sees only the licenses assigned to them and whether they are recorded as used |
 | `STAFF` | Member of the license management team. Views and edits license information (catalog, vendors, entitlements, contracts) and enters expenses |
-| `MANAGER` | Manager of a unit (P&L, department, team). Mainly uses dashboards and analytics; plans and monitors the unit's budget; reviews optimization results |
-| `ADMIN` | Every Manager permission for every unit, plus users, departments, roles, and permissions |
+| `MANAGER` | Manager of a unit (a P&L or a department). Mainly uses dashboards and analytics; plans and monitors the unit's budget; reviews optimization results. Sees license data and cost through the dashboards |
+| `ADMIN` | Operates the system: users, roles, permissions, and the P&L / department tree. Has no access to license, budget, or cost data |
 | License providers | External systems (Microsoft Graph and other provider APIs, logs, exports). VFast only reads from them |
 
-Every Manager, Staff, and Admin is also an employee, so they have the Employee use cases.
+Every account belongs to a real employee (matched by company email), so View My Licenses and Login / Logout belong to every role.
 
-![VFast actors](diagrams/out/uc_actors.png)
+**Organization.** The group has several P&Ls (subsidiaries); each P&L has departments. In this document a *unit* is a P&L or a department. A Manager is assigned to one or more units and sees only their data; budgets, cost allocation, and data scope follow units.
 
 ## Role × feature matrix
 
 | Mind-map branch | Feature | Admin | Manager | Staff | Employee |
 |---|---|---|---|---|---|
-| License Management | Software catalog, vendors, entitlements, contracts (UC01–UC04) | View | View | View and edit | |
-| Budget Management | Budget planning, cost allocation (UC05, UC06) | ✓ every unit | ✓ own units | | |
-| | Expense management (UC07) | View | View, own units | Enter and edit | |
-| | Budget monitoring, financial forecast (UC08, UC09) | ✓ every unit | ✓ own units | | |
-| Optimization | Unused, inactive, overuse detection (UC10–UC12) | ✓ every unit | ✓ own units | | |
-| | Cost optimization, recommendations (UC13, UC14) | ✓ every unit | ✓ own units | | |
-| Analytics | License, financial, compliance, optimization dashboards (UC15–UC18) | ✓ every unit | ✓ own units | | |
-| User & Organization | Users, departments, roles, permissions (UC19–UC22) | ✓ | | | |
+| License Management | Software catalog, vendors, entitlements, contracts (UC01–UC04) | | | ✓ | |
+| Budget Management | Budget planning, cost allocation (UC05, UC06) | | ✓ own units | | |
+| | Expense management (UC07) | | | ✓ | |
+| | Budget monitoring, financial forecast (UC08, UC09) | | ✓ own units | | |
+| Optimization | Unused, inactive, overuse detection (UC10–UC12) | | ✓ own units | | |
+| | Cost optimization, recommendations (UC13, UC14) | | ✓ own units | | |
+| Analytics | License, financial, compliance, optimization dashboards (UC15–UC18) | | ✓ own units | | |
+| User & Organization | Users, P&Ls and departments, roles, permissions (UC19–UC22) | ✓ | | | |
 | Self-service | My licenses, login / logout (UC23, UC24) | ✓ | ✓ | ✓ | ✓ |
 
 Menus and buttons are hidden when the user lacks permission, but the API enforces every rule in this table; a URL outside the role returns `403`.
@@ -55,41 +55,33 @@ Menus and buttons are hidden when the user lacks permission, but the API enforce
 | BR-13 | **Recommendations need evidence and a decision.** A recommendation (reduce seats, downgrade plan, cancel, reassign) shows its evidence and estimated yearly saving. Status: `Proposed` → `Accepted` or `Rejected` (reason required) → `Done`. VFast never carries it out on the provider (BR-01). |
 | BR-14 | Every figure carries its source (`api`, `import`, `manual`) and confidence. A value from a connector cannot be overwritten silently: an edit needs a reason and keeps the original value. |
 | BR-15 | Every change to license data, expenses, budgets, recommendations, users, departments, roles, and permissions is recorded with who, old value, new value, and time. Licenses, vendors, and contracts are never deleted, only marked inactive. |
-| BR-16 | Data scope comes from the server on every request: a Manager sees the units assigned to them; Admin sees every unit; Staff sees every license and expense but no budget; an Employee sees only their own licenses, without price or cost. |
+| BR-16 | Data scope comes from the server on every request: a Manager sees the units assigned to them, and license data and cost only through dashboards; Staff sees every license and expense but no budget; Admin sees users, roles, permissions, and the P&L / department tree, but no license, budget, or cost data; an Employee sees only their own licenses, without price or cost. |
 | BR-17 | Each account has exactly one role: Admin, Manager, Staff, or Employee. Permissions are granted to roles, not to individual users. The last active Admin cannot be disabled or lose the Admin role. |
 | BR-18 | Wrong credentials show one generic message; 5 failed attempts in a row lock login for 15 minutes; passwords are stored hashed; the session lives in an `HttpOnly`, `Secure` cookie. |
 
 ## Use case diagrams
 
-Each role has its own diagram so no picture is crowded. Use cases are grouped by their mind-map branch. Sources (draw.io) are in [`diagrams/out/`](diagrams/out/); the PNG and SVG files are exported from them.
+One diagram per actor. Each diagram shows every use case that actor can start, grouped by mind-map branch; a use case used by several actors appears in each of their diagrams. Sources (draw.io) are in [`diagrams/out/`](diagrams/out/); the PNG and SVG files are exported from them.
 
-### Employee — every role inherits these
+### Employee
 
 ![Employee use cases](diagrams/out/uc_employee.png)
 
-### Staff — license data and expenses
+### Staff
 
 ![Staff use cases](diagrams/out/uc_staff.png)
 
-### Manager (1/3) — budget
+### Manager
 
-![Manager budget use cases](diagrams/out/uc_manager_budget.png)
+![Manager use cases](diagrams/out/uc_manager.png)
 
-### Manager (2/3) — optimization
-
-![Manager optimization use cases](diagrams/out/uc_manager_optimization.png)
-
-### Manager (3/3) — analytics
-
-![Manager analytics use cases](diagrams/out/uc_manager_analytics.png)
-
-### Admin — user and organization
+### Admin
 
 ![Admin use cases](diagrams/out/uc_admin.png)
 
 ### Use case list
 
-| ID | Use case | Mind-map leaf | Primary actor |
+| ID | Use case | Mind-map leaf | Actors |
 |---|---|---|---|
 | UC01 | Manage Software Catalog | Software Catalog | Staff |
 | UC02 | Manage Vendors | Vendor Management | Staff |
@@ -110,11 +102,11 @@ Each role has its own diagram so no picture is crowded. Use cases are grouped by
 | UC17 | View Compliance Dashboard | Compliance Dashboard | Manager |
 | UC18 | View Optimization Dashboard | Optimization Dashboard | Manager |
 | UC19 | Manage Users | User Management | Admin |
-| UC20 | Manage Departments | Department Management | Admin |
+| UC20 | Manage P&Ls and Departments | Department Management | Admin |
 | UC21 | Manage Roles | Role Management | Admin |
 | UC22 | Manage Permissions | Permission Management | Admin |
-| UC23 | View My Licenses | — (self-service) | Employee |
-| UC24 | Login / Logout | — (access) | Employee (every role) |
+| UC23 | View My Licenses | — (self-service) | Employee, Staff, Manager, Admin |
+| UC24 | Login / Logout | — (access) | Employee, Staff, Manager, Admin |
 
 ## Use cases
 
@@ -122,28 +114,28 @@ Each role has its own diagram so no picture is crowded. Use cases are grouped by
 
 #### UC01 Manage Software Catalog
 
-- **Actor:** Staff (Manager and Admin: view only)
+- **Actor:** Staff
 - **Main flow:** catalog table (Software, Vendor, Category, Subcategory, Archetype, Licenses, Status) → search, filter by vendor, category, archetype, status → create a product: name, vendor, category, subcategory, description, useful links → edit → mark inactive
 - **Alternative:** same name and vendor already exist → warning, open the existing product; product without category → `Uncategorized`; product with active entitlements → cannot be marked inactive
 - **Result:** one catalog for every provider; changes recorded (BR-15)
 
 #### UC02 Manage Vendors
 
-- **Actor:** Staff (Manager and Admin: view only)
+- **Actor:** Staff
 - **Main flow:** vendor table (Vendor, Products, Contracts, Collection method, Status) → create a vendor: name, website, support contact, collection method (API, log, import, manual) → edit → mark inactive
 - **Alternative:** duplicate name → open the existing vendor; vendor with an active contract → cannot be marked inactive
 - **Result:** every product and contract points to a vendor
 
 #### UC03 Manage License Entitlements
 
-- **Actor:** Staff (Manager and Admin: view only)
+- **Actor:** Staff
 - **Main flow:** open a product → entitlement lines (Plan, Archetype, Unit, Quantity or quota, Assigned, Active, Valid from–to, Source) → add a line: plan, archetype (BR-02), unit (seat, slot, token, core…), quantity or quota, validity, unit price, billing cycle, currency → edit → end a line → import lines from a CSV template
 - **Alternative:** negative quantity, end before start, or missing currency → field errors; a value from a connector → edit needs a reason and keeps the original (BR-14); CSV with an invalid row → whole file rejected with the error rows
 - **Result:** Purchased quantity and price per line; Assigned and Active come from connectors (BR-01)
 
 #### UC04 Manage Contracts
 
-- **Actor:** Staff (Manager and Admin: view only)
+- **Actor:** Staff
 - **Main flow:** contract table (Contract, Vendor, Start, Renewal date, Notice period, Auto-renew, Value, Status) → create a contract: vendor, entitlement lines it covers, start, renewal date, notice period, auto-renew, commitment, total value, attachment → edit → mark ended
 - **Alternative:** renewal before start → error; an entitlement line already covered by another active contract → refused; renewal within 30 days → marked "Renewal soon"; notice deadline passed → marked "Notice period passed"
 - **Result:** renewal dates feed the forecast (UC09) and recommendations timing (UC13)
@@ -166,7 +158,7 @@ Each role has its own diagram so no picture is crowded. Use cases are grouped by
 
 #### UC07 Manage Expenses
 
-- **Actor:** Staff (Manager: view own units; Admin: view)
+- **Actor:** Staff
 - **Main flow:** expense table (Date, License, Vendor, Unit, Amount, Currency, Invoice, Source) → add an expense with an optional invoice file → edit → import expenses from a CSV template → see import history
 - **Alternative:** amount ≤ 0, unknown license, or file too large → field errors; month closed → only a correcting entry (BR-10); invalid CSV row → whole file rejected; expense already imported from a billing API → edit needs a reason (BR-14)
 - **Result:** expenses are the "Actual cost" level of BR-09
@@ -257,15 +249,15 @@ Each role has its own diagram so no picture is crowded. Use cases are grouped by
 #### UC19 Manage Users
 
 - **Actor:** Admin
-- **Main flow:** user table (Name, Email, Role, Department, Managed units, Status, Last login) → create an account: name, email, role, department → edit → disable or re-enable
+- **Main flow:** user table (Name, Email, Role, P&L, Department, Managed units, Status, Last login) → create an account: name, email, role, P&L and department → edit → disable or re-enable
 - **Alternative:** email already exists → open that account; disabling oneself or the last active Admin → refused (BR-17); email not in the collected user list → created with a warning that UC23 will be empty
 - **Result:** disabling ends open sessions at once and never deletes the account; changes recorded (BR-15)
 
-#### UC20 Manage Departments
+#### UC20 Manage P&Ls and Departments
 
 - **Actor:** Admin
-- **Main flow:** unit tree (P&L → department → team) → create a unit with a parent → rename, move → assign Managers to a unit → mark inactive
-- **Alternative:** a cycle in the tree → refused; a unit with active users or an active budget plan → cannot be marked inactive; units imported from HR data → read-only name, Managers still assignable
+- **Main flow:** tree of P&Ls (subsidiaries) and their departments → create a P&L, or a department under a P&L → rename; move a department to another P&L → assign Managers to a P&L or a department → mark inactive
+- **Alternative:** a department without a P&L, or a P&L under a department → refused; duplicate name within the same P&L → refused; a unit with active users or an active budget plan → cannot be marked inactive; units imported from HR data → read-only name, Managers still assignable
 - **Result:** units drive data scope (BR-16), cost allocation (UC06), and budgets (UC05)
 
 #### UC21 Manage Roles
@@ -286,15 +278,15 @@ Each role has its own diagram so no picture is crowded. Use cases are grouped by
 
 #### UC23 View My Licenses
 
-- **Actor:** Employee (every role)
+- **Actor:** Employee, Staff, Manager, Admin
 - **Main flow:** table of licenses assigned to the user (License, Vendor, Plan, Assigned date, Status, Last active, Expiry date) → rows in `Inactive` or `No activity` carry a note that the seat may be reviewed → sort
 - **Alternative:** no license → "You have no licenses assigned"; login email not matched → empty table with a hint to contact Admin; `Not monitored` → "Not tracked"
 - **Result:** own rows only; another user's data returns `404`; no price or cost
 
 #### UC24 Login / Logout
 
-- **Actor:** every role
-- **Main flow:** email and password → system checks credentials and status → session created → default screen by role (Admin and Manager: License Dashboard; Staff: Software Catalog; Employee: My Licenses) → logout destroys the session
+- **Actor:** Employee, Staff, Manager, Admin
+- **Main flow:** email and password → system checks credentials and status → session created → default screen by role (Manager: License Dashboard; Staff: Software Catalog; Admin: Users; Employee: My Licenses) → logout destroys the session
 - **Alternative:** wrong credentials → generic message; 5 failures → locked 15 minutes; disabled account → refused; session expired → log in again; screen outside the role → `403`
 - **Result:** BR-18; SSO and self-registration are out of scope
 
