@@ -4,7 +4,7 @@
 >
 > Implementation status: NOT STARTED (requirements phase)
 
-Product name: **VFast — Enterprise License Management System**.
+System: **Enterprise License Management System (ELMS)**, built by team VFast.
 
 This document decomposes the assignment from the business problem down to user stories:
 
@@ -116,7 +116,7 @@ For Microsoft 365, the Graph v1.0 endpoints below cover the first phase. They mu
 | Activity per user | `GET /reports/getOffice365ActiveUserDetail(period='D30')` |
 | Last sign-in | `GET /users?$select=signInActivity` |
 
-Graph does not provide prices, cost, P&L, or monthly history: prices and cost come from Staff (import or manual entry), assignments and usage of licenses without a connector also come from Staff (UC03), units from HR data, and history from a daily snapshot kept by VFast.
+Graph does not provide prices, cost, P&L, or monthly history: prices and cost come from Staff (import or manual entry), assignments and usage of licenses without a connector also come from Staff (UC03), units from HR data, and history from a daily snapshot kept by ELMS.
 
 **Risks to check early:** admin permissions needed to call each API; report delay and history limits; usage reports that anonymize user names by default; `signInActivity` requiring a paid Entra ID plan; API rate limits.
 
@@ -151,7 +151,7 @@ Pipeline principles:
 
 The epics are the five branches of the agreed mind map; each leaf is one use case.
 
-![VFast mind map](mindmap.png)
+![ELMS mind map](mindmap.png)
 
 | Epic | Group | Features (use cases) |
 |---|---|---|
@@ -189,7 +189,7 @@ The epics are the five branches of the agreed mind map; each leaf is one use cas
 
 - Every provider connection is read-only.
 - Employee identity is matched by company email (for Microsoft 365, `userPrincipalName`).
-- The group has several P&Ls (subsidiaries), each with departments. Admin maintains the P&L / department tree in VFast; it can be filled from HR data.
+- The group has several P&Ls (subsidiaries), each with departments. Admin maintains the P&L / department tree in ELMS; it can be filled from HR data.
 - The 60-day inactivity threshold is fixed in this phase.
 
 ## 9. Key risks
