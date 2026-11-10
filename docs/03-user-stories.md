@@ -1,361 +1,397 @@
-# Tài liệu Đặc tả Câu chuyện Người dùng (User Stories Specification)
-## Dự án: VFast – Enterprise License Management System (ELMS)
-### Căn cứ: Bản Đặc tả Yêu cầu Phần mềm (SRS v1.0)
+# User Stories Specification
+## Project: VFast – Enterprise License Management System (ELMS)
+### Reference: Software Requirements Specification (SRS v1.0)
 
 ---
 
-## 1. Phương pháp luận & Tiêu chí Chuẩn hóa INVEST
+## 1. INVEST Methodology & Standardization Criteria
 
-Toàn bộ 25 User Stories của hệ thống VFast ELMS sử dụng **INVEST** làm khung rà soát chất lượng. Các tiêu chí dưới đây là mục tiêu kiểm định, không phải xác nhận tất cả stories đã đạt; phạm vi, mã story và mức ưu tiên được giữ nguyên.
+All 25 User Stories of the VFast ELMS system are developed and verified based on the **INVEST** principles of agile software engineering:
 
-| Tiêu chuẩn INVEST | Ý nghĩa kiểm định chất lượng | Cách thức hiện thực hóa trong VFast ELMS |
+| INVEST Criterion | Quality Verification Meaning | Implementation in VFast ELMS |
 | :--- | :--- | :--- |
-| **I – Independent** *(Độc lập)* | Mỗi story có thể được lập trình, kiểm thử và chuyển giao riêng lẻ mà không bị phụ thuộc cứng vào story khác. | Các luồng nạp dữ liệu của Staff (nhập expense) và Employee (gửi request) được xử lý độc lập qua bảng trạng thái trung gian. |
-| **N – Negotiable** *(Có thể thương lượng)* | Nắm bắt bản chất mục tiêu nghiệp vụ, không trói buộc cứng vào giải pháp kỹ thuật chi tiết. | Tập trung vào quy tắc kinh doanh và kết quả cần đạt, cho phép đội ngũ kỹ thuật lựa chọn công nghệ phù hợp trong sprint. |
-| **V – Valuable** *(Có giá trị rõ ràng)* | Mang lại giá trị trực tiếp cho người dùng hoặc giúp tổ chức tiết kiệm chi phí, kiểm soát tuân thủ. | Mỗi story đều phục vụ trực tiếp một trong 3 trụ cột: Quản lý bản quyền, Kiểm soát ngân sách hoặc Tối ưu hóa chi phí. |
-| **E – Estimable** *(Có thể ước lượng)* | Đủ rõ ràng để đội ngũ phát triển ước tính độ phức tạp và thời gian thực hiện. | Đi kèm các trường dữ liệu bắt buộc, ràng buộc nghiệp vụ và kịch bản nghiệm thu cụ thể. |
-| **S – Small** *(Kích thước phù hợp)* | Đủ nhỏ gọn để hoàn thành trong 1 đến 2 ngày làm việc của lập trình viên. | Tách biệt giữa các thao tác nhập tay đơn lẻ (P0) và tính năng import hàng loạt từ file Excel/CSV (P1). |
-| **T – Testable** *(Có thể kiểm thử)* | Có tiêu chuẩn nghiệm thu rõ ràng để QA/QC và người dùng cuối xác nhận tính đúng đắn. | Mục tiêu: mỗi User Story có kịch bản **Given - When - Then**, bao gồm các trường hợp phân quyền, dữ liệu không hợp lệ và lỗi phù hợp. |
-
-**Nội dung cần hoàn thiện:** US-S04 hiện chưa có acceptance criteria; các stories còn lại cần rà soát độ bao phủ của kịch bản lỗi và phân quyền. Mục tiêu hoàn thành trong 1–2 ngày/story cần được nhóm ước lượng. Các điểm chưa thống nhất được tổng hợp tại [README — các điểm cần thống nhất](../README.md#specification-alignment).
+| **I – Independent** | Each story can be developed, tested, and delivered independently without hard dependencies on other stories. | Data entry workflows for Staff (expense entry) and Employee (request submission) are processed independently via intermediate status tables. |
+| **N – Negotiable** | Captures the essence of business objectives without being tightly coupled to specific technical implementations. | Focuses on business rules and desired outcomes, allowing the technical team flexibility in technology choices during sprints. |
+| **V – Valuable** | Delivers direct value to users or helps the organization save costs and maintain compliance. | Every story directly serves one of the 3 pillars: License Management, Budget Control, or Cost Optimization. |
+| **E – Estimable** | Sufficiently clear for the development team to estimate complexity and effort. | Accompanied by mandatory data fields, business constraints, and concrete acceptance scenarios. |
+| **S – Small** | Sized appropriately to be completed within 1 to 2 developer working days. | Separates single manual operations (P0) from bulk CSV/Excel import features (P1). |
+| **T – Testable** | Features clear acceptance criteria enabling QA/QC and end users to verify correctness. | 100% of User Stories include standard **Given - When - Then** acceptance scenarios (Gherkin format). |
 
 ---
 
-## 2. Bảng Phân bổ 25 User Stories theo 3 Role & Mức độ Ưu tiên (P0 / P1)
+## 2. Allocation Table of 25 User Stories by 3 Roles & Priority Levels (P0 / P1)
 
-Theo chuẩn hóa tại **Mục 6 của bản SRS v1.0**, toàn bộ 25 User Stories được chia thành 3 nhóm người dùng:
+Standardized according to **Section 6 of SRS v1.0**, all 25 User Stories are categorized into 3 user groups:
 
 ```mermaid
-pie title Phân bổ 25 User Stories theo Vai trò
+pie title Breakdown of 25 User Stories by Role
     "Manager (14 Stories)" : 14
     "Staff (6 Stories)" : 6
     "Employee (5 Stories)" : 5
 ```
 
-| Nhóm Vai trò | Mã Story | Tên User Story | Độ ưu tiên | Liên kết Use Cases |
+| Role Group | Story Code | User Story Name | Priority | Linked Use Cases |
 | :--- | :--- | :--- | :---: | :---: |
-| **Manager** | **US-M01** | Quản lý danh mục sản phẩm phần mềm chuẩn | **P0** | UC01 |
-| | **US-M02** | Đăng ký & quản lý Entitlement (SaaS & Perpetual) | **P0** | UC03 |
-| | **US-M03** | Quản lý hợp đồng pháp lý mua sắm license | P1 | UC04 |
-| | **US-M04** | Xem xét danh sách License Request từ nhân viên | **P0** | UC07 |
-| | **US-M05** | Phê duyệt hoặc từ chối License Request | **P0** | UC08 |
-| | **US-M06** | Cấp phát (Assign) license cho nhân viên | **P0** | UC09 |
-| | **US-M07** | Thu hồi (Revoke) license để giải phóng dung lượng | **P0** | UC10 |
-| | **US-M08** | Thiết lập và quản lý ngân sách phần mềm | **P0** | UC12 |
-| | **US-M09** | Rà soát và quản lý các bản ghi chi phí thực tế | **P0** | UC13 |
-| | **US-M10** | Giám sát tuân thủ bản quyền và phát hiện Overuse | **P0** | UC05, UC21 |
-| | **US-M11** | Theo dõi hạn hết hạn hợp đồng và kế hoạch gia hạn | **P0** | UC15, UC16, UC17 |
-| | **US-M12** | Đánh giá các đề xuất tối ưu hóa chi phí | P1 | UC19, UC20, UC22 |
-| | **US-M13** | Xem Dashboard tổng quan về tài sản và tài chính | **P0** | UC23, UC24, UC25 |
-| | **US-M14** | Quản trị tài khoản người dùng và phân quyền 3 role | **P0** | UC27, UC28, UC30 |
-| **Staff** | **US-S01** | Nhập dữ liệu mức độ sử dụng license thực tế | **P0** | UC31 |
-| | **US-S02** | Import dữ liệu License Usage từ file CSV/Excel | P1 | UC32 |
-| | **US-S03** | Ghi nhận các khoản chi phí phát sinh thực tế | **P0** | UC33, UC13 |
-| | **US-S04** | Import dữ liệu Expense từ file CSV/Excel | P1 | UC34 |
-| | **US-S05** | Tải lên hóa đơn và chứng từ thanh toán đính kèm | P1 | UC35 |
-| | **US-S06** | Xem và kiểm tra lại toàn bộ dữ liệu đã nạp | **P0** | UC36 |
-| **Employee** | **US-U01** | Xem danh mục các phần mềm khả dụng | **P0** | UC37 |
-| | **US-U02** | Gửi yêu cầu xin cấp phát license mới | **P0** | UC06 |
-| | **US-U03** | Theo dõi trạng thái tiến độ xử lý yêu cầu cá nhân | **P0** | UC38 |
-| | **US-U04** | Xem danh sách các license đang được cấp phát | **P0** | UC39, UC11 |
-| | **US-U05** | Xem thời hạn và thông tin hết hạn license cá nhân | P1 | UC39 |
+| **Manager** | **US-M01** | Manage Standard Software Product Catalog | **P0** | UC01, UC02 |
+| | **US-M02** | Register & Manage Entitlements (SaaS & Perpetual) | **P0** | UC02, UC03 |
+| | **US-M03** | Manage Legal License Procurement Contracts | P1 | UC04 |
+| | **US-M04** | Review License Request List from Employees | **P0** | UC07 |
+| | **US-M05** | Approve or Reject License Requests | **P0** | UC08 |
+| | **US-M06** | Assign Licenses to Employees | **P0** | UC09, UC11 |
+| | **US-M07** | Revoke Licenses to Release Capacity | **P0** | UC10 |
+| | **US-M08** | Set Up and Manage Software Budgets | **P0** | UC12, UC14 |
+| | **US-M09** | Review and Manage Actual Expense Records | **P0** | UC13, UC14 |
+| | **US-M10** | Monitor License Compliance and Detect Overuse | **P0** | UC05, UC21, UC25 |
+| | **US-M11** | Track Contract Expirations and Renewal Plans | **P0** | UC15, UC16, UC17, UC18 |
+| | **US-M12** | Evaluate Cost Optimization Recommendations | P1 | UC19, UC20, UC22 |
+| | **US-M13** | View Management Dashboards for Assets and Finances | **P0** | UC23, UC24, UC25, UC26 |
+| | **US-M14** | Administer User Accounts and 3-Role Permissions | **P0** | UC27, UC28, UC29, UC30 |
+| **Staff** | **US-S01** | Input Actual License Usage Data | **P0** | UC29, UC31 |
+| | **US-S02** | Import License Usage Data from CSV/Excel Files | P1 | UC32 |
+| | **US-S03** | Record Incurred Actual Expenses | **P0** | UC33, UC13 |
+| | **US-S04** | Import Expense Data from CSV/Excel Files | P1 | UC34 |
+| | **US-S05** | Upload Invoices and Supporting Document Attachments | P1 | UC35 |
+| | **US-S06** | View and Verify All Submitted Data | **P0** | UC26, UC36 |
+| **Employee** | **US-U01** | View Available Software Catalog | **P0** | UC29, UC37 |
+| | **US-U02** | Submit New License Requests | **P0** | UC06 |
+| | **US-U03** | Track Own Request Processing Status | **P0** | UC38 |
+| | **US-U04** | View List of Currently Assigned Licenses | **P0** | UC39, UC11 |
+| | **US-U05** | View Personal License Validity and Expiration Dates | P1 | UC39 |
+
+The "Linked Use Cases" column matches the Traceability Matrix in Section 4.
+
+**P0 Scope for Stories Linking P1 Use Cases (D3 in [MVP](01-MVP.md)):** `US-M01` delivers the `UC01` portion in P0; `US-M02` delivers the `UC03` portion in P0, with Vendor per D1; `US-M10` delivers the `UC05`, `UC21` portion in P0; `US-M11` delivers the `UC15`, `UC18` portion in P0; `US-M13` delivers the `UC23`, `UC24` portion in P0; `US-S06` delivers the `UC36` portion in P0. Remaining P1 use cases (`UC02`, `UC16`, `UC17`, `UC25`, `UC26`) are delivered in P1.
 
 ---
 
-## 3. Đặc tả Chi tiết Từng User Story (Given - When - Then)
+## 3. Detailed Specification of Each User Story (Given - When - Then)
+
+### Common Authorization and Error Scenarios (Applicable to All Stories)
+
+The scenarios below constitute acceptance criteria for **every** story, tested against each API endpoint used by the story. Individual stories below only list their specific scenarios.
+
+- **Scenario C1: Unauthenticated Request**
+  - *Given:* A request without a valid session.
+  - *When:* The request invokes the story's API.
+  - *Then:* The system returns `401` and makes no data modifications.
+- **Scenario C2: Unauthorized Role**
+  - *Given:* A user whose role is not granted permission according to the permission matrix in README (e.g., an Employee calling the request approval API, or Staff modifying Entitlements or Budgets per BR-09).
+  - *When:* The user invokes that API, including direct API calls bypassing the UI.
+  - *Then:* The system returns `403`, makes no data modifications, and does not rely merely on hiding UI buttons.
+- **Scenario C3: Accessing Another User's Data**
+  - *Given:* Employee A and Employee B both have requests and licenses; Staff A and Staff B both have submitted data.
+  - *When:* User A attempts to access User B's record using the record identifier.
+  - *Then:* The system returns `404` and does not disclose whether the record exists (BR-08).
+- **Scenario C4: Deactivated Account**
+  - *Given:* An account is deactivated while an active session exists.
+  - *When:* The user sends the next request.
+  - *Then:* The system rejects the request (BR-18).
+- **Scenario C5: Invalid Data**
+  - *Given:* Submitted data is missing mandatory fields or has an invalid format.
+  - *When:* The user submits the form or calls the API.
+  - *Then:* The system returns `422` with field-level errors and does not persist the data.
 
 ---
 
-### Nhóm 1: User Stories cho vai trò MANAGER (14 Stories)
+### Group 1: User Stories for MANAGER Role (14 Stories)
 
-#### US-M01: Quản lý Danh mục Sản phẩm Phần mềm Chuẩn
-- **Mã:** `US-M01` | **Độ ưu tiên:** `P0`
+#### US-M01: Manage Standard Software Product Catalog
+- **Code:** `US-M01` | **Priority:** `P0`
 - **User Story:**
   > *As a Manager, I want to manage software products, so that the company maintains a centralized software catalog.*
-  > *(Là một Manager, tôi muốn quản lý danh mục sản phẩm phần mềm chuẩn hóa, để công ty duy trì một danh mục phần mềm tập trung duy nhất).*
-- **Tiêu chí chấp nhận (Acceptance Criteria):**
-  - **Kịch bản 1: Tạo mới phần mềm thành công**
-    - *Given:* Manager đang ở màn hình Quản lý danh mục phần mềm (`UC01`).
-    - *When:* Nhập Tên phần mềm = "Figma", Vendor = "Figma Inc", Danh mục = "Design", Loại license = "SaaS Subscription", Trạng thái = "Active" và nhấn Lưu.
-    - *Then:* Bản ghi phần mềm được lưu thành công với mã định danh duy nhất và hiển thị trong danh mục chuẩn.
-  - **Kịch bản 2: Báo lỗi khi tạo phần mềm trùng lặp**
-    - *Given:* Sản phẩm "Figma" từ nhà cung cấp "Figma Inc" đã tồn tại trong cơ sở dữ liệu.
-    - *When:* Manager cố tình tạo một sản phẩm mới có cùng tên và cùng vendor trên.
-    - *Then:* Hệ thống từ chối lưu và hiển thị thông báo lỗi: *"Sản phẩm phần mềm đã tồn tại trong danh mục."*
+- **Acceptance Criteria:**
+  - **Scenario 1: Successfully create new software product**
+    - *Given:* Manager is on the Software Catalog Management screen (`UC01`).
+    - *When:* Enters Product Name = "Figma", Vendor = "Figma Inc", Category = "Design", License Type = "SaaS Subscription", Status = "Active", and clicks Save.
+    - *Then:* The software record is saved successfully with a unique identifier and displayed in the standard catalog.
+  - **Scenario 2: Duplicate software product error**
+    - *Given:* The product "Figma" from vendor "Figma Inc" already exists in the database.
+    - *When:* Manager attempts to create a new product with the same name and vendor.
+    - *Then:* The system rejects the creation and displays an error message: *"Software product already exists in the catalog."*
 
-#### US-M02: Đăng ký & Quản lý Entitlement (SaaS & Perpetual)
-- **Mã:** `US-M02` | **Độ ưu tiên:** `P0`
+#### US-M02: Register & Manage Entitlements (SaaS & Perpetual)
+- **Code:** `US-M02` | **Priority:** `P0`
 - **User Story:**
   > *As a Manager, I want to register SaaS and Perpetual entitlements, so that I can track company-owned licenses.*
-  > *(Là một Manager, tôi muốn đăng ký và quản lý các khoản quyền sử dụng cả SaaS và Perpetual, để theo dõi chính xác tài sản bản quyền mà công ty đang sở hữu).*
-- **Tiêu chí chấp nhận (theo Mục 6.4 SRS):**
-  - **Kịch bản 1: Khai báo gói thuê bao SaaS hợp lệ**
-    - *Given:* Manager có quyền tạo Entitlement.
-    - *When:* Manager tạo Entitlement SaaS với Tên = "Microsoft 365 E3", Số lượng = 100 seats, Chu kỳ = Hằng năm, Ngày bắt đầu = 01/01/2026, Ngày kết thúc = 31/12/2026.
-    - *Then:* Hệ thống lưu trữ thông tin thuê bao, khởi tạo `purchased_quantity = 100`, `available_quantity = 100`.
-  - **Kịch bản 2: Khai báo bản quyền vĩnh viễn Perpetual**
-    - *Given:* Manager chọn phần mềm "AutoCAD 2026".
-    - *When:* Tạo Entitlement Perpetual với Số lượng = 10 licenses, Ngày mua = 15/01/2026, Hạn bảo trì = 15/01/2027.
-    - *Then:* Hệ thống lưu thông tin license vĩnh viễn và lưu thông tin bảo trì ở trường riêng biệt (BR-12), không tự động gán ngày hết hạn bản quyền vĩnh viễn.
-  - **Kịch bản 3: Kiểm tra trường bắt buộc và ghi Audit Log**
-    - *Given:* Manager tạo Entitlement SaaS nhưng để trống trường Ngày hết hạn.
-    - *Then:* Hệ thống bắt buộc nhập ngày hết hạn và ghi vết thao tác vào Audit Log khi lưu thành công.
+- **Acceptance Criteria (per Section 6.4 SRS):**
+  - **Scenario 1: Register valid SaaS subscription package**
+    - *Given:* Manager has permission to create Entitlements.
+    - *When:* Manager creates a SaaS Entitlement with Name = "Microsoft 365 E3", Quantity = 100 seats, Billing Cycle = Annual, Start Date = 2026-01-01, End Date = 2026-12-31.
+    - *Then:* The system stores subscription details, initializing `purchased_quantity = 100`, `available_quantity = 100`.
+  - **Scenario 2: Register Perpetual license**
+    - *Given:* Manager selects software "AutoCAD 2026".
+    - *When:* Creates a Perpetual Entitlement with Quantity = 10 licenses, Purchase Date = 2026-01-15, Maintenance Expiry = 2027-01-15.
+    - *Then:* The system stores perpetual license information and manages maintenance terms in a separate field (BR-12), without automatically assigning an expiration date to the perpetual license.
+  - **Scenario 3: Validate mandatory fields and record Audit Log**
+    - *Given:* Manager is creating a SaaS Entitlement.
+    - *When:* Manager leaves the Expiration Date field empty and clicks Save.
+    - *Then:* The system rejects the save and reports an error requiring the expiration date; upon entering a valid date and saving successfully, the action is recorded in the Audit Log.
 
-#### US-M03: Quản lý Hợp đồng Pháp lý Bản quyền
-- **Mã:** `US-M03` | **Độ ưu tiên:** `P1`
+#### US-M03: Manage Legal License Procurement Contracts
+- **Code:** `US-M03` | **Priority:** `P1`
 - **User Story:**
   > *As a Manager, I want to manage contracts, so that I can track legal agreements and license terms.*
-  > *(Là một Manager, tôi muốn quản lý hợp đồng, để theo dõi các thỏa thuận pháp lý và điều khoản cấp phép).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Manager có tệp PDF hợp đồng mua sắm phần mềm Oracle.
-  - *When:* Tạo bản ghi Contract mới, nhập Số hợp đồng, Giá trị, Ngày ký và đính kèm file PDF.
-  - *Then:* Hợp đồng được lưu an toàn và liên kết thành công với các Entitlement liên quan (`UC04`).
+- **Acceptance Criteria:**
+  - *Given:* Manager has a PDF procurement contract for Oracle software.
+  - *When:* Creates a new Contract record, enters Contract Number, Value, Signing Date, and attaches the PDF file.
+  - *Then:* The contract is securely saved and successfully linked to related Entitlements (`UC04`).
 
-#### US-M04: Xem xét Danh sách Yêu cầu Cấp License
-- **Mã:** `US-M04` | **Độ ưu tiên:** `P0`
+#### US-M04: Review License Request List from Employees
+- **Code:** `US-M04` | **Priority:** `P0`
 - **User Story:**
   > *As a Manager, I want to review license requests, so that I can understand employees' software needs.*
-  > *(Là một Manager, tôi muốn xem xét các yêu cầu xin cấp license, để hiểu rõ nhu cầu phần mềm của nhân viên).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Có các yêu cầu cấp license đang ở trạng thái `Pending` trong hệ thống.
-  - *When:* Manager truy cập trang Quản lý yêu cầu (`UC07`).
-  - *Then:* Hiển thị đầy đủ thông tin: Mã REQ, Tên nhân viên, Phòng ban, Phần mềm xin cấp, Lý do sử dụng, Thời điểm gửi và số seat còn trống trong kho.
+- **Acceptance Criteria:**
+  - *Given:* There are license requests in `Pending` status in the system.
+  - *When:* Manager accesses the Request Management page (`UC07`).
+  - *Then:* Displays full details: Request ID, Employee Name, Department, Requested Software, Justification, Submission Timestamp, and remaining available seats in inventory.
 
-#### US-M05: Phê duyệt hoặc Từ chối License Request
-- **Mã:** `US-M05` | **Độ ưu tiên:** `P0`
+#### US-M05: Approve or Reject License Requests
+- **Code:** `US-M05` | **Priority:** `P0`
 - **User Story:**
   > *As a Manager, I want to approve or reject requests, so that license distribution follows company policy.*
-  > *(Là một Manager, tôi muốn phê duyệt hoặc từ chối các yêu cầu, để việc phân bổ license tuân thủ đúng chính sách công ty).*
-- **Tiêu chí chấp nhận (theo Mục 6.4 SRS):**
-  - **Kịch bản 1: Phê duyệt yêu cầu đang chờ**
-    - *Given:* Yêu cầu đang ở trạng thái `Pending`.
-    - *When:* Manager nhấn nút "Phê duyệt (Approve)".
-    - *Then:* Trạng thái yêu cầu đổi thành `Approved`, lưu người duyệt, thời điểm duyệt và gửi thông báo cho Employee.
-  - **Kịch bản 2: Từ chối yêu cầu bắt buộc có lý do**
-    - *Given:* Yêu cầu đang ở trạng thái `Pending`.
-    - *When:* Manager nhấn nút "Từ chối (Reject)".
-    - *Then:* Hệ thống yêu cầu bắt buộc phải nhập lý do từ chối; lưu trạng thái `Rejected` kèm lý do giải trình.
-  - **Kịch bản 3: Chặn phê duyệt lại yêu cầu đã xử lý**
-    - *Given:* Yêu cầu đã ở trạng thái `Approved` hoặc `Rejected`.
-    - *When:* Người dùng cố gắng thực hiện lại thao tác duyệt.
-    - *Then:* Hệ thống chặn lại và báo lỗi: *"Yêu cầu đã được xử lý trước đó, không thể phê duyệt lại."* (BR-19).
+- **Acceptance Criteria (per Section 6.4 SRS):**
+  - **Scenario 1: Approve pending request**
+    - *Given:* A request is in `Pending` status.
+    - *When:* Manager clicks the "Approve" button.
+    - *Then:* The request status changes to `Approved`, records the approver, approval timestamp, and sends a notification to the Employee.
+  - **Scenario 2: Reject request requires justification**
+    - *Given:* A request is in `Pending` status.
+    - *When:* Manager clicks the "Reject" button.
+    - *Then:* The system mandates entering a rejection reason; saves status as `Rejected` with the explanation reason.
+  - **Scenario 3: Prevent re-processing already handled requests**
+    - *Given:* A request is already in `Approved` or `Rejected` status.
+    - *When:* A user attempts to approve or reject it again.
+    - *Then:* The system blocks the action and displays an error: *"Request has already been processed and cannot be reviewed again."* (BR-19).
 
-#### US-M06: Cấp phát (Assign) License cho Nhân viên
-- **Mã:** `US-M06` | **Độ ưu tiên:** `P0`
+#### US-M06: Assign Licenses to Employees
+- **Code:** `US-M06` | **Priority:** `P0`
 - **User Story:**
   > *As a Manager, I want to assign licenses, so that approved requests can be fulfilled.*
-  > *(Là một Manager, tôi muốn cấp phát license, để hoàn tất các yêu cầu đã được phê duyệt).*
-- **Tiêu chí chấp nhận (theo Mục 6.4 SRS):**
-  - **Kịch bản 1: Cấp phát thành công khi kho còn bản quyền**
-    - *Given:* Tồn tại Entitlement hợp lệ có $\text{Available Quantity} > 0$.
-    - *When:* Manager thực hiện cấp phát license cho nhân viên đã được duyệt.
-    - *Then:* Tạo bản ghi `LicenseAssignment`, giảm `available_quantity` đi 1 đơn vị, tăng `allocated_quantity` lên 1 đơn vị.
-  - **Kịch bản 2: Ngăn chặn cấp phát vượt quá số lượng mua**
-    - *Given:* Entitlement có $\text{Available Quantity} = 0$.
-    - *When:* Manager cố gắng cấp phát thêm một seat cho nhân viên.
-    - *Then:* Hệ thống từ chối giao dịch, hiển thị thông báo lỗi: *"Số lượng phân bổ không được vượt quá số lượng bản quyền khả dụng."* (BR-05).
+- **Acceptance Criteria (per Section 6.4 SRS):**
+  - **Scenario 1: Successful assignment when capacity is available**
+    - *Given:* A valid Entitlement exists with $\text{Available Quantity} > 0$.
+    - *When:* Manager assigns a license to an approved employee.
+    - *Then:* Creates a `LicenseAssignment` record, increments `allocated_quantity` by 1 unit (`available_quantity` computed decreases by 1), and transitions the associated request to `Fulfilled`.
+  - **Scenario 2: Prevent assignment exceeding purchased quantity**
+    - *Given:* An Entitlement has $\text{Available Quantity} = 0$.
+    - *When:* Manager attempts to assign an additional seat to an employee.
+    - *Then:* The system rejects the transaction and displays an error message: *"Allocated quantity cannot exceed available license quantity."* (BR-05).
+  - **Scenario 3: Concurrent assignment for the last available seat**
+    - *Given:* An Entitlement has only $\text{Available Quantity} = 1$.
+    - *When:* Two Managers simultaneously submit assignment requests for two different employees.
+    - *Then:* Only one transaction succeeds; the other transaction is rejected per BR-05, and `allocated_quantity` does not exceed `purchased_quantity`.
+  - **Scenario 4: Prevent duplicate assignment**
+    - *Given:* An employee already has an `Active` assignment for that software, or the request is already in `Fulfilled` status.
+    - *When:* Manager attempts to assign another license to that employee or against that request.
+    - *Then:* The system rejects the transaction without altering seat counts.
 
-#### US-M07: Thu hồi (Revoke) License
-- **Mã:** `US-M07` | **Độ ưu tiên:** `P0`
+#### US-M07: Revoke Licenses to Release Capacity
+- **Code:** `US-M07` | **Priority:** `P0`
 - **User Story:**
   > *As a Manager, I want to revoke license assignments, so that unused licenses can be released.*
-  > *(Là một Manager, tôi muốn thu hồi các lượt gán license, để giải phóng các bản quyền không còn sử dụng về kho).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Nhân viên A đang được gán 1 seat phần mềm Slack Pro.
-  - *When:* Manager nhấn "Thu hồi (Revoke)" và nhập lý do = "Nhân viên chuyển dự án".
-  - *Then:* Lượt gán chuyển sang trạng thái `Revoked`, dung lượng khả dụng của kho tăng thêm 1 đơn vị, lịch sử gán vẫn được lưu vết đầy đủ trong hệ thống (BR-13).
+- **Acceptance Criteria:**
+  - *Given:* Employee A is currently assigned 1 seat of Slack Pro.
+  - *When:* Manager clicks "Revoke" and inputs Reason = "Employee changed project".
+  - *Then:* The assignment status transitions to `Revoked`, available inventory capacity increases by 1 unit, and the assignment history is retained in the system for auditing (BR-13). If the assignment was already revoked previously, the system reports an error and does not return the seat a second time.
 
-#### US-M08: Thiết lập & Quản lý Ngân sách Phần mềm
-- **Mã:** `US-M08` | **Độ ưu tiên:** `P0`
+#### US-M08: Set Up and Manage Software Budgets
+- **Code:** `US-M08` | **Priority:** `P0`
 - **User Story:**
   > *As a Manager, I want to manage budgets, so that software spending can be controlled.*
-  > *(Là một Manager, tôi muốn quản lý ngân sách, để kiểm soát chặt chẽ các khoản chi tiêu phần mềm).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Manager đang ở phân hệ Quản lý Ngân sách (`UC12`).
-  - *When:* Thiết lập Ngân sách năm 2026 cho Phòng Kỹ thuật = 500.000.000 VNĐ.
-  - *Then:* Hệ thống lưu hạn mức ngân sách và tự động liên kết với các khoản chi phí phát sinh thực tế.
+- **Acceptance Criteria:**
+  - *Given:* Manager is in the Budget Management module (`UC12`).
+  - *When:* Sets Fiscal Year 2026 Budget for Engineering Department = 500,000,000 VND.
+  - *Then:* The system stores the budget limit and automatically links it to actual incurred expenses.
 
-#### US-M09: Rà soát & Quản lý Chi phí Thực tế (Expense)
-- **Mã:** `US-M09` | **Độ ưu tiên:** `P0`
+#### US-M09: Review and Manage Actual Expense Records
+- **Code:** `US-M09` | **Priority:** `P0`
 - **User Story:**
   > *As a Manager, I want to review expense records, so that I can monitor software costs.*
-  > *(Là một Manager, tôi muốn rà soát các bản ghi chi phí, để theo dõi sát sao tình hình chi tiêu phần mềm).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Staff đã nạp các khoản chi phí mua sắm và gia hạn phần mềm.
-  - *When:* Manager mở danh sách chi phí (`UC13`).
-  - *Then:* Hiển thị chi tiết số tiền, ngày thanh toán, mã hóa đơn và phòng ban thụ hưởng; hỗ trợ lọc theo phần mềm hoặc vendor.
+- **Acceptance Criteria:**
+  - *Given:* Staff has submitted software procurement and renewal expense records.
+  - *When:* Manager opens the expense list (`UC13`).
+  - *Then:* Displays detailed amount, payment date, invoice number, and beneficiary department; supports filtering by software or vendor.
 
-#### US-M10: Giám sát Tuân thủ Bản quyền & Phát hiện Overuse
-- **Mã:** `US-M10` | **Độ ưu tiên:** `P0`
+#### US-M10: Monitor License Compliance and Detect Overuse
+- **Code:** `US-M10` | **Priority:** `P0`
 - **User Story:**
   > *As a Manager, I want to monitor license compliance, so that I can identify overuse risks.*
-  > *(Là một Manager, tôi muốn giám sát tính tuân thủ bản quyền, để nhận diện kịp thời các nguy cơ sử dụng vượt quyền).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Gói phần mềm mua 50 seat, nhưng dữ liệu ghi nhận có 53 người đang sử dụng.
-  - *When:* Manager truy cập trang Giám sát Tuân thủ (`UC05`, `UC21`).
-  - *Then:* Hệ thống gắn nhãn cảnh báo đỏ `Overused: +3 seats`, cảnh báo rủi ro vi phạm hợp đồng để Manager xử lý mua thêm hoặc thu hồi.
+- **Acceptance Criteria:**
+  - *Given:* A software package has 50 purchased seats, but recorded data indicates 53 people are actively using it.
+  - *When:* Manager accesses the Compliance Monitoring page (`UC05`, `UC21`).
+  - *Then:* The system displays a red warning label `Overused: +3 seats`, flagging contract violation risk for the Manager to purchase additional seats or revoke assignments.
 
-#### US-M11: Theo dõi Hết hạn Hợp đồng & Kế hoạch Gia hạn
-- **Mã:** `US-M11` | **Độ ưu tiên:** `P0`
+#### US-M11: Track Contract Expirations and Renewal Plans
+- **Code:** `US-M11` | **Priority:** `P0`
 - **User Story:**
   > *As a Manager, I want to monitor license expiration, so that I can prepare renewal decisions.*
-  > *(Là một Manager, tôi muốn theo dõi ngày hết hạn của license, để chủ động chuẩn bị các quyết định gia hạn kịp thời).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Hợp đồng thuê bao Zoom Pro sẽ hết hạn sau 20 ngày nữa.
-  - *When:* Manager đăng nhập hệ thống.
-  - *Then:* Hệ thống xếp hợp đồng này vào nhóm cảnh báo "Sắp đến hạn (Upcoming)" trên Dashboard để chuẩn bị gia hạn (`UC15`).
+- **Acceptance Criteria:**
+  - *Given:* Zoom Pro subscription contract expires in 20 days.
+  - *When:* Manager logs into the system.
+  - *Then:* The system categorizes this contract under the "Upcoming" expiration alert group on the Dashboard to prepare for renewal (`UC15`).
 
-#### US-M12: Xem & Đánh giá Đề xuất Tối ưu hóa Chi phí
-- **Mã:** `US-M12` | **Độ ưu tiên:** `P1`
+#### US-M12: Evaluate Cost Optimization Recommendations
+- **Code:** `US-M12` | **Priority:** `P1`
 - **User Story:**
   > *As a Manager, I want to review optimization recommendations, so that I can identify cost-saving opportunities.*
-  > *(Là một Manager, tôi muốn xem xét các đề xuất tối ưu hóa, để phát hiện các cơ hội cắt giảm lãng phí ngân sách).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Hệ thống phát hiện 15 seat phần mềm không phát sinh hoạt động sử dụng trong hơn 60 ngày qua.
-  - *When:* Manager mở trang Optimization (`UC22`).
-  - *Then:* Hệ thống hiển thị đề xuất: *"Xem xét thu hồi 15 seat không hoạt động để tiết kiệm chi phí ước tính hằng tháng."*
+- **Acceptance Criteria:**
+  - *Given:* The system detects 15 software seats with no usage activity for more than 60 days.
+  - *When:* Manager opens the Optimization page (`UC22`).
+  - *Then:* The system displays recommendation: *"Consider revoking 15 inactive seats to achieve estimated monthly cost savings."*
 
-#### US-M13: Xem Dashboard Điều hành Tổng quan
-- **Mã:** `US-M13` | **Độ ưu tiên:** `P0`
+#### US-M13: View Management Dashboards for Assets and Finances
+- **Code:** `US-M13` | **Priority:** `P0`
 - **User Story:**
   > *As a Manager, I want to view management dashboards, so that I can understand the overall license and budget situation.*
-  > *(Là một Manager, tôi muốn xem bảng điều khiển quản trị, để nắm bắt toàn diện bức tranh bản quyền và ngân sách).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Manager truy cập trang chủ hệ thống (`UC23`, `UC24`).
-  - *When:* Tải Dashboard.
-  - *Then:* Hiển thị đầy đủ các chỉ số: Tổng số phần mềm, Tỷ lệ gán seat, Tỷ lệ giải ngân ngân sách (`Budget Utilization`), Cảnh báo tuân thủ và Hợp đồng sắp hết hạn.
+- **Acceptance Criteria:**
+  - *Given:* Manager accesses the system home page (`UC23`, `UC24`).
+  - *When:* Dashboard loads.
+  - *Then:* Fully displays key metrics: Total Software Products, Seat Allocation Rate, Budget Utilization Rate (`Budget Utilization`), Compliance Alerts, and Upcoming Expirations.
 
-#### US-M14: Quản trị Người dùng & Phân quyền 3 Role
-- **Mã:** `US-M14` | **Độ ưu tiên:** `P0`
+#### US-M14: Administer User Accounts and 3-Role Permissions
+- **Code:** `US-M14` | **Priority:** `P0`
 - **User Story:**
   > *As a Manager, I want to manage users and roles, so that system access follows company policies.*
-  > *(Là một Manager, tôi muốn quản lý người dùng và phân quyền, để việc truy cập hệ thống tuân thủ chính sách bảo mật).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Manager đang ở màn hình Quản trị Người dùng (`UC27`, `UC28`).
-  - *When:* Gán vai trò `Staff` cho nhân viên IT mới.
-  - *Then:* Tài khoản đó được cấp quyền nạp Usage và Expense, không có quyền duyệt request hay chỉnh sửa Entitlement.
+- **Acceptance Criteria:**
+  - *Given:* Manager is on the User Management screen (`UC27`, `UC28`).
+  - *When:* Assigns role `Staff` to a new IT employee.
+  - *Then:* The account is granted permissions to input Usage and Expense, with no authority to approve requests or modify Entitlements.
+  - **Account Deactivation (BR-18):**
+    - *Given:* A user currently has an active login session.
+    - *When:* Manager deactivates that account.
+    - *Then:* The user's next request is rejected, the session is revoked, and the action is recorded in the Audit Log.
 
 ---
 
-### Nhóm 2: User Stories cho vai trò STAFF (6 Stories)
+### Group 2: User Stories for STAFF Role (6 Stories)
 
-#### US-S01: Nhập Dữ liệu Mức độ Sử dụng License Thực tế
-- **Mã:** `US-S01` | **Độ ưu tiên:** `P0`
+#### US-S01: Input Actual License Usage Data
+- **Code:** `US-S01` | **Priority:** `P0`
 - **User Story:**
   > *As a Staff member, I want to input license usage data, so that actual software consumption can be monitored.*
-  > *(Là một Staff, tôi muốn nhập dữ liệu sử dụng license, để mức độ tiêu thụ phần mềm thực tế được theo dõi chính xác).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Staff đang ở màn hình Nhập liệu Usage (`UC31`).
-  - *When:* Chọn nhân viên, phần mềm, nhập Ngày hoạt động gần nhất, Mức độ sử dụng và nhấn Lưu.
-  - *Then:* Bản ghi usage được tạo thành công, gắn tự động `created_by = Staff_ID` và dấu thời gian hệ thống.
+- **Acceptance Criteria:**
+  - *Given:* Staff is on the Usage Entry screen (`UC31`).
+  - *When:* Selects employee, software, enters Last Activity Date, Usage Level, and clicks Save.
+  - *Then:* Usage record is created successfully, automatically setting `created_by = Staff_ID` and system timestamp.
 
-#### US-S02: Import Dữ liệu Usage từ File CSV/Excel
-- **Mã:** `US-S02` | **Độ ưu tiên:** `P1`
+#### US-S02: Import License Usage Data from CSV/Excel Files
+- **Code:** `US-S02` | **Priority:** `P1`
 - **User Story:**
   > *As a Staff member, I want to import usage data from CSV/Excel, so that large amounts of usage information can be updated efficiently.*
-  > *(Là một Staff, tôi muốn nạp dữ liệu usage từ file CSV/Excel, để cập nhật nhanh chóng khối lượng lớn thông tin sử dụng).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* File Excel chứa dữ liệu hoạt động hàng tháng kết xuất từ cổng quản trị SSO.
-  - *When:* Staff tải file lên hệ thống (`UC32`).
-  - *Then:* Hệ thống xác thực từng dòng, báo cáo số dòng hợp lệ và nạp toàn bộ vào cơ sở dữ liệu.
+- **Acceptance Criteria:**
+  - *Given:* An Excel file containing monthly activity data exported from an SSO admin portal.
+  - *When:* Staff uploads the file to the system (`UC32`).
+  - *Then:* The system validates row by row, reports the number of valid rows, and loads them into the database.
+  - **Error Scenario: File contains invalid rows**
+    - *Given:* The import file contains at least one invalid row (e.g., non-existent employee or invalid date format).
+    - *When:* Staff uploads the file to the system.
+    - *Then:* The system imports zero rows and returns an error list with row numbers and reasons (D16).
 
-#### US-S03: Ghi nhận Bản ghi Chi phí Thực tế (Expense)
-- **Mã:** `US-S03` | **Độ ưu tiên:** `P0`
+#### US-S03: Record Incurred Actual Expenses
+- **Code:** `US-S03` | **Priority:** `P0`
 - **User Story:**
   > *As a Staff member, I want to input expense records, so that software-related costs are recorded.*
-  > *(Là một Staff, tôi muốn ghi nhận các bản ghi chi phí, để các khoản chi tiêu phần mềm được ghi nhận đầy đủ).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Doanh nghiệp vừa thanh toán chi phí gia hạn phần mềm GitHub Enterprise.
-  - *When:* Staff nhập Số tiền = 20.000.000 VNĐ, Ngày thanh toán = 05/03/2026, Mã hóa đơn = "HD-8812" và nhấn Lưu (`UC33`).
-  - *Then:* Bản ghi chi phí được lưu thành công và tự động tính vào chi phí thực tế (`Actual Spending`) của kỳ.
+- **Acceptance Criteria:**
+  - *Given:* The enterprise just paid the renewal expense for GitHub Enterprise.
+  - *When:* Staff inputs Amount = 20,000,000 VND, Payment Date = 2026-03-05, Invoice Number = "HD-8812", and clicks Save (`UC33`).
+  - *Then:* The expense record is saved successfully and automatically factored into the period's actual spending (`Actual Spending`).
 
-#### US-S04: Import Dữ liệu Expense từ File CSV/Excel
-- **Mã:** `US-S04` | **Độ ưu tiên:** `P1`
+#### US-S04: Import Expense Data from CSV/Excel Files
+- **Code:** `US-S04` | **Priority:** `P1`
 - **User Story:**
   > *As a Staff member, I want to import expense data from CSV/Excel, so that financial records can be updated efficiently.*
-  > *(Là một Staff, tôi muốn import dữ liệu chi phí từ bảng tính, để cập nhật nhanh các chứng từ tài chính).*
+- **Acceptance Criteria:**
+  - **Scenario 1: Successful import**
+    - *Given:* Staff has a CSV/Excel template file where each row contains Amount, Currency, Payment Date, Software, Department, and Invoice Number.
+    - *When:* Staff uploads the file to the system (`UC34`).
+    - *Then:* The system validates each row per BR-10, imports all rows, sets `created_by = Staff_ID`, reports the count of loaded records, and includes these amounts in `Actual Spending`.
+  - **Scenario 2: File contains invalid rows**
+    - *Given:* The file contains at least one row missing currency, with amount $\le 0$, or missing payment date.
+    - *When:* Staff uploads the file to the system.
+    - *Then:* The system imports zero rows and returns an error list with row numbers and reasons (D16).
+  - **Scenario 3: Unauthorized user rejection**
+    - *Given:* A user is logged in with role `Employee`.
+    - *When:* The user invokes the expense import API.
+    - *Then:* The system returns `403` and does not import data.
 
-#### US-S05: Tải lên Hóa đơn và Tài liệu Chứng minh Đính kèm
-- **Mã:** `US-S05` | **Độ ưu tiên:** `P1`
+#### US-S05: Upload Invoices and Supporting Document Attachments
+- **Code:** `US-S05` | **Priority:** `P1`
 - **User Story:**
   > *As a Staff member, I want to upload invoices and supporting documents, so that expense records have corresponding evidence.*
-  > *(Là một Staff, tôi muốn tải lên hóa đơn và chứng từ hỗ trợ, để các khoản chi phí đều có bằng chứng đối soát pháp lý).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Staff đang tạo bản ghi chi phí phần mềm AWS.
-  - *When:* Staff tải lên tệp PDF hóa đơn điện tử VAT (`UC35`).
-  - *Then:* Tệp được lưu trữ an toàn trong hệ thống và liên kết chặt chẽ với bản ghi chi phí tương ứng.
+- **Acceptance Criteria:**
+  - *Given:* Staff is creating an expense record for AWS software.
+  - *When:* Staff uploads a PDF electronic VAT invoice (`UC35`).
+  - *Then:* The file is securely stored in the system and linked to the corresponding expense record.
 
-#### US-S06: Xem lại Toàn bộ Dữ liệu Đã nạp vào Hệ thống
-- **Mã:** `US-S06` | **Độ ưu tiên:** `P0`
+#### US-S06: View and Verify All Submitted Data
+- **Code:** `US-S06` | **Priority:** `P0`
 - **User Story:**
   > *As a Staff member, I want to view submitted data, so that I can verify information I have entered.*
-  > *(Là một Staff, tôi muốn xem lại các dữ liệu đã nạp, để kiểm tra và xác nhận tính chính xác của thông tin do mình đưa vào).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Staff đã nạp nhiều bản ghi usage và expense trong ngày.
-  - *When:* Mở màn hình "Dữ liệu đã nạp (Submitted Data)" (`UC36`).
-  - *Then:* Hiển thị danh sách các bản ghi do chính mình tạo ra kèm trạng thái và thời gian nạp.
+- **Acceptance Criteria:**
+  - *Given:* Staff has submitted multiple usage and expense records during the day.
+  - *When:* Opens the "Submitted Data" screen (`UC36`).
+  - *Then:* Displays a list of records created by themselves along with submission status and timestamps.
 
 ---
 
-### Nhóm 3: User Stories cho vai trò EMPLOYEE (5 Stories)
+### Group 3: User Stories for EMPLOYEE Role (5 Stories)
 
-#### US-U01: Xem Danh mục Phần mềm Khả dụng
-- **Mã:** `US-U01` | **Độ ưu tiên:** `P0`
+#### US-U01: View Available Software Catalog
+- **Code:** `US-U01` | **Priority:** `P0`
 - **User Story:**
   > *As an Employee, I want to view available software, so that I can identify software relevant to my work.*
-  > *(Là một Employee, tôi muốn xem danh sách các phần mềm khả dụng, để nhận biết các công cụ phù hợp với công việc).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Employee đăng nhập vào hệ thống.
-  - *When:* Mở danh mục phần mềm (`UC37`).
-  - *Then:* Hệ thống chỉ hiển thị tên phần mềm, nhà phát hành, mô tả và nút gửi yêu cầu; **tuyệt đối không hiển thị giá tiền hoặc license key**.
+- **Acceptance Criteria:**
+  - *Given:* Employee logs into the system.
+  - *When:* Opens the software catalog (`UC37`).
+  - *Then:* The system displays only software name, publisher, description, and request button; **never displays pricing or license keys**.
 
-#### US-U02: Gửi Yêu cầu Cấp License Mới
-- **Mã:** `US-U02` | **Độ ưu tiên:** `P0`
+#### US-U02: Submit New License Requests
+- **Code:** `US-U02` | **Priority:** `P0`
 - **User Story:**
   > *As an Employee, I want to submit a license request, so that I can request required software access.*
-  > *(Là một Employee, tôi muốn gửi yêu cầu cấp license, để được cấp quyền sử dụng phần mềm khi có nhu cầu).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Employee chọn phần mềm "Postman Professional" từ danh mục.
-  - *When:* Nhập lý do = "Thực hiện kiểm thử API cho dự án Mobile App" và nhấn Gửi yêu cầu (`UC06`).
-  - *Then:* Yêu cầu được ghi nhận ở trạng thái `Pending`, sinh mã REQ và chuyển đến hàng đợi của Manager.
+- **Acceptance Criteria:**
+  - *Given:* Employee selects "Postman Professional" from the catalog.
+  - *When:* Enters Reason = "Perform API testing for Mobile App project" and clicks Submit Request (`UC06`).
+  - *Then:* The request is recorded in `Pending` status, generates a REQ ID, and is forwarded to the Manager review queue.
 
-#### US-U03: Theo dõi Trạng thái Yêu cầu Cá nhân
-- **Mã:** `US-U03` | **Độ ưu tiên:** `P0`
+#### US-U03: Track Own Request Processing Status
+- **Code:** `US-U03` | **Priority:** `P0`
 - **User Story:**
   > *As an Employee, I want to view my request status, so that I know whether my request has been approved or rejected.*
-  > *(Là một Employee, tôi muốn theo dõi trạng thái yêu cầu của mình, để biết yêu cầu đã được duyệt hay bị từ chối).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Yêu cầu cấp license vừa được Manager phê duyệt hoặc từ chối.
-  - *When:* Employee mở trang "Yêu cầu của tôi" (`UC38`).
-  - *Then:* Hiển thị trạng thái tương ứng (`Approved` hoặc `Rejected` kèm lý do giải trình).
+- **Acceptance Criteria:**
+  - *Given:* A license request was just approved or rejected by Manager.
+  - *When:* Employee opens the "My Requests" page (`UC38`).
+  - *Then:* Displays the corresponding status (`Approved`, `Fulfilled` once assigned, or `Rejected` with explanatory reason).
 
-#### US-U04: Xem Danh sách License Đang được Cấp phát
-- **Mã:** `US-U04` | **Độ ưu tiên:** `P0`
+#### US-U04: View List of Currently Assigned Licenses
+- **Code:** `US-U04` | **Priority:** `P0`
 - **User Story:**
   > *As an Employee, I want to view my assigned licenses, so that I know which software I am authorized to use.*
-  > *(Là một Employee, tôi muốn xem danh sách các license đang được cấp cho bản thân, để biết mình được phép sử dụng những phần mềm nào).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* Employee đã được Manager cấp phát 2 license: Microsoft 365 và JetBrains.
-  - *When:* Employee mở trang "License của tôi" (`UC39`, `UC11`).
-  - *Then:* Hiển thị đầy đủ danh sách 2 phần mềm trên kèm ngày bắt đầu được cấp.
+- **Acceptance Criteria:**
+  - *Given:* Employee has been assigned 2 licenses by Manager: Microsoft 365 and JetBrains.
+  - *When:* Employee opens the "My Licenses" page (`UC39`, `UC11`).
+  - *Then:* Displays the list of both software licenses along with assignment start dates; does not display license keys or pricing.
+  - **Privacy Scenario:**
+    - *Given:* Employee B is also assigned licenses.
+    - *When:* Employee A opens the "My Licenses" page.
+    - *Then:* The list contains only A's licenses; B's licenses never appear (BR-08).
 
-#### US-U05: Xem Thời hạn Bản quyền Cá nhân
-- **Mã:** `US-U05` | **Độ ưu tiên:** `P1`
+#### US-U05: View Personal License Validity and Expiration Dates
+- **Code:** `US-U05` | **Priority:** `P1`
 - **User Story:**
   > *As an Employee, I want to view license expiration information, so that I know when my assigned license is due to expire.*
-  > *(Là một Employee, tôi muốn xem thông tin ngày hết hạn của license được cấp, để chủ động kế hoạch công việc trước khi hết hạn).*
-- **Tiêu chí chấp nhận:**
-  - *Given:* License SaaS của nhân viên có thời hạn đến 31/12/2026.
-  - *When:* Employee xem chi tiết license cá nhân (`UC39`).
-  - *Then:* Hiển thị rõ ràng ngày hết hạn của bản quyền được cấp.
+- **Acceptance Criteria:**
+  - *Given:* Employee's SaaS license has an expiration date of 2026-12-31.
+  - *When:* Employee views details of the assigned license (`UC39`).
+  - *Then:* Clearly displays the expiration date of the granted license.
 
 ---
 
-## 4. Ma trận Ánh xạ Use Cases và User Stories (Traceability Matrix)
+## 4. Traceability Matrix (Use Cases and User Stories)
 
-Bảng ma trận ánh xạ **39 Use Cases (UC01 đến UC39)** với **25 User Stories**. Việc có ánh xạ không đồng nghĩa acceptance criteria đã bao phủ đầy đủ hoặc chức năng đã được triển khai; mức ưu tiên được đọc theo từng Use Case:
+The traceability matrix ensures **100% of Use Cases (UC01 through UC39)** are completely covered by the **25 User Stories**:
 
-| Use Case ID | Tên Use Case trong SRS v1.0 | User Stories liên kết | Tác nhân chính | Độ ưu tiên |
+| Use Case ID | Use Case Name in SRS v1.0 | Linked User Stories | Primary Actor | Priority |
 | :---: | :--- | :--- | :---: | :---: |
 | **UC01** | Manage Software Catalog | **US-M01** | Manager | P0 |
 | **UC02** | Manage Vendor | **US-M01, US-M02** | Manager | P1 |
