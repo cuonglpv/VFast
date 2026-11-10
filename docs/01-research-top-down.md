@@ -4,7 +4,7 @@
 >
 > Implementation status: NOT STARTED (requirements phase)
 
-Product name: **VFast**.
+Product name: **VFast — Enterprise License Management System**.
 
 This document decomposes the assignment from the business problem down to user stories:
 
@@ -25,15 +25,15 @@ A company buys software from many providers: Microsoft, Google, Adobe, JetBrains
 | Budget plans are not compared with what was bought, assigned, and used | The team cannot tell whether a gap comes from buying too much, not assigning, or not using |
 | No data to find surplus or inefficient licenses | Renewal and budget decisions repeat last year's numbers |
 
-**Problem statement:** a company needs one place that collects license, assignment, usage, and cost data from every provider, measures each license in the unit that fits its model, compares the budget plan with reality, and tells managers every month which licenses are wasted — without ever changing anything on the provider side.
+**Problem statement:** a company needs one place that collects license, assignment, usage, and cost data from every provider, measures each license in the unit that fits its model, compares the budget plan with reality, and shows managers which licenses are wasted and what to do about it — without ever changing anything on the provider side.
 
 ## 2. Stakeholders
 
 | Stakeholder | Role in system | Main interest |
 |---|---|---|
-| Unit manager (P&L, department, team) | `MANAGER` | Dashboards and analytics for their unit, budget plan, month-end warnings |
-| License management team member | `STAFF` | Keeping the license catalog correct: view and edit license data, import usage and cost for providers without an API |
-| System administrator | `ADMIN` | Everything a Manager can do, plus accounts, roles, and data scope of every user |
+| Unit manager (P&L, department, team) | `MANAGER` | Dashboards and analytics for their unit, budget planning and monitoring, optimization results and recommendations |
+| License management team member | `STAFF` | Keeping license data correct: software catalog, vendors, entitlements, contracts, and expenses |
+| System administrator | `ADMIN` | Everything a Manager can do for every unit, plus users, departments, roles, and permissions |
 | Every employee of the company | `EMPLOYEE` | Knowing which licenses they hold and whether the system sees them as used |
 | License providers | External systems | Source of license, assignment, usage, and cost data through their APIs, logs, or exports |
 
@@ -46,7 +46,7 @@ A company buys software from many providers: Microsoft, Google, Adobe, JetBrains
 | G3 — Measure automatically | License, assignment, and usage data refresh daily without manual work for providers with an API |
 | G4 — Express waste as money | Underutilized accounts and their annual cost are shown on one screen |
 | G5 — Plan and reconcile the budget | Each unit has a yearly plan; Planned, Purchased, Assigned, Used, and Actual cost are compared per license |
-| G6 — Act every month | Each Manager receives a month-end list of unused seats with their cost and records a decision for each |
+| G6 — Turn waste into savings | Every unused, inactive, or overused license becomes a recommendation with evidence and an estimated saving, accepted or rejected by a Manager |
 | G7 — Trustworthy figures | Numbers match across screens; missing data is shown as `Unknown`, never as zero |
 
 ## 4. Research: license models and data sources
@@ -130,7 +130,7 @@ Graph does not provide prices, cost, P&L, or monthly history: prices and cost co
 
 ```text
 1. Connect provider (once) → 2. Collect data (daily) → 3. Normalize → 4. Analyze usage and budget
-  → 5. Detect inefficiency → 6. Dashboards and month-end warnings → Manager records a decision
+  → 5. Detect inefficiency → 6. Saving opportunities and recommendations → 7. Dashboards → Manager decides
 ```
 
 Pipeline principles:
@@ -149,15 +149,20 @@ Pipeline principles:
 
 ## 6. Functional decomposition (Epic → Feature)
 
-| Epic | Features | Use cases |
+The epics are the five branches of the agreed mind map; each leaf is one use case.
+
+![VFast mind map](mindmap.png)
+
+| Epic | Group | Features (use cases) |
 |---|---|---|
-| E1 License Management | Overview metrics, license list, license detail with user table | UC01–UC03 |
-| E2 Usage Analytics | KPIs, application usage, spend by department, subscription usage by month | UC04–UC07 |
-| E3 Budget Planning & Monitoring | Budget overview, budget plan, budget lines, budget vs actual | UC08–UC11 |
-| E4 Month-end Warnings | Month-end check, unused-seat list, Manager decisions | UC12 |
-| E5 Employee Self-service | My licenses | UC13 |
-| E6 Access & Administration | Login and logout, users and roles | UC14, UC15 |
-| E7 License Data | Declare and edit licenses, import usage and cost | UC16, UC17 |
+| E1 License Management | Catalog & Entitlement | Software Catalog (UC01), Vendor Management (UC02), License Entitlement (UC03), Contract Management (UC04) |
+| E2 Budget Management | Planning & Cost Allocation | Budget Planning (UC05), Cost Allocation (UC06) |
+| | Spending & Monitoring | Expense Management (UC07), Budget Monitoring (UC08), Financial Forecast (UC09) |
+| E3 Optimization | Detection | Unused License Detection (UC10), Inactive Usage Detection (UC11), License Overuse Detection (UC12) |
+| | Savings & Recommendation | Cost Optimization (UC13), Recommendation Management (UC14) |
+| E4 Analytics | Dashboards | License (UC15), Financial (UC16), Compliance (UC17), Optimization (UC18) |
+| E5 User & Organization | Administration | User (UC19), Department (UC20), Role (UC21), Permission Management (UC22) |
+| — Self-service and access | | View My Licenses (UC23), Login / Logout (UC24) |
 
 ## 7. Scope
 
@@ -166,7 +171,9 @@ Pipeline principles:
 - License catalog and information for every provider and every license model.
 - Budget plans per P&L, department, and fiscal year; tracking of planned, purchased, assigned, and used quantities.
 - Automatic usage collection through connectors; file import and manual entry where no connector exists.
-- Utilization, consumption, and cost-efficiency analysis; waste detection; dashboards and month-end warnings.
+- Software catalog, vendors, entitlements, contracts, and expenses maintained by the license team.
+- Utilization, consumption, and cost-efficiency analysis; unused, inactive, and overuse detection; saving opportunities and recommendations; budget forecast; license, financial, compliance, and optimization dashboards.
+- Users, departments, roles, and permissions.
 - Four roles: Admin, Manager, Staff, Employee.
 
 ### Out of scope
@@ -174,7 +181,7 @@ Pipeline principles:
 - Assigning or revoking licenses on a provider.
 - Buying, renewing, or cancelling contracts.
 - Changing subscriptions or permissions on a provider automatically.
-- Automatic recommendations, anomaly detection, and forecasting (later phase).
+- Carrying out a recommendation automatically; anomaly detection with machine learning.
 - Notifications outside the application (email, chat).
 - Data-source configuration screens for Admin (later phase).
 
@@ -192,7 +199,7 @@ Pipeline principles:
 | A provider has no usage API | Import or manual entry with a confidence label (A9) |
 | Usage reports anonymize users | Check tenant settings early; show aggregated data without per-user tables |
 | A sync fails and usage looks like zero | A4: the status becomes `Unknown`, and no warning is created |
-| Figures disagree between screens | Shared statuses and reconciliation rules (BR-02, BR-07, BR-09 in [Use cases](02-use-cases.md)) |
+| Figures disagree between screens | Shared statuses and reconciliation rules (BR-03, BR-06, BR-09 in [Use cases](02-use-cases.md)) |
 | Per-user usage is sensitive personal data | Every API requires login; data scope is enforced on the backend |
 
 ## 10. Open questions
