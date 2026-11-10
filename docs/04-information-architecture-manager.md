@@ -1,495 +1,445 @@
-# COMPREHENSIVE INFORMATION ARCHITECTURE & VIEW SPECIFICATIONS (IA)
+# UI/UX INFORMATION ARCHITECTURE & VIEW SPECIFICATIONS (IA)
 ## Project: VFast – Enterprise License Management System (ELMS)
-### Subsystem: Executive Management Portal for Manager Role (Module 1, Module 2, Module 3)
+### Subsystem: Executive Management Portal (2-View Focused Architecture)
 
-> **Document Baselines:** [README.md](../README.md), [docs/01-MVP.md](01-MVP.md), [docs/02-use-cases.md](02-use-cases.md), [docs/03-user-stories.md](03-use-stories.md)  
-> **Structural Reference:** [PMDC-BATCH4-DATNT250 / 09-information-architecture.md](https://github.com/DatTienNguyenn/PMDC-BATCH4-DATNT250/blob/main/docs/09-information-architecture.md)  
-> **Version:** 3.0 (Comprehensive Standardization of Screen IDs, Routes, Hierarchy, UI/UX State Contract, Screen-to-API Mapping Matrix, View Specifications, and RBAC Matrix)  
-> **Development Branch:** `docs/manager-information-architecture`
+> **Document Baseline:** [README.md](../README.md), [docs/01-MVP.md](01-MVP.md), [docs/02-use-cases.md](02-use-cases.md), [docs/03-user-stories.md](03-user-stories.md)  
+> **Architecture Version:** 4.2 – MUI & ApexCharts Standards, Zero-Bloat & Icon Integrity Constraints  
+> **Target Scope:** Executive Portal focused exclusively on **License Management** and **Analytics**  
+> **Git Worktree Branch:** `docs/uiux-ia-2-views`
 
 ---
 
 ## 📋 TABLE OF CONTENTS
 
-1. [Master Screen Catalog](#-1-master-screen-catalog)
-2. [Screen Hierarchy](#-2-screen-hierarchy)
-3. [UI/UX State Contract & Interaction Rules](#-3-uiux-state-contract--interaction-rules)
-4. [Screen-to-API Mapping Matrix](#-4-screen-to-api-mapping-matrix)
-5. [Detailed View Specifications](#-5-detailed-view-specifications)
-6. [RBAC Screen Access Matrix](#-6-rbac-screen-access-matrix)
+1. [Executive Architecture Overview](#-1-executive-architecture-overview)
+2. [Master Screen & View Catalog](#-2-master-screen--view-catalog)
+3. [Screen Hierarchy & Navigation Flow](#-3-screen-hierarchy--navigation-flow)
+4. [Detailed View Specification: View 1 – License Management](#-4-detailed-view-specification-view-1--license-management)
+   - 4.1. [Key Metrics & Visualizations (Top Section)](#41-key-metrics--visualizations-top-section)
+   - 4.2. [General License Data Grid (9 Core Columns)](#42-general-license-data-grid-9-core-columns)
+   - 4.3. [License Detail Drill-Down View (Side Drawer)](#43-license-detail-drill-down-view-side-drawer)
+5. [Detailed View Specification: View 2 – Analytics](#-5-detailed-view-specification-view-2--analytics)
+   - 5.1. [Top KPI Health Metrics (4 Top Indicators)](#51-top-kpi-health-metrics-4-top-indicators)
+   - 5.2. [Application Usage Optimization Chart (ApexCharts Horizontal Bar)](#52-application-usage-optimization-chart-apexcharts-horizontal-bar)
+   - 5.3. [Spend by Department Chart (ApexCharts Donut / Treemap)](#53-spend-by-department-chart-apexcharts-donut--treemap)
+   - 5.4. [Subscription Usage 12-Month Comparative Chart (ApexCharts Dual-Column)](#54-subscription-usage-12-month-comparative-chart-apexcharts-dual-column)
+6. [UI/UX State Contract, Technical Constraints & Interaction Rules](#-6-uiux-state-contract-technical-constraints--interaction-rules)
+   - 6.1. [The 5 Core UI States Contract](#61-the-5-core-ui-states-contract)
+   - 6.2. [Zero-Bloat Information Minimization Constraint](#62-zero-bloat-information-minimization-constraint)
+   - 6.3. [Icon Integrity Constraint (No Arbitrary / Auto-Generated Icons)](#63-icon-integrity-constraint-no-arbitrary--auto-generated-icons)
+   - 6.4. [Component Library Standard: @mui/material & @mui/icons-material](#64-component-library-standard-muimaterial--muiicons-material)
+   - 6.5. [Data Visualization Standard: ApexCharts](#65-data-visualization-standard-apexcharts)
+7. [Screen-to-API Mapping Matrix](#-7-screen-to-api-mapping-matrix)
 
 ---
 
-## 🗂️ 1. MASTER SCREEN CATALOG
+## 🏛️ 1. EXECUTIVE ARCHITECTURE OVERVIEW
 
-The Manager Portal is standardized into **18 Screens & Interactive Views** (comprising Full Pages, Side Drawers, Modal Overlays, and System Error Views). 100% of views are provisioned with a **Unique Screen ID**, **Designated Route Path**, **Presentation Mode**, **Mapped User Stories**, and **Implementation Scope**.
+The Information Architecture of the VFast Enterprise License Management System (ELMS) Executive Portal is standardized into a streamlined **2-View Model**:
 
-| Screen ID | Screen Name / Modal | Presentation | Route URL Path | Related Stories | Scope / Status |
-|:---|:---|:---:|:---|:---|:---:|
-| **SCR-AUTH-01** | Enterprise Authentication (Login) | Full Page | `/auth/login` | `US-M14` | MVP P0 |
-| **SCR-LIC-01** | License Inventory & Executive KPIs | Full Page | `/manager/licenses` | `US-M01`, `US-M02` | MVP P0 |
-| **SCR-LIC-ADD-01** | Add License Drawer (SaaS & Perpetual) | Side Drawer | `/manager/licenses?action=create` | `US-M02` | MVP P0 |
-| **SCR-LIC-DETAIL-01**| License Detail View & Seat Gauge (4 Tabs) | Full Page | `/manager/licenses/[id]` | `US-M02`, `US-M06` | MVP P0 |
-| **SCR-LIC-EDIT-01** | Edit License Drawer (Seat Floor Guard) | Side Drawer | `/manager/licenses/[id]?action=edit` | `US-M02` | MVP P0 |
-| **SCR-LIC-DEL-01** | Delete / Decommission Modal (Safety Check) | Modal Overlay | `/manager/licenses/[id]?action=delete` | `US-M02` | MVP P0 |
-| **SCR-ASGN-01** | License Assignment Hub (4 Views) | Full Page (4 Views) | `/manager/assignments` | `US-M06`, `US-M07` | MVP P0 |
-| **SCR-ASGN-ADD-01** | Assign License Drawer (Seat Validation) | Side Drawer | `/manager/assignments?action=assign` | `US-M06` | MVP P0 |
-| **SCR-ASGN-REVOKE-01**| Revoke License Modal (Mandatory Reason) | Modal Overlay | `/manager/assignments?action=revoke` | `US-M07` | MVP P0 |
-| **SCR-ASGN-CHANGE-01**| Change License Tier Modal (Atomic Swap) | Modal Overlay | `/manager/assignments?action=change-tier`| `US-M06`, `US-M07` | Deferred post-MVP (D10) |
-| **SCR-ASGN-AVAIL-01** | Real-time Seat Availability Monitor | Sub-view / Table | `/manager/assignments?view=availability`| `US-M06`, `US-M10` | MVP P0 |
-| **SCR-ASGN-HIST-01** | Global Assignment Audit History View | Sub-view / Table | `/manager/assignments?view=history` | `US-M06`, `US-M07` | MVP P0 |
-| **SCR-BDG-MONITOR-01**| Budget Monitoring Cockpit (4 P0 Metrics, Committed in P1) | Full Page | `/manager/budget` | `US-M08`, `US-M13` | MVP P0 |
-| **SCR-BDG-PLAN-01** | Multi-dimensional Budget Planning Matrix | Full Page | `/manager/budget/planning` | `US-M08` | MVP P0 (annual per department); P1 (12-month matrix) |
-| **SCR-BDG-EXP-01** | Comprehensive License Expense Ledger | Full Page | `/manager/budget/expenses` | `US-M09` | MVP P0 (paid expenses); P1 (other statuses) |
-| **SCR-BDG-REPORT-01** | Financial Reporting & Renewal Forecast | Full Page | `/manager/budget/reports` | `US-M13` | P1 (UC16, UC22, UC26) |
-| **SCR-ERR-403** | 403 Forbidden Access (RBAC Guard) | Full Page | `/403` | `US-M14` | MVP P0 |
-| **SCR-ERR-404** | 404 Page Not Found (Resource Error) | Full Page | `/404` | System | MVP P0 |
+1. **View 1: License Management (`SCR-LIC-MGMT-01`):** Operational cockpit providing enterprise inventory visibility, publisher and category distribution, seat entitlements, active utilization rates, and an in-context detail drawer for individual licenses.
+2. **View 2: Analytics (`SCR-ANALYTICS-01`):** Strategic health and financial intelligence center providing 4 top executive KPIs, user activity status breakdown (Never used / Inactive >60d / Actively used), cross-departmental cost allocations, and 12-month dual-column subscription dynamics (Active, Inactive, No activity, Not monitored vs. Unassigned).
+
+### Core Design Principles
+- **Clarity over Clutter:** Consolidate sprawling interfaces into two purpose-built views with zero navigation friction.
+- **Actionable Optimization:** Direct visualization of unused/underutilized licenses to support immediate reclamation and renewal negotiation.
+- **In-Context Drill-Down:** Single-license inspection operates via a non-intrusive Side Drawer (`SCR-LIC-DETAIL-01`), preserving table scroll position, sorting, and active filters.
+- **Technical Rigor:** Strict adherence to `@mui/material` component architecture and `ApexCharts` visualization standards with zero decorative bloat and zero hallucinated icons.
 
 ---
 
-## 🌳 2. SCREEN HIERARCHY
+## 🗂️ 2. MASTER SCREEN & VIEW CATALOG
 
-### 2.1. Screen Hierarchy Tree (Mermaid Diagram)
+| Screen ID | Screen / View Name | Presentation Mode | Route URL Path | Mapped Use Cases | Status / Priority |
+|:---|---|:---:|:---|---|:---:|
+| **SCR-AUTH-01** | Enterprise Authentication | Full Page | `/auth/login` | `UC29`, `US-M14` | MVP P0 |
+| **SCR-LIC-MGMT-01** | **View 1: License Management** | Full Page | `/manager/licenses` | `UC01`, `UC02`, `UC05`, `UC15`, `UC23` | MVP P0 Core |
+| **SCR-LIC-DETAIL-01**| **License Detail Drill-Down** | Side Drawer (640px) | `/manager/licenses?drawer=detail&id=:id` | `UC02`, `UC03`, `UC20`, `UC21` | MVP P0 Core |
+| **SCR-ANALYTICS-01** | **View 2: Analytics & Health** | Full Page | `/manager/analytics` | `UC14`, `UC16`, `UC19`, `UC20`, `UC24` | MVP P0 Core |
+| **SCR-ERR-404** | 404 Page Not Found | Full Page | `/404` | System | System |
+
+---
+
+## 🌳 3. SCREEN HIERARCHY & NAVIGATION FLOW
 
 ```mermaid
 flowchart TD
-    Root["Root Application (/)"] --> L1_Auth["Block 1: Authentication & Session"]
-    Root --> L1_Manager["Block 2: Manager Executive Portal (/manager)"]
-    Root --> L1_Error["Block 3: System Error Views"]
+    Root["Root Application (/)"] --> AuthCheck{"Session Authentication"}
+    AuthCheck -->|"Unauthenticated"| SCR_AUTH["SCR-AUTH-01: Enterprise Login (/auth/login)"]
+    AuthCheck -->|"Authenticated"| Shell["Executive App Shell (Sidebar Navigation + Top Bar)"]
 
-    %% Block 1: Auth
-    L1_Auth --> SCR_AUTH_01["SCR-AUTH-01: Enterprise Login (/auth/login)"]
+    Shell --> Nav1["Menu Item 1: License Management"]
+    Shell --> Nav2["Menu Item 2: Analytics"]
 
-    %% Block 2: Manager Shell
-    L1_Manager --> M1_Hub["Module 1: License Management"]
-    L1_Manager --> M2_Hub["Module 2: Assignment Management"]
-    L1_Manager --> M3_Hub["Module 3: Budget Management"]
+    Nav1 --> SCR_LIC_MGMT["SCR-LIC-MGMT-01: License Management (/manager/licenses)"]
+    SCR_LIC_MGMT --> Sub_KPI1["Top KPI: Total Licenses"]
+    SCR_LIC_MGMT --> Sub_Pie["ApexCharts: Category Distribution (%)"]
+    SCR_LIC_MGMT --> Sub_Top5["App Usage Widget: Top 5 Active Apps"]
+    SCR_LIC_MGMT --> Sub_Table["General License Data Grid (9 Core Columns)"]
 
-    %% Module 1 Sub-views
-    M1_Hub --> SCR_LIC_01["SCR-LIC-01: License Inventory & KPIs (/manager/licenses)"]
-    SCR_LIC_01 -.->|"Add Button"| SCR_LIC_ADD_01["SCR-LIC-ADD-01: Add License Drawer"]
-    SCR_LIC_01 --> SCR_LIC_DETAIL_01["SCR-LIC-DETAIL-01: License Details (/manager/licenses/:id)"]
-    SCR_LIC_DETAIL_01 -.->|"Edit Button"| SCR_LIC_EDIT_01["SCR-LIC-EDIT-01: Edit License Drawer"]
-    SCR_LIC_DETAIL_01 -.->|"Delete Button"| SCR_LIC_DEL_01["SCR-LIC-DEL-01: Delete/Archive Modal"]
-    SCR_LIC_DETAIL_01 -.->|"Quick Assign"| SCR_ASGN_ADD_01
+    Sub_Table -.->|"Click on Row"| SCR_LIC_DETAIL["SCR-LIC-DETAIL-01: License Detail Drawer"]
+    SCR_LIC_DETAIL --> Det_Key["Key Indicators: Monthly Cost, Subscriptions, Types, Total Users, Unassigned"]
+    SCR_LIC_DETAIL --> Det_Info["Detailed Information: Vendor, Description, Category, Subcategory, Useful Links"]
 
-    %% Module 2 Sub-views
-    M2_Hub --> SCR_ASGN_01["SCR-ASGN-01: Assignment Hub (/manager/assignments)"]
-    SCR_ASGN_01 -.->|"By Employee Tab"| SCR_ASGN_01_A["View A: By Employee Perspective"]
-    SCR_ASGN_01 -.->|"By Software Tab"| SCR_ASGN_01_B["View B: By Software & Seat"]
-    SCR_ASGN_01 -.->|"Seat Capacity Tab"| SCR_ASGN_AVAIL_01["SCR-ASGN-AVAIL-01: Seat Availability Monitor"]
-    SCR_ASGN_01 -.->|"Audit History Tab"| SCR_ASGN_HIST_01["SCR-ASGN-HIST-01: Global Assignment History"]
-
-    SCR_ASGN_01 -.->|"Assign Button"| SCR_ASGN_ADD_01["SCR-ASGN-ADD-01: Assign License Drawer"]
-    SCR_ASGN_01 -.->|"Revoke Button"| SCR_ASGN_REVOKE_01["SCR-ASGN-REVOKE-01: Revoke License Modal"]
-    SCR_ASGN_01 -.->|"Change Tier Button"| SCR_ASGN_CHANGE_01["SCR-ASGN-CHANGE-01: Change License Tier Modal"]
-
-    %% Module 3 Sub-views
-    M3_Hub --> SCR_BDG_MONITOR_01["SCR-BDG-MONITOR-01: Budget Monitoring (/manager/budget)"]
-    M3_Hub --> SCR_BDG_PLAN_01["SCR-BDG-PLAN-01: Budget Planning (/manager/budget/planning)"]
-    M3_Hub --> SCR_BDG_EXP_01["SCR-BDG-EXP-01: Expense Ledger (/manager/budget/expenses)"]
-    M3_Hub --> SCR_BDG_REPORT_01["SCR-BDG-REPORT-01: Financial Reporting (/manager/budget/reports)"]
-
-    %% Block 3: Error
-    L1_Error --> SCR_ERR_403["SCR-ERR-403: 403 Forbidden"]
-    L1_Error --> SCR_ERR_404["SCR-ERR-404: 404 Not Found"]
+    Nav2 --> SCR_ANALYTICS["SCR-ANALYTICS-01: License Analytics (/manager/analytics)"]
+    SCR_ANALYTICS --> Ana_KPIs["4 Top KPIs: Total Annual Spend, Managed Licenses, Underutilized Accounts, Wasted Cost"]
+    SCR_ANALYTICS --> Ana_Chart1["ApexCharts 1: Application Usage Horizontal Bar (Never used / Inactive >60d / Actively used)"]
+    SCR_ANALYTICS --> Ana_Chart2["ApexCharts 2: Spend by Department (Engineering, Sales, Tech Support, Accounting...)"]
+    SCR_ANALYTICS --> Ana_Chart3["ApexCharts 3: Subscription Usage 12-Month Dual Column (Stacked 4 States vs. Unassigned)"]
 ```
 
 ---
 
-### 2.2. Level Hierarchy Table
+## 📊 4. DETAILED VIEW SPECIFICATION: VIEW 1 – LICENSE MANAGEMENT
 
-| Level | Concept & Architecture Responsibility | Screen / Component Catalog | Display & Navigation Constraints |
-|:---:|---|---|---|
-| **Level 0** | **Global Layout & Context Shell** | Root App Context, Auth State Provider, Role Guard Provider, Toast & Modal Provider | Maintains active JWT session, enforces `Manager` role authentication before DOM render. |
-| **Level 1** | **Root Layout Shells** | 1. `AuthShell`: Minimalist centered authentication card.<br>2. `ManagerShell`: Left navigation sidebar, top executive header, breadcrumbs, user profile.<br>3. `ErrorShell`: Full-page boundary view without administrative navigation. | Strict security isolation between Manager, Editor, and Employee portals; blocks unauthorized roles at shell level. |
-| **Level 2** | **Primary Pages** | `SCR-LIC-01`, `SCR-LIC-DETAIL-01`, `SCR-ASGN-01`, `SCR-BDG-MONITOR-01`, `SCR-BDG-PLAN-01`, `SCR-BDG-EXP-01`, `SCR-BDG-REPORT-01`. | Direct routing destinations linked to primary sidebar navigation; preserves full browser history. |
-| **Level 3** | **Nested Sub-Views & Tabs** | - 4 Tabs in `SCR-LIC-DETAIL-01`: General Info, Active Assignments, History, Audit Logs.<br>- 4 Views in `SCR-ASGN-01`: By Employee, By Software, Availability Monitor, Global History.<br>- 4 Reports in `SCR-BDG-REPORT-01`: Monthly Trends, By Vendor, Variance, Renewal Forecast. | Tab selection state persisted in URL query parameters (e.g., `?tab=active-users` or `?view=availability`). |
-| **Level 4** | **Overlay Modals & Side Drawers** | `SCR-LIC-ADD-01`, `SCR-LIC-EDIT-01`, `SCR-LIC-DEL-01`, `SCR-ASGN-ADD-01`, `SCR-ASGN-REVOKE-01`, `SCR-ASGN-CHANGE-01`. | Backdrop blur overlay; background scroll-locked (`overflow: hidden`); supports `Esc` key dismiss and top-right close `X`. |
-
----
-
-### 2.3. Navigation & Breadcrumb Hierarchy Rules
-- **Standardized Breadcrumb Syntax:**
-  - `License List:` `Administration > License Management`
-  - `License Detail:` `Administration > License Management > [Software Name & Edition] ([License Code])`
-  - `Assignment Hub:` `Administration > License Assignments > [View Name]`
-  - `Budget Monitoring:` `Administration > Budget & Finance > Budget Monitoring`
-  - `Budget Planning:` `Administration > Budget & Finance > Budget Planning`
-  - `Expense Ledger:` `Administration > Budget & Finance > Expense Ledger`
-  - `Financial Reporting:` `Administration > Budget & Finance > Financial Reporting > [Report Type]`
-
----
-
-## 🎨 3. UI/UX STATE CONTRACT & INTERACTION RULES
-
-To guarantee data consistency, completely eliminate over-allocation liabilities (**BR-05**), and maintain enterprise-grade reliability, all screens strictly adhere to the **5 Core UI States Contract** and **6 Core UX Interaction Rules**.
-
-### 3.1. The 5 Core UI States Contract
-
-```mermaid
-flowchart TD
-    Init(["View Initialization"]) --> Loading["1. Loading State: Data fetch in progress, Skeleton loaders, Spinners"]
-    Loading -->|"Empty dataset (0 records)"| Empty["2. Empty State: Zero data, Actionable onboarding CTA"]
-    Loading -->|"Fetch succeeded (Data present)"| Success["3. Success State: Standardized data grid, KPIs, Metrics"]
-    Loading -->|"API failure or Permission denied"| Error["5. Error State: Inline validation, Toast alerts, 403/404 Views"]
-    Success -->|"Capacity exhausted or Budget breached"| Degraded["4. Capacity Alert State: 0 seats alert, 80%/100% budget warning banner"]
-    Degraded -->|"Seats reclaimed / Budget supplemented"| Success
-    Empty -->|"User creates initial record"| Loading
-    Error -->|"User clicks Retry"| Loading
-```
-
-| UI State | Technical UI Standard | Mandatory Interface Components | UX Interaction Behavior |
-|:---|---|---|---|
-| **1. Loading State** | - Zero blank white screen flashes.<br>- Zero layout shifts (CLS $< 0.1$). | - **Skeleton Placeholders:** Muted rectangular pulse loaders for KPI cards, charts, and table rows.<br>- **Button Spinner:** Submitting buttons disabled with animated spinning indicator. | Prevents duplicate click submissions; provides continuous feedback for asynchronous network jobs. |
-| **2. Empty State** | - Never display bare empty tables or blank zeros.<br>- Provide guiding visual prompts. | - Vector illustration matching operational context.<br>- Explicit messaging (e.g., *"No software licenses registered in inventory"*).<br>- **Primary CTA Button:** Prominent button triggering initial workflow (e.g., `+ Register First License`). | Transforms empty spaces into actionable onboarding pathways. |
-| **3. Success / Ideal State** | - Displays complete, standardized records.<br>- Strict number formatting with thousands separators. | - Formatted currency: `5,000,000,000 VND`, `$12,500 USD`.<br>- Formatted seat quantities: `45/50 seats (90%)`.<br>- Standardized status badges: Green (`Active`, `Paid`), Amber (`Expiring Soon`, `Pending`), Red (`Expired`, `Overdue`).<br>- Pagination: 10, 25, 50 rows per page. | Conveys reliability, transparency, and actionable clarity to executive managers. |
-| **4. Capacity Alert State** | - Visual warnings when approaching operational ceilings. | - Amber warning banner when budget reaches 80% or available seats drop to $\le 10\%$.<br>- Critical red banner when available seats equal 0 ($Available = 0$) or budget reaches $\ge 100\%$.<br>- Action button `[Assign Seat]` dynamically disabled with explanatory tooltip. | Preempts over-allocation legal violations and corporate budget overruns. |
-| **5. Error / Failure State** | - Contextual error messages without exposing technical stack traces. | - **Inline Field Errors:** Crisp red text under invalid input fields for validation errors (422).<br>- **Toast Alert:** Top-right toast notification for server errors (500) with Transaction ID.<br>- **System Error Views (403/404):** Dedicated pages with "Return to Dashboard" action buttons. | Guides Manager toward corrective action or IT support channels. |
-
----
-
-### 3.2. 6 Core UX Interaction Rules
-
-1. **Rule 1: Concurrency Row-Level Locking Against Over-allocation (BR-04, BR-05):**
-   - License assignments execute within an atomic database transaction with pessimistic row-level locking (`SELECT ... FOR UPDATE`).
-   - If $Available = Purchased - Allocated \le 0$, the transaction rolls back immediately and displays: *"License pool has 0 available seats. Allocation blocked."*
-2. **Rule 2: Purchased Seat Reduction Guard ($Purchased \ge Allocated$ - BR-05):**
-   - When modifying the purchased quantity of an entitlement, the system enforces: $Purchased_{new} \ge Allocated_{current}$.
-   - If a Manager inputs a number below the active assigned seats, the Save button is disabled with the error: *"Cannot reduce purchased seats below active assigned count. Reclaim seats first."*
-3. **Rule 3: Mandatory Audit Change Reason on Significant Events (BR-17):**
-   - Every Edit License, Revoke Seat, Change Tier, or Budget Revision action requires a non-empty `Change Reason` of at least 10 characters.
-   - Persisted immutably to `audit_logs` containing Actor ID, Action Type, Target ID, Old Value, New Value, and Timestamp.
-4. **Rule 4: Non-destructive Historical Data Retention (BR-13, BR-20):**
-   - Physical deletion (`HARD DELETE`) is strictly forbidden for entitlements and assignments that have operational history.
-   - Revoking a seat transitions status to `Revoked` and restores $Available += 1$, retaining historical records indefinitely for corporate audits.
-5. **Rule 5: Multi-currency Separation & Administrative Normalization (BR-10, BR-11):**
-   - `VND` and `USD` expenditure figures are never summed directly across raw tables.
-   - The system applies an administrative exchange rate table (e.g., $1 \text{ USD} = 25,400 \text{ VND}$) to standardize reporting into the fiscal base currency.
-6. **Rule 6: Automated 3-Tier Budget Threshold Alerting (UC14):**
-   - Below 80%: Safe Zone (Green). Normal disbursement pace.
-   - 80% to 99%: Warning Zone (Amber). Alerts Manager to review upcoming renewals and audit inactive users.
-   - 100% or Above: Critical Zone (Red). Flags over-budget status and alerts the Manager. New expenses are not blocked and no additional approval tier is added (D11).
-   - Zones use `Budget Utilization` $= Actual / Total$ (D4).
-
----
-
-## 🔗 4. SCREEN-TO-API MAPPING MATRIX
-
-Comprehensive matrix mapping all 18 Manager Portal screens to backend REST API endpoints:
-
-| Screen ID | UI Action / Trigger | API Endpoint & Method | Business Purpose & Data Payload | RBAC Role |
-|:---|---|---|---|:---:|
-| **SCR-AUTH-01** | Login Form Submit | `POST /api/v1/auth/login` | Authenticates credentials, issues a server-revocable session per UC29 and returns the role context. Applies lockout and rate limiting. | Public |
-| **SCR-LIC-01** | Fetch Inventory & KPIs | `GET /api/v1/licenses?status={}&vendor={}` | Retrieves paginated entitlements list and 5 executive KPI summary cards. Never returns license keys in clear. | Manager; Staff (read-only, D9) |
-| **SCR-LIC-01** | Export Inventory Data | `GET /api/v1/licenses/export?format=csv` | P1 (UC26). Exports the company-wide license register as CSV/Excel for auditing, excluding license keys and neutralizing spreadsheet formulas. | Manager Only |
-| **SCR-LIC-ADD-01** | Submit New License Form | `POST /api/v1/licenses` | Registers new entitlement (SaaS / Perpetual), initializes $Available = Purchased$. | Manager Only |
-| **SCR-LIC-DETAIL-01**| Load License Details | `GET /api/v1/licenses/{id}` | Fetches license metadata, contract profile, attachments, and capacity gauge, with the key masked. | Manager; Staff (read-only, D9) |
-| **SCR-LIC-DETAIL-01**| Click "Reveal License Key" | `POST /api/v1/licenses/{id}/reveal-key` | Decrypts serial key for one response with `Cache-Control: no-store` and rate limiting; writes security audit log `VIEW_LICENSE_KEY`. The key never appears in URLs or logs (NFR-01). | Manager Only |
-| **SCR-LIC-DETAIL-01**| Tab 2: Active Assigned Users | `GET /api/v1/licenses/{id}/assignments?status=Active` | Retrieves list of employees currently holding a seat with usage status. | Manager Only |
-| **SCR-LIC-DETAIL-01**| Tab 3: Allocation History | `GET /api/v1/licenses/{id}/assignments/history` | Retrieves complete chronological assignment/revocation log (BR-13). | Manager Only |
-| **SCR-LIC-DETAIL-01**| Tab 4: Configuration Audit | `GET /api/v1/licenses/{id}/audit-logs` | Retrieves audit trail of quantity changes, renewals, and price edits (BR-17). | Manager Only |
-| **SCR-LIC-EDIT-01**| Submit Edit Form | `PUT /api/v1/licenses/{id}` | Updates renewal terms, notes, and purchased count ($Purchased \ge Allocated$). | Manager Only |
-| **SCR-LIC-DEL-01** | Confirm Decommission | `DELETE /api/v1/licenses/{id}` | Verifies $Allocated = 0$, marks status as `Archived` or deletes draft. | Manager Only |
-| **SCR-ASGN-01** | Load Assignment Hub | `GET /api/v1/assignments/summary` | Retrieves macro sizing metrics: Total Allocated, Available Pool, Inactive. | Manager Only |
-| **SCR-ASGN-01** | View A: By Employee | `GET /api/v1/assignments/by-employee` | Lists employees with expandable cards showing held software tools. | Manager Only |
-| **SCR-ASGN-01** | View B: By Software | `GET /api/v1/assignments/by-software` | Displays discrete seat-level allocations per software catalog item. | Manager Only |
-| **SCR-ASGN-AVAIL-01**| Load Seat Monitor | `GET /api/v1/licenses/availability-monitor` | Fetches real-time capacity percentages and alert flags (Red/Yellow/Green/Blue). | Manager Only |
-| **SCR-ASGN-HIST-01** | Load Global Audit Log | `GET /api/v1/assignments/global-history` | Fetches company-wide chronological assignment event register. | Manager Only |
-| **SCR-ASGN-ADD-01** | Confirm Seat Allocation | `POST /api/v1/assignments` | Assigns seat to employee; verifies $Available > 0$ with row-level locking, rejects duplicates (D7) and marks any linked request `Fulfilled` (D6). | Manager Only |
-| **SCR-ASGN-REVOKE-01**| Confirm Seat Revocation | `POST /api/v1/assignments/{id}/revoke` | Locks the assignment and entitlement, rejects an assignment that is no longer `Active`, revokes seat to pool ($Available += 1$); logs mandatory reason (BR-13). | Manager Only |
-| **SCR-ASGN-CHANGE-01**| Confirm Tier Transition | `POST /api/v1/assignments/{id}/change-tier` | Deferred post-MVP (D10). Atomic swap transaction: Revokes current tier and assigns target tier. | Manager Only |
-| **SCR-BDG-MONITOR-01**| Load Budget Cockpit | `GET /api/v1/budgets/monitoring?fiscalYear={year}` | Retrieves core financial metrics per D4, burn-down trajectory, and alerts. | Manager; Staff (read-only, D9) |
-| **SCR-BDG-PLAN-01** | Load Budget Matrix | `GET /api/v1/budgets/planning?fiscalYear={year}` | Fetches annual departmental budgets; the 12-month allocation matrix is P1. | Manager; Staff (read-only, D9) |
-| **SCR-BDG-PLAN-01** | Save Budget Allocations | `POST /api/v1/budgets/planning` | Establishes fiscal budget ceiling or saves departmental revisions. | Manager Only |
-| **SCR-BDG-EXP-01** | Load Expense Ledger | `GET /api/v1/expenses?fiscalYear={year}&status={}` | Retrieves paid expenses; other statuses are P1 (D5). Staff see only records they created (UC36). | Manager; Staff (own records) |
-| **SCR-BDG-EXP-01** | Create Expense | `POST /api/v1/expenses` | Records a paid expense: amount, currency, payment date (BR-10), invoice number. Sets `created_by` on the server. | Manager, Staff |
-| **SCR-BDG-EXP-01** | Update Expense | `PUT /api/v1/expenses/{id}` | Corrects an expense; Staff may update only records they created. Writes an audit log. | Manager; Staff (own records) |
-| **SCR-BDG-EXP-01** | Mark Expense as Paid | `PATCH /api/v1/expenses/{id}/mark-paid` | P1 (D5). Transitions a payable to `PAID` and records the payment date; a VAT invoice attachment (UC35) is optional. | Manager Only |
-| **SCR-BDG-REPORT-01** | Load Variance Report | `GET /api/v1/budgets/reports/variance?fiscalYear={year}`| P1. Computes budget vs. actuals variance across departments and vendors. | Manager Only |
-| **SCR-BDG-REPORT-01** | Load Renewal Forecast | `GET /api/v1/budgets/reports/renewal-forecast?days=90` | P1. Forecasts forward cash outlays and integrates inactive seat reductions. | Manager Only |
-| **SCR-BDG-REPORT-01** | Export Executive PDF | `GET /api/v1/budgets/reports/export-pdf?type={}` | P1 (UC26). Generates board-ready graphical PDF financial report. | Manager Only |
-
----
-
-### 4.1. Supporting API Contract for Other P0 Flows
-
-These P0 endpoints serve use cases that have no screen in this document yet. All APIs use the `/api/v1/` prefix (D16). Status codes: `401` unauthenticated, `403` wrong role, `404` another user's record, `409` state conflict, `422` validation error.
-
-| Use Case | API Endpoint & Method | Business Purpose | RBAC Role |
-|:---|---|---|:---:|
-| UC29 | `POST /api/v1/auth/logout` | Revokes the current session. | Authenticated |
-| UC01, UC37 | `GET /api/v1/software` | Lists the catalog. Employee responses exclude price and license key. | All roles |
-| UC01 | `POST`, `PUT /api/v1/software/{id}` | Creates or updates a catalog item, with quick Vendor creation (D1). | Manager Only |
-| UC06 | `POST /api/v1/license-requests` | Creates a `Pending` request for one seat for the caller (D6). | Employee |
-| UC07 | `GET /api/v1/license-requests?status={}` | Lists all requests. | Manager Only |
-| UC38 | `GET /api/v1/license-requests/mine` | Lists the caller's own requests (BR-08). | Employee |
-| UC08 | `POST /api/v1/license-requests/{id}/approve` | Approves a `Pending` request; `409` if already processed (BR-19). | Manager Only |
-| UC08 | `POST /api/v1/license-requests/{id}/reject` | Rejects a `Pending` request with a mandatory reason; `409` if already processed (BR-19). | Manager Only |
-| UC39, UC11 | `GET /api/v1/assignments/mine` | Lists the caller's own assignments, without license keys (BR-08). | Employee |
-| UC31 | `POST`, `PUT /api/v1/license-usage/{id}` | Creates or corrects a usage record for a period. Staff may update only records they created. | Manager, Staff |
-| UC36 | `GET /api/v1/submissions/mine?type={}` | Lists usage and expense records created by the caller. | Staff |
-| UC05, UC21 | `GET /api/v1/compliance` | Returns compliance status per entitlement (D15). | Manager; Staff (read-only) |
-| UC15 | `GET /api/v1/licenses/expiring?days={}` | Lists SaaS and maintenance expiry dates in separate fields (BR-12). | Manager; Staff (read-only) |
-| UC18 | `GET /api/v1/notifications` | Lists the caller's in-app notifications (D14). | Authenticated |
-| UC23 | `GET /api/v1/dashboards/license` | Returns license dashboard metrics. | Manager Only |
-| UC24 | `GET /api/v1/dashboards/financial?fiscalYear={year}` | Returns financial dashboard metrics per D4. | Manager Only |
-| UC27 | `GET`, `POST`, `PUT /api/v1/users/{id}` | Lists, creates, and updates users, including deactivation (BR-18). | Manager Only |
-| UC28 | `PUT /api/v1/users/{id}/role` | Changes a user's role and revokes that user's sessions. | Manager Only |
-| UC30 | `GET /api/v1/audit-logs` | Reads audit logs. No write endpoint exists (BR-17). | Manager Only |
-
----
-
-## 📱 5. DETAILED VIEW SPECIFICATIONS
-
----
-
-### BLOCK 1: LICENSE INVENTORY MANAGEMENT (MODULE 1)
-
-#### 1.1. `SCR-LIC-01`: License Inventory & Executive KPIs
 - **Route:** `/manager/licenses`
-- **Presentation:** Full Page
-- **Permissions:** Manager Only.
-- **Layout & Functional Components:**
-  - **Header Bar:** Title `License Management`, buttons `[Export Report (CSV/Excel)]` and `[+ Add New License]`.
-  - **KPI Summary Cards (5 Cards):**
-    - *Card 1:* Active Licenses count (`Active` status).
-    - *Card 2:* Total Purchased Seats enterprise-wide.
-    - *Card 3:* Average Allocation Rate ($\frac{\sum Allocated}{\sum Purchased} \times 100\%$).
-    - *Card 4:* Expiring Soon within $\le 30$ days.
-    - *Card 5:* Over-allocated / Compliance Risk count.
-  - **Filter & Search Toolbar:**
-    - Instant search input matching software name, vendor, license code (300ms debounce). License keys are never searchable (NFR-01).
-    - Dropdowns: Vendor, Model (`SaaS Subscription` / `Perpetual License`), Status (`Active`, `Expiring Soon`, `Expired`, `Suspended`), Expiration Range, Seat Availability.
-  - **License Data Grid:**
-    - Columns: License Code, Software & Edition, Vendor, Model, Capacity Utilization ($Allocated / Purchased$), Available Seats ($Available$), Expiration Date, Status (Pill Badge), Row Actions `[...]`.
-  - **Pagination:** 10, 25, 50 rows per page.
+- **Presentation:** Full Page responsive layout built with `@mui/material/Grid` and `@mui/material/Box`.
+- **Primary Goal:** Operational overview of software inventory, category distribution, top utilized applications, and comprehensive licensing tabular data with instant drawer inspection.
 
-#### 1.2. `SCR-LIC-ADD-01`: Add License Drawer (SaaS & Perpetual)
-- **Triggered from:** `[+ Add New License]` button on `SCR-LIC-01`.
-- **Presentation:** Side Drawer (Width: 640px)
-- **Permissions:** Manager Only.
-- **Form Fields:**
-  - Licensing Model: Radio buttons `SaaS Subscription` or `Perpetual License`.
-  - Software selector from Software Catalog; auto-populates Vendor.
-  - Edition/Tier, License Key / Serial Number (with inline random generator).
-  - Metric: `Per User (Seat)` (Default), `Per Core`, `Concurrent`, `Per Device`.
-  - Purchased Quantity ($Purchased \ge 1$), Unit Cost, Currency (`VND` or `USD` per BR-10, BR-11).
-  - **SaaS Specifics:** Start Date, Expiration Date (Mandatory), Billing Cycle, Auto-renewal Toggle.
-  - **Perpetual Specifics:** Purchase Date, Core Validity fixed to `Perpetual` (BR-12), Maintenance Agreement Checkbox, Maintenance Expiration Date.
-  - Contract/PO Code, optional Supporting Invoice Upload (P1; PDF, PNG, JPG $\le 10$MB, validated by file content per NFR-01).
-- **Post-condition:** Initializes $Allocated = 0$, $Available = Purchased$. Records audit log `CREATE_LICENSE_ENTITLEMENT`.
+### 4.1. Key Metrics & Visualizations (Top Section)
 
-#### 1.3. `SCR-LIC-DETAIL-01`: License Detail View & Seat Gauge (4 Tabs)
-- **Route:** `/manager/licenses/[id]`
-- **Presentation:** Full Page
-- **Interface Structure:**
-  - **Header:** License Code, Vendor, Status Badge, Masked Key `XXXX-XXXX-****-1234` with reveal button (writes `VIEW_LICENSE_KEY` audit log).
-  - **Seat Utilization Gauge:** Tripartite progress bar: Blue (Active seats), Amber (Idle seats), Green (Available seats).
-  - **Quick Action Bar:** `[+ Assign Seat]` (opens `SCR-ASGN-ADD-01`), `[Renew Agreement]`, `[Edit License]`, `[Delete/Archive]`.
-  - **4 Management Tabs:**
-    - *Tab 1 (General Info & Contract Profile):* Pricing, billing frequency, contract reference, invoice attachment.
-    - *Tab 2 (Active Assigned Users):* Interactive table of employees holding a seat, usage status (`Active`, `Idle`, `Inactive` for $\ge 60$ days with red alert badge, `Unknown` when no valid usage exists per BR-15), inline action button `[Revoke]` (`[Change Tier]` is deferred post-MVP per D10).
-    - *Tab 3 (Allocation History):* Chronological audit log of all grants and revocations for this license (BR-13).
-    - *Tab 4 (License Change Audit Log):* Immutable log of seat changes, renewals, and price modifications (BR-17).
+The top section consists of three visual containers organized in a 12-column `@mui/material/Grid`:
 
-#### 1.4. `SCR-LIC-EDIT-01`: Edit License Drawer
-- **Triggered from:** "Edit" button on `SCR-LIC-01` or `SCR-LIC-DETAIL-01`.
-- **Presentation:** Side Drawer
-- **Data Safeguards:**
-  - Model, Metric, and License ID fields are permanently locked.
-  - **Seat Reduction Guard:** Restricts $Purchased$ reduction if $Purchased_{new} < Allocated_{current}$ (BR-05).
-  - Mandatory `Change Reason` input required to save changes (BR-17).
+```
++------------------------------------+------------------------------------+----------------------------------------+
+| [ Total License Card ] (Col 1-3)  |  [ Category Donut Chart ] (Col 4-7)|  [ Top 5 Usage Widget ] (Col 8-12)     |
++------------------------------------+------------------------------------+----------------------------------------+
+```
 
-#### 1.5. `SCR-LIC-DEL-01`: Delete / Decommission Modal (Safety Check)
-- **Triggered from:** "Delete" button on `SCR-LIC-DETAIL-01`.
-- **Presentation:** Modal Overlay (Width: 520px)
+#### 1. Metric: Total Licenses (`@mui/material/Card`, Col 1–3)
+- **Primary Display Value:** Total active software licenses provisioned across the organization (e.g., `1,284 Licenses`).
+- **Sub-indicators:**
+  - `Active Entitlements:` e.g., `1,142` (88.9%).
+  - `Expiring in <= 30 Days:` Amber `@mui/material/Chip` with count (e.g., `18`).
+  - `MoM Growth:` e.g., `+4.5% vs. previous month`.
 
-```mermaid
-flowchart TD
-    ClickDel["Manager clicks Delete License"] --> CheckSeats{"Check Allocated Quantity:<br/>Allocated > 0?"}
-    CheckSeats -->|"Yes (Allocated > 0)"| Block["BLOCK DELETION (Error Modal):<br/>Cannot delete license with active users"]
-    Block --> Guide["Action: Navigate to Assignment Hub<br/>to revoke all seats first"]
-    
-    CheckSeats -->|"No (Allocated == 0)"| CheckHistory{"Check Historical Usage:<br/>Has past assignments?"}
-    CheckHistory -->|"Yes (Has history)"| SoftDelete["Recommended: Transition to Archived status<br/>(Preserves audit logs per BR-13, BR-20)"]
-    CheckHistory -->|"No (Never assigned)"| HardDelete["Allow Hard Deletion"]
-    
-    SoftDelete --> ConfirmStep["Two-Step Confirmation Modal"]
-    HardDelete --> ConfirmStep
-    ConfirmStep --> TypeCode["Require typing License Code to confirm"]
-    TypeCode --> Done["Record Audit Log and Complete"]
+#### 2. Visual: Category Distribution (`ApexCharts Donut`, Col 4–7)
+- **Chart Component:** `react-apexcharts` (`type="donut"`).
+- **Chart Options Baseline:**
+  ```javascript
+  {
+    chart: { type: 'donut', height: 260 },
+    labels: ['Development & DevOps', 'Productivity & Office', 'Communication & Collaboration', 'Design & Creative', 'Security & Compliance', 'Other / Utilities'],
+    series: [32, 28, 18, 12, 7, 3],
+    colors: ['#1976D2', '#0288D1', '#0097A7', '#7B1FA2', '#E64A19', '#757575'],
+    legend: { position: 'bottom', fontSize: '12px' },
+    plotOptions: { pie: { donut: { size: '68%' } } }
+  }
+  ```
+- **Interactivity:**
+  - Hovering displays: Category Name, License Count, Total Monthly Spend, and Percentage.
+  - Clicking any slice instantly filters the General License Data Grid below (`?category=Development`).
+
+#### 3. Visual: Application Usage (Top 5) (`@mui/material/Card`, Col 8–12)
+- **Widget Component:** Ranked progress list built using `@mui/material/LinearProgress` and `@mui/material/Typography`.
+- **Ranked Applications:**
+  1. **Microsoft 365 Enterprise:** `94% Active` (470/500 users active) — `Productivity`
+  2. **Slack Enterprise Grid:** `91% Active` (410/450 users active) — `Communication`
+  3. **GitHub Enterprise:** `88% Active` (264/300 users active) — `Development`
+  4. **Jira Software & Confluence:** `85% Active` (255/300 users active) — `Project Management`
+  5. **Zoom Business:** `81% Active` (202/250 users active) — `Video Conferencing`
+- **Visual Display:** Two-tone `@mui/material/LinearProgress` (Green `#4CAF50` for Active rate, Gray `#E0E0E0` for Allocated but Inactive).
+
+---
+
+### 4.2. General License Data Grid (9 Core Columns)
+
+- **Layout:** Standard `@mui/material/Table` inside `@mui/material/TableContainer` with `@mui/material/Paper`. No extraneous columns or decorative elements.
+- **Standardized Table Columns:**
+
+| STT | Column Name | Technical Data Key | Display Format & MUI Components | Alignment | Description & Business Meaning |
+|:---:|---|---|---|:---:|---|
+| 1 | **License Name** | `software_name` | Plain text + publisher logo asset (no arbitrary icons) | Left | Registered name of the software / license entitlement. |
+| 2 | **Publisher Name** | `publisher_name` | `@mui/material/Typography` (variant="body2", color="text.secondary") | Left | Software vendor or publisher legal entity. |
+| 3 | **License Type** | `license_type` | Standard `@mui/material/Chip` (size="small", variant="outlined") | Center | Licensing model and contractual entitlement structure. |
+| 4 | **Compliance Status** | `compliance_status` | Status `@mui/material/Chip` with standard color prop:<br>- `success` (Compliant: $Allocated \le Purchased$)<br>- `warning` (At Risk: $Expiring \le 30\text{d}$ or $\ge 95\%$ capacity)<br>- `error` (Over-allocated: $Allocated > Purchased$) | Center | Legal compliance and entitlement status to prevent liability. |
+| 5 | **Purchased** | `total_purchase_amount` | Currency formatted (`$48,000 USD` / `1,220,000,000 VND`) | Right | Total purchase expenditure committed for this entitlement. |
+| 6 | **Licence Entitlement** | `purchased_seats` | Plain numeric string (`150 seats`) | Right | Total contractual license seats purchased from publisher. |
+| 7 | **Active Users** | `active_users_count` | Plain numeric text (`124`) | Right | Number of users actively using the application in the cycle (30 days). |
+| 8 | **Total Users** | `allocated_users_count` | Plain ratio string (`140 / 150`) | Right | Total user accounts currently allocated to this entitlement. |
+| 9 | **Expiry Date** | `expiration_date` | Date format: `YYYY-MM-DD` | Center | Contract expiration date (SaaS) or maintenance renewal date (Perpetual). |
+
+- **Table Interactions:**
+  - **Row Click Trigger:** Clicking any row opens **`SCR-LIC-DETAIL-01`** (`@mui/material/Drawer`) with full contextual drill-down.
+  - **Quick Search Input:** Standard `@mui/material/TextField` with `@mui/icons-material/Search` input adornment and 300ms debounce.
+  - **Filters:** `@mui/material/Select` dropdowns for Compliance and Category.
+  - **Pagination:** Standard `@mui/material/TablePagination` (10, 25, 50 rows).
+
+---
+
+### 4.3. License Detail Drill-Down View (Side Drawer `SCR-LIC-DETAIL-01`)
+
+- **Presentation:** `@mui/material/Drawer` (`anchor="right"`, PaperProps width: `640px`, backdrop blur enabled).
+- **Trigger:** Click on any license item in the General License Data Grid.
+- **Header:** License Name, Publisher text, Status Chip, Close button (`@mui/material/IconButton` with standard `@mui/icons-material/Close`).
+
+#### 1. Key Indicators (Top Cards)
+A compact 2x3 grid built with `@mui/material/Grid` and `@mui/material/Paper`:
+
+```
++------------------------------------+------------------------------------+
+| 1. Monthly Cost                    | 2. Subscriptions                   |
+|    $4,200 / month                  |    3 Contracts / POs               |
++------------------------------------+------------------------------------+
+| 3. Subscription Types              | 4. Total Users                     |
+|    2 Types (Enterprise, Business)  |    140 Assigned Users              |
++------------------------------------+------------------------------------+
+| 5. Unassigned Subscriptions        |                                    |
+|    10 Seats Available (Inventory)  |                                    |
++------------------------------------+------------------------------------+
+```
+
+| Key Indicator | Data Attribute | Detailed Definition & Business Meaning |
+|---|---|---|
+| **Monthly Cost** | `monthly_amortized_cost` | The monthly expenditure incurred by the enterprise for the application (amortized for annual and monthly contracts). |
+| **Subscriptions** | `subscriptions_count` | Total count of active subscription agreements or procurement orders held for this application. |
+| **Subscription Types** | `subscription_tiers` | Number of service plan tiers currently utilized (e.g., *Free*, *Plus*, *Business*, *Enterprise*). |
+| **Total Users** | `total_assigned_users` | Total user accounts associated with the application (holding active license grants). |
+| **Unassigned Subscriptions** | `unassigned_seats` | Number of purchased licenses not yet allocated to any user ($Purchased - Allocated$ available in inventory). |
+
+#### 2. Detailed Information (Metadata Specification)
+
+Presented cleanly using an `@mui/material/List` or 2-column key-value grid without decorative icon clutter:
+
+| Attribute | Technical Key | Definition & Data Specification |
+|---|---|---|
+| **Vendor** | `vendor_company` | Software publisher legal entity, country of origin, technical support contact, and account manager details. |
+| **Description** | `software_description` | Functional summary of the application, internal business purpose, and core organizational workflows supported. |
+| **Category** | `category_name` | Primary software classification (e.g., *Productivity*, *Engineering*, *Security*, *Design*). |
+| **Subcategory** | `subcategory_name` | Granular functional classification (e.g., *IDE & Source Control*, *Team Chat*, *Cloud Infrastructure*, *UI Prototyping*). |
+| **Useful links & Policy** | `policy_links` | Standard text hyperlinks using `@mui/material/Link` with standard `@mui/icons-material/OpenInNew` icon only:<br>- **Internal License Policy**<br>- **Vendor Terms of Service**<br>- **Security Compliance Policy**<br>- **Management Portal** |
+
+---
+
+## 📈 5. DETAILED VIEW SPECIFICATION: VIEW 2 – ANALYTICS
+
+- **Route:** `/manager/analytics`
+- **Presentation:** Full Page executive dashboard built using `@mui/material/Grid` and `ApexCharts`.
+- **Primary Goal:** Evaluate comprehensive license health and financial efficiency through high-impact metrics and analytical charts to eliminate waste and optimize budget allocation.
+
+```
++-------------------------------------------------------------------------------------------------------+
+|  [ Total Annual Spend ]  |  [ Managed Licenses ]  |  [ Underutilized Accts ]  |  [ Wasted Lic Cost ]  |
++-------------------------------------------------------------------------------------------------------+
+|  [ Chart 1: Application Usage (ApexCharts Horizontal Bar) - Top 5/10/20 ] (Col 1-7)                   |
+|  Segments: Never Used (Orange) | Inactive >60d (Gray) | Actively Used (Green)                         |
++-------------------------------------------------------------------------------------------------------+
+|  [ Chart 2: Spend by Department (ApexCharts Donut / Treemap) ] (Col 8-12)                            |
+|  Engineering | Sales | Tech Support | Accounting | Marketing | Product                                |
++-------------------------------------------------------------------------------------------------------+
+|  [ Chart 3: Subscription Usage (ApexCharts 12-Month Dual-Column) ] (Full Width Col 1-12)              |
+|  Col 1 (Stacked): Active | Inactive | No Activity | Not Monitored   vs.   Col 2: Unassigned         |
++-------------------------------------------------------------------------------------------------------+
 ```
 
 ---
 
-### BLOCK 2: SEAT ALLOCATION & ASSIGNMENT MANAGEMENT (MODULE 2)
+### 5.1. Top KPI Health Metrics (4 Top Indicators)
 
-#### 2.1. `SCR-ASGN-01`: License Assignment Hub
-- **Route:** `/manager/assignments`
-- **Presentation:** Full Page
-- **Macro Sizing Cards:** Total Assigned Seats, Available Pool, Unique Active Assignees, Under-utilized Seats (Inactive $\ge 60$ days).
-- **4 Perspective Sub-views:**
-  - *View A (By Employee - Default):* Employee directory with expandable rows displaying software tools held and action buttons.
-  - *View B (By Software & Seat):* Seat-by-seat inventory breakdown per software product.
-  - *View C (Seat Availability Monitor - `SCR-ASGN-AVAIL-01`):* Real-time capacity monitor across all pools.
-  - *View D (Global History - `SCR-ASGN-HIST-01`):* Enterprise assignment event ledger.
+Four executive KPI cards built with `@mui/material/Card` and `@mui/material/Typography`:
 
-#### 2.2. `SCR-ASGN-ADD-01`: Assign License Drawer
-- **Triggered from:** `[+ Assign License]` button or approving a request (UC09).
-- **Presentation:** Side Drawer (Width: 560px)
+| KPI Metric Name | Display Key & Format | Definition & Business Meaning | Action Threshold / Alert Logic |
+|---|---|---|---|
+| **1. Total Annual Spend** | `annual_total_spend`<br>`$1,420,000 USD`<br>(or `36,000,000,000 VND`) | **Total annual financial outlay:** Total annualized cash outlay across all software licenses and subscriptions. | Compares actual spending against approved fiscal budget ceiling; triggers alert on budget burn velocity. |
+| **2. Managed Licenses** | `total_managed_licenses`<br>`1,284 Licenses` (across 48 Apps) | **Managed licenses volume:** Total volume of software licenses and subscriptions centrally tracked under ELMS. | Provides executive visibility into enterprise software portfolio size. |
+| **3. Underutilized Accounts** | `underutilized_accounts`<br>`312 Accounts` (24.3%) | **Underutilized accounts count:** Total user accounts provisioned with licenses that exhibit low, inactive (>60 days), or zero usage. | Amber warning if $> 15\%$; Critical red alert if $> 25\%$ of total allocated accounts. |
+| **4. Underutilized License Cost** | `wasted_license_cost`<br>`$285,600 USD / yr` (20.1%) | **Wasted spend on underutilized licenses:** Total annual capital wasted on idle, unassigned, or neglected licenses. | Primary financial recovery target for internal reclamation and renewal downsizing. |
+
+---
+
+### 5.2. Application Usage Optimization Chart (ApexCharts Horizontal Bar)
+
+- **Component:** `react-apexcharts` (`type="bar"`).
+- **Configuration Standard:**
+  ```javascript
+  {
+    chart: { type: 'bar', height: 350, stacked: true },
+    plotOptions: { bar: { horizontal: true, barHeight: '60%' } },
+    colors: ['#FF9800', '#9E9E9E', '#4CAF50'], // Never used (Orange), Inactive (Gray), Actively used (Green)
+    series: [
+      { name: 'Never used', data: [45, 30, 25, 20, 15] },
+      { name: 'Inactive (>60 days)', data: [65, 50, 40, 35, 25] },
+      { name: 'Actively used', data: [390, 370, 235, 200, 162] }
+    ],
+    xaxis: { categories: ['Microsoft 365', 'Slack', 'GitHub Enterprise', 'Jira', 'Zoom'], title: { text: 'Number of Users' } },
+    legend: { position: 'top', horizontalAlign: 'left' }
+  }
+  ```
+- **Controls:** Standard `@mui/material/ToggleButtonGroup` for Top 5 | Top 10 | Top 20 range selection.
+
+#### 3 User Activity Status Segments:
+
+| Status Segment | ApexCharts Color | Definition & Business Meaning |
+|---|:---:|---|
+| **Never used** | 🟧 **Orange** (`#FF9800`) | **Account never accessed:** The license was assigned to an employee, but the user has never logged in or performed any action since provisioning. |
+| **Inactive (>60 days)** | ⬜ **Gray** (`#9E9E9E`) | **Dormant account (>60 days):** The user was active in the past but has recorded zero activity for over 60 consecutive days (e.g., project completion, role change, departure). |
+| **Actively used** | 🟩 **Green** (`#4CAF50`) | **Actively used account:** The user logs in and interacts regularly with the software within the active tracking window (<60 days). |
+
+#### Management Insights:
+1. **Identify Wasteful Applications:** Instantly detect software products where Orange and Gray segments dominate total allocation.
+2. **Quantify Financial Leakage:** Calculate the exact monetary waste per application by multiplying idle seats by unit cost.
+3. **Execute Seat Reclamation & Reallocation:** Reclaim licenses from inactive assignees to fulfill incoming employee requests without procuring additional seats.
+4. **Data-Driven Renewal Negotiations:** Establish solid contractual leverage to downsize seat quantities during annual vendor renewal discussions.
+
+---
+
+### 5.3. Spend by Department Chart (ApexCharts Donut / Treemap)
+
+- **Component:** `react-apexcharts` (`type="donut"` or `type="treemap"`).
+- **Configuration Standard:**
+  ```javascript
+  {
+    chart: { type: 'donut', height: 320 },
+    labels: ['Engineering & Product', 'Sales & BD', 'Tech Support', 'Accounting & Finance', 'Marketing & Creative', 'HR & Operations'],
+    series: [580000, 320000, 180000, 140000, 120000, 80000],
+    colors: ['#1976D2', '#388E3C', '#F57C00', '#7B1FA2', '#0097A7', '#616161'],
+    legend: { position: 'bottom' },
+    tooltip: { y: { formatter: (val) => `$${val.toLocaleString()} USD` } }
+  }
+  ```
+
+#### Management Insights:
+1. **Pinpoint Top SaaS Consumers:** Deliver full transparency into departmental software expenditure across the organization.
+2. **Benchmark Cost per Headcount:** Compare average software expenditure per employee across distinct business units.
+3. **Validate Strategic Alignment:** Verify whether departmental software spend aligns with corporate strategic priorities.
+4. **Enable Internal Chargebacks:** Empower managers to adjust department budgets or implement internal software chargeback models.
+
+---
+
+### 5.4. Subscription Usage 12-Month Comparative Chart (ApexCharts Dual-Column)
+
+- **Component:** `react-apexcharts` (`type="bar"`).
+- **Core Purpose:** Tracks enterprise subscription utilization dynamics across every month of the fiscal year (January to December), comparing deployed status composition against unassigned inventory.
+- **Configuration Standard:**
+  ```javascript
+  {
+    chart: { type: 'bar', height: 380, stacked: true },
+    plotOptions: { bar: { columnWidth: '65%' } },
+    series: [
+      // Column 1: Stacked allocated composition
+      { name: 'Active', group: 'allocated', data: [780, 810, 840, 860, 890, 920, 950, 970, 990, 1010, 1030, 1050], color: '#4CAF50' },
+      { name: 'Inactive', group: 'allocated', data: [110, 105, 95, 90, 85, 80, 75, 70, 68, 65, 62, 60], color: '#FF9800' },
+      { name: 'No activity', group: 'allocated', data: [45, 42, 40, 38, 35, 33, 30, 28, 26, 25, 24, 22], color: '#616161' },
+      { name: 'Not monitored', group: 'allocated', data: [50, 48, 45, 42, 40, 38, 35, 32, 30, 28, 25, 22], color: '#3F51B5' },
+      // Column 2: Single unassigned column
+      { name: 'Unassigned', group: 'inventory', data: [220, 200, 180, 160, 140, 120, 110, 100, 90, 80, 75, 70], color: '#E91E63' }
+    ],
+    xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] },
+    legend: { position: 'top' }
+  }
+  ```
+
+#### Detailed 5 Status Definitions:
+
+| Column Assignment | Status Name | ApexCharts Color | Detailed Business Meaning |
+|:---:|---|:---:|---|
+| **Column 1 (Stacked)** | **1. Active** | 🟩 **Green** (`#4CAF50`) | **Active:** Subscriptions currently utilized by employees in the monthly reporting period. |
+| **Column 1 (Stacked)** | **2. Inactive** | 🟧 **Amber / Orange** (`#FF9800`) | **Inactive:** Subscriptions assigned to employees but showing zero activity during the tracking window. |
+| **Column 1 (Stacked)** | **3. No activity** | ⬛ **Dark Gray** (`#616161`) | **No activity:** Subscriptions with zero telemetry or activity logs recorded throughout the fiscal period (dormant accounts). |
+| **Column 1 (Stacked)** | **4. Not monitored** | 🟦 **Indigo / Slate Blue** (`#3F51B5`) | **Not monitored:** Subscriptions where usage telemetry is unmonitored (e.g., on-premise software lacking telemetry agents or missing vendor API logs). |
+| **Column 2 (Single)** | **5. Unassigned** | 🟥 **Rose** (`#E91E63`) | **Unassigned:** Subscriptions purchased under enterprise contract but not assigned to any user (idle inventory capital). |
+
+#### Management Insights:
+- **Allocation vs. Inventory Ratio:** Compares assigned licenses (Column 1) against unallocated inventory (Column 2). A persistent Column 2 indicates over-procurement.
+- **Utilization Trajectory:** Evaluates whether the Active segment (Green) expands alongside software spend or if Inactive/No activity segments are accumulating.
+- **Telemetry Blindspots:** The Not Monitored segment signals blind spots in IT visibility, prioritizing candidates for agent deployment or vendor API integration.
+
+---
+
+## 🎨 6. UI/UX STATE CONTRACT, TECHNICAL CONSTRAINTS & INTERACTION RULES
+
+### 6.1. The 5 Core UI States Contract
+
+Both views adhere strictly to the **5 Core UI States Contract** implemented with native `@mui/material` components:
 
 ```mermaid
 flowchart TD
-    Step1["Step 1: Select Beneficiary Employee<br/>(Search by Name, Email, Dept)"]
-    Step1 --> CheckDuplicate{"Check Existing Licenses:<br/>Already holds identical license?"}
-    CheckDuplicate -->|"Yes (Already has active seat)"| DupWarn["BLOCK ALLOCATION:<br/>Employee already holds an active seat for this software<br/>(Revoke the current seat first)"]
-    CheckDuplicate -->|"No (Eligible)"| Step2["Step 2: Select Software and Entitlement Pool"]
-
-    Step2 --> RealtimeCheck{"Validate Seat Availability:<br/>Available = Purchased - Allocated > 0?"}
-    RealtimeCheck -->|"Available == 0 (Exhausted)"| SeatBlock["BLOCK ALLOCATION (Button Disabled):<br/>Pool has 0 seats available<br/>Suggestion: Purchase additional seats or reclaim inactive seats"]
-    RealtimeCheck -->|"Available > 0 (Seats Available)"| Step3["Step 3: Configure Parameters and Terms"]
-
-    Step3 --> Params["Set Effective Date, Term Duration,<br/>Business Justification, and Request ID"]
-    Params --> LockTx["Execute Database Transaction with Row-Level Locking<br/>Re-check request status, duplicates, and seats on the server"]
-    LockTx --> Success["Success:<br/>1. Create license_assignments (Active)<br/>2. Increment allocated_quantity (+1), available is derived<br/>3. Mark linked request as Fulfilled<br/>4. Write Audit Log (ASSIGN_LICENSE)<br/>5. Send notification to Employee"]
+    Init(["View Initialization"]) --> Loading["1. Loading State (@mui/material/Skeleton, Shimmer)"]
+    Loading -->|"Data Available"| Success["2. Success / Ideal State (@mui/material/Table, ApexCharts, Cards)"]
+    Loading -->|"Empty Dataset"| Empty["3. Empty State (Zero-data guidance, Reset Filters Button)"]
+    Loading -->|"Network Error"| Error["4. Error State (@mui/material/Alert, Retry Button)"]
+    Success -->|"Underutilized > 25% or Unassigned Spike"| AlertState["5. Optimization Alert State (Actionable @mui/material/Alert banner)"]
+    AlertState -->|"Reclaim Executed"| Success
 ```
 
-#### 2.3. `SCR-ASGN-REVOKE-01`: Revoke License Modal
-- **Triggered from:** "Revoke" button on an employee's software record.
-- **Presentation:** Modal Overlay (Width: 500px)
-- **Form Components:**
-  - Summary: Employee name, Software title, Seat code, Duration utilized, Last active timestamp.
-  - Standardized Revocation Reasons (Dropdown): *Employee departure, Project completion, Inactive $\ge 60$ days (UC20), Project term expired, Voluntary return, Other*.
-  - Detailed justification text input (Mandatory, minimum 10 characters).
-  - Optional email notification toggle to the employee.
-- **System Execution:** Updates status to `Revoked`, restores $Available += 1$, preserves audit record indefinitely (BR-13).
-
-#### 2.4. `SCR-ASGN-CHANGE-01`: Change License Tier Modal (Atomic Swap) — Deferred post-MVP
-
-> Not part of the pilot: no use case or business rule defines this flow (D10). During the pilot, revoke the current seat and then assign the target tier. The specification below is kept for later reference.
-
-- **Triggered from:** "Change Tier" button on an employee's software record.
-- **Presentation:** Modal Overlay (Width: 620px)
-- **Components:**
-  - Left Column (Current): Current Tier, Current monthly cost.
-  - Right Column (Target): Dropdown of compatible tiers displaying real-time available seats in target pool.
-  - Automatic transaction classification: `Upgrade` or `Downgrade`.
-  - Mandatory justification input.
-- **Atomic Transaction:** Closes old assignment (+1 seat to source pool) and provisions new assignment (-1 seat from target pool) in a single database transaction.
-
-#### 2.5. `SCR-ASGN-AVAIL-01`: Real-time Seat Availability Monitor
-- **Route:** `/manager/assignments?view=availability`
-- **Presentation:** Sub-view / Table
-- **4 Alert Bands:**
-  - 🔴 **Critical Red (Capacity Exhausted):** $Available = 0$.
-  - 🟡 **Warning Yellow (Low Capacity):** $Available \le 10\%$.
-  - 🟢 **Optimal Green:** $10\% < Available \le 30\%$.
-  - 🔵 **Under-utilized Blue:** $Available > 30\%$ (Cost optimization opportunity per UC19).
-
-#### 2.6. `SCR-ASGN-HIST-01`: Global Assignment Audit History View
-- **Route:** `/manager/assignments?view=history`
-- **Presentation:** Sub-view / Table
-- **Content:** Complete chronological audit ledger recording timestamp, action (`ASSIGN`, `REVOKE`, `UPGRADE`, `DOWNGRADE`), employee, software, actor (Manager), and business justification (BR-13, BR-17).
+1. **Loading State:** Native `@mui/material/Skeleton` shimmer placeholders for all 4 KPI cards, linear loading bars for charts, and a 5-row table placeholder. Zero layout shift (CLS $< 0.1$).
+2. **Success State:** Complete record presentation with formatted currency (`USD` / `VND`), date format `YYYY-MM-DD`, and WCAG 2.1 AA compliant color contrast badges.
+3. **Empty State:** Clean empty state with descriptive guidance and a prominent `@mui/material/Button` (`[Reset All Filters]`) when queries return zero results.
+4. **Error State:** Contextual error alerts using `@mui/material/Alert` preserving user filter states, accompanied by a non-destructive `@mui/material/Button` (`[Retry Request]`).
+5. **Optimization Alert State:** Standard `@mui/material/Alert` banner (`severity="warning"` or `"error"`) triggered when underutilized accounts exceed $20\%$ or unassigned inventory spikes.
 
 ---
 
-### BLOCK 3: FINANCIAL & BUDGET MANAGEMENT (MODULE 3)
+### 6.2. Zero-Bloat Information Minimization Constraint
 
-#### 3.1. `SCR-BDG-MONITOR-01`: Budget Monitoring Cockpit
-- **Route:** `/manager/budget`
-- **Presentation:** Full Page
-- **Permissions:** Manager Only.
-- **Interface Layout:**
-  - **Fiscal Year Selector:** `FY2026`, `FY2027` and Base Currency Toggle (`VND`, `USD`).
-  - **Core Financial Health Metrics (Cards), per UC14 and D4:**
-    1. `Total Budget:` Approved financial ceiling for the fiscal year.
-    2. `Actual Spending:` Cash settled and disbursed to date ($\sum \text{Paid}$).
-    3. `Remaining Budget:` $\text{Total} - \text{Actual}$.
-    4. `Budget Utilization:` $\frac{\text{Actual}}{\text{Total}} \times 100\%$. All threshold banners use this value.
-    5. `Committed Spending` (P1, shown separately): Unpaid invoices plus remaining contract obligations that have no invoice yet, so no obligation is counted twice. It is excluded from metrics 3 and 4.
-  - **Automated Threshold Banners:**
-    - Amber warning banner at $\ge 80\%$: Prompts Manager to review Q4 expenditure.
-    - Red critical banner at $\ge 100\%$: Over-budget alert to the Manager, with no additional approval tier (D11).
-  - **Cumulative Spending Burn-down / Burn-up Chart:** 12-month trajectory comparing Planned vs. Actual vs. Committed.
-  - **Departmental Utilization Progress Bars:** Visual spending velocity per cost center.
-
-#### 3.2. `SCR-BDG-PLAN-01`: Multi-dimensional Budget Planning Matrix
-- **Route:** `/manager/budget/planning`
-- **Presentation:** Full Page
-- **Interface Structure:**
-  - Annual ceiling input and base currency selection (`VND`/`USD`).
-  - Allocation strategy toggle: *Even 12-Month Partition* vs. *Custom Seasonal Input*.
-  - **Allocation Matrix Grid:**
-    - Rows: Cost centers (Engineering, Design, Sales, Marketing, Operations, HR, Buffer).
-    - Columns: 12 Months (M01 to M12) and Annual Total.
-    - Asterisk indicators (*) on peak renewal months (March, November).
-    - Balance validation column: Green checkmark when $\sum = \text{Annual Budget}$, red alert when unbalanced.
-  - `[Save Budget Plan]` button (appends revision version `v1.0`, `v1.1` to Audit Log).
-
-#### 3.3. `SCR-BDG-EXP-01`: Comprehensive License Expense Ledger
-- **Route:** `/manager/budget/expenses`
-- **Presentation:** Full Page
-- **Features:**
-  - Filters: Vendor, Frequency (`Monthly` / `Annual`), Cost Center. In P0 the ledger holds paid expenses only. `PENDING` and `OVERDUE` payables are a P1 extension that needs its own rule, because BR-10 requires a payment date. `PROJECTED` is forecast data from reports, not an expense record (D5).
-  - **Expense Ledger Data Grid:**
-    - Columns: Invoice ID, Software & Tier, Vendor, Amount & Currency, Frequency, Invoice Date, Payment Due Date, Status, VAT Invoice PDF link, Actions (View, Approve).
-  - Enforces amount, currency, and payment date (**BR-10**) and currency standardization (**BR-11**). The VAT invoice attachment is optional and arrives with UC35 in P1 (D2).
-
-#### 3.4. `SCR-BDG-REPORT-01`: Financial Reporting & Renewal Forecast
-- **Route:** `/manager/budget/reports`
-- **Presentation:** Full Page
-- **Scope:** P1 in full. The P0 financial overview is provided by `SCR-BDG-MONITOR-01`.
-- **4 Specialized Report Types:**
-  1. *Report 1: Monthly Trends:* Stacked bar chart of SaaS vs. Perpetual over 12 months with MoM growth rates.
-  2. *Report 2: By Vendor:* Donut & Treemap market share analysis identifying Top 5 suppliers for volume negotiations.
-  3. *Report 3: Budget vs. Actual Variance Analysis:* Variance matrix ($Variance = Budget - (Actual + Committed)$) highlighting favorable (green) and unfavorable (red) cost deviations.
-  4. *Report 4: Renewal Cashflow Forecast:* 30/90/365-day forward cash flow forecast linked to **Inactive Users ($\ge 60$ days)** from Module 2 to recommend seat downsizing before renewal (UC22).
-  - Export actions: `[Export Executive PDF]` and `[Export CSV / Excel]`.
+To maintain executive clarity and high cognitive ergonomics, the user interface enforces a strict **Zero-Bloat Information Constraint**:
+1. **No Redundant / Speculative Information:** Display **strictly** the exact KPI cards, data attributes, chart series, and table columns specified in this document. Adding speculative fields, hypothetical scores, decorative widgets, or placeholder metrics not defined in this IA is strictly prohibited.
+2. **High Signal-to-Noise Ratio:** Every rendered field must directly support a documented managerial action (inventory tracking, cost quantification, seat reclamation, or renewal negotiation).
+3. **No Decorative Nesting:** Avoid superfluous nested cards, multi-level accordion wrappers, or redundant summary labels that duplicate existing grid data.
 
 ---
 
-### BLOCK 4: SYSTEM ERROR & SECURITY VIEWS
+### 6.3. Icon Integrity Constraint (No Arbitrary / Auto-Generated Icons)
 
-#### 4.1. `SCR-ERR-403`: 403 Forbidden Access
-- **Route:** `/403`
-- **Presentation:** Full Page
-- **Content:** Access denied illustration, explanation that current role lacks Manager privileges, `[Return to Personal Portal]` action button.
-
-#### 4.2. `SCR-ERR-404`: 404 Page Not Found
-- **Route:** `/404`
-- **Presentation:** Full Page
-- **Content:** Resource not found illustration, `[Return to Dashboard]` action button.
-
----
-
-## 🔐 6. RBAC SCREEN ACCESS MATRIX
-
-Comprehensive access permission matrix for all 18 Manager Portal Screens & Dialogs:
-
-| Screen ID | Screen Name / Modal | Public | Manager (Full Admin) | Editor (Data Ingestion) | Employee (End User) |
-|:---|---|:---:|:---:|:---:|:---:|
-| **SCR-AUTH-01** | Enterprise Authentication | ✅ | ✅ | ✅ | ✅ |
-| **SCR-LIC-01** | License Inventory & KPIs | ❌ | ✅ (Full Access) | ❌ (Blocked 403) | ❌ (Blocked 403) |
-| **SCR-LIC-ADD-01** | Add License Drawer | ❌ | ✅ | ❌ | ❌ |
-| **SCR-LIC-DETAIL-01**| License Details & Seat Gauge | ❌ | ✅ (Full Access) | ❌ (Blocked 403) | ❌ (Blocked 403) |
-| **SCR-LIC-EDIT-01** | Edit License Drawer | ❌ | ✅ | ❌ | ❌ |
-| **SCR-LIC-DEL-01** | Delete / Decommission Modal | ❌ | ✅ | ❌ | ❌ |
-| **SCR-ASGN-01** | Assignment Hub | ❌ | ✅ (Full Access) | ❌ (Blocked 403) | ❌ (Blocked 403) |
-| **SCR-ASGN-ADD-01** | Assign License Drawer | ❌ | ✅ | ❌ | ❌ |
-| **SCR-ASGN-REVOKE-01**| Revoke License Modal | ❌ | ✅ | ❌ | ❌ |
-| **SCR-ASGN-CHANGE-01**| Change License Tier Modal | ❌ | ✅ | ❌ | ❌ |
-| **SCR-ASGN-AVAIL-01** | Real-time Seat Monitor | ❌ | ✅ (Full Access) | ❌ | ❌ |
-| **SCR-ASGN-HIST-01** | Global Assignment History | ❌ | ✅ (Full Access) | ❌ | ❌ |
-| **SCR-BDG-MONITOR-01**| Budget Monitoring Cockpit | ❌ | ✅ (Full Access) | ❌ (Blocked 403) | ❌ (Blocked 403) |
-| **SCR-BDG-PLAN-01** | Budget Planning Matrix | ❌ | ✅ (Full Access) | ❌ (Blocked 403) | ❌ (Blocked 403) |
-| **SCR-BDG-EXP-01** | License Expense Ledger | ❌ | ✅ (Full Access) | ✅ (Input & View) | ❌ (Blocked 403) |
-| **SCR-BDG-REPORT-01** | Financial Reporting Center | ❌ | ✅ (Full Access) | ❌ (Blocked 403) | ❌ (Blocked 403) |
-| **SCR-ERR-403** | 403 Forbidden | ✅ | ✅ | ✅ | ✅ |
-| **SCR-ERR-404** | 404 Not Found | ✅ | ✅ | ✅ | ✅ |
-
-**Screen access versus data access (D9):** This matrix covers Manager Portal screens only. A 403 here does not remove the read access granted to Staff in the [README permissions matrix](../README.md); Staff read that data through the APIs in Section 4 and through Staff screens that will be specified separately. Enforcement happens on the backend for every API, and hiding a screen is not an access control.
+To preserve visual professionalism and avoid visual pollution:
+1. **Strictly No Auto-Generated or Hallucinated Icons:** The system prohibits inventing custom glyphs, generating arbitrary SVG artwork, or inserting arbitrary decorative emojis into UI labels, table headers, or KPI metric cards.
+2. **Standard Curated Iconography Only:** All functional icons must be imported strictly from `@mui/icons-material`:
+   - Search: `@mui/icons-material/Search`
+   - Filter: `@mui/icons-material/FilterList`
+   - Drawer Close: `@mui/icons-material/Close`
+   - Sorting: `@mui/icons-material/ArrowUpward`, `@mui/icons-material/ArrowDownward`
+   - Pagination: `@mui/icons-material/KeyboardArrowLeft`, `@mui/icons-material/KeyboardArrowRight`
+   - External Links: `@mui/icons-material/OpenInNew`
+   - Status Dots: Standard CSS colored dots or `@mui/material/Badge` (no custom illustrative status icons)
+3. **Application Brand Icons:** Software vendor logos (e.g., Microsoft, GitHub, Slack) must be rendered from verified publisher SVG/PNG assets only. When a logo is absent, display a clean `@mui/material/Avatar` with standard 2-letter textual monogram (e.g., `MS`, `GH`).
 
 ---
 
-*This Information Architecture & View Specifications document is 100% aligned with [README.md](../README.md), [docs/01-MVP.md](01-MVP.md), [docs/02-use-cases.md](02-use-cases.md), and [docs/03-user-stories.md](03-user-stories.md).*
+### 6.4. Component Library Standard: `@mui/material` & `@mui/icons-material`
+
+All interface elements across both views are implemented using the `@mui/material` (v5/v6) design system:
+
+| UI Pattern | Standard `@mui/material` Component | Props / Styling Standards |
+|---|---|---|
+| **App Shell & Layout** | `Box`, `Stack`, `Container` | Responsive flexbox layout, theme spacing tokens (`spacing(2)`, `spacing(3)`). |
+| **Grid System** | `Grid` (v2) | 12-column executive responsive grid (`xs={12}`, `md={6}`, `lg={3}`). |
+| **KPI & Metric Cards** | `Card`, `CardContent`, `Typography` | `variant="h4"` for numerical values, `variant="body2"` with `color="text.secondary"` for labels. |
+| **Data Grid & Table** | `TableContainer`, `Table`, `TableHead`, `TableRow`, `TableCell`, `TableBody`, `TablePagination` | `size="medium"`, sticky headers, high contrast row borders. |
+| **Status Chips** | `Chip` | `size="small"`, `variant="outlined"` or filled with theme status colors (`success`, `warning`, `error`, `default`). |
+| **Side Drawer** | `Drawer` | `anchor="right"`, `PaperProps={{ sx: { width: 640, p: 3 } }}`, backdrop blur. |
+| **Form Inputs** | `TextField`, `Select`, `MenuItem`, `Button`, `IconButton` | Standardized controlled inputs with clean debouncing and accessible aria labels. |
+| **Feedback Elements** | `Skeleton`, `Alert`, `Snackbar`, `LinearProgress` | Built-in theme animations, zero layout shift. |
+
+---
+
+### 6.5. Data Visualization Standard: ApexCharts
+
+All charts across both views are implemented strictly using `ApexCharts` (`react-apexcharts`):
+1. **Responsive Rendering:** All charts must set `width="100%"` and explicit responsive height breakpoints.
+2. **Color Palette Alignment:** Colors must adhere strictly to the specified executive semantic palette:
+   - Green (Active / Healthy): `#4CAF50`
+   - Orange / Amber (Warning / Never used / Inactive): `#FF9800`
+   - Gray (Dormant / Inactive >60d / No activity): `#9E9E9E` / `#616161`
+   - Indigo / Slate Blue (Not monitored): `#3F51B5`
+   - Rose / Red (Unassigned / Over-allocated): `#E91E63` / `#D32F2F`
+3. **Data Tooltips:** Tooltips must format currency figures and user counts cleanly without technical keys or raw unformatted timestamps.
+
+---
+
+## 🔗 7. SCREEN-TO-API MAPPING MATRIX
+
+RESTful API endpoints powering both views and the detail drawer:
+
+| Screen / Component | User Action / Event | REST API Endpoint & Method | Query / Body Parameters | Response Payload Overview |
+|---|---|---|---|---|
+| **SCR-LIC-MGMT-01** | Initialize License Management | `GET /api/v1/licenses/overview` | `None` | `total_licenses`, `category_breakdown` (Pie data), `top_5_usage` (Ranked list). |
+| **SCR-LIC-MGMT-01** | Fetch General License Grid | `GET /api/v1/licenses` | `page`, `limit`, `search`, `category`, `status`, `sort_by` | Paginated license list containing all 9 core columns. |
+| **SCR-LIC-DETAIL-01**| Click License Row | `GET /api/v1/licenses/{id}/detail` | `id` (License Entitlement ID) | Key indicators (`monthly_cost`, `subscriptions_count`, `tiers`, `total_users`, `unassigned_count`) and Detailed metadata (`vendor`, `description`, `category`, `subcategory`, `policy_links`). |
+| **SCR-ANALYTICS-01** | Load Top 4 KPIs | `GET /api/v1/analytics/kpis` | `fiscal_year` (Defaults to current) | `total_annual_spend`, `managed_licenses`, `underutilized_accounts`, `wasted_license_cost`. |
+| **SCR-ANALYTICS-01** | Load Application Usage Chart | `GET /api/v1/analytics/application-usage` | `limit=5\|10\|20`, `sort=wasted` | Array of applications with 3 segment metrics: `never_used`, `inactive_60d`, `actively_used`. |
+| **SCR-ANALYTICS-01** | Load Spend by Department | `GET /api/v1/analytics/spend-by-department` | `fiscal_year`, `currency=USD\|VND` | Departmental data array: `department_name`, `spend_amount`, `percentage_share`, `headcount`. |
+| **SCR-ANALYTICS-01** | Load Subscription Usage Chart | `GET /api/v1/analytics/subscription-usage-monthly`| `fiscal_year` | 12-month array: Column 1 (`active`, `inactive`, `no_activity`, `not_monitored`) and Column 2 (`unassigned`). |
+
+---
+
+*This Information Architecture & View Specification document (v4.2) defines the strict UI/UX contract, @mui/material components, ApexCharts configurations, and zero-bloat constraints for VFast ELMS.*
