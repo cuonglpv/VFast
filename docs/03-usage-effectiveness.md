@@ -1,8 +1,13 @@
 # Usage Effectiveness Measurement
 
-There is no single metric for all software: the license model decides what to measure and where the data comes from. The solution assigns each software product to one of 7 groups. Each group has a default measurement that can be changed. This is the content of UC08 (see [Use cases](02-use-cases.md)).
+There is no single metric for all software: the license model decides what to measure and where the data comes from. The solution assigns each software product to one of 7 groups. Each group has its own usage source, activity signal and inactivity threshold. This is a system rule, not a use case: UC03 to UC05 display the statuses it produces (see [Use cases](02-use-cases.md)).
 
-**Link to UC01–UC06.** Groups 1 to 3 have concrete accounts or devices, so the result maps to the statuses Active, Inactive and No activity, and the viewing use cases work as they are. Groups 4 to 7 have no per-person accounts, so they are measured at license level with a usage ratio shown in UC03, and does not add them to Underutilized accounts in UC04.
+**Link to UC01–UC05.** Groups 1 to 3 have concrete accounts or devices, so the result maps to the statuses Active, Inactive and No activity, and the viewing use cases work as they are. Groups 4 to 7 have no per-person accounts, so they are measured at license level with a usage ratio shown in UC03, and are not added to Underutilized accounts in UC04.
+
+**Rules**
+- Each license belongs to exactly one group.
+- A license not yet assigned to a group uses the default rule, threshold 60 days.
+- A group with no usage source: its accounts are Not monitored.
 
 ## 1. Metrics common to every group
 

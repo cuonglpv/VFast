@@ -1,10 +1,10 @@
 # VFast – Internal License Management
 
-VFast is a set of analysis documents for a self-built system that manages software licenses for a group of subsidiaries. It serves one role, the license manager (Admin), and covers every kind of license. The system observes and analyzes only: it has no grant or revoke action. Nothing is implemented yet.
+VFast is a set of analysis documents for a self-built system that manages software licenses for a group of subsidiaries. It serves one role, the license manager (Manager), and covers every kind of license. The system observes and analyzes only: it has no grant or revoke action. Nothing is implemented yet.
 
 The scope has three parts:
 
-1. **8 use cases** for the Admin: 6 for viewing and analyzing, 2 additions.
+1. **6 use cases** for the Manager: 5 for viewing and analyzing, 1 for data intake.
 2. **A usage-effectiveness solution** that measures usage across 7 software groups.
 3. **A data-intake solution**: manual upload is the base, automatic sync is the priority direction.
 
@@ -22,9 +22,9 @@ Editable source: [`docs/mindmap/vfast-license.xmind`](docs/mindmap/vfast-license
 
 | # | Pain point | Use case |
 |---|---|---|
-| P1 | Manual entry of license allocation (confirmed) | UC07 |
-| P2 | Usage effectiveness not tracked (confirmed) | UC08, UC03–UC06 |
-| P3 | No overall picture across subsidiaries | UC01, UC02, UC06 |
+| P1 | Manual entry of license allocation (confirmed) | UC06 |
+| P2 | Usage effectiveness not tracked (confirmed) | UC03–UC05 |
+| P3 | No overall picture across subsidiaries | UC01, UC02, UC05 |
 | P4 | Compliance and audit risk | UC02 |
 | P5 | Passive renewal | UC02 |
 | P6 | Shadow IT | Later phase |
@@ -41,20 +41,18 @@ Symptoms of each one: [Scope](docs/01-scope.md).
 | UC02 | View License List | License Management |
 | UC03 | View License Detail | License Management |
 | UC04 | View Analytics KPIs | Analytics |
-| UC05 | View Application Usage | Analytics |
-| UC06 | View Spend and Usage Breakdown | Analytics |
-| UC07 | Upload and Sync License Data | Data Sources |
-| UC08 | Measure License Usage Effectiveness | Settings |
+| UC05 | View Application Usage Breakdown | Analytics |
+| UC06 | Upload and Sync License Data | Data Sources |
 
-- **Actors:** Admin (primary, the license manager); Scheduled Job (secondary, runs automatic sync for UC07).
-- **Company filter:** every screen has a shared Company filter, defaulting to the whole group; choosing a subsidiary recomputes UC01 to UC06 for that company.
-- UC01 to UC05 follow the team's original specification. UC06 merges two original use cases. UC07 and UC08 are additions.
+- **Actors:** Manager (primary, the license manager); Scheduled Job (secondary, runs automatic sync for UC06).
+- **Company filter:** every screen has a shared Company filter, defaulting to the whole group; choosing a subsidiary recomputes UC01 to UC05 for that company.
+- UC01 to UC04 follow the team's original specification. UC05 merges three original use cases (View Application Usage, View Spend by Department, View Subscription Usage by Month). UC06 is an addition.
 
-Diagram source: [`docs/diagrams/ve_license.py`](docs/diagrams/ve_license.py), drawn with [`srsdiagram.py`](docs/diagrams/srsdiagram.py); SVG and an editable draw.io file are in [`docs/diagrams/out/`](docs/diagrams/out/). Regenerate with `python ve_license.py` from `docs/diagrams` (needs Pillow, Playwright with Chromium, and Liberation Sans or Arial).
+Use cases are grouped by the screen they belong to. Source: [`docs/diagrams/out/uc_license_management.drawio`](docs/diagrams/out/uc_license_management.drawio) (open with draw.io); the PNG and SVG are exported from it.
 
 ## 4. Usage effectiveness
 
-Each software product belongs to one of 7 groups with its own default measurement (UC08):
+Each software product belongs to one of 7 groups with its own usage source and inactivity threshold; this is a system rule, not a use case:
 
 1. Office and collaboration SaaS, per user
 2. Specialized SaaS, per seat
@@ -72,11 +70,11 @@ Upload from Excel or CSV is always available. Automatic sync (HR, IdP/SSO, vendo
 
 ## 6. Open questions
 
-Whether the group has a central IdP/SSO, a shared HR system and employee ID, and an endpoint management tool; which are the top 10–20 products; what the current Excel file looks like; how subsidiaries split cost; and whether anyone besides the Admin will use the system. Full list: [Scope](docs/01-scope.md#4-open-questions).
+Whether the group has a central IdP/SSO, a shared HR system and employee ID, and an endpoint management tool; which are the top 10–20 products; what the current Excel file looks like; how subsidiaries split cost; and whether anyone besides the Manager will use the system. Full list: [Scope](docs/01-scope.md#4-open-questions).
 
 ## Documentation
 
 - [Scope](docs/01-scope.md) — pain points, scope, open questions
-- [Use cases](docs/02-use-cases.md) — actors, 8 use cases, specifications of UC06–UC08
+- [Use cases](docs/02-use-cases.md) — actors, 6 use cases, specifications of UC05–UC06
 - [Usage effectiveness](docs/03-usage-effectiveness.md) — 7 software groups and how to measure each
 - [Data intake automation](docs/04-data-automation.md) — sources, design rules, roadmap

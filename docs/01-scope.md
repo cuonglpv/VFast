@@ -4,7 +4,7 @@
 
 The project is a set of analysis documents for a self-built license management system. It serves the license manager of a group of subsidiaries and covers every kind of license. The scope has three parts:
 
-1. **8 use cases** for the license manager: 6 for viewing and analyzing, 2 additions.
+1. **6 use cases** for the license manager: 5 for viewing and analyzing, 1 for data intake.
 2. **A usage-effectiveness solution** that measures usage across 7 software groups.
 3. **A data-intake solution**: manual upload is the base, automation is the priority direction.
 
@@ -16,9 +16,9 @@ P1 and P2 are confirmed. P3 to P6 are problems that usually come with Excel-base
 
 | # | Pain point | Symptom | Use case |
 |---|---|---|---|
-| P1 | Manual entry of license allocation (confirmed) | The department head records every grant and revocation in Excel; data is late and drifts from reality | UC07 |
-| P2 | Usage effectiveness not tracked (confirmed) | Nobody knows whether an issued license is used, and how much | UC08 (measure), UC03–UC06 (display) |
-| P3 | No overall picture | Each subsidiary and department has its own Excel file; the group cannot consolidate | UC01, UC02, UC06 |
+| P1 | Manual entry of license allocation (confirmed) | The department head records every grant and revocation in Excel; data is late and drifts from reality | UC06 |
+| P2 | Usage effectiveness not tracked (confirmed) | Nobody knows whether an issued license is used, and how much | UC03–UC05 (display), software-group rules (measure) |
+| P3 | No overall picture | Each subsidiary and department has its own Excel file; the group cannot consolidate | UC01, UC02, UC05 |
 | P4 | Compliance and audit risk | Use beyond what was bought; no figures when a vendor audits | UC02 (Compliance status column) |
 | P5 | Passive renewal | Renewing the old quantity although demand changed; missed deadlines | UC02 (Expiring soon flag) |
 | P6 | Shadow IT | Departments buy or install on their own, outside IT | None yet, later phase |
@@ -38,7 +38,7 @@ The scope is analysis documents, not a running product: use cases for the manage
 | Business | View catalog and detail, analyze cost and usage effectiveness, collect data automatically, configure how usage is measured | Grant or revoke actions in the system; procurement, payment, contract negotiation |
 | Automation | Solution and approach per data source, proposed roadmap | Building real connectors |
 
-In this phase the system only observes and analyzes: there is no grant or revoke action. Data enters in two ways (UC07): manual upload is always available, and automatic sync is the priority direction to reduce manual entry over time.
+In this phase the system only observes and analyzes: there is no grant or revoke action. Data enters in two ways (UC06): manual upload is always available, and automatic sync is the priority direction to reduce manual entry over time.
 
 ## 4. Open questions
 
@@ -49,9 +49,9 @@ Three directions are settled: self-built (documents only), all license types, a 
 - [ ] Is an endpoint management tool (Intune, SCCM or equivalent) already in place?
 - [ ] What are the 10–20 most expensive software products, and which of the 7 groups do they belong to?
 - [ ] Which columns does the current Excel file have? Can we get a masked sample?
-- [ ] Do subsidiaries buy licenses separately, or does the group buy together and split? (affects cost splitting in UC06 and the Company filter)
+- [ ] Do subsidiaries buy licenses separately, or does the group buy together and split? (affects cost splitting in UC05 and the Company filter)
 - [ ] Besides the manager, will anyone else use the system later? (decides whether permissions are needed)
-- [ ] What do sections 6.4, 7.4, 7.5 and principle A4 of the team's specification say? They need to be read to align UC07 and UC08 with them.
+- [ ] What do sections 6.4, 7.4, 7.5 and principle A4 of the team's specification say? They need to be read to align UC06 and the software-group rules with them.
 
 ## 5. References
 
