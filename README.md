@@ -119,12 +119,112 @@ The target schema is PostgreSQL, 41 tables in seven groups: organization and acc
 
 Entity overview, one ERD per group, rule-to-schema traceability, and the decisions still to confirm (D5–D15): [Database design](docs/database/README.md). Source [`elms.dbml`](docs/database/elms.dbml), reference DDL [`schema.sql`](docs/database/schema.sql), draw.io files in [`docs/database/diagrams/`](docs/database/diagrams/).
 
+## 3. Architecture and Folder Structures
+
+ELMS is designed as one monolith with Clean Architecture, deployed as two processes (API and worker) that share one PostgreSQL database. The API serves users; slow work (provider sync, CSV import, detection) runs in the worker through a PostgreSQL-backed job queue, so no Redis or message broker is required.
+
+### 3.1 Container view
+
+```mermaid
+flowchart TB
+    people(["Employee / Staff / Manager / Admin"])
+    providers["Software providers<br/><i>[External]</i><br/>read-only APIs"]
+    subgraph platform["ELMS [System boundary]"]
+        direction TB
+        web["Web Frontend<br/><i>[React + Vite SPA]</i>"]
+        api["Elms.Api<br/><i>[ASP.NET Core 10]</i><br/>Auth, RBAC, data scope"]
+        worker["Elms.Worker<br/><i>[.NET Worker + Hangfire]</i><br/>Sync, import, detection"]
+        db[("PostgreSQL 16<br/>data, queue, sessions")]
+        files[("S3 / MinIO<br/>invoices, CSV")]
+    end
+    people --> web
+    web -- "REST / JSON, cookie session" --> api
+    api --> db
+    api --> files
+    worker --> db
+    worker --> files
+    worker -- "read-only" --> providers
+```
+
+| Layer | Technology | Status |
+|---|---|---|
+| Frontend | React 19, Vite, TypeScript, MUI v6, Tailwind CSS v4, ApexCharts | Implemented in `src/frontend` |
+| Backend | ASP.NET Core 10, EF Core + Dapper, Hangfire worker | Proposed |
+| Database | PostgreSQL 16 | Designed in `docs/database/elms.dbml` |
+
+### 3.2 Repository layout
+
+```text
+VFast/
+├─ README.md
+├─ docs/
+│  ├─ 01 … 04               Research, use cases, INVEST, information architecture
+│  ├─ 05-folder-structure.md
+│  ├─ database/             elms.dbml
+│  ├─ diagrams/out/         Use case diagrams
+│  └─ mindmap/              XMind source
+└─ src/
+   ├─ frontend/             React SPA
+   └─ backend/              .NET solution
+```
+
+### 3.3 Frontend
+
+```text
+src/frontend/
+├─ routes/        paths.ts, router.tsx
+├─ layouts/       Header, Sidebar, MainLayout
+├─ components/    cards/, layout/, shared charts and icons
+├─ sections/      licenses/, budget/  (feature blocks that compose pages)
+├─ pages/         licenses/, budget/, analytics/, users/  (one per screen)
+├─ types/  utils/  data/  theme/
+└─ App.tsx, main.tsx, index.css
+```
+
+Call flow: `routes → pages → sections → components → types / utils`.
+
+### 3.4 Backend
+
+```text
+ELMS/
+├─ Elms.slnx, global.json, Directory.Build.props, Directory.Packages.props
+├─ docker-compose.yml
+├─ src/
+│  ├─ SharedKernel.Domain/            BaseEntity, BaseAuditableEntity, Money
+│  ├─ SharedKernel.Application/       Base Command/Query, Behaviours, Exceptions, AccessScope
+│  ├─ SharedKernel.Infrastructure/    BaseDbContext, Audit + Scope interceptor
+│  ├─ SharedKernel.Api/               BaseApiController, GlobalExceptionHandler
+│  ├─ Elms.Domain/
+│  │  ├─ Entities/<Module>/           Catalog, Usage, Finance, Optimization...
+│  │  ├─ Enums/                       Archetype, SeatStatus, RecommendationStatus
+│  │  └─ Rules/                       SeatStatusRule, CostNormalizer, CostAllocator
+│  ├─ Elms.Application/
+│  │  ├─ Interfaces/                  IAppDbContext, IProviderConnector, IFileStorage
+│  │  ├─ <Module>/<Feature>/          e.g. Catalog/Products, Finance/BudgetPlans
+│  │  │  └─ Commands/  Queries/  DTO/
+│  │  ├─ Analytics/<Dashboard>/Queries/   Read views with Dapper
+│  │  ├─ Ingestion/Pipeline/          Steps of the daily job
+│  │  └─ ConfigureServices.cs
+│  ├─ Elms.Infrastructure/
+│  │  ├─ Data/                        AppDbContext, Configurations/, Migrations/
+│  │  ├─ Connectors/MicrosoftGraph/, Storage/
+│  │  └─ ConfigureServices.cs
+│  ├─ Elms.Api/                       Controllers/<Module>/, Program.cs
+│  └─ Elms.Worker/                    Program.cs, Jobs/DailyPipelineJob.cs
+└─ tests/                             Unit, Integration (Testcontainers), Architecture
+```
+
+Dependency direction: `Api / Worker → Infrastructure → Application → Domain → SharedKernel`. The eight business modules (`identity`, `organization`, `catalog`, `ingestion`, `usage`, `finance`, `optimization`, `analytics`, plus shared `audit`) are feature folders inside each layer; boundaries are enforced by architecture tests.
+
+Full trees, module table, API conventions, jobs, caching, security, and deployment: [Folder structure and architecture](docs/05-folder-structure.md).
+
 ## Documentation
 
 - [Top-down research](docs/01-research-top-down.md) — problem, stakeholders, goals, license models, data sources, process, epics, scope, risks
 - [Use cases](docs/02-use-cases.md) — actors, role × feature matrix, business rules, use case diagrams per role, 24 use cases
 - [INVEST requirements](docs/03-invest-requirements.md) — 24 user stories, INVEST review, acceptance criteria
 - [Information architecture](docs/04-information-architecture-manager.md) — screens, views, and navigation: License Management, Analytics Hub (license health and budget analytics), User Management
+- [Folder structure and architecture](docs/05-folder-structure.md) — solution architecture, frontend structure, backend modules and .NET folder layout, API conventions, jobs, caching, security
 - [Database design](docs/database/README.md) — conventions, entity overview, ERD per group, rule-to-schema traceability, proposed decisions D5–D15
 
 ## Frontend development
