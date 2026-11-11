@@ -11,7 +11,6 @@ VFast/
 ├─ docs/
 │  ├─ 01-research-top-down.md … 04-information-architecture-manager.md
 │  ├─ 05-folder-structure.md        ← this file
-│  ├─ 06-data-model.md              Tables, enums, conventions, tables per module
 │  ├─ database/
 │  │  ├─ elms.dbml                  Database design (source of truth)
 │  ├─ diagrams/out/                 Use case diagrams (draw.io, png, svg)
@@ -277,4 +276,4 @@ A reverse proxy (Nginx or Caddy) serves the SPA and forwards `/api/*` to `Elms.A
 
 ## 10. Database
 
-37 tables, 19 enums, 7 table groups, PostgreSQL. See [Data model](06-data-model.md) for the table groups, every table and enum, conventions, and tables per backend module; [`database/elms.dbml`](database/elms.dbml) is the source of truth. Each module maps to one Postgres schema (`identity`, `org`, `catalog`, `ingestion`, `usage`, `finance`, `optimization`, `audit`).
+41 tables, 7 table groups, PostgreSQL. See [Database design](database/README.md) for the ERDs and rules; [`database/elms.dbml`](database/elms.dbml) is the source of truth. Each module maps to one Postgres schema (`identity`, `org`, `catalog`, `ingestion`, `usage`, `finance`, `optimization`, `audit`).

@@ -1,0 +1,59 @@
+---
+config:
+  layout: elk
+  elk:
+    mergeEdges: false
+    nodePlacementStrategy: NETWORK_SIMPLEX
+---
+erDiagram
+    org_units |o--o{ org_units : "contains"
+    org_units |o--o{ employees : "employs"
+    employees ||--o| user_accounts : "logs in as"
+    roles ||--o{ user_accounts : "assigned to"
+    roles ||--o{ role_permissions : grants
+    permissions ||--o{ role_permissions : "granted by"
+    user_accounts ||--o{ user_sessions : opens
+    user_accounts ||--o{ manager_org_units : manages
+    org_units ||--o{ manager_org_units : "managed by"
+    vendors ||--o{ provider_accounts : "has tenant"
+    vendors ||--o{ software_products : sells
+    vendors ||--o{ contracts : signs
+    software_categories ||--o{ software_products : classifies
+    software_products ||--o{ license_plans : "offered as"
+    software_products ||--o{ product_links : links
+    org_units ||--o{ license_plans : owns
+    license_plans ||--o{ entitlement_lines : "purchased as"
+    provider_accounts ||--o{ entitlement_lines : "billed in"
+    contracts |o--o{ entitlement_lines : covers
+    entitlement_lines |o--o{ entitlement_lines : renews
+    entitlement_lines ||--o{ entitlement_allocations : "split into"
+    org_units ||--o{ entitlement_allocations : receives
+    provider_accounts ||--o{ connectors : "read by"
+    connectors ||--o{ sync_runs : runs
+    license_plans ||--o{ plan_data_sources : "collected from"
+    connectors |o--o{ plan_data_sources : feeds
+    license_plans ||--o{ collection_coverage : "completeness of"
+    sync_runs ||--o{ raw_records : stores
+    files ||--o{ import_batches : "imported from"
+    provider_accounts ||--o{ subjects : "identity in"
+    employees |o--o{ subjects : "matched to"
+    license_plans ||--o{ license_assignments : "held as"
+    subjects ||--o{ license_assignments : holds
+    entitlement_lines |o--o{ license_assignments : "seat of"
+    license_plans ||--o{ usage_records : "used as"
+    subjects |o--o{ usage_records : uses
+    license_plans ||--o{ plan_daily_snapshots : "daily figures"
+    license_plans ||--o{ plan_unit_daily_snapshots : "daily seats"
+    org_units ||--o{ budget_plans : budgets
+    budget_plans ||--o{ budget_plan_lines : plans
+    license_plans ||--o{ budget_plan_lines : "planned in"
+    accounting_periods ||--o{ cost_allocations : "month of"
+    license_plans ||--o{ cost_allocations : "cost of"
+    org_units |o--o{ cost_allocations : carries
+    license_plans ||--o{ expenses : "billed for"
+    org_units |o--o{ expenses : pays
+    expenses |o--o{ expenses : corrects
+    detection_runs ||--o{ detection_results : produces
+    license_plans ||--o{ detection_results : "checked in"
+    detection_results |o--o{ recommendations : "turned into"
+    license_plans ||--o{ recommendations : concerns
