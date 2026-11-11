@@ -1,5 +1,6 @@
 import React from 'react';
 import { formatCurrency, formatDate } from '@/utils';
+import { StatusBadge } from '@/components/StatusBadge';
 
 export interface LicenseDetailProps {
   open: boolean;
@@ -53,7 +54,7 @@ export const LicenseDetailDrawer: React.FC<LicenseDetailProps> = ({
       />
 
       {/* Right Slide-over Panel (640px) */}
-      <aside className="fixed top-0 right-0 h-screen w-full sm:w-[640px] max-w-[640px] bg-white z-50 shadow-2xl border-l border-slate-200 flex flex-col justify-between font-body text-slate-800 antialiased animate-in slide-in-from-right duration-200">
+      <aside className="license-detail-drawer fixed top-0 right-0 h-screen w-full sm:w-[640px] max-w-[640px] bg-white z-50 shadow-2xl border-l border-slate-200 flex flex-col justify-between font-body text-slate-800 antialiased animate-in slide-in-from-right duration-200">
         {/* Drawer Header */}
         <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
           <div className="flex items-center gap-3.5 min-w-0">
@@ -66,10 +67,7 @@ export const LicenseDetailDrawer: React.FC<LicenseDetailProps> = ({
                 <h2 className="text-xl font-bold text-slate-900 tracking-tight font-headline truncate">
                   {license.softwareName}
                 </h2>
-                <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2.5 py-0.5 rounded-full font-medium inline-flex items-center gap-1.5 shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                  {license.status}
-                </span>
+                <StatusBadge domain="compliance" status={license.status} />
               </div>
               <p className="text-xs text-slate-500 mt-0.5 truncate">
                 {license.publisher} • SKU: {license.sku}
@@ -119,7 +117,7 @@ export const LicenseDetailDrawer: React.FC<LicenseDetailProps> = ({
               {/* 1. Monthly Cost */}
               <div className="p-3 bg-white border border-slate-200 rounded-lg flex flex-col justify-between hover:border-slate-300 transition-colors shadow-xs">
                 <div className="flex items-center justify-between text-slate-500 mb-0.5">
-                  <span className="text-[11px] font-medium">Monthly Cost</span>
+                  <span className="text-xs font-medium">Monthly Cost</span>
                   <span className="material-symbols-outlined text-slate-400 text-base" data-icon="payments">
                     payments
                   </span>
@@ -127,37 +125,37 @@ export const LicenseDetailDrawer: React.FC<LicenseDetailProps> = ({
                 <div className="text-lg font-bold text-slate-900 leading-tight">
                   {formatCurrency(license.monthlyCost)} / mo
                 </div>
-                <div className="text-[10px] text-slate-400 mt-1">Annual: {formatCurrency(license.annualCost)}</div>
+                <div className="text-xs text-slate-400 mt-1">Annual: {formatCurrency(license.annualCost)}</div>
               </div>
 
               {/* 2. Subscriptions */}
               <div className="p-3 bg-white border border-slate-200 rounded-lg flex flex-col justify-between hover:border-slate-300 transition-colors shadow-xs">
                 <div className="flex items-center justify-between text-slate-500 mb-0.5">
-                  <span className="text-[11px] font-medium">Subscriptions</span>
+                  <span className="text-xs font-medium">Subscriptions</span>
                   <span className="material-symbols-outlined text-slate-400 text-base" data-icon="description">
                     description
                   </span>
                 </div>
                 <div className="text-lg font-bold text-slate-900 leading-tight">3 Contracts</div>
-                <div className="text-[10px] text-emerald-600 mt-1">Direct Enterprise</div>
+                <div className="text-xs text-emerald-600 mt-1">Direct Enterprise</div>
               </div>
 
               {/* 3. Tiers */}
               <div className="p-3 bg-white border border-slate-200 rounded-lg flex flex-col justify-between hover:border-slate-300 transition-colors shadow-xs">
                 <div className="flex items-center justify-between text-slate-500 mb-0.5">
-                  <span className="text-[11px] font-medium">Tiers</span>
+                  <span className="text-xs font-medium">Tiers</span>
                   <span className="material-symbols-outlined text-slate-400 text-base" data-icon="layers">
                     layers
                   </span>
                 </div>
                 <div className="text-lg font-bold text-slate-900 leading-tight">E5 & E3 Tiers</div>
-                <div className="text-[10px] text-slate-400 mt-1">400 E5, 100 E3</div>
+                <div className="text-xs text-slate-400 mt-1">400 E5, 100 E3</div>
               </div>
 
               {/* 4. Assigned Users */}
               <div className="p-3 bg-white border border-slate-200 rounded-lg flex flex-col justify-between hover:border-slate-300 transition-colors shadow-xs">
                 <div className="flex items-center justify-between text-slate-500 mb-0.5">
-                  <span className="text-[11px] font-medium">Assigned Users</span>
+                  <span className="text-xs font-medium">Assigned Users</span>
                   <span className="material-symbols-outlined text-slate-400 text-base" data-icon="group">
                     group
                   </span>
@@ -165,13 +163,13 @@ export const LicenseDetailDrawer: React.FC<LicenseDetailProps> = ({
                 <div className="text-lg font-bold text-slate-900 leading-tight">
                   {license.assignedSeats} <span className="text-xs font-normal text-slate-500">/ {license.totalSeats}</span>
                 </div>
-                <div className="text-[10px] text-emerald-600 mt-1">{license.utilizationRate}% Utilization</div>
+                <div className="text-xs text-emerald-600 mt-1">{license.utilizationRate}% Utilization</div>
               </div>
 
               {/* 5. Available Seats */}
               <div className="p-3 bg-white border border-slate-200 rounded-lg flex flex-col justify-between hover:border-slate-300 transition-colors shadow-xs">
                 <div className="flex items-center justify-between text-slate-500 mb-0.5">
-                  <span className="text-[11px] font-medium">Available Seats</span>
+                  <span className="text-xs font-medium">Available Seats</span>
                   <span className="material-symbols-outlined text-slate-400 text-base" data-icon="event_seat">
                     event_seat
                   </span>
@@ -179,13 +177,13 @@ export const LicenseDetailDrawer: React.FC<LicenseDetailProps> = ({
                 <div className="text-lg font-bold text-slate-900 leading-tight">
                   {license.availableSeats} <span className="text-xs font-normal text-slate-500">seats buffer</span>
                 </div>
-                <div className="text-[10px] text-slate-400 mt-1">6.0% Unassigned</div>
+                <div className="text-xs text-slate-400 mt-1">6.0% Unassigned</div>
               </div>
 
               {/* 6. Renewal Date */}
               <div className="p-3 bg-white border border-slate-200 rounded-lg flex flex-col justify-between hover:border-slate-300 transition-colors shadow-xs">
                 <div className="flex items-center justify-between text-slate-500 mb-0.5">
-                  <span className="text-[11px] font-medium">Renewal Date</span>
+                  <span className="text-xs font-medium">Renewal Date</span>
                   <span className="material-symbols-outlined text-slate-400 text-base" data-icon="calendar_today">
                     calendar_today
                   </span>
@@ -193,7 +191,7 @@ export const LicenseDetailDrawer: React.FC<LicenseDetailProps> = ({
                 <div className="text-lg font-bold text-slate-900 leading-tight">
                   {formatDate(license.renewalDate)}
                 </div>
-                <div className="text-[10px] text-slate-400 mt-1 font-mono">Auto-renews (30d notice)</div>
+                <div className="text-xs text-slate-400 mt-1 font-mono">Auto-renews (30d notice)</div>
               </div>
             </div>
           </div>
@@ -236,7 +234,7 @@ export const LicenseDetailDrawer: React.FC<LicenseDetailProps> = ({
                 <div className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                   Granted Accounts Roster
                 </div>
-                <div className="text-[11px] text-slate-500">
+                <div className="text-xs text-slate-500">
                   Active assigned employees provisioned under this subscription
                 </div>
               </div>
@@ -245,27 +243,27 @@ export const LicenseDetailDrawer: React.FC<LicenseDetailProps> = ({
               </span>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 border-b border-slate-200 text-[10px] uppercase font-semibold text-slate-500">
+            <div className="table-surface table-scroll">
+              <table className="data-table drawer-accounts-table" aria-label="Granted accounts roster">
+                <thead className="bg-slate-50 border-b border-slate-200 text-xs uppercase font-semibold text-slate-500">
                   <tr>
-                    <th className="py-2 px-3">Employee</th>
-                    <th className="py-2 px-3">Department</th>
-                    <th className="py-2 px-3">Tier</th>
-                    <th className="py-2 px-3">Last Active</th>
-                    <th className="py-2 px-3">Status</th>
+                    <th scope="col">Employee</th>
+                    <th scope="col">Department</th>
+                    <th scope="col">Tier</th>
+                    <th scope="col">Last Active</th>
+                    <th scope="col">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700">
                   <tr className="hover:bg-slate-50">
                     <td className="py-2.5 px-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-blue-100 text-[#0F67B1] flex items-center justify-center font-bold text-[10px]">
+                        <div className="w-6 h-6 rounded-full bg-blue-100 text-[#0F67B1] flex items-center justify-center font-bold text-xs">
                           DN
                         </div>
                         <div>
                           <div className="font-semibold text-slate-900">Dat Nguyen</div>
-                          <div className="text-[10px] text-slate-400">dat.nguyen@vfast.com</div>
+                          <div className="text-xs text-slate-400">dat.nguyen@vfast.com</div>
                         </div>
                       </div>
                     </td>
@@ -273,20 +271,18 @@ export const LicenseDetailDrawer: React.FC<LicenseDetailProps> = ({
                     <td className="py-2.5 px-3 font-mono font-medium">E5 Enterprise</td>
                     <td className="py-2.5 px-3 text-slate-500">Today, 09:24 AM</td>
                     <td className="py-2.5 px-3">
-                      <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        Active
-                      </span>
+                      <StatusBadge domain="usage" status="Active" />
                     </td>
                   </tr>
                   <tr className="hover:bg-slate-50">
                     <td className="py-2.5 px-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-[10px]">
+                        <div className="w-6 h-6 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs">
                           SJ
                         </div>
                         <div>
                           <div className="font-semibold text-slate-900">Sarah Jenkins</div>
-                          <div className="text-[10px] text-slate-400">s.jenkins@vfast.com</div>
+                          <div className="text-xs text-slate-400">s.jenkins@vfast.com</div>
                         </div>
                       </div>
                     </td>
@@ -294,20 +290,18 @@ export const LicenseDetailDrawer: React.FC<LicenseDetailProps> = ({
                     <td className="py-2.5 px-3 font-mono font-medium">E5 Enterprise</td>
                     <td className="py-2.5 px-3 text-slate-500">Yesterday</td>
                     <td className="py-2.5 px-3">
-                      <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        Active
-                      </span>
+                      <StatusBadge domain="usage" status="Active" />
                     </td>
                   </tr>
                   <tr className="hover:bg-slate-50">
                     <td className="py-2.5 px-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-[10px]">
+                        <div className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs">
                           AM
                         </div>
                         <div>
                           <div className="font-semibold text-slate-900">Alex Mercer</div>
-                          <div className="text-[10px] text-slate-400">alex.m@vfast.com</div>
+                          <div className="text-xs text-slate-400">alex.m@vfast.com</div>
                         </div>
                       </div>
                     </td>
@@ -315,9 +309,7 @@ export const LicenseDetailDrawer: React.FC<LicenseDetailProps> = ({
                     <td className="py-2.5 px-3 font-mono font-medium">E3 Enterprise</td>
                     <td className="py-2.5 px-3 text-amber-600 font-medium">42 days ago</td>
                     <td className="py-2.5 px-3">
-                      <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                        Idle (42d)
-                      </span>
+                      <StatusBadge domain="usage" status="Idle (42d)" />
                     </td>
                   </tr>
                 </tbody>
@@ -328,7 +320,7 @@ export const LicenseDetailDrawer: React.FC<LicenseDetailProps> = ({
 
         {/* Drawer Sticky Footer */}
         <div className="p-4 border-t border-slate-200 bg-white flex items-center justify-between shrink-0">
-          <div className="text-[11px] text-slate-500">
+          <div className="text-xs text-slate-500">
             Last automated sync: <span className="font-mono text-slate-700">10 mins ago</span>
           </div>
           <div className="flex items-center gap-2">

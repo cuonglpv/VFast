@@ -1,72 +1,68 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
+import type { AnalyticsDashboardData } from '@/types/analytics';
 
+const number = new Intl.NumberFormat('en-US');
+const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
 export function HorizontalBarChart({ rows, max, currency = false }: {
   rows: { label: string; value: number }[];
   max: number;
   currency?: boolean;
 }) {
-  const format = (value: number) => currency ? (value === 0 ? '$0' : '$' + value / 1000 + 'k') : String(value);
-  return <div className="horizontal-bar-chart" role="img" aria-label={rows.map(row => row.label + ': ' + format(row.value)).join(', ')}>
+  const ceiling = Math.max(1, max, ...rows.map(row => row.value));
+  const axisLabel = (value: number) => currency ? (value === 0 ? '$0' : '$' + number.format(value / 1000) + 'k') : number.format(value);
+  const valueLabel = (value: number) => currency ? money.format(value) : number.format(value);
+  return <div className="horizontal-bar-chart">
     <div className="horizontal-bar-rows">
-      {rows.map((row, index) => <div className="horizontal-bar-row" key={row.label}>
+      {rows.map((row, index) => <div className="horizontal-bar-row" key={row.label} tabIndex={0} aria-label={row.label + ': ' + valueLabel(row.value)}>
         <span className="horizontal-bar-label">{row.label}</span>
-        <div className="horizontal-bar-track" title={row.label + ': ' + format(row.value)}>
-          <span style={{ width: Math.min(100, row.value / max * 100) + '%', background: index === 0 ? '#146db5' : '#0094d5' }} />
-        </div>
+        <div className="horizontal-bar-track"><span style={{ width: Math.max(0, row.value / ceiling * 100) + '%', background: index === 0 ? '#146db5' : '#0094d5' }} /></div>
+        <span className="chart-tooltip bar-tooltip" aria-hidden="true"><strong>{row.label}</strong><span>{valueLabel(row.value)}</span></span>
       </div>)}
     </div>
-    <div className="horizontal-bar-axis">
-      {[0, 1, 2, 3, 4].map(tick => <span key={tick} style={{ left: tick * 25 + '%' }}>{format(max * tick / 4)}</span>)}
-    </div>
+    <div className="horizontal-bar-axis">{[0, 1, 2, 3, 4].map(tick => <span key={tick} style={{ left: tick * 25 + '%' }}>{axisLabel(ceiling * tick / 4)}</span>)}</div>
   </div>;
 }
 
-const months = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
-const seatStatuses = [
-  { name: 'Active', color: '#8bbce9', values: [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15] },
-  { name: 'Inactive', color: '#2e7ac7', values: [65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65] },
-  { name: 'No activity', color: '#d8b7ef', values: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0] },
-  { name: 'Not monitored', color: '#9179bb', values: [40, 15, 15, 40, 22, 24, 26, 24, 40, 40, 0, 40] },
-];
-const unassigned = { name: 'Unassigned', color: '#f6e6a0', values: [90, 60, 0, 90, 72, 60, 90, 80, 54, 90, 80, 90] };
-
-export function SubscriptionDynamicsChart() {
+export function SubscriptionDynamicsChart({ data }: { data: AnalyticsDashboardData['subscriptionDynamics'] }) {
   const id = useId();
-  const baseline = 174;
-  const scale = 1.2;
+  const [activeMonth, setActiveMonth] = useState<number | null>(null);
+  const { months, seatStatuses, unassigned } = data;
   const legend = [...seatStatuses, unassigned];
+  const stackedTotals = months.map((_, index) => seatStatuses.reduce((sum, item) => sum + (item.values[index] ?? 0), 0));
+  const peak = Math.max(1, ...stackedTotals, ...unassigned.values);
+  const tickStep = peak <= 120 ? 20 : Math.ceil(peak / 6 / 10) * 10;
+  const ceiling = tickStep * 6;
+  const baseline = 210;
+  const plotHeight = 180;
+  const groupWidth = 1060 / Math.max(1, months.length);
 
-  return <>
-    <ul className="lifecycle-legend" aria-label="License seat status">
-      {legend.map(item => <li key={item.name}><i style={{ background: item.color }} />{item.name}</li>)}
-    </ul>
-    <svg className="lifecycle-chart" viewBox="0 0 1120 200" role="img" aria-labelledby={id}>
-      <title id={id}>{'Monthly license seats by status; unassigned seats shown alongside monitored usage. ' + months.map((month, index) => month + ': ' + legend.map(item => item.name + ' ' + item.values[index]).join(', ')).join('; ')}</title>
-      {[0, 20, 40, 60, 80, 100, 120].map(value => {
-        const y = baseline - value * scale;
-        return <g key={value}>
-          <line x1="36" x2="1118" y1={y} y2={y} stroke="#e7edf5" />
-          <text x="26" y={y + 3} textAnchor="end">{value}</text>
-        </g>;
-      })}
-      {months.map((month, index) => {
-        const x = 54 + index * 89;
-        let accumulated = 0;
-        return <g key={month} className="subscription-month">
-          {seatStatuses.map(item => {
-            const value = item.values[index];
-            accumulated += value;
-            return value > 0 && <rect key={item.name} x={x} y={baseline - accumulated * scale} width="17" height={value * scale} fill={item.color}>
-              <title>{month + ' - ' + item.name + ': ' + value}</title>
-            </rect>;
-          })}
-          {unassigned.values[index] > 0 && <rect x={x + 26} y={baseline - unassigned.values[index] * scale} width="17" height={unassigned.values[index] * scale} fill={unassigned.color}>
-            <title>{month + ' - Unassigned: ' + unassigned.values[index]}</title>
-          </rect>}
-          <text x={x + 17} y="192" textAnchor="middle">{month}</text>
-        </g>;
-      })}
-    </svg>
-  </>;
+  return <div className="lifecycle-visual">
+    <ul className="lifecycle-legend" aria-label="License seat status">{legend.map(item => <li key={item.name}><i style={{ background: item.color }} />{item.name}</li>)}</ul>
+    <div className="lifecycle-scroll"><div className="lifecycle-plot">
+      <svg className="lifecycle-chart" viewBox="0 0 1120 246" aria-labelledby={id}>
+        <title id={id}>Monthly license seats by status. Unassigned seats are shown in a separate column alongside monitored usage.</title>
+        {[0, 1, 2, 3, 4, 5, 6].map(tick => {
+          const y = baseline - tick / 6 * plotHeight;
+          return <g key={tick}><line x1="42" x2="1112" y1={y} y2={y} stroke="#e7edf5" /><text x="32" y={y + 4} textAnchor="end">{number.format(tick * tickStep)}</text></g>;
+        })}
+        {months.map((month, index) => {
+          const x = 56 + index * groupWidth + groupWidth * .18;
+          let stacked = 0;
+          return <g key={month} className="subscription-month" tabIndex={0} aria-label={month + ': ' + legend.map(item => item.name + ' ' + number.format(item.values[index] ?? 0)).join(', ')} onPointerEnter={() => setActiveMonth(index)} onPointerLeave={() => setActiveMonth(null)} onFocus={() => setActiveMonth(index)} onBlur={() => setActiveMonth(null)}>
+            {activeMonth === index && <rect x={x - 9} y="22" width="63" height="190" fill="#edf5ff" rx="4" />}
+            {seatStatuses.map(item => {
+              const value = item.values[index] ?? 0;
+              stacked += value;
+              return value > 0 && <rect key={item.name} x={x} y={baseline - stacked / ceiling * plotHeight} width="18" height={value / ceiling * plotHeight} fill={item.color} />;
+            })}
+            {(unassigned.values[index] ?? 0) > 0 && <rect x={x + 27} y={baseline - unassigned.values[index] / ceiling * plotHeight} width="18" height={unassigned.values[index] / ceiling * plotHeight} fill={unassigned.color} />}
+            <text x={x + 22} y="234" textAnchor="middle">{month}</text>
+            <rect x={x - 9} y="22" width="63" height="216" fill="transparent" />
+          </g>;
+        })}
+      </svg>
+      {activeMonth !== null && <div className="chart-tooltip lifecycle-tooltip" role="status" style={{ left: Math.min(86, Math.max(14, (78 + activeMonth * groupWidth) / 1120 * 100)) + '%' }}><strong>{months[activeMonth]}</strong>{legend.map(item => <span key={item.name}><i style={{ background: item.color }} />{item.name}<b>{number.format(item.values[activeMonth] ?? 0)}</b></span>)}</div>}
+    </div></div>
+  </div>;
 }

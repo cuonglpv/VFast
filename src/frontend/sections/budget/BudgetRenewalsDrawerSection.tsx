@@ -8,11 +8,11 @@ import {
   List,
   ListItem,
   ListItemText,
-  Chip,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { RenewalObligation } from '@/types/budget';
 import { formatCurrency, formatDate } from '@/utils';
+import { StatusBadge } from '@/components/StatusBadge';
 
 interface BudgetRenewalsDrawerSectionProps {
   open: boolean;
@@ -74,12 +74,7 @@ export const BudgetRenewalsDrawerSection: React.FC<BudgetRenewalsDrawerSectionPr
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     {item.softwareName}
                   </Typography>
-                  <Chip
-                    label={item.status}
-                    size="small"
-                    color={item.status === 'Critical' ? 'error' : item.status === 'Warning' ? 'warning' : 'success'}
-                    sx={{ height: 20, fontSize: '0.7rem' }}
-                  />
+                  <StatusBadge domain="renewal" status={item.status} />
                 </Box>
               }
               secondary={

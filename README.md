@@ -229,12 +229,11 @@ Full trees, module table, API conventions, jobs, caching, security, and deployme
 
 ## Frontend development
 
-The frontend application, configuration, package manifests and lockfiles are in [src/frontend](src/frontend/README.md).
+The frontend application, configuration, dependencies and lockfiles are in [src/frontend](src/frontend/README.md). From the repository root, install its dependencies once and start the dev server:
 
 ```powershell
-cd src/frontend
-pnpm.cmd install --frozen-lockfile
-pnpm.cmd dev
+npm --prefix src/frontend install
+npm run dev
 ```
 
-Run `pnpm.cmd build` in the same directory to create `src/frontend/dist/`. Dependencies and build outputs are ignored by Git.
+`npm run build` and `npm run preview` also work from the repository root. The root scripts forward to `src/frontend`; the build output is `src/frontend/dist/`.

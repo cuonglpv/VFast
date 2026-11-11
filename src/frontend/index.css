@@ -38,15 +38,26 @@
   --color-outline-variant: #c1c7d3;
   --color-border-hairline: #e2e8f0;
 
-  --color-error: #ba1a1a;
-  --color-error-container: #ffdad6;
+  --color-error: #b42318;
+  --color-error-container: #fef3f2;
   --color-on-error: #ffffff;
   --color-on-error-container: #93000a;
 
-  --color-success: #10b981;
-  --color-success-light: #d1fae5;
-  --color-warning: #f59e0b;
-  --color-warning-light: #fef3c7;
+  --color-success: #166534;
+  --color-success-light: #f0fdf4;
+  --color-warning: #92400e;
+  --color-warning-light: #fffbeb;
+
+  --color-status-success-text: #166534;
+  --color-status-success-bg: #f0fdf4;
+  --color-status-warning-text: #92400e;
+  --color-status-warning-bg: #fffbeb;
+  --color-status-error-text: #b42318;
+  --color-status-error-bg: #fef3f2;
+  --color-status-info-text: #1d4ed8;
+  --color-status-info-bg: #eff6ff;
+  --color-status-neutral-text: #334155;
+  --color-status-neutral-bg: #f1f5f9;
 
   /* Brand Shorthands */
   --color-brand-blue: #0f67b1;
@@ -59,6 +70,19 @@
 
   --font-headline: "Inter", sans-serif;
   --font-body: "Inter", sans-serif;
+}
+
+:root {
+  --type-page-size: 24px;
+  --type-page-line: 32px;
+  --type-section-size: 18px;
+  --type-section-line: 26px;
+  --type-body-size: 14px;
+  --type-body-line: 22px;
+  --type-label-size: 12px;
+  --type-label-line: 18px;
+  --type-kpi-size: 28px;
+  --type-kpi-line: 36px;
 }
 
 * {
