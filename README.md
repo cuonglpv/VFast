@@ -117,6 +117,36 @@ Backlog, per-story INVEST review, and acceptance criteria: [INVEST requirements]
 - [Use cases](docs/02-use-cases.md) — actors, role × feature matrix, business rules, use case diagrams per role, 24 use cases
 - [INVEST requirements](docs/03-invest-requirements.md) — 24 user stories, INVEST review, acceptance criteria
 - [Information architecture](docs/04-information-architecture-manager.md) — screens, views, and navigation: License Management, Analytics Hub (license health and budget analytics), User Management
+- [Code structure and architecture](docs/05-code-structure.md) — solution architecture, backend modules and .NET folder layout, API conventions, jobs, caching, security, frontend structure
+- [Database design (DBML)](docs/database/elms.dbml) — 37 tables, 19 enums, PostgreSQL; paste into [dbdiagram.io](https://dbdiagram.io) to render
+- [ER diagrams (Mermaid)](docs/database/er-diagram.md) — one diagram per table group, generated from the DBML
+
+## Architecture and code structure
+
+ELMS is designed as one monolith with Clean Architecture, deployed as two processes (API and worker) that share one PostgreSQL database. The API serves users; slow work (provider sync, CSV import, detection) runs in the worker through a PostgreSQL-backed job queue, so no Redis or message broker is required.
+
+| Layer | Technology | Status |
+|---|---|---|
+| Frontend | React 19, Vite, TypeScript, MUI v6, Tailwind CSS v4, ApexCharts | Implemented in `src/frontend` |
+| Backend | ASP.NET Core 10, EF Core + Dapper, Hangfire worker | Proposed |
+| Database | PostgreSQL 16 | Designed in `docs/database/elms.dbml` |
+
+```text
+VFast/
+├─ docs/                  Research, use cases, INVEST, IA, code structure
+│  ├─ database/           elms.dbml and er-diagram.md
+│  ├─ diagrams/out/       Use case diagrams
+│  └─ mindmap/            XMind source
+└─ src/
+   ├─ frontend/           React SPA: routes, layouts, components, sections, pages, types, utils, theme
+   └─ backend/            (proposed) Elms.Domain, Application, Infrastructure, Api, Worker
+```
+
+Full folder trees, module boundaries, and conventions: [Code structure and architecture](docs/05-code-structure.md).
+
+## Database
+
+The schema has 37 tables in seven groups: organization and access, license catalog, collection pipeline, holders and usage, budget and expenses, optimization, and audit. Money is `numeric(18,2)` with a currency, and `NULL` always means Unknown, never zero. Master data is never deleted, only ended or deactivated. Source: [`docs/database/elms.dbml`](docs/database/elms.dbml); diagrams: [`docs/database/er-diagram.md`](docs/database/er-diagram.md). The schema is a target design; nothing is migrated yet.
 
 ## Frontend development
 
