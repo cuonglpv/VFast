@@ -111,12 +111,21 @@ US23–US24   My licenses, login / logout                                       
 
 Backlog, per-story INVEST review, and acceptance criteria: [INVEST requirements](docs/03-invest-requirements.md).
 
+## 2. Database design
+
+The target schema is PostgreSQL, 41 tables in seven groups: organization and access, license catalog, collection pipeline, holders and usage, budget and expenses, optimization, audit. A license is a plan (tier/SKU); each purchase is an entitlement line; missing data is `Unknown`, never 0; history is kept as frozen daily snapshots and monthly cost allocations.
+
+![Entity overview](docs/database/diagrams/erd_overview.png)
+
+Entity overview, one ERD per group, rule-to-schema traceability, and the decisions still to confirm (D5–D15): [Database design](docs/database/README.md). Source [`elms.dbml`](docs/database/elms.dbml), reference DDL [`schema.sql`](docs/database/schema.sql), draw.io files in [`docs/database/diagrams/`](docs/database/diagrams/).
+
 ## Documentation
 
 - [Top-down research](docs/01-research-top-down.md) — problem, stakeholders, goals, license models, data sources, process, epics, scope, risks
 - [Use cases](docs/02-use-cases.md) — actors, role × feature matrix, business rules, use case diagrams per role, 24 use cases
 - [INVEST requirements](docs/03-invest-requirements.md) — 24 user stories, INVEST review, acceptance criteria
 - [Information architecture](docs/04-information-architecture-manager.md) — screens, views, and navigation: License Management, Analytics Hub (license health and budget analytics), User Management
+- [Database design](docs/database/README.md) — conventions, entity overview, ERD per group, rule-to-schema traceability, proposed decisions D5–D15
 
 ## Frontend development
 

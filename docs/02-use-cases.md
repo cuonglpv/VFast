@@ -60,7 +60,7 @@ Menus and buttons are hidden when the user lacks permission, but the API enforce
 | BR-05 | Every cost is converted to an effective monthly cost: yearly plans ÷ 12, perpetual licenses count only maintenance, pay-as-you-go uses the actual spend of the month. Amounts in different currencies are added only with a declared exchange rate. |
 | BR-06 | **Cost allocation:** the cost of a license is split evenly over its seats; each seat counts toward the department of its holder. Unassigned seats go to `Unallocated`; holders without a department go to `Unknown department`. The sum of all groups equals the total cost. |
 | BR-07 | **Overuse:** a license is `Over-allocated` when assigned quantity > entitlement (Allocation, Concurrent peak, Capacity deployed). Overuse is a compliance risk and is shown on the compliance dashboard. |
-| BR-08 | A unit has at most one budget plan per fiscal year. A plan is `Draft` or `Active`; only `Active` plans count. Every change to an `Active` plan keeps the old value, new value, reason, and time. |
+| BR-08 | A unit has at most one budget plan per fiscal year. A plan is `Draft` or `Active`; only `Active` plans count. Every change to an `Active` plan keeps the old value, new value, reason, and time. P&L plans and department plans are two separate levels and are never added together: a P&L plan is the envelope for the whole P&L, and the plans of its departments are shares inside it. The company total is the sum of the P&L plans; a P&L without its own plan counts the sum of its department plans. |
 | BR-09 | Budget utilization = actual cost / budget: below 80% is normal, from 80% is a warning, from 100% is over budget. Budget reconciliation per unit and license: Planned → Purchased → Assigned → Used → Actual cost. |
 | BR-10 | An expense has a date, amount, currency, license, unit, and an optional invoice file (PDF or image, at most 10 MB). An expense can be edited until its month is closed; afterwards only a correcting entry is allowed. |
 | BR-11 | A forecast is a projection, never presented as actual cost: it uses the run rate of the last 3 closed months, known renewals, and active plan lines, and shows the method used. |
@@ -142,7 +142,7 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 #### UC03 Manage License Entitlements
 
 - **Actor:** Staff
-- **Main flow (entitlement):** open a product → entitlement lines (Plan, Archetype, Unit, Quantity or quota, Assigned, Active, Valid from–to, Source) → add a line: plan, archetype (BR-02), unit (seat, slot, token, core…), quantity or quota, validity, unit price, billing cycle, currency → edit → end a line → import lines from a CSV template
+- **Main flow (entitlement):** open a product → entitlement lines (Plan, Archetype, Unit, Quantity or quota, Assigned, Active, Valid from–to, Source) → add a line: plan, archetype (BR-02), unit (seat, slot, token, core…), quantity or quota (or unlimited), validity, commercial term, unit price for the period of that term, currency → edit → end a line → import lines from a CSV template
 - **Main flow (assignment and usage, for a line without a connector):** open a line → holders table (User, Assigned date, Last active, Source) → add or remove a holder by employee email → enter the last activity date per holder; for Concurrent, Metered, and Capacity lines enter the peak sessions, consumption, or deployed units per period → or import a CSV template for the line's archetype → preview rows to add, update, reject → confirm → see the entry history (who, when, file, rows)
 - **Alternative:** negative quantity, end before start, or missing currency → field errors; a value from a connector → edit needs a reason and keeps the original (BR-14); CSV with an invalid row → whole file rejected with the error rows; holder email not matched to an employee → stored with the provider identity and `Unknown department`; the line already has a connector for assignments or usage → manual entry of that data is refused (one primary source, BR-14); a period entered twice → replaced, no duplicate
 - **Result:** Purchased quantity and price per line; Assigned and usage come from connectors or, where there is none, from Staff entry with source `manual` or `import` (BR-14). A line with neither stays `Not monitored` (BR-03)
@@ -160,7 +160,7 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 
 - **Actor:** Manager
 - **Main flow:** choose fiscal year and unit → enter budget, currency, note → saved as `Draft` → add plan lines: license, planned quantity, planned cost (suggested = quantity × current yearly unit price) → activate → plan becomes `Active` → adjust mid-year with a reason
-- **Alternative:** a plan already exists for that unit and year → open it; budget ≤ 0 or no currency → field errors; planned cost above budget → warning, confirmation required to activate; new year → copy last year's lines; delete → `Draft` only
+- **Alternative:** a plan already exists for that unit and year → open it; budget ≤ 0 or no currency → field errors; planned cost above budget → warning, confirmation required to activate; department budgets of a P&L adding up to more than the P&L budget → warning, confirmation required to activate; new year → copy last year's lines; delete → `Draft` only
 - **Result:** BR-08; plan lines are the "Planned" level of BR-09
 
 #### UC06 Allocate License Cost
@@ -181,7 +181,7 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 
 - **Actor:** Manager
 - **Main flow:** choose fiscal year → Total budget, Planned cost, Actual cost, Remaining, Utilization → table per unit with utilization colour (BR-09) → open a unit: per license Planned, Purchased, Assigned, Used, Actual cost, Variance, with gap types (`Over plan`, `Under plan`, `Unassigned`, `Unused`)
-- **Alternative:** unit with cost but no plan → Budget "Not set", Utilization "—"; missing data at a level → `Unknown`, no gap flagged at that level; cost outside the plan → group "Outside plan"
+- **Alternative:** unit with cost but no plan → Budget "Not set", Utilization "—"; missing data at a level → `Unknown`, no gap flagged at that level; cost outside the plan → group "Outside plan"; a P&L budget not fully shared out to its departments → the rest shown as "Not distributed" (BR-08)
 - **Result:** read-only; the sum of the units plus `Unallocated` equals the company's actual cost
 
 #### UC09 Forecast License Spending
@@ -197,7 +197,8 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 
 - **Actor:** Manager
 - **Main flow:** list of licenses with `Unassigned` seats (License, Purchased, Assigned, Unassigned, Monthly cost of unassigned seats, Data date) sorted by cost → open a license (detail with holders) → create a recommendation (UC14)
-- **Alternative:** Assigned is `Unknown` → license excluded and counted as "Not evaluated"
+- **Alternative:** Assigned is `Unknown` → license excluded and counted as "Not evaluated"; an unlimited license has no unassigned seats and is never listed
+- **Data scope:** an unassigned seat belongs to no department, so the result is one company-level row per license; a Manager sees the licenses that have a holder in their units, with the same figures for every Manager
 - **Result:** BR-12; nothing changes on the provider
 
 #### UC11 Detect Inactive Usage
@@ -211,7 +212,8 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 
 - **Actor:** Manager
 - **Main flow:** list of licenses where use exceeds the entitlement (License, Archetype, Entitlement, In use, Excess, Since) → open a license to see the evidence
-- **Alternative:** Concurrent license → in use = peak sessions in the period; Capacity license → in use = deployed units; missing data → `Not evaluated`
+- **Alternative:** Concurrent license → in use = peak sessions in the period; Capacity license → in use = deployed units; missing data → `Not evaluated`; unlimited license → never over-allocated
+- **Data scope:** an excess belongs to no department, so the result is one company-level row per license; a Manager sees the licenses that have a holder in their units, with the same figures for every Manager
 - **Result:** BR-07; the result also appears on the compliance dashboard (UC17)
 
 #### UC13 Optimize License Cost
@@ -295,6 +297,7 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 - **Actor:** Employee, Staff, Manager, Admin
 - **Main flow:** table of licenses assigned to the user (License, Vendor, Plan, Assigned date, Status, Last active, Expiry date) → rows in `Inactive` or `No activity` carry a note that the seat may be reviewed → sort
 - **Alternative:** no license → "You have no licenses assigned"; login email not matched → empty table with a hint to contact Admin; `Not monitored` → "Not tracked"
+- **Expiry date:** the end of validity of the purchase (entitlement line) the seat belongs to; when the provider pools the seats of several purchases and the purchase is not known, the earliest end of validity among the active purchases of that license, the first day the seat may lapse
 - **Result:** own rows only; another user's data returns `404`; no price or cost
 
 #### UC24 Login / Logout
