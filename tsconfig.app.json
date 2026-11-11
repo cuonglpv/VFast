@@ -27,6 +27,8 @@
       "@pages/*": ["src/pages/*"],
       "@components/*": ["src/components/*"],
       "@sections/*": ["src/sections/*"],
+      "@layouts/*": ["src/layouts/*"],
+      "@layout/*": ["src/layout/*"],
       "@types/*": ["src/types/*"],
       "@routes/*": ["src/routes/*"],
       "@utils/*": ["src/utils/*"]

@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import MainLayout from '@/components/layout/MainLayout';
+import MainLayout from '@/layouts/MainLayout';
 import LicenseManagementPage from '@/pages/licenses/LicenseManagementPage';
 import BudgetAnalyticsPage from '@/pages/budget/BudgetAnalyticsPage';
 import UserManagementPage from '@/pages/users/UserManagementPage';
