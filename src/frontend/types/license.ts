@@ -1,6 +1,14 @@
-export type LicenseStatus = 'Active' | 'Inactive' | 'At Risk' | 'Over-allocated';
+export type LicenseStatus =
+  | "Active"
+  | "Inactive"
+  | "At Risk"
+  | "Over-allocated";
 
-export type MeasurementArchetype = 'Allocation' | 'Concurrent' | 'Metered' | 'Capacity';
+export type MeasurementArchetype =
+  | "Allocation"
+  | "Concurrent"
+  | "Metered"
+  | "Capacity";
 
 export interface LicenseItem {
   id: string;
@@ -33,7 +41,7 @@ export interface LicenseRecord {
   description: string;
   subcategory: string;
   licenseType: string;
-  complianceStatus: 'Compliant' | 'At Risk' | 'Over-allocated';
+  complianceStatus: "Compliant" | "Risk" | "Over";
   purchasedAmount: number;
   monthlyCost: number;
   entitlementSeats: number;

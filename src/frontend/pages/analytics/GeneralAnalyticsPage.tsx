@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { HorizontalBarChart, SubscriptionDynamicsChart } from '@/components/LicenseHealthCharts';
 import { dashboardRepository } from '@/data/repositories';
 import { useRepositoryData } from '@/data/useRepositoryData';
+import { InfoTooltip } from '@/components/InfoTooltip';
 import { PATHS } from '@/routes/paths';
 
 export default function GeneralAnalyticsPage() {
@@ -16,7 +17,12 @@ export default function GeneralAnalyticsPage() {
   if (!data) return <p role="status">Loading analytics...</p>;
   const { metrics, applicationUsage, departmentSpend, subscriptionDynamics } = data;
   return <div className="license-health-page">
-    <div className="page-heading"><h1>License Health</h1><p>Executive overview of license utilization and operational efficiency</p></div>
+    <div className="page-heading">
+      <h1 className="inline-flex items-center gap-2">
+        <span>License Health</span>
+        <InfoTooltip title="Executive overview of license utilization and operational efficiency" />
+      </h1>
+    </div>
     <section className="health-metrics" aria-label="License health metrics">
       {metrics.map(metric => <article className="portal-card health-metric" key={metric.label}><h2>{metric.label}</h2><strong>{metric.value}</strong><span className={'metric-note ' + metric.tone}>{metric.note}</span></article>)}
     </section>
@@ -25,8 +31,10 @@ export default function GeneralAnalyticsPage() {
       <article className="portal-card health-chart-card"><div className="health-chart-heading"><h2>Department Spend</h2><Link className="chart-detail-link" to={PATHS.ANALYTICS_SPEND_DETAIL} aria-label="View Department Spend details">View details<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10m-4-4 4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></Link></div><HorizontalBarChart rows={departmentSpend} max={600000} currency /></article>
     </div>
     <article className="portal-card lifecycle-card">
-      <h2>Subscription Dynamics</h2>
-      <p>Monthly license seats by status; unassigned seats shown alongside monitored usage.</p>
+      <h2 className="inline-flex items-center gap-2">
+        <span>Subscription Dynamics</span>
+        <InfoTooltip title="Monthly license seats by status; unassigned seats shown alongside monitored usage." />
+      </h2>
       <SubscriptionDynamicsChart data={subscriptionDynamics} />
     </article>
   </div>;

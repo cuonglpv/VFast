@@ -7,6 +7,7 @@ import BudgetAnalyticsPage from '@/pages/budget/BudgetAnalyticsPage';
 import UserManagementPage from '@/pages/users/UserManagementPage';
 import GeneralAnalyticsPage from '@/pages/analytics/GeneralAnalyticsPage';
 import AnalyticsDetailPage from '@/pages/analytics/AnalyticsDetailPage';
+import { InfoTooltip } from '@/components/InfoTooltip';
 import { PATHS } from './paths';
 import { LicenseProvider } from '@/data/licenses';
 
@@ -28,7 +29,14 @@ export const router = createBrowserRouter([
       },
       {
         path: PATHS.SETTINGS,
-        element: <div className="page-heading"><h1>Settings</h1><p>Workspace: VFast Enterprise · Profile: Dat Nguyen · Role: System Admin</p></div>,
+        element: (
+          <div className="page-heading">
+            <h1 className="inline-flex items-center gap-2">
+              <span>Settings</span>
+              <InfoTooltip title="Workspace: VFast Enterprise · Profile: Dat Nguyen · Role: System Admin" />
+            </h1>
+          </div>
+        ),
       },
       {
         path: PATHS.BUDGET,

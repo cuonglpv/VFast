@@ -4,6 +4,7 @@ export interface UserAccount {
   id: string;
   fullName: string;
   email: string;
+  tenant?: string;
   department: string;
   role: UserRole;
   assignedLicensesCount: number;
@@ -18,6 +19,7 @@ export interface UserRecord {
   email: string;
   avatarInitials: string;
   avatarBg: string;
+  tenant: string;
   department: string;
   role: UserRole;
   assignedLicensesCount: number;

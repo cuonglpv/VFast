@@ -49,9 +49,15 @@
 .popover-close { float: right; border: 0; background: none; font-size: 20px !important; }
 .portal-main { margin-left: var(--portal-sidebar); padding: calc(var(--portal-header) + 28px) 28px 48px; min-height: 100vh; }
 .page-heading { margin-bottom: 18px; }
-.page-heading h1 { font-size: var(--type-page-size); font-weight: 700; line-height: var(--type-page-line); letter-spacing: -.02em; margin: 0 0 3px; }
+.page-heading h1 { font-size: var(--type-page-size); font-weight: 700; line-height: var(--type-page-line); letter-spacing: -.02em; margin: 0; display: inline-flex; align-items: center; gap: 8px; }
 .page-heading p { color: var(--portal-muted); font-size: var(--type-body-size); margin: 0; line-height: var(--type-body-line); }
-.page-title { font-family: inherit; font-size: var(--type-page-size); line-height: var(--type-page-line); font-weight: 700; letter-spacing: -.02em; color: var(--portal-ink); }
+.page-title { font-family: inherit; font-size: var(--type-page-size); line-height: var(--type-page-line); font-weight: 700; letter-spacing: -.02em; color: var(--portal-ink); display: inline-flex; align-items: center; gap: 8px; }
+.page-heading h1 .budget-kpi-info,
+.page-title .budget-kpi-info {
+  margin-left: 2px;
+  cursor: help;
+  vertical-align: middle;
+}
 .page-description { color: var(--portal-muted); font-size: var(--type-body-size); line-height: var(--type-body-line); }
 .section-title { color: var(--portal-ink); font-size: var(--type-section-size); line-height: var(--type-section-line); font-weight: 600; }
 .section-description { color: var(--portal-muted); font-size: var(--type-body-size); line-height: var(--type-body-line); }
@@ -104,7 +110,7 @@
 .portal-button { height: 40px; min-width: 78px; padding: 0 18px; font-size: var(--type-body-size); font-weight: 600; border: 1px solid var(--portal-border); border-radius: 5px; background: #fff; color: #334155; transition: background .15s; }
 .portal-button:hover { background: #edf5ff; }
 .import-button { margin-left: auto; min-width: 116px; border-radius: 7px; color: #475569; font-weight: 400; }
-.users-toolbar { justify-content: space-between; margin-bottom: 0; }
+.users-toolbar { justify-content: space-between; margin-bottom: 24px; }
 .table-filter-controls { display: flex; align-items: center; flex-wrap: wrap; flex: 1; min-width: 0; gap: 12px; }
 .table-surface, .inventory-table-wrap, .accounts-table-wrap { border: 1px solid var(--portal-border); border-radius: 6px; background: #fff; box-shadow: none; }
 .table-surface { overflow: hidden; }
@@ -208,6 +214,10 @@
 .detail-metric strong { font-size: var(--type-section-size); font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .detail-metric small { color: #64748b; font-size: var(--type-label-size); line-height: var(--type-label-line); }
 .detail-metadata { margin-top: 34px; }
+.detail-metadata .detail-card-header { border-bottom: 0; padding-bottom: 0; margin-bottom: 12px; }
+.detail-metadata .detail-card-header h2 { margin: 0; }
+.collapse-toggle-btn { background: transparent; border: 0; padding: 4px; cursor: pointer; display: inline-flex; align-items: center; color: #64748b; border-radius: 4px; }
+.collapse-toggle-btn:hover { background: #f1f5f9; color: #1e293b; }
 .detail-metadata dl { margin: 12px 0 26px; }
 .detail-metadata dl > div { display: grid; grid-template-columns: 185px minmax(0, 1fr); gap: 0; min-height: 35px; align-items: center; }
 .detail-metadata dt { color: var(--portal-muted); font-size: var(--type-label-size); }
@@ -217,6 +227,8 @@
 .policy-links button { border: 0; padding: 0; background: transparent; font-size: var(--type-body-size); color: #172238; }
 .policy-links button:hover { text-decoration: underline; }
 .granted-accounts { padding-top: 20px; border-top: 1px solid var(--portal-border); }
+.granted-accounts .detail-card-header { border-bottom: 0; padding-bottom: 0; margin-bottom: 18px; }
+.granted-accounts .detail-card-header h2 { margin: 0; }
 .granted-accounts h2 { margin-bottom: 18px; }
 .accounts-toolbar { margin-bottom: 16px; }
 .accounts-table { min-width: 680px; }

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { dashboardRepository } from '@/data/repositories';
 import { useRepositoryData } from '@/data/useRepositoryData';
 import { FilterSelect } from '@/components/FilterSelect';
+import { InfoTooltip } from '@/components/InfoTooltip';
 import PortalIcon from '@/components/PortalIcon';
 import { PATHS } from '@/routes/paths';
 import type { AnalyticsBreakdownKind, AnalyticsBreakdownRow } from '@/types/analytics';
@@ -29,7 +30,12 @@ export default function AnalyticsDetailPage({ kind }: { kind: AnalyticsBreakdown
 
   return <div className="analytics-detail-page">
     <Link className="detail-back-link" to={`${PATHS.ANALYTICS}#analytics-breakdowns`}><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16 10H4m5-5-5 5 5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>Back to License Health</Link>
-    <div className="page-heading"><h1>{title}</h1><p>{currency ? 'Full spending breakdown across all departments · USD' : 'Full usage breakdown across all departments'}</p></div>
+    <div className="page-heading">
+      <h1 className="inline-flex items-center gap-2">
+        <span>{title}</span>
+        <InfoTooltip title={currency ? 'Full spending breakdown across all departments · USD' : 'Full usage breakdown across all departments'} />
+      </h1>
+    </div>
     {error ? <p role="alert">Unable to load {title.toLowerCase()}. Please try again.</p> : rows === null ? <p role="status">Loading {title.toLowerCase()}...</p> : <>
       <section className="analytics-detail-summary" aria-label={`${title} summary`}>
         <article className="portal-card"><span>Departments</span><strong>{rows.length.toLocaleString('en-US')}</strong><small>Full dataset</small></article>
