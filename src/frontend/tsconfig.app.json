@@ -23,16 +23,17 @@
     /* Paths */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@pages/*": ["src/pages/*"],
-      "@components/*": ["src/components/*"],
-      "@sections/*": ["src/sections/*"],
-      "@layouts/*": ["src/layouts/*"],
-      "@layout/*": ["src/layout/*"],
-      "@types/*": ["src/types/*"],
-      "@routes/*": ["src/routes/*"],
-      "@utils/*": ["src/utils/*"]
+      "@/*": ["./*"],
+      "@pages/*": ["./pages/*"],
+      "@components/*": ["./components/*"],
+      "@sections/*": ["./sections/*"],
+      "@layouts/*": ["./layouts/*"],
+      "@layout/*": ["./layout/*"],
+      "@types/*": ["./types/*"],
+      "@routes/*": ["./routes/*"],
+      "@utils/*": ["./utils/*"]
     }
   },
-  "include": ["src"]
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist", "vite.config.ts"]
 }
