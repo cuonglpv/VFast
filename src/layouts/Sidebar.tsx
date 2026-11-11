@@ -1,25 +1,18 @@
 import React from 'react';
-import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Box, Divider } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
-import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined';
-import InsightsOutlinedIcon from '@mui/icons-material/InsightsOutlined';
-import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
-import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
 import { PATHS } from '@/routes/paths';
-
-const SIDEBAR_WIDTH = 240;
 
 interface NavItem {
   label: string;
   path: string;
-  icon: React.ReactNode;
+  icon: string;
 }
 
 const navItems: NavItem[] = [
-  { label: 'License Management', path: PATHS.LICENSES, icon: <VpnKeyOutlinedIcon fontSize="small" /> },
-  { label: 'Budget Analytics', path: PATHS.BUDGET, icon: <AccountBalanceWalletOutlinedIcon fontSize="small" /> },
-  { label: 'General Analytics', path: PATHS.ANALYTICS, icon: <InsightsOutlinedIcon fontSize="small" /> },
-  { label: 'User Management', path: PATHS.USERS, icon: <ManageAccountsOutlinedIcon fontSize="small" /> },
+  { label: 'License Management', path: PATHS.LICENSES, icon: 'vpn_key' },
+  { label: 'Analytics Hub', path: PATHS.ANALYTICS, icon: 'insights' },
+  { label: 'Budget Analytics', path: PATHS.BUDGET, icon: 'account_balance_wallet' },
+  { label: 'User Management', path: PATHS.USERS, icon: 'admin_panel_settings' },
 ];
 
 export const Sidebar: React.FC = () => {
@@ -27,77 +20,97 @@ export const Sidebar: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <Drawer
-      variant="permanent"
-      className="shrink-0"
-      sx={{
-        width: SIDEBAR_WIDTH,
-        flexShrink: 0,
-        [`& .MuiDrawer-paper`]: {
-          width: SIDEBAR_WIDTH,
-          boxSizing: 'border-box',
-          top: 64,
-          height: 'calc(100% - 64px)',
-          borderRight: '1px solid #E2E8F0',
-          backgroundColor: '#FFFFFF',
-        },
-      }}
-    >
-      <Box className="overflow-auto py-4">
-        <List disablePadding>
+    <aside className="fixed left-0 top-0 h-screen w-60 bg-white border-r border-[#e2e8f0] flex flex-col justify-between p-4 z-40 shadow-xs font-body text-sm font-medium">
+      {/* Top Brand & Navigation Cluster */}
+      <div>
+        {/* Header */}
+        <div className="flex items-center gap-3 px-2 py-2 mb-6">
+          <div className="w-9 h-9 rounded-lg bg-[#dee8ff] text-[#0f67b1] flex items-center justify-center shrink-0 shadow-xs">
+            <span
+              className="material-symbols-outlined text-xl fill text-[#0f67b1]"
+              data-icon="vpn_key"
+            >
+              vpn_key
+            </span>
+          </div>
+          <div className="flex flex-col leading-tight overflow-hidden">
+            <span className="font-bold text-base text-[#111c2d] truncate">VFast ELMS</span>
+            <span className="text-xs text-[#515f74] truncate">Executive Portal</span>
+          </div>
+        </div>
+
+        {/* Main Navigation Links */}
+        <nav className="space-y-1">
           {navItems.map((item) => {
             const isSelected = location.pathname === item.path;
             return (
-              <ListItem key={item.path} disablePadding className="mb-1 px-3">
-                <ListItemButton
-                  onClick={() => navigate(item.path)}
-                  selected={isSelected}
-                  className={`rounded-lg py-2 px-3 transition-colors ${
-                    isSelected
-                      ? 'bg-sky-100 text-[#0F67B1] font-semibold'
-                      : 'hover:bg-slate-100 text-slate-700'
+              <button
+                key={item.path}
+                type="button"
+                onClick={() => navigate(item.path)}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors duration-150 ${
+                  isSelected
+                    ? 'bg-[#dee8ff] text-[#004f8b] font-semibold'
+                    : 'text-[#515f74] hover:bg-[#f0f3ff] hover:text-[#111c2d]'
+                }`}
+              >
+                <span
+                  className={`material-symbols-outlined text-xl ${
+                    isSelected ? 'fill text-[#004f8b]' : 'text-[#515f74]'
                   }`}
-                  sx={{
-                    borderRadius: 1.5,
-                    py: 1,
-                    px: 1.5,
-                    '&.Mui-selected': {
-                      backgroundColor: '#E0F2FE',
-                      color: 'primary.main',
-                      fontWeight: 600,
-                      '&:hover': {
-                        backgroundColor: '#BAE6FD',
-                      },
-                      '& .MuiListItemIcon-root': {
-                        color: 'primary.main',
-                      },
-                    },
-                  }}
+                  data-icon={item.icon}
                 >
-                  <ListItemIcon
-                    className="min-w-9"
-                    sx={{
-                      minWidth: 36,
-                      color: isSelected ? 'primary.main' : 'text.secondary',
-                    }}
-                  >
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontSize: '0.875rem',
-                      fontWeight: isSelected ? 600 : 500,
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
+                  {item.icon}
+                </span>
+                <span className="text-sm">{item.label}</span>
+              </button>
             );
           })}
-        </List>
-        <Divider className="my-4 border-slate-200" />
-      </Box>
-    </Drawer>
+        </nav>
+      </div>
+
+      {/* Bottom Sidebar Section & Tenant Context */}
+      <div className="space-y-4 pt-4 border-t border-[#c1c7d3]/60">
+        {/* Tenant Isolation Badge Card */}
+        <div className="bg-[#f0f3ff] border border-[#c1c7d3]/80 rounded-lg p-2.5">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[10px] uppercase font-semibold tracking-wider text-[#515f74]">
+              Tenant Environment
+            </span>
+            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Isolated
+            </span>
+          </div>
+          <p className="text-xs font-semibold text-[#111c2d] truncate">VFast Enterprise</p>
+          <p className="text-[11px] text-[#515f74]">US-East (Virginia)</p>
+        </div>
+
+        {/* Footer Sub-Navigation Links */}
+        <div className="space-y-0.5">
+          <a
+            className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[#515f74] hover:bg-[#f0f3ff] text-xs transition-colors"
+            href="#support"
+            onClick={(e) => e.preventDefault()}
+          >
+            <span className="material-symbols-outlined text-base" data-icon="help_outline">
+              help_outline
+            </span>
+            <span>Support & Docs</span>
+          </a>
+          <a
+            className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[#515f74] hover:bg-[#f0f3ff] text-xs transition-colors"
+            href="#signout"
+            onClick={(e) => e.preventDefault()}
+          >
+            <span className="material-symbols-outlined text-base" data-icon="logout">
+              logout
+            </span>
+            <span>Sign Out</span>
+          </a>
+        </div>
+      </div>
+    </aside>
   );
 };
 
