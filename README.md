@@ -1,159 +1,119 @@
-# VFast – Enterprise License Management System (ELMS)
+# Enterprise License Management System (ELMS) — team VFast
 
-VFast ELMS is a system for managing software licenses centrally inside a company. It brings the software catalog, license entitlements, the request → approval → assignment → revocation flow, actual usage data, budgets and expenses, expiry alerts, compliance checks, and an audit log into one place — **the number of assigned seats can never exceed the number purchased, every important action is recorded, and every cost-optimization recommendation needs Manager approval before it is carried out**.
+ELMS brings software licenses from every provider (Microsoft, Google, Adobe, JetBrains, Oracle, OpenAI, Anthropic, AWS, VPN, specialized software) and every license model into one place. It keeps the catalog, vendors, entitlements, contracts, and expenses; plans and monitors the license budget; detects unused, inactive, and overused licenses; turns them into recommendations with evidence; and shows everything on dashboards — **without ever assigning, revoking, or changing anything on a provider**.
 
-## 1. Requirements — Research, INVEST, Use Cases, and Permissions
+## 1. Requirements — Research, Use Cases, and INVEST
 
-Requirements are derived top-down: business problem → goals → scope → feature groups → use cases → user stories. Each story is reviewed with INVEST and has Given/When/Then acceptance criteria.
+Requirements are derived top-down: business problem → stakeholders → goals → license models and data sources → epics (mind map) → use cases → user stories. Each story is reviewed with INVEST and has Given/When/Then acceptance criteria.
 
-### 1.1 Top-down problem analysis
+### 1.1 Mind map
 
-![VFast ELMS mind map](docs/mindmap.png)
+![ELMS mind map](docs/mindmap.png)
 
-The map has five branches: **License Management** (catalog & entitlement, allocation, lifecycle & compliance), **Budget Management**, **Optimization**, **Analytics**, and **User & Organization**.
+The map has five branches: **License Management** (catalog & entitlement), **Budget Management** (planning & cost allocation, spending & monitoring), **Optimization** (detection, savings & recommendation), **Analytics** (four dashboards), and **User & Organization**. Each of the 22 leaves is one use case (UC01–UC22, in branch order); UC23 View My Licenses and UC24 Login / Logout are self-service use cases every role has.
 
-Editable source: [`docs/mindmap/vfast-elms.xmind`](docs/mindmap/vfast-elms.xmind) (open with XMind). `docs/mindmap.png` is exported from it.
+Editable source: [`docs/mindmap/vfast.xmind`](docs/mindmap/vfast.xmind) (open with XMind); `docs/mindmap.png` is exported from it.
 
-The system manages two license models:
+### 1.2 Top-down problem analysis
 
-- **SaaS Subscription:** cloud subscriptions with a term and recurring cost (Microsoft 365, Google Workspace, Adobe CC, Zoom, Slack, Figma, …).
-- **Perpetual License:** a one-time purchase of long-term usage rights (AutoCAD, Windows Pro, VMware, …), possibly with a maintenance or upgrade-support agreement.
-
-In practice, license information is scattered across Excel files, paper contracts, accounting invoices, and each vendor's own admin portal. This produces seven core problems:
-
-| # | Problem | Symptom |
-|---|---|---|
-| P1 | Fragmented data | Software, license, contract, and expense data live in different places, with no single source of truth |
-| P2 | Weak license control | It is hard to know exactly how many licenses are purchased (`Purchased`), assigned (`Allocated`), and free (`Available`) |
-| P3 | No usage monitoring | Nobody knows who is using what, which licenses are forgotten, or who uses more than they are entitled to |
-| P4 | Hard to control budget | Subscription, perpetual, and maintenance costs are not consolidated against the plan |
-| P5 | Expiry risk | No early warning before contracts and maintenance agreements end, so service can stop suddenly |
-| P6 | No approval process | Software is requested by email or word of mouth, with no review and no history |
-| P7 | Hard to optimize cost | Not enough data to find unassigned licenses or "zombie seats" held by people who left or changed role |
+License and usage data are scattered across each provider's admin portal, and every provider counts in its own unit: seats, sessions, devices, cores, tokens, or contract terms. Nobody can say what the company owns, who uses it, or how far reality is from the budget plan.
 
 | Goal | Measured by |
 |---|---|
-| G1 Centralize licenses | SaaS and Perpetual licenses both registered and tracked in one system |
-| G2 Control allocation | Closed loop Request → Approve → Assign → Revoke; `Purchased`, `Allocated`, and `Available` 100% accurate per license metric |
-| G3 Monitor usage | `Usage` data recorded and aggregated completely |
-| G4 Manage budget | `Expense` recorded completely; `Budget Utilization` computed per year, period, and department |
-| G5 Manage lifecycle | Alerts for contracts and maintenance expiring within 30, 15, and 7 days |
-| G6 License compliance | `Over-allocation` ($Allocated > Purchased$) and `Overuse` detected correctly |
-| G7 Optimize cost | Unassigned and inactive licenses found, with saving recommendations |
-| G8 Management analytics | License, Financial, and Compliance dashboards and reports |
-
-In addition, every important business action must reach an immutable Audit Log, and the three-role permissions must be enforced on the backend.
+| G1 Centralize licenses | Every license from every provider listed with vendor, model, quantity, cost, and expiry in one catalog |
+| G2 Know who uses what | Every assigned seat has exactly one status: `Active`, `Inactive`, `No activity`, or `Not monitored` |
+| G3 Measure automatically | License, assignment, and usage data refresh daily for providers with an API |
+| G4 Express waste as money | Underutilized accounts and their annual cost on one screen |
+| G5 Plan and reconcile the budget | Planned, Purchased, Assigned, Used, and Actual cost compared per unit and license |
+| G6 Turn waste into savings | Every unused, inactive, or overused license becomes a recommendation with evidence and an estimated saving |
+| G7 Trustworthy figures | Numbers match across screens; missing data is `Unknown`, never zero |
 
 What makes this project different:
 
-1. **Never over-assign** — assignment runs in a transaction with row locking; $\text{Allocated} \le \text{Purchased}$ holds even when several Managers act at once (BR-05).
-2. **One source for two license models** — the SaaS term and the Perpetual maintenance term are two independent fields (BR-12).
-3. **Missing data is not guessed** — missing usage is never read as zero; compliance checks need valid usage (BR-14, BR-15).
-4. **Decisions have an owner** — only a Manager approves requests, assigns, and revokes; optimization recommendations need data evidence and Manager approval (BR-06, BR-07, BR-16).
-5. **History is kept** — revoked assignments stay for audit; the Audit Log records Actor, Action, and Timestamp and cannot be edited (BR-13, BR-17).
-6. **Currencies are not mixed carelessly** — costs in different currencies are summed only with an explicit conversion policy (BR-10, BR-11).
+1. **One model for every license** — each license is a combination of three axes (measurement archetype, commercial term, collection method) and one of four archetypes: Allocation, Concurrent, Metered, Capacity.
+2. **Budget reconciliation chain** — Planned → Purchased → Assigned → Used → Actual cost; each gap is a different problem with a different fix.
+3. **Missing data is not guessed** — a failed sync is `Unknown`, never usage 0, so it never creates a false waste finding.
+4. **Decisions stay with people** — every recommendation shows evidence and a saving, and a Manager accepts or rejects it; ELMS only reads from providers.
 
-### Scope
-
-- **Delivery goal.** The MVP is a Production Pilot delivered in 2 weeks (14 days) for one company's internal use.
-- **Eight feature groups.**
-
-| Code | Group | Main content |
-|:---:|---|---|
-| F01 | License Management | Software Catalog, Vendor, Entitlement, Contract, Compliance |
-| F02 | License Allocation | Request, approval, Assign, Revoke, allocation tracking |
-| F03 | Budget Management | Budget per year or period, Expense, invoices, Budget Utilization |
-| F04 | Lifecycle Management | Contract and maintenance dates, Renewal, expiry notifications |
-| F05 | License Optimization | Unassigned and inactive licenses, Overuse, saving recommendations |
-| F06 | Analytics & Reporting | License, Financial, Compliance dashboards; report export |
-| F07 | User & Role Management | Accounts, departments, three-role permissions |
-| F08 | System Administration | Login/logout, sessions, Audit Log, data import |
-
-- **Priority.**
-  - **P0 — required for the pilot:** login and RBAC; Catalog; SaaS/Perpetual Entitlement; Request – Approve/Reject; Assign/Revoke with quantity control; Budget and Expense; Usage entry; expiry tracking; core Dashboard; Audit Log.
-  - **P1 — right after the core flow:** Vendor and Contract; CSV/Excel import; invoice upload; detection of unassigned licenses and licenses inactive for 60 days or more; Compliance Dashboard; report export.
-  - **P2 — future:** automatic vendor integration, advanced SSO, AI optimization.
-- **Out of scope for the first release:** synchronizing with vendor APIs, auto-provisioning or revoking accounts on the vendor's system, ERP or accounting integration, automatic payment, AI/ML optimization, multi-level approval, auto-revoking inactive licenses without a Manager, and multi-tenancy.
-
-Detailed MVP scope, the 20 business rules (BR-01 to BR-20), non-functional requirements, the 12-entity data model, and the 14 acceptance criteria: [MVP specification](docs/01-MVP.md).
-
-### 1.2 INVEST requirements
-
-The backlog has **25 user stories** (19 P0, 6 P1) grouped by role: Manager 14, Staff 6, Employee 5. Every story passes the INVEST review and has Given/When/Then scenarios.
-
-| Criterion | Meaning in VFast ELMS |
-|---|---|
-| **Independent** | Each story produces a demonstrable outcome; the Staff's data entry and the Employee's requests run independently through intermediate status tables. |
-| **Negotiable** | Layout and implementation may change while outcome, permissions, and business rules stay fixed. |
-| **Valuable** | Each story serves one of three pillars: license control, budget control, or cost optimization. |
-| **Estimable** | Required fields, business constraints, and acceptance scenarios are explicit. |
-| **Small** | Fits in 1–2 working days; manual entry of single records (P0) is separate from bulk CSV/Excel import (P1). |
-| **Testable** | 100% of stories have Given/When/Then criteria, including authorization and error cases. |
-
-```text
-US-M01–M03   Manager: software catalog, entitlements, contracts
-US-M04–M07   Manager: view requests, approve/reject, assign, revoke
-US-M08–M09   Manager: budgets, review expense records
-US-M10–M11   Manager: compliance and overuse, expiry and renewal
-US-M12       Manager: optimization recommendations (P1)
-US-M13       Manager: management dashboard
-US-M14       Manager: users and role assignment
-US-S01–S02   Staff: enter usage, import usage CSV/Excel (P1)
-US-S03–S05   Staff: enter expense, import expense (P1), upload invoices (P1)
-US-S06       Staff: review submitted data
-US-U01–U03   Employee: view catalog, submit request, track request status
-US-U04–U05   Employee: view assigned licenses, view expiry (P1)
-```
-
-Backlog, story ↔ use case traceability matrix, and acceptance criteria: [User stories](docs/03-user-stories.md).
+Full analysis, license-model research, data-source feasibility, scope, and risks: [Top-down research](docs/01-research-top-down.md).
 
 ### 1.3 Use cases
 
-The use case diagram follows UML: actors as stick figures, one system boundary, and one ellipse per capability. Each ellipse groups related use cases and names them (for example UC07–11), so the 39 use cases fit in one picture. All roles log in and out with UC29. The Lifecycle Scheduler is the system actor (Lifecycle Notification System) that runs UC18.
+There are four roles. One diagram per actor shows every use case that actor can start; shared use cases (View My Licenses, Login / Logout) appear in each actor's diagram.
 
-![VFast ELMS use case overview](docs/diagrams/out/uc_overview.png)
+| Role | Use cases |
+|---|---|
+| **Employee** (every employee) | UC23 View My Licenses · UC24 Login / Logout |
+| **Staff** (reports to a Manager; hands-on data entry) | UC01–UC04 License Management · UC07 Manage Expenses · UC23, UC24 |
+| **Manager** (manager of a P&L or a department; plans and decides) | UC05, UC06, UC08, UC09 Budget · UC10–UC14 Optimization · UC15–UC18 Analytics · UC23, UC24 |
+| **Admin** (system operator) | UC19–UC22 User & Organization (users, P&Ls and departments, roles, permissions) · UC23, UC24 |
 
-Diagram source: [`docs/diagrams/ve_elms.py`](docs/diagrams/ve_elms.py), drawn with [`srsdiagram.py`](docs/diagrams/srsdiagram.py); also available as SVG and an editable draw.io file in [`docs/diagrams/out/`](docs/diagrams/out/). Regenerate with `python ve_elms.py` from `docs/diagrams` (needs Pillow, Playwright with Chromium, and the Liberation Sans font). Detailed diagrams with one ellipse per use case, per actor: [Use cases](docs/02-use-cases.md).
+| | |
+|---|---|
+| ![Employee](docs/diagrams/out/uc_employee.png) | ![Staff](docs/diagrams/out/uc_staff.png) |
+| ![Manager](docs/diagrams/out/uc_manager.png) | ![Admin](docs/diagrams/out/uc_admin.png) |
 
-There are **39 use cases** (25 P0, 14 P1). Three main business flows:
-
-1. **Request and allocation:** Employee views the catalog (UC37) → submits a request (UC06) → Manager reviews (UC07) → Approve/Reject (UC08) → checks the entitlement has free seats → Assign (UC09) → Employee sees the license (UC39).
-2. **Usage and expense:** Staff enters or imports Usage (UC31, UC32) and Expense with invoices (UC33–35) → reviews submitted data (UC36) → Manager reconciles (UC13) → the system computes financial and compliance figures.
-3. **Budget and lifecycle:** Manager sets a Budget (UC12) → Expenses are entered → the system computes `Actual Spending`, `Remaining Budget`, and `Budget Utilization` (UC14) → a cron job scans expiry dates (UC18) → Manager decides to Renew, Downsize, or Cancel (UC16).
-
-Full list of 39 use cases, diagrams per role, sequence diagrams, and specifications of the P0 use cases: [Use cases](docs/02-use-cases.md).
+Diagram sources are draw.io files in [`docs/diagrams/out/`](docs/diagrams/out/). Role × feature matrix, 18 business rules, and the specification of all 24 use cases: [Use cases](docs/02-use-cases.md).
 
 ### 1.4 Roles and permissions
 
-There are three user roles. The Lifecycle Notification System is a system actor with no account.
+There are four roles; each account has exactly one. Every account belongs to a real employee, matched by company email.
 
-| Capability | Manager | Staff | Employee |
+| Role | Who | Responsibility | Data scope |
 |---|---|---|---|
-| Software Catalog | CRUD | Read | Read (no price, no key) |
-| Vendor | CRUD | Read | No access |
-| License Entitlement | CRUD | Read | No access |
-| Contract | CRUD | Read | No access |
-| License Compliance | Manage / read | Read | No access |
-| License Request | Review / approve | No access | Create / own |
-| License Assignment | CRUD | No access | Read own |
-| License Revocation | Manage | No access | No access |
-| Budget | CRUD | Read | No access |
-| Expense | CRUD | Enter / update | No access |
-| License Usage | Read / manage | Enter / update | No access |
-| Lifecycle | Manage | Read | Read own expiry |
-| Optimization Insights | Manage / review | Read | No access |
-| Dashboard and reports | Full | Related data only | Personal only |
-| User and Role admin | CRUD | No access | No access |
-| Audit Log | Read | Own actions | No access |
-| Data Import | Manage | Execute | No access |
+| **Employee** | Every employee of the group | Sees the licenses assigned to them and whether they are recorded as used | Own licenses only, without price or cost |
+| **Staff** | License management team member, reports to a Manager | Hands-on work: enters and corrects license data, holders and usage where there is no connector, and expenses | Every license and expense; no budget, no dashboards |
+| **Manager** | Manager of a P&L (subsidiary) or a department | Plans the budget, monitors spending, reviews waste, decides on recommendations | Only the P&Ls or departments assigned to them |
+| **Admin** | System operator | Users, P&Ls and departments, roles, permissions | Access settings only; no license, budget, or cost data |
 
-**System actor:** the Lifecycle Notification System scans SaaS expiry dates and Perpetual maintenance dates daily and sends alerts to Managers.
+| Capability | Admin | Manager | Staff | Employee |
+|---|---|---|---|---|
+| Software catalog, vendors | — | — | Create / edit | — |
+| License entitlements, contracts | — | — | Create / edit | — |
+| License holders and usage (where there is no connector) | — | — | Create / edit / import | — |
+| Expenses and invoices | — | — | Create / edit / import | — |
+| Budget plan | — | Create / edit, own units | — | — |
+| Cost allocation, budget monitoring, forecast | — | Read, own units | — | — |
+| Unused, inactive, overuse detection | — | Read, own units | — | — |
+| Cost optimization, recommendations | — | Read / decide, own units | — | — |
+| License, financial, compliance, optimization dashboards | — | Read, own units | — | — |
+| Users, roles, permissions | Create / edit | — | — | — |
+| P&Ls and departments | Create / edit | — | — | — |
+| My licenses | Read own | Read own | Read own | Read own |
 
-The backend must enforce RBAC, the Employee's access to personal data only (BR-08), and the rule that a Staff member cannot change an Entitlement or Budget (BR-09); hiding frontend controls serves UI/UX only.
+- The backend enforces every cell of this table and the data scope; hiding a button in the interface is not enough, and a call outside the role returns `403`.
+- ELMS never writes to a provider: "edit" here changes data in ELMS only.
+- Every change to license data, expenses, budgets, recommendations, and access is recorded with who, old value, new value, and time.
+
+Staff and Manager compared, and the full role × feature matrix with the business rules: [Use cases](docs/02-use-cases.md#staff-and-manager).
+
+### 1.5 INVEST requirements
+
+The backlog contains **24 user stories (92 story points)**, one per use case (USxx implements UCxx). Every story passes the INVEST review and has Given/When/Then acceptance criteria.
+
+| Criterion | Meaning in ELMS |
+|---|---|
+| **Independent** | Each story produces a demonstrable outcome; analytics and detection stories run on seeded data without waiting for connectors. |
+| **Negotiable** | Layout and implementation may change while outcome, permissions, and business rules stay fixed. |
+| **Valuable** | Each story names the benefit for one role: Employee, Staff, Manager, or Admin. |
+| **Estimable** | Inputs, outputs, roles, data scope, and failure outcomes are explicit; every story is estimated in points. |
+| **Small** | One mind-map leaf per story; only US03 (entitlements plus manual usage entry) reaches 8 points. |
+| **Testable** | Every story has observable criteria, including rules that tie figures across screens. |
+
+```text
+US01–US04   License Management: catalog, vendors, entitlements, contracts       Staff
+US05–US09   Budget: plan, cost allocation, expenses, monitoring, forecast       Manager (US07: Staff)
+US10–US14   Optimization: unused, inactive, overuse, savings, recommendations   Manager
+US15–US18   Analytics: license, financial, compliance, optimization dashboards  Manager
+US19–US22   User & Organization: users, P&Ls and departments, roles, permissions Admin
+US23–US24   My licenses, login / logout                                         Every role
+```
+
+Backlog, per-story INVEST review, and acceptance criteria: [INVEST requirements](docs/03-invest-requirements.md).
 
 ## Documentation
 
-- [MVP specification](docs/01-MVP.md) — scope, 20 business rules, NFRs, 12 entities, 14 acceptance criteria
-- [Use cases](docs/02-use-cases.md) — 39 use cases, three business flows, sequence diagrams
-- [User stories](docs/03-user-stories.md) — 25 user stories, Given/When/Then, traceability matrix
-- [Manager information architecture](docs/04-information-architecture-manager.md) — sitemap, views, modals and wireframes for Manager (Modules 1–3)
+- [Top-down research](docs/01-research-top-down.md) — problem, stakeholders, goals, license models, data sources, process, epics, scope, risks
+- [Use cases](docs/02-use-cases.md) — actors, role × feature matrix, business rules, use case diagrams per role, 24 use cases
+- [INVEST requirements](docs/03-invest-requirements.md) — 24 user stories, INVEST review, acceptance criteria
+- [Information architecture](docs/04-information-architecture-manager.md) — screens, views, and navigation: License Management, Analytics Hub (license health and budget analytics), User Management

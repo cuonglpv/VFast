@@ -1,0 +1,259 @@
+# INVEST Requirements & Acceptance Criteria — ELMS
+
+> Design status: TARGET
+
+Each story is small enough to implement and test independently. Authentication, authorization, data scope, and error handling are acceptance constraints, not hidden features. Business rules `BR-xx` are defined in [Use cases](02-use-cases.md#business-rules). Story `USxx` implements use case `UCxx`, and stories are grouped by the branches of the [mind map](mindmap.png).
+
+## INVEST checklist
+
+| Principle | Application in this backlog |
+|---|---|
+| Independent | Each story produces a demonstrable outcome and lists only unavoidable prerequisites; analytics and detection stories run on seeded data without waiting for connectors. |
+| Negotiable | Layout and implementation details may change while the outcome, permissions, and business rules stay fixed. |
+| Valuable | Every story names the benefit for one role: Employee, Staff, Manager, or Admin. |
+| Estimable | Inputs, outputs, roles, data scope, and failure outcomes are explicit; each story has a story-point estimate. |
+| Small | One mind-map leaf per story; only US03 reaches 8 points, every other story is 5 or less. |
+| Testable | Every story has observable Given/When/Then criteria, including rules that tie figures across screens. |
+
+## Product backlog
+
+Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fibonacci scale.
+
+| ID | User story | Value | Dependencies | Priority | Points |
+|---|---|---|---|---|---|
+| **License Management** | | | | | |
+| US01 | As a Staff member, I want to maintain one software catalog for every provider so that everyone talks about the same products. | Single catalog | US24 | M | 5 |
+| US02 | As a Staff member, I want to record vendors and how their data is collected so that every product and contract has an owner. | Vendor master data | US24 | M | 2 |
+| US03 | As a Staff member, I want to record entitlement lines with archetype, quantity, and price, and — where no connector exists — who holds each license and their usage, so that purchased, assigned, and used quantities are known. | Purchased and usage baseline | US01, US02 | M | 8 |
+| US04 | As a Staff member, I want to record contracts with renewal date and notice period so that renewals are never missed. | Renewal control | US02, US03 | M | 3 |
+| **Budget Management** | | | | | |
+| US05 | As a Manager, I want to plan my unit's yearly license budget with planned quantity and cost per license so that spending has a target. | Planning | US03, US20 | M | 5 |
+| US06 | As a Manager, I want license cost allocated to departments by seat holder so that I see where the money goes. | Cost visibility | US03 | M | 3 |
+| US07 | As a Staff member, I want to enter or import expenses with invoices so that actual cost is complete. | Actual cost | US03 | M | 5 |
+| US08 | As a Manager, I want planned, purchased, assigned, used, and actual cost side by side so that I see where plan and reality diverge. | Reconciliation | US05, US07 | M | 5 |
+| US09 | As a Manager, I want a year-end spending forecast so that I can act before the budget is exceeded. | Early warning | US07, US04 | S | 5 |
+| **Optimization** | | | | | |
+| US10 | As a Manager, I want to see licenses with unassigned seats and their cost so that I stop paying for seats nobody holds. | Waste found | US03 | M | 3 |
+| US11 | As a Manager, I want to see seats that are inactive or never used so that I know whom to ask. | Waste found | US03 | M | 3 |
+| US12 | As a Manager, I want to see licenses used beyond their entitlement so that compliance risk is caught before an audit. | Compliance | US03 | M | 5 |
+| US13 | As a Manager, I want saving opportunities with evidence and the date I can act on them so that I choose the right moment. | Savings | US10, US11, US04 | S | 5 |
+| US14 | As a Manager, I want to accept, reject, and close recommendations so that savings are decided and tracked. | Decisions | US10, US11 | M | 5 |
+| **Analytics** | | | | | |
+| US15 | As a Manager, I want a license dashboard so that I see the portfolio and its usage at a glance. | Overview | US03 | M | 3 |
+| US16 | As a Manager, I want a financial dashboard so that spend, budget, and forecast are on one screen. | Financial overview | US06, US08 | M | 3 |
+| US17 | As a Manager, I want a compliance dashboard so that overuse and contract deadlines are visible. | Compliance overview | US12, US04 | M | 3 |
+| US18 | As a Manager, I want an optimization dashboard so that I see waste and realized savings. | Savings overview | US10, US11, US14 | S | 3 |
+| **User & Organization** | | | | | |
+| US19 | As an Admin, I want to create, edit, and disable users so that only the right people have access. | Access control | US24 | M | 3 |
+| US20 | As an Admin, I want to maintain the P&Ls and their departments and assign Managers to them so that data scope and budgets follow the group's organization. | Organization | US19 | M | 3 |
+| US21 | As an Admin, I want to change the role of a user so that their access matches their job. | Role control | US19 | M | 2 |
+| US22 | As an Admin, I want to adjust which features each role may read or write so that permissions fit the company. | Permission control | US21 | M | 5 |
+| **Self-service** | | | | | |
+| US23 | As an employee, I want to see the licenses assigned to me and whether I am recorded as using them so that I can tell my manager when I no longer need one. | Self-service | US24 | M | 2 |
+| US24 | As any user, I want to log in and out and land on the screen of my role so that only I see my data. | Protected access | Seeded accounts | M | 3 |
+
+**Total:** 24 stories, 92 points. Must-have: 21 stories (79 points); forecast, cost optimization, and the optimization dashboard are Should-have.
+
+## Per-story INVEST review
+
+`PASS` means the design provides enough information for planning and acceptance. It does not claim that implementation or tests exist.
+
+| Story | I | N | V | E | S | T | Notes |
+|---|---|---|---|---|---|---|---|
+| US01 | PASS | PASS | PASS | PASS | PASS | PASS | Duplicate rule and inactive rule are explicit. |
+| US02 | PASS | PASS | PASS | PASS | PASS | PASS | Simple master data; inactive rule explicit. |
+| US03 | PASS | PASS | PASS | PASS | PASS | PASS | Largest story (8). Archetype per line (BR-02); connector values protected and one primary source per data type (BR-14). Splits into: entitlement form, entitlement CSV, holders and usage form, usage CSV per archetype. |
+| US04 | PASS | PASS | PASS | PASS | PASS | PASS | "Renewal soon" and "Notice period passed" are testable with a fixed date. |
+| US05 | PASS | PASS | PASS | PASS | PASS | PASS | One plan per unit and year; `Draft`/`Active` (BR-08). |
+| US06 | PASS | PASS | PASS | PASS | PASS | PASS | Split rule BR-06; total ties to the financial dashboard. |
+| US07 | PASS | PASS | PASS | PASS | PASS | PASS | Closed-month rule BR-10. Splits into: form with invoice, CSV import. |
+| US08 | PASS | PASS | PASS | PASS | PASS | PASS | Gap types and `Unknown` rule explicit (BR-04, BR-09). |
+| US09 | PASS | PASS | PASS | PASS | PASS | PASS | Method fixed (BR-11); low-confidence case defined. Should-have. |
+| US10 | PASS | PASS | PASS | PASS | PASS | PASS | Unknown assignment excluded. |
+| US11 | PASS | PASS | PASS | PASS | PASS | PASS | `Not monitored` excluded (BR-04). |
+| US12 | PASS | PASS | PASS | PASS | PASS | PASS | Overuse per archetype (BR-07). |
+| US13 | PASS | PASS | PASS | PASS | PASS | PASS | Action date from contract terms. Should-have. |
+| US14 | PASS | PASS | PASS | PASS | PASS | PASS | Status flow and reason rule (BR-13). |
+| US15 | PASS | PASS | PASS | PASS | PASS | PASS | Counts tie to US01, US03. |
+| US16 | PASS | PASS | PASS | PASS | PASS | PASS | Totals tie to US06, US08. |
+| US17 | PASS | PASS | PASS | PASS | PASS | PASS | `Not evaluated` never shown as `Compliant`. |
+| US18 | PASS | PASS | PASS | PASS | PASS | PASS | Figures tie to US10, US11, US14. Should-have. |
+| US19 | PASS | PASS | PASS | PASS | PASS | PASS | Last Admin protected (BR-17). |
+| US20 | PASS | PASS | PASS | PASS | PASS | PASS | Cycle and inactive rules explicit. |
+| US21 | PASS | PASS | PASS | PASS | PASS | PASS | One role per account. |
+| US22 | PASS | PASS | PASS | PASS | PASS | PASS | Guard rails: Admin permissions and Employee cost access cannot be changed. |
+| US23 | PASS | PASS | PASS | PASS | PASS | PASS | Own data only; no price or cost. |
+| US24 | PASS | PASS | PASS | PASS | PASS | PASS | Lockout and cookie rules BR-18. |
+
+## Acceptance criteria
+
+Format: **Given** context, **When** action, **Then** observable result.
+
+### License Management
+
+#### AC-US01 Software catalog
+
+1. Given a Staff member, when a product with name, vendor, and category is saved, then it appears in the catalog and the change is recorded.
+2. Given a product with the same name and vendor exists, when another is created, then a warning is shown and the existing product opens.
+3. Given a product with an active entitlement, when it is marked inactive, then it is refused.
+4. Given a Manager or Employee calls the edit API, then it returns `403`.
+
+#### AC-US02 Vendors
+
+1. Given a new vendor with a collection method, when saved, then it can be chosen for products and contracts.
+2. Given a vendor with an active contract, when it is marked inactive, then it is refused.
+
+#### AC-US03 License entitlements
+
+1. Given a product, when a line with archetype Allocation, 20 seats, and a yearly price is saved, then Purchased shows 20 for that line.
+2. Given a negative quantity, an end date before the start, or no currency, then field errors are returned.
+3. Given a quantity that comes from a connector, when Staff edits it, then a reason is required and the original value is kept beside the edit.
+4. Given a CSV with one invalid row, when imported, then no line is created and the error row is listed.
+5. Given a line without a connector, when Staff adds 3 holders by email with their last activity dates, then Assigned shows 3 and each holder's status follows BR-03 with source `manual`.
+6. Given a line whose assignments come from a connector, when Staff tries to add a holder by hand, then it is refused.
+7. Given a usage CSV for a Metered line, then the preview shows rows to add, update, and reject before anything is written; importing the same period again creates no duplicate.
+
+#### AC-US04 Contracts
+
+1. Given a contract renewing in 20 days, then it is marked "Renewal soon"; given its notice deadline has passed, then it is marked "Notice period passed".
+2. Given an entitlement line already covered by another active contract, when added to a new contract, then it is refused.
+3. Given a renewal date before the start date, then an error is returned.
+
+### Budget Management
+
+#### AC-US05 Budget plan
+
+1. Given a unit without a 2027 plan, when a plan with budget 600 is saved, then it is `Draft`; when activated, then it is `Active` and counted in monitoring.
+2. Given a plan already exists for that unit and year, when creating another, then the existing plan opens.
+3. Given a license priced 10 per seat per year, when 40 people are planned, then 400 is suggested as planned cost.
+4. Given an `Active` plan, when its budget changes, then a reason is required and the old value is kept; deleting it is refused.
+
+#### AC-US06 Cost allocation
+
+1. Given a license of 12 seats costing 120 per year with 3 seats held in Sales and 9 unassigned, then Sales gets 30 and `Unallocated` gets 90.
+2. Given any period, then all departments plus `Unallocated` and `Unknown department` add up to the total cost.
+
+#### AC-US07 Expenses
+
+1. Given a Staff member, when an expense with amount, currency, license, unit, and a PDF invoice under 10 MB is saved, then it appears with source `manual`.
+2. Given an amount ≤ 0 or a file over 10 MB, then field errors are returned.
+3. Given the month is closed, when an expense of that month is edited, then it is refused and a correcting entry is offered.
+4. Given a Manager or Employee calls the expense API, then it returns `403`.
+
+#### AC-US08 Budget monitoring
+
+1. Given utilization 84%, then the unit is coloured as a warning; given 100% or more, then as over budget.
+2. Given Planned 40, Purchased 40, Assigned 35, Used 22, then the line is flagged `Unassigned` and `Unused`, not `Over plan`.
+3. Given Used is `Unknown`, then the line is not flagged `Unused`.
+4. Given a Manager of unit A requests unit B, then the API returns `403`.
+
+#### AC-US09 Forecast
+
+1. Given 6 closed months, then the forecast for the remaining months uses the run rate of the last 3 closed months plus known renewals, and the method is shown.
+2. Given only 2 closed months, then the forecast uses plan lines only and is labelled "low confidence".
+3. Given any month, then actual and forecast amounts are never added into one figure.
+
+### Optimization
+
+#### AC-US10 Unused licenses
+
+1. Given a license with 20 purchased and 15 assigned seats, then it is listed with 5 unassigned seats and their monthly cost.
+2. Given Assigned is `Unknown`, then the license is not listed and is counted as "Not evaluated".
+
+#### AC-US11 Inactive usage
+
+1. Given a seat last active 75 days ago, then it is listed as `Inactive`; given a seat with a usage source and no activity ever, then as `No activity`.
+2. Given a license without a usage source, then its seats are not listed and are counted as `Not monitored`.
+
+#### AC-US12 Overuse
+
+1. Given 25 seats assigned on an entitlement of 20, then the license is listed with an excess of 5.
+2. Given a Concurrent license with a peak of 12 sessions on 10 slots, then it is listed with an excess of 2.
+3. Given missing data, then the license is `Not evaluated`, not `Compliant`.
+
+#### AC-US13 Cost optimization
+
+1. Given 5 unassigned seats on a monthly plan, then the opportunity "reduce 5 seats" shows its yearly saving and can be acted on now.
+2. Given a yearly contract renewing on 1 March with a 30-day notice period, then the action date is 30 January; given that date has passed, then the opportunity moves to the next renewal.
+
+#### AC-US14 Recommendations
+
+1. Given an opportunity, when it is turned into a recommendation, then its status is `Proposed` with the evidence attached.
+2. Given a rejection without a reason, then it is refused; with a reason, then the status is `Rejected`.
+3. Given a `Proposed` recommendation, when marked done, then it is refused; given `Accepted`, then it can be marked `Done` with the actual saving.
+4. Given any status change, then nothing is sent to the provider.
+
+### Analytics
+
+#### AC-US15 License dashboard
+
+1. Given seeded data, then Total licenses equals the number of active catalog licenses with an active entitlement, and the top applications show `Active`, `Inactive`, `No activity` per holder count.
+2. Given no data, then "No data yet" is shown instead of zeros.
+
+#### AC-US16 Financial dashboard
+
+1. Given a year, then spend by department equals the cost allocation total (US06) and budget vs actual matches monitoring (US08).
+2. Given two currencies without an exchange rate, then amounts are shown per currency.
+
+#### AC-US17 Compliance dashboard
+
+1. Given overuse results, then the same licenses as US12 are listed as `Over-allocated`.
+2. Given contracts marked "Renewal soon" or "Notice period passed", then they are listed.
+
+#### AC-US18 Optimization dashboard
+
+1. Given detection results, then underutilized accounts equal the count in US11 and unassigned seats equal the total in US10.
+2. Given recommendations, then accepted and done savings equal the sums in US14.
+
+### User & Organization
+
+#### AC-US19 Users
+
+1. Given an Admin creates a user with an existing email, then the existing account opens.
+2. Given a user is disabled, then their open sessions end at once and the account stays listed.
+3. Given the Admin disables themselves or the last active Admin, then it is refused.
+4. Given a non-Admin calls the user API, then it returns `403`.
+
+#### AC-US20 Departments
+
+1. Given a department without a P&L, or a P&L placed under a department, then it is refused.
+2. Given a Manager is assigned to P&L A, then after login they see only the data of P&L A and its departments.
+3. Given a unit with an active budget plan, when it is marked inactive, then it is refused.
+
+#### AC-US21 Roles
+
+1. Given a user changed from Employee to Staff, then the new permissions apply from their next request.
+2. Given the last active Admin, when their role is changed, then it is refused.
+
+#### AC-US22 Permissions
+
+1. Given the Admin removes "edit contracts" from Staff with a reason, then Staff can still view contracts but editing returns `403`, and the change is recorded.
+2. Given an attempt to give Employee access to price or cost, then it is refused.
+3. Given an attempt to remove the permission Admin needs to manage permissions, then it is refused.
+
+### Self-service
+
+#### AC-US23 My licenses
+
+1. Given an employee holding 3 licenses, then exactly those 3 rows are shown, without price or cost.
+2. Given a request for another employee's licenses, then the API returns `404`.
+
+#### AC-US24 Login / logout
+
+1. Given valid credentials, then a session is created and the user lands on the screen of their role.
+2. Given wrong credentials or a disabled account, then the same generic message is shown.
+3. Given 5 failed attempts in a row, then login is locked for 15 minutes.
+4. Given logout, then the session is destroyed and internal pages redirect to login.
+
+## Cross-cutting acceptance constraints
+
+- Only Admin, Manager, Staff, and Employee have accounts; every API requires login because per-user usage is sensitive.
+- Admin manages access only: license, budget, cost, and optimization APIs return `403` for Admin.
+- The API, not the client, enforces roles, permissions, and data scope (BR-16, BR-17).
+- ELMS never writes to a provider (BR-01); every connector uses read-only access.
+- Missing data is `Unknown`, never 0 (BR-04); every figure carries its source and confidence (BR-14).
+- Figures tie across screens: cost allocation total = financial dashboard spend by department; detection counts = optimization dashboard; overuse list = compliance dashboard.
+- Every change to master data, expenses, budgets, recommendations, and access is recorded (BR-15).
+- Providers sit behind a connector interface with fakes, so every story is testable without real tenants.
+
+**Related:** [Research](01-research-top-down.md) · [Use cases](02-use-cases.md)
