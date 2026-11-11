@@ -115,7 +115,7 @@ Backlog, per-story INVEST review, and acceptance criteria: [INVEST requirements]
 
 The target schema is PostgreSQL, 41 tables in seven groups: organization and access, license catalog, collection pipeline, holders and usage, budget and expenses, optimization, audit. A license is a plan (tier/SKU); each purchase is an entitlement line; missing data is `Unknown`, never 0; history is kept as frozen daily snapshots and monthly cost allocations.
 
-![License catalog](docs/database/diagrams/erd_license_catalog.png)
+![Entity overview](docs/database/diagrams/erd_overview.png)
 
 Entity overview, one ERD per group, rule-to-schema traceability, and the decisions still to confirm (D5–D15): [Database design](docs/database/README.md). Source [`elms.dbml`](docs/database/elms.dbml), reference DDL [`schema.sql`](docs/database/schema.sql), draw.io files in [`docs/database/diagrams/`](docs/database/diagrams/).
 
