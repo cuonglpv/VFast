@@ -126,3 +126,15 @@ Entity overview, one ERD per group, rule-to-schema traceability, and the decisio
 - [INVEST requirements](docs/03-invest-requirements.md) — 24 user stories, INVEST review, acceptance criteria
 - [Information architecture](docs/04-information-architecture-manager.md) — screens, views, and navigation: License Management, Analytics Hub (license health and budget analytics), User Management
 - [Database design](docs/database/README.md) — conventions, entity overview, ERD per group, rule-to-schema traceability, proposed decisions D5–D15
+
+## Frontend development
+
+The frontend application, configuration, package manifests and lockfiles are in [src/frontend](src/frontend/README.md).
+
+```powershell
+cd src/frontend
+pnpm.cmd install --frozen-lockfile
+pnpm.cmd dev
+```
+
+Run `pnpm.cmd build` in the same directory to create `src/frontend/dist/`. Dependencies and build outputs are ignored by Git.
