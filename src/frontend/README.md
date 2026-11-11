@@ -1,4 +1,4 @@
-# VFast Frontend Architecture Guide (`/src`)
+# VFast Frontend Architecture Guide (`/src/frontend`)
 
 This document outlines the architectural conventions and directory layout for the VFast Enterprise License Management System (ELMS) frontend application built with **React**, **Vite**, **TypeScript**, **Tailwind CSS v4**, and **Material-UI (MUI v6)**.
 
@@ -7,7 +7,7 @@ This document outlines the architectural conventions and directory layout for th
 ## 📁 Directory Structure Overview
 
 ```
-src/
+src/frontend/
 ├── layouts/             # App shell layouts & navigation containers
 │   ├── Header.tsx       # Top navigation bar (Brand, Monogram, Profile)
 │   ├── Sidebar.tsx      # Left vertical navigation menu with route highlights
@@ -69,7 +69,7 @@ src/
 
 The project leverages both **Tailwind CSS v4** (via `@tailwindcss/vite`) for rapid utility-first layout styling and **Material-UI v6** for enterprise accessible components (Modals, Drawers, Menus, DataGrids).
 
-### Tailwind Theme Tokens (`@theme` in `src/index.css`)
+### Tailwind Theme Tokens (`@theme` in `src/frontend/index.css`)
 - `bg-brand-blue` (`#0F67B1`)
 - `bg-brand-sky` (`#E0F2FE`)
 - `bg-brand-canvas` (`#F8FAFC`)
@@ -85,6 +85,12 @@ The project leverages both **Tailwind CSS v4** (via `@tailwindcss/vite`) for rap
 ## 🚀 Running the Project
 
 ```bash
+# From the repository root
+cd src/frontend
+
+# Install dependencies
+pnpm install --frozen-lockfile
+
 # Start Vite dev server
 pnpm dev
 

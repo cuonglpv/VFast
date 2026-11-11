@@ -117,3 +117,15 @@ Backlog, per-story INVEST review, and acceptance criteria: [INVEST requirements]
 - [Use cases](docs/02-use-cases.md) — actors, role × feature matrix, business rules, use case diagrams per role, 24 use cases
 - [INVEST requirements](docs/03-invest-requirements.md) — 24 user stories, INVEST review, acceptance criteria
 - [Information architecture](docs/04-information-architecture-manager.md) — screens, views, and navigation: License Management, Analytics Hub (license health and budget analytics), User Management
+
+## Frontend development
+
+The frontend application, configuration, package manifests and lockfiles are in [src/frontend](src/frontend/README.md).
+
+```powershell
+cd src/frontend
+pnpm.cmd install --frozen-lockfile
+pnpm.cmd dev
+```
+
+Run `pnpm.cmd build` in the same directory to create `src/frontend/dist/`. Dependencies and build outputs are ignored by Git.
