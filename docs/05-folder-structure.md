@@ -1,6 +1,6 @@
 # 05 — Folder structure and solution architecture
 
-Design status: **TARGET** for the backend, **implemented** for the frontend. Frontend (`src/frontend`), **backend proposed** (not yet in the repository). The backend design comes from the team's *System Design & Solution Architecture* proposal; items marked *assumption* need team confirmation.
+Design status: **TARGET** for the backend; the frontend (`src/frontend`) is already coded. The backend design comes from the team's *System Design & Solution Architecture* proposal; items marked *assumption* need team confirmation.
 
 
 ## 1. Repository layout
@@ -17,12 +17,12 @@ VFast/
 │  ├─ diagrams/out/                 Use case diagrams (draw.io, png, svg)
 │  └─ mindmap/vfast.xmind           Editable mind map
 └─ src/
-   ├─ frontend/                     React SPA (implemented)
-   └─ backend/                      .NET solution (proposed, see section 4)
+   ├─ frontend/                     React SPA
+   └─ backend/                      .NET solution
 ```
 
 
-## 2. Solution architecture (proposed)
+## 2. Solution architecture
 
 One monolith built with Clean Architecture, deployed as two processes (`Elms.Api` and `Elms.Worker`) that share one PostgreSQL database. The API serves users only; every slow operation (provider calls, large CSV imports, detection) is queued and run by the worker. The queue lives in PostgreSQL, so no Redis or message broker is needed.
 
@@ -161,30 +161,35 @@ Connectors are plugins implementing one interface: `fetchEntitlements`, `fetchAs
 
 ### 4.2 Folder structure
 
-Four projects plus a shared kernel. Modules are feature folders inside each layer, not separate projects; boundaries are kept by namespaces and architecture tests.
+The solution is created in `src/backend/`. Four `SharedKernel.*` projects (reusable by other hosts) sit beside the `Elms.*` projects (Domain, Application, Infrastructure, Api, Worker). Modules are feature folders inside each layer, not separate projects; boundaries are kept by namespaces and architecture tests.
 
 ```text
-src/backend/
+ELMS/
+├─ Elms.slnx, global.json, Directory.Build.props, Directory.Packages.props
+├─ docker-compose.yml
 ├─ src/
-│  ├─ SharedKernel/                 Base entities, result types, ICurrentUser
+│  ├─ SharedKernel.Domain/            BaseEntity, BaseAuditableEntity, Money
+│  ├─ SharedKernel.Application/       Base Command/Query, Behaviours, Exceptions, AccessScope
+│  ├─ SharedKernel.Infrastructure/    BaseDbContext, Audit + Scope interceptor
+│  ├─ SharedKernel.Api/               BaseApiController, GlobalExceptionHandler
 │  ├─ Elms.Domain/
-│  │  ├─ Entities/<Module>/         Catalog, Usage, Finance, Optimization, ...
-│  │  ├─ Enums/                     Archetype, SeatStatus, RecommendationStatus
-│  │  └─ Rules/                     SeatStatusRule, CostNormalizer, CostAllocator
+│  │  ├─ Entities/<Module>/           Catalog, Usage, Finance, Optimization...
+│  │  ├─ Enums/                       Archetype, SeatStatus, RecommendationStatus
+│  │  └─ Rules/                       SeatStatusRule, CostNormalizer, CostAllocator
 │  ├─ Elms.Application/
-│  │  ├─ Interfaces/                IAppDbContext, IProviderConnector, IFileStorage
-│  │  ├─ <Module>/<Feature>/        e.g. Catalog/Products, Finance/BudgetPlans
+│  │  ├─ Interfaces/                  IAppDbContext, IProviderConnector, IFileStorage
+│  │  ├─ <Module>/<Feature>/          e.g. Catalog/Products, Finance/BudgetPlans
 │  │  │  └─ Commands/  Queries/  DTO/
-│  │  ├─ Analytics/Queries/         Read views with Dapper
-│  │  ├─ Ingestion/Pipeline/        Steps of the daily job
-│  │  └─ ConfigureServices.cs       AddApplication()
+│  │  ├─ Analytics/<Dashboard>/Queries/   Read views with Dapper
+│  │  ├─ Ingestion/Pipeline/          Steps of the daily job
+│  │  └─ ConfigureServices.cs
 │  ├─ Elms.Infrastructure/
-│  │  ├─ Data/                      AppDbContext, Configurations/, Migrations/
+│  │  ├─ Data/                        AppDbContext, Configurations/, Migrations/
 │  │  ├─ Connectors/MicrosoftGraph/, Storage/
-│  │  └─ ConfigureServices.cs       AddInfrastructure(config)
-│  ├─ Elms.Api/                     Controllers/, Program.cs
-│  └─ Elms.Worker/                  Program.cs, Jobs/DailyPipelineJob.cs
-└─ tests/                           Unit, Integration (Testcontainers), Architecture
+│  │  └─ ConfigureServices.cs
+│  ├─ Elms.Api/                       Controllers/<Module>/, Program.cs
+│  └─ Elms.Worker/                    Program.cs, Jobs/DailyPipelineJob.cs
+└─ tests/                             Unit, Integration (Testcontainers), Architecture
 ```
 
 Dependency direction: `Api / Worker → Infrastructure → Application → Domain → SharedKernel`. Application talks to the database only through `IAppDbContext`.

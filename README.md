@@ -770,11 +770,11 @@ VFast/
 │  ├─ diagrams/out/         Use case diagrams
 │  └─ mindmap/              XMind source
 └─ src/
-   ├─ frontend/             React SPA (implemented)
-   └─ backend/              .NET solution (proposed)
+   ├─ frontend/             React SPA
+   └─ backend/              .NET solution
 ```
 
-### 3.3 Frontend (implemented)
+### 3.3 Frontend
 
 ```text
 src/frontend/
@@ -789,18 +789,35 @@ src/frontend/
 
 Call flow: `routes → pages → sections → components → types / utils`.
 
-### 3.4 Backend (proposed)
+### 3.4 Backend
 
 ```text
-src/backend/
+ELMS/
+├─ Elms.slnx, global.json, Directory.Build.props, Directory.Packages.props
+├─ docker-compose.yml
 ├─ src/
-│  ├─ SharedKernel/
-│  ├─ Elms.Domain/           Entities/<Module>/, Enums/, Rules/
-│  ├─ Elms.Application/      <Module>/<Feature>/{Commands,Queries,DTO}, Interfaces/
-│  ├─ Elms.Infrastructure/   Data/ (AppDbContext, Configurations/, Migrations/), Connectors/, Storage/
-│  ├─ Elms.Api/              Controllers/, Program.cs
-│  └─ Elms.Worker/           Jobs/, Program.cs
-└─ tests/                    Unit, Integration (Testcontainers), Architecture
+│  ├─ SharedKernel.Domain/            BaseEntity, BaseAuditableEntity, Money
+│  ├─ SharedKernel.Application/       Base Command/Query, Behaviours, Exceptions, AccessScope
+│  ├─ SharedKernel.Infrastructure/    BaseDbContext, Audit + Scope interceptor
+│  ├─ SharedKernel.Api/               BaseApiController, GlobalExceptionHandler
+│  ├─ Elms.Domain/
+│  │  ├─ Entities/<Module>/           Catalog, Usage, Finance, Optimization...
+│  │  ├─ Enums/                       Archetype, SeatStatus, RecommendationStatus
+│  │  └─ Rules/                       SeatStatusRule, CostNormalizer, CostAllocator
+│  ├─ Elms.Application/
+│  │  ├─ Interfaces/                  IAppDbContext, IProviderConnector, IFileStorage
+│  │  ├─ <Module>/<Feature>/          e.g. Catalog/Products, Finance/BudgetPlans
+│  │  │  └─ Commands/  Queries/  DTO/
+│  │  ├─ Analytics/<Dashboard>/Queries/   Read views with Dapper
+│  │  ├─ Ingestion/Pipeline/          Steps of the daily job
+│  │  └─ ConfigureServices.cs
+│  ├─ Elms.Infrastructure/
+│  │  ├─ Data/                        AppDbContext, Configurations/, Migrations/
+│  │  ├─ Connectors/MicrosoftGraph/, Storage/
+│  │  └─ ConfigureServices.cs
+│  ├─ Elms.Api/                       Controllers/<Module>/, Program.cs
+│  └─ Elms.Worker/                    Program.cs, Jobs/DailyPipelineJob.cs
+└─ tests/                             Unit, Integration (Testcontainers), Architecture
 ```
 
 Dependency direction: `Api / Worker → Infrastructure → Application → Domain → SharedKernel`. The eight business modules (`identity`, `organization`, `catalog`, `ingestion`, `usage`, `finance`, `optimization`, `analytics`, plus shared `audit`) are feature folders inside each layer; boundaries are enforced by architecture tests.
