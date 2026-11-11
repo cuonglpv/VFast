@@ -1,0 +1,15 @@
+import type { GrantedAccount, LicenseRecord } from '@/types/license';
+
+export const mockLicenseRecords: LicenseRecord[] = [
+  { id: 'lic-m365-01', softwareName: 'Microsoft 365', publisher: 'Microsoft', vendor: 'Microsoft Corporation', category: 'Productivity', description: 'Enterprise productivity suite', subcategory: 'Office & Collaboration', licenseType: 'Subscription', complianceStatus: 'Compliant', purchasedAmount: 48000, monthlyCost: 15000, entitlementSeats: 500, activeUsers: 470, totalUsers: 470, expiryDate: '2027-05-31', tiers: 'E3, E5', contracts: 3 },
+  { id: 'lic-slk-02', softwareName: 'Slack Grid', publisher: 'Salesforce', vendor: 'Salesforce', category: 'Communication', description: 'Enterprise team messaging', subcategory: 'Team Collaboration', licenseType: 'Subscription', complianceStatus: 'Compliant', purchasedAmount: 21600, monthlyCost: 1800, entitlementSeats: 450, activeUsers: 410, totalUsers: 430, expiryDate: '2027-03-15', tiers: 'Enterprise Grid', contracts: 1 },
+  { id: 'lic-gh-03', softwareName: 'GitHub Enterprise', publisher: 'GitHub', vendor: 'GitHub', category: 'DevOps', description: 'Enterprise software development platform', subcategory: 'Source Control', licenseType: 'Subscription', complianceStatus: 'At Risk', purchasedAmount: 36000, monthlyCost: 3000, entitlementSeats: 300, activeUsers: 264, totalUsers: 300, expiryDate: '2026-12-22', tiers: 'Enterprise', contracts: 1 },
+  { id: 'lic-jira-04', softwareName: 'Jira Software', publisher: 'Atlassian', vendor: 'Atlassian', category: 'DevOps', description: 'Project and issue tracking', subcategory: 'Project Management', licenseType: 'Subscription', complianceStatus: 'Compliant', purchasedAmount: 18000, monthlyCost: 1500, entitlementSeats: 300, activeUsers: 255, totalUsers: 280, expiryDate: '2027-01-10', tiers: 'Premium', contracts: 1 },
+  { id: 'lic-zoom-05', softwareName: 'Zoom Business', publisher: 'Zoom', vendor: 'Zoom', category: 'Communication', description: 'Enterprise video meetings', subcategory: 'Video Conferencing', licenseType: 'Subscription', complianceStatus: 'Compliant', purchasedAmount: 12000, monthlyCost: 1000, entitlementSeats: 250, activeUsers: 202, totalUsers: 230, expiryDate: '2026-12-31', tiers: 'Business', contracts: 1 },
+];
+
+export const mockGrantedAccounts: GrantedAccount[] = [
+  { user: 'Dat Nguyen', tenant: 'HQ Vietnam', tier: 'E5', allocated: '2026-01-12', status: 'Actively used' },
+  { user: 'Chloe Mai', tenant: 'R&D Lab', tier: 'E3', allocated: '2026-02-04', status: 'Inactive' },
+  { user: 'Anh Le', tenant: 'HQ Vietnam', tier: 'E3', allocated: '2026-02-18', status: 'Actively used' },
+];

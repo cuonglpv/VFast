@@ -1,99 +1,49 @@
-# VFast Frontend Architecture Guide (`/src/frontend`)
+# Frontend ELMS
 
-This document outlines the architectural conventions and directory layout for the VFast Enterprise License Management System (ELMS) frontend application built with **React**, **Vite**, **TypeScript**, **Tailwind CSS v4**, and **Material-UI (MUI v6)**.
+Ứng dụng React 19, TypeScript, Vite, React Router 7, Tailwind CSS 4 và MUI 6. Chạy tại `src/frontend`:
 
----
-
-## 📁 Directory Structure Overview
-
-```
-src/frontend/
-├── layouts/             # App shell layouts & navigation containers
-│   ├── Header.tsx       # Top navigation bar (Brand, Monogram, Profile)
-│   ├── Sidebar.tsx      # Left vertical navigation menu with route highlights
-│   ├── MainLayout.tsx   # Base application shell combining Header, Sidebar & Outlet
-│   └── index.ts         # Central layout barrel export
-│
-├── components/          # Reusable, atomic / molecular UI components
-│   ├── cards/           # KPI cards, metric widgets (4-element minimalist contract)
-│   ├── tables/          # Shared data grid tables and pagination wrappers
-│   └── index.ts         # Central components barrel export
-│
-├── sections/            # Domain-specific feature blocks composing pages
-│   ├── licenses/        # License tables, top filter bars, action modals
-│   ├── budget/          # Budget KPI grids, 640px Renewals Drawer (SCR-BUDGET-RENEWALS-01)
-│   └── index.ts         # Central sections barrel export
-│
-├── pages/               # Screen-level route views (corresponding to SCR-* IDs)
-│   ├── licenses/        # License Management (SCR-LIC-MGMT-01)
-│   ├── budget/          # Budget Analytics & Forecast (SCR-BUDGET-ANALYTICS-01)
-│   ├── users/           # User & Access Management (SCR-USER-MGMT-01)
-│   ├── analytics/       # Cross-platform General Analytics (SCR-ANALYTICS-01)
-│   └── index.ts         # Central pages barrel export
-│
-├── routes/              # Client-side routing configuration
-│   ├── paths.ts         # Strongly-typed constant route URL paths
-│   ├── router.tsx       # React Router DOM (v7) browser router hierarchy
-│   └── index.ts         # Central routes export
-│
-├── types/               # TypeScript interfaces, domain models, and API types
-│   ├── license.ts       # LicenseItem, LicenseStatus, MeasurementArchetype
-│   ├── budget.ts        # BudgetKpiOverview, RenewalObligation, CategoryBudgetShare
-│   ├── user.ts          # UserAccount, UserRole
-│   └── index.ts         # Central types barrel export
-│
-├── utils/               # Pure utility functions and formatters
-│   ├── formatCurrency.ts # USD currency formatting ($1,280,000 / $1.2M compact)
-│   ├── formatDate.ts    # Date localized display and countdown calculations
-│   ├── calculations.ts  # Burn rate, seat utilization calculations
-│   └── index.ts         # Central utils barrel export
-│
-├── theme/               # Material-UI Theme & Design Tokens
-│   ├── theme.ts         # Minimal Ocean Blue design tokens (IA v5.3)
-│   └── index.ts
-│
-├── layout/              # Alias re-export compatible with `layouts/`
-├── page/                # Alias re-export compatible with `pages/`
-├── componant/           # Alias re-export compatible with `components/`
-├── section/             # Alias re-export compatible with `sections/`
-├── route/               # Alias re-export compatible with `routes/`
-│
-├── App.tsx              # App provider tree (ThemeProvider, CssBaseline, RouterProvider)
-├── main.tsx             # Application bootstrap & DOM mount
-└── index.css            # Tailwind CSS v4 (@import "tailwindcss";) & @theme definitions
+```powershell
+npm install
+npm run dev
+npm run build
 ```
 
----
+Từ thư mục gốc repo, chạy `npm --prefix src/frontend install` một lần, sau đó dùng `npm run dev` hoặc `npm run build`. `package.json` ở thư mục gốc chuyển lệnh tới frontend.
 
-## 🎨 Styling: Tailwind CSS v4 + Material-UI (MUI v6)
+## Cấu trúc đang dùng
 
-The project leverages both **Tailwind CSS v4** (via `@tailwindcss/vite`) for rapid utility-first layout styling and **Material-UI v6** for enterprise accessible components (Modals, Drawers, Menus, DataGrids).
+| Thư mục | Vai trò |
+| --- | --- |
+| `routes/` | URL và khai báo màn hình; `/` chuyển tới quản lý license. |
+| `layouts/` | Khung chung: header, sidebar, `Outlet`. |
+| `pages/` | Các trang license list/detail, budget, analytics, users. |
+| `sections/` | Khối giao diện theo nghiệp vụ: bảng license, drawer renewal. |
+| `components/` | Thành phần giao diện dùng lại và biểu đồ. |
+| `types/` | Model mà giao diện tiêu thụ. Đây chưa phải kiểu dữ liệu backend. |
+| `data/mock/` | Tất cả dữ liệu mẫu của các màn hình đang hoạt động. |
+| `data/repositories/` | Giao diện đọc/ghi dữ liệu và bản triển khai mẫu. `index.ts` chọn nguồn dữ liệu. |
+| `data/useRepositoryData.ts` | Hook tải dữ liệu với trạng thái loading/error. |
+| `data/licenses.tsx` | React context cho hai route license, gọi repository và chia sẻ dữ liệu giữa list/detail. |
+| `utils/` | Định dạng tiền, ngày, tính toán và đọc CSV. |
+| `theme/`, `index.css`, `portal.css` | Theme và CSS. |
 
-### Tailwind Theme Tokens (`@theme` in `src/frontend/index.css`)
-- `bg-brand-blue` (`#0F67B1`)
-- `bg-brand-sky` (`#E0F2FE`)
-- `bg-brand-canvas` (`#F8FAFC`)
-- `text-brand-ink` (`#0F172A`)
-- `text-brand-muted` (`#64748B`)
-- `border-brand-border` (`#E2E8F0`)
-- `text-brand-success` (`#10B981`)
-- `text-brand-warning` (`#F59E0B`)
-- `text-brand-error` (`#EF4444`)
+Luồng hiện tại: `page/section → hook hoặc LicenseProvider → repository → mock/localStorage`. Không có lệnh gọi HTTP tới backend. `browserLicenseRepository` lấy seed từ `data/mock/licenses.ts` khi chưa có dữ liệu, rồi lưu các thay đổi vào khóa `vfast-license-records-v1` của trình duyệt. Xóa dữ liệu site trong trình duyệt sẽ trở lại seed. Users, budget và analytics được trả về bởi `mockDashboardRepository`; các mảng ví dụ nằm trong `data/mock/`.
 
----
+`LicenseDetailDrawer` trong `sections/licenses` có giá trị mặc định minh họa, nhưng router hiện dùng `LicenseDetailPage`; drawer đó không tham gia luồng màn hình hiện tại. Các chữ/profile mẫu trong header, sidebar và settings vẫn là placeholder giao diện.
+`components/layout/` là bộ layout khác chưa được router dùng; router đang dùng `layouts/`. `BudgetKpiSection` và các model `LicenseItem`, `UserAccount` cũng chưa nằm trong luồng màn hình đang chạy, nên không nên lấy chúng làm hợp đồng API.
 
-## 🚀 Running the Project
+Quy tắc chữ, bảng và màu trạng thái: [docs/frontend-ui-guidelines.md](../../docs/frontend-ui-guidelines.md).
 
-```bash
-# From the repository root
-cd src/frontend
+## Nối backend
 
-# Install dependencies
-pnpm install --frozen-lockfile
+Hợp đồng HTTP cần được thống nhất với backend trước khi viết adapter. Bản đề xuất về endpoint, trường, kiểu, đơn vị và quy tắc dữ liệu nằm ở [docs/frontend-api-contract.md](../../docs/frontend-api-contract.md). Tên endpoint và tên trường trong tài liệu là **đề xuất**, chưa phải API đã tồn tại.
 
-# Start Vite dev server
-pnpm dev
+Khi backend sẵn sàng:
 
-# Build production bundle with type checking
-pnpm build
-```
+1. Chốt OpenAPI/JSON schema, ví dụ response thực tế, quyền truy cập, phân trang, lỗi và quy ước `null`/ngày/tiền với backend.
+2. Tạo `apiLicenseRepository` và `apiDashboardRepository` trong `data/repositories/`. Mỗi adapter gọi HTTP, kiểm tra response và ánh xạ DTO backend sang model trong `types/`. Không ép kiểu trực tiếp bằng `as LicenseRecord`.
+3. Chuyển binding trong `data/repositories/index.ts` sang adapter HTTP. `LicenseProvider`, các page và section tiếp tục gọi cùng interface. Cấu hình base URL/auth và xử lý 401/403, retry, loading/error theo môi trường.
+4. Với license, map `GET list`, `PATCH một license`, `POST import CSV/batch` và `GET granted accounts`. Backend phải kiểm tra quyền và ghi audit. Không gửi lại toàn bộ collection để sửa một record.
+5. Đối soát tổng/KPI giữa các màn: hiện các fixture được tạo độc lập nên số budget/analytics không khớp danh sách 5 license. Với API thật cần một nguồn tính chung hoặc endpoint dashboard nhất quán.
+
+Trạng thái hiện tại chỉ là UI demo. CSV được parse ở frontend rồi lưu trong browser; ngân sách, analytics, user và profile chưa có thao tác ghi vào backend. Nút FY, currency, budget và export hiện mới là phần giao diện hoặc chưa được nối nghiệp vụ.

@@ -14,7 +14,7 @@ export const theme = createTheme({
       contrastText: '#FFFFFF',
     },
     secondary: {
-      main: '#515F74', // Slate Grey Neutral
+      main: '#475569', // Slate Grey Neutral
       light: '#64748B',
       dark: '#334155',
       contrastText: '#FFFFFF',
@@ -25,19 +25,19 @@ export const theme = createTheme({
     },
     text: {
       primary: '#111C2D',   // Deep Slate Ink
-      secondary: '#515F74', // Neutral Inks
+      secondary: '#475569', // Neutral Inks
     },
     success: {
-      main: '#10B981', // Emerald Green
-      light: '#D1FAE5',
+      main: '#166534',
+      light: '#F0FDF4',
     },
     warning: {
-      main: '#F59E0B', // Warm Amber
-      light: '#FEF3C7',
+      main: '#92400E',
+      light: '#FFFBEB',
     },
     error: {
-      main: '#BA1A1A', // Crimson Red
-      light: '#FFDAD6',
+      main: '#B42318',
+      light: '#FEF3F2',
     },
     divider: '#E2E8F0', // Hairline Border
   },
@@ -45,29 +45,38 @@ export const theme = createTheme({
     fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     h5: {
       fontWeight: 700,
-      fontSize: '1.5rem',
+      fontSize: 'var(--type-page-size)',
+      lineHeight: 'var(--type-page-line)',
       letterSpacing: '-0.02em',
       color: '#111C2D',
     },
     h6: {
-      fontWeight: 700,
-      fontSize: '1.125rem',
+      fontWeight: 600,
+      fontSize: 'var(--type-section-size)',
+      lineHeight: 'var(--type-section-line)',
       letterSpacing: '-0.01em',
       color: '#111C2D',
     },
     body1: {
-      fontSize: '0.875rem',
-      lineHeight: 1.5,
+      fontSize: 'var(--type-body-size)',
+      lineHeight: 'var(--type-body-line)',
       color: '#111C2D',
     },
     body2: {
-      fontSize: '0.8125rem',
-      lineHeight: 1.4,
-      color: '#515F74',
+      fontSize: 'var(--type-body-size)',
+      lineHeight: 'var(--type-body-line)',
+      color: '#475569',
     },
     caption: {
-      fontSize: '0.75rem',
+      fontSize: 'var(--type-label-size)',
+      lineHeight: 'var(--type-label-line)',
       color: '#515F74',
+    },
+    button: {
+      fontSize: 'var(--type-body-size)',
+      lineHeight: '20px',
+      fontWeight: 600,
+      textTransform: 'none',
     },
   },
   shape: {
@@ -90,7 +99,7 @@ export const theme = createTheme({
           textTransform: 'none',
           fontWeight: 600,
           borderRadius: 8,
-          fontSize: '0.75rem',
+          fontSize: 'var(--type-body-size)',
           padding: '6px 14px',
         },
       },
@@ -98,7 +107,9 @@ export const theme = createTheme({
     MuiChip: {
       styleOverrides: {
         root: {
-          fontWeight: 500,
+          fontWeight: 600,
+          fontSize: 'var(--type-label-size)',
+          height: 24,
           borderRadius: 6,
         },
       },
