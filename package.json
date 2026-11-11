@@ -1,0 +1,9 @@
+{
+  "name": "vfast-elms",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix src/frontend run dev",
+    "build": "npm --prefix src/frontend run build",
+    "preview": "npm --prefix src/frontend run preview"
+  }
+}

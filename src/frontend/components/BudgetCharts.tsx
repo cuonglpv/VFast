@@ -16,14 +16,12 @@ export function CategoryBudgetAllocation({ shares, total, margin }: {
       {shares.map(share => {
         const percentage = share.allocated > 0 ? Math.round(share.spent / share.allocated * 100) : null;
         return <div className="budget-category-row" key={share.category} tabIndex={0} aria-label={`${share.category}: ${formatCurrency(share.spent)} spent of ${formatCurrency(share.allocated)} allocated${percentage === null ? '' : `, ${percentage}%`}`}>
-          <div className="budget-category-heading"><span>{share.category}</span><span className="budget-category-amount"><strong>{formatCurrency(share.spent)}</strong><span> / {formatCurrency(share.allocated)}</span></span></div>
           <div className="budget-category-progress"><div className="budget-category-track"><span style={{ width: `${Math.max(0, Math.min(100, percentage ?? 0))}%` }} /></div><span className="budget-category-percentage">{percentage === null ? '—' : `${percentage}%`}</span></div>
           <div className="chart-tooltip budget-category-tooltip" aria-hidden="true"><strong>{share.category}</strong><span>Spent: {formatCurrency(share.spent)}</span><span>Allocated: {formatCurrency(share.allocated)}</span></div>
         </div>;
       })}
       {!shares.length && <p className="budget-chart-empty">No category allocations available.</p>}
     </div>
-    <div className="budget-allocation-footer"><span>Burn threshold safety margin: <strong>{margin}%</strong></span><span className="budget-allocation-status"><i aria-hidden="true" />Within Target Cap</span></div>
   </article>;
 }
 

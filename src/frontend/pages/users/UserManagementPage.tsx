@@ -30,7 +30,7 @@ export const UserManagementPage: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="page-title">
-            User & Access Governance
+            User Management
           </h1>
           <p className="page-description mt-0.5">
             Manage employee licensing assignments, role permissions, and access lifecycle.
@@ -39,15 +39,6 @@ export const UserManagementPage: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2.5">
-          <button
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-slate-200 text-slate-800 hover:bg-slate-50 text-xs font-semibold rounded-lg shadow-xs transition-colors cursor-pointer"
-            type="button"
-          >
-            <span className="material-symbols-outlined text-base text-slate-500" data-icon="file_download">
-              file_download
-            </span>
-            <span>Export CSV</span>
-          </button>
           <button
             className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0F67B1] hover:bg-[#004f8b] text-white text-xs font-semibold rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer"
             type="button"
