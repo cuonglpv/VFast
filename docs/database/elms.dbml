@@ -30,11 +30,11 @@
 //        effective, allocated view; UC07 and invoice reconciliation use billed.
 //   D6.  Prepaid invoices stay billed on their date; the spread over months is
 //        the effective cost of the entitlement line. expenses get an optional
-//        service period.
+//        service month.
 //   D7.  Per-seat status needs per-subject usage. An aggregate-only usage source
 //        leaves seats Not monitored (A9).
-//   D8.  Collection completeness is tracked per plan, provider account, kind of
-//        data, and day (collection_coverage). Detection runs only on complete days.
+//   D8.  Collection completeness is tracked per plan, kind of data, and day
+//        (collection_coverage). Detection runs only on complete days.
 //   D9.  History is kept by freezing results, not by versioning master data:
 //        daily snapshots, and cost_allocations frozen when a month closes.
 //        No employee department history table in this phase.
@@ -42,22 +42,46 @@
 //        belong to the owner unit or to the quota unit; a Manager sees only rows
 //        of their own units (BR-16). This replaces the UC10/UC12 rule "a Manager
 //        sees the licenses that have a holder in their units".
-//   D11. A vendor has one or more provider accounts (tenant, organization,
-//        billing account). Identities and provider ids are unique per account.
-//   D12. One reporting currency (system_settings). Snapshots and allocations are
+//   D11. One account per vendor: the group uses one tenant (organization,
+//        billing account) per vendor, so identities and provider ids are unique
+//        per vendor. Several tenants per vendor are not modelled.
+//   D12. One reporting currency (VND, an application setting). Snapshots and allocations are
 //        converted with the rate in force on their date and then frozen.
 //   D13. Overuse of a Metered line with a quota = consumption over the validity
 //        of the line above its quota; pay-as-you-go without quota never overuses.
 //   D14. Months close automatically on a set day of the next month; an employee
-//        marked left has their account disabled automatically.
+//        whose leaving day has passed has their account disabled automatically.
 //   D15. A recommendation may have an Unknown estimated saving; Done needs the
 //        actual saving.
+//
+// Decisions PROPOSED after the field review of 2026-11-11, pending team
+// confirmation (no new table; columns and enum values only):
+//   D16. An unknown notice period is NULL, never 0. A recommendation points to
+//        the contract that limits it; its notice deadline is computed on read.
+//   D17. A price is entered as the vendor quotes it: unit_price for
+//        price_per_qty units (e.g. 2.50 USD per 1,000,000 tokens).
+//   D18. Manual and imported holders and usage are complete while Staff have
+//        confirmed them recently (data_as_of within manual_data_max_age_days);
+//        a seat whose activity was never checked is Not monitored, not No activity.
+//   D19. Quotas have their own validity, so a split can change during a line;
+//        a renewal line copies the quotas in force.
+//   D20. Leavers: employees.left_on replaces the status column; the leaver check
+//        flags seats of employees who left or of identities disabled at the provider.
+//   D21. The employee directory can be imported from an HR CSV file; a connector
+//        may also load it (source api).
+//   D22. A new account gets a one-time link to set its first password; Admin
+//        shows it to the user. The same link resets a forgotten password.
+//   D23. A contract may be signed with a reseller (vendors.kind = reseller) and
+//        then covers plans of several publishers.
 //
 // Conventions:
 //   - Target DBMS: PostgreSQL 15+. Surrogate keys are bigint identity columns;
 //     every table has a single-column id so audit_logs can point to any row.
-//   - Money is numeric(18,2) with an ISO 4217 currency beside it; amounts in
-//     different currencies are only added through exchange_rates (BR-05, D12).
+//   - Money is numeric(18,2). Amounts entered from outside (contract values,
+//     prices, expenses) carry an ISO 4217 currency; figures ELMS computes
+//     (snapshots, allocations, detection costs, savings) and budgets are in the
+//     reporting currency and carry none. Amounts in different currencies are
+//     only added through exchange_rates (BR-05, D12).
 //   - Quantities are numeric(20,4) because one column serves seats, sessions,
 //     tokens, and cores.
 //   - A NULL figure means Unknown and is never read as 0 (BR-04, A4). NULL has
@@ -66,8 +90,14 @@
 //     SUM skips NULL, so totals must check for NULL parts first).
 //   - Master data is never deleted, only marked inactive or ended (BR-15), so
 //     no foreign key cascades on delete.
+//   - Where a date or timestamp decides a state, there is no status column
+//     beside it: a P&L is a unit without parent_id, a budget plan is active
+//     once activated_at is set, a month is closed once closed_at is set, and a
+//     detection result is not evaluated / clear / flagged when flagged_qty is
+//     NULL / 0 / more than 0.
 //   - Where a row has an end date, the date alone says whether it is active
 //     (contracts.ended_on, entitlement_lines.valid_to,
+//     entitlement_allocations.valid_to, employees.left_on,
 //     user_accounts.disabled_at); there is no status column beside it. End
 //     dates are inclusive: the row is valid on its last day.
 //   - Each daily figure has one owner table: Purchased and cost in
@@ -77,6 +107,18 @@
 //   - Confidence (BR-14, A9) is derived from the source, not stored:
 //     api or log per subject = high; api or log aggregate, or import = medium;
 //     manual = low.
+//   - sync_run_id and import_batch_id on a row name the run or import that wrote
+//     it last; source is the source of that write.
+//   - Connector messages live at the level they describe:
+//       whole run failed           sync_runs.error_message
+//       one plan, kind, and day    collection_coverage.error_code, error_message
+//       one provider record        raw_records.normalize_error
+//     Messages are stored without secrets (tokens, keys).
+//   - Settings are not stored in the database: they are application settings
+//     of the API and the worker. reporting_currency VND (D12),
+//     inactivity_threshold_days 60 (BR-03), month_close_day 10 (D14),
+//     raw_record_retention_days 180, manual_data_max_age_days 35 (D18),
+//     password_link_valid_hours 72 (D22).
 //   - updated_at is set by the application (or a trigger) on every update;
 //     the default only covers the insert.
 //   - Rules DBML cannot express are written in the table notes:
@@ -99,16 +141,6 @@ Project elms {
 // Enums
 // ----------------------------------------------------------------------------
 
-Enum org_unit_type {
-  pnl [note: 'P&L (subsidiary); top level']
-  department [note: 'Department under exactly one P&L']
-}
-
-Enum employee_status {
-  active
-  left [note: 'No longer with the company; the account is disabled (D14), seats still held are a waste signal']
-}
-
 Enum permission_action {
   read
   write
@@ -119,6 +151,11 @@ Enum data_source {
   log [note: 'Collected by a connector from logs (license server, VPN)']
   import [note: 'CSV file imported by Staff']
   manual [note: 'Typed in by Staff']
+}
+
+Enum vendor_kind {
+  publisher [note: 'Makes the software; products belong to a publisher']
+  reseller [note: 'Distributor, reseller, or CSP partner; can sign contracts, owns no product (D23)']
 }
 
 Enum license_archetype {
@@ -144,6 +181,14 @@ Enum data_kind {
   expense [note: 'Billing data: expenses and invoices']
 }
 
+Enum import_kind {
+  entitlement [note: 'Entitlement lines (UC03)']
+  assignment [note: 'Holders of one plan (UC03)']
+  usage [note: 'Usage of one plan (UC03)']
+  expense [note: 'Expenses (UC07)']
+  employee [note: 'Employee directory from HR (D21)']
+}
+
 Enum usage_granularity {
   per_subject [note: 'Usage known per user, device, project, or key']
   aggregate [note: 'Only totals; seats stay Not monitored and are never listed per user (A9, D7)']
@@ -160,7 +205,6 @@ Enum subject_type {
 Enum usage_metric {
   active_subjects [note: 'Allocation, aggregate source only: number of active users in the period']
   peak_concurrent [note: 'Concurrent: peak simultaneous sessions in the period']
-  denied_requests [note: 'Concurrent: session requests refused in the period']
   consumption [note: 'Metered: tokens, requests, credits, GB consumed in the period']
   deployed_units [note: 'Capacity: units deployed at the end of the period']
 }
@@ -190,16 +234,6 @@ Enum import_status {
   rejected [note: 'At least one invalid row; whole file refused']
 }
 
-Enum budget_plan_status {
-  draft
-  active
-}
-
-Enum period_status {
-  open
-  closed
-}
-
 Enum cost_bucket {
   unit [note: 'Cost carried by a P&L or department']
   unallocated [note: 'Cost of purchased seats nobody holds, or of usage with no known department (BR-06)']
@@ -217,12 +251,7 @@ Enum detection_check {
   unused [note: 'Unassigned seats (UC10)']
   inactive [note: 'Seats in Inactive or No activity (UC11)']
   overuse [note: 'Use above entitlement (UC12, BR-07, D13)']
-}
-
-Enum detection_outcome {
-  clear [note: 'Evaluated, nothing found; Compliant for the overuse check']
-  flagged
-  not_evaluated [note: 'Data missing or incomplete; never counted as clear or compliant']
+  leaver [note: 'Open seats of employees who left or of identities disabled at the provider (D20)']
 }
 
 Enum recommendation_type {
@@ -246,31 +275,27 @@ Enum recommendation_status {
 Table org_units {
   id bigint [pk, increment]
   parent_id bigint [ref: > org_units.id, note: 'NULL for a P&L; the owning P&L for a department']
-  unit_type org_unit_type [not null]
   name varchar(200) [not null]
-  source data_source [not null, default: 'manual', note: 'import = loaded from HR data; the name is then read-only (UC20)']
-  external_ref varchar(200) [note: 'Key of the unit in the HR source, if imported']
   is_active boolean [not null, default: true]
   created_at timestamptz [not null, default: `now()`]
   updated_at timestamptz [not null, default: `now()`]
 
   indexes {
     (parent_id, name) [unique, name: 'uq_org_units_parent_name']
-    unit_type
   }
 
   checks {
-    `(unit_type = 'pnl' and parent_id is null) or (unit_type = 'department' and parent_id is not null)` [name: 'chk_org_units_two_levels']
     `parent_id is null or parent_id <> id` [name: 'chk_org_units_not_own_parent']
   }
 
   Note: '''
     P&Ls (subsidiaries) and their departments in one two-level tree (UC20).
-    A "unit" in the docs is one row of this table.
+    A "unit" in the docs is one row of this table. A P&L has no parent_id; a
+    department has its P&L as parent_id.
     Partial unique: P&L names are unique, case-insensitive
     (unique on lower(name) where parent_id is null).
-    App rule: the parent of a department is a P&L (with the check above this
-    also rules out deeper trees and cycles); a unit with active employees, an
+    App rule: the parent of a department is a P&L, a unit without parent_id
+    (this rules out deeper trees and cycles); a unit with active employees, an
     active budget plan, or active plans it owns cannot be marked inactive.
   '''
 }
@@ -281,28 +306,39 @@ Table employees {
   full_name varchar(200) [not null]
   email varchar(320) [not null, unique, note: 'Company email, stored lowercase; the matching key for accounts and provider identities']
   org_unit_id bigint [ref: > org_units.id, note: 'Department (or P&L when no department). NULL = Unknown department (BR-06)']
-  status employee_status [not null, default: 'active']
-  source data_source [not null, default: 'manual']
-  external_ref varchar(200) [note: 'Key of the person in the HR or IdP source']
+  left_on date [note: 'Last working day; NULL = still with the company (D20). Seats still held after it are flagged by the leaver check']
+  source data_source [not null, default: 'manual', note: 'manual = created with an account by Admin (UC19); import = HR file (D21); api = IdP connector']
+  sync_run_id bigint [ref: > sync_runs.id]
+  import_batch_id bigint [ref: > import_batches.id]
   created_at timestamptz [not null, default: `now()`]
   updated_at timestamptz [not null, default: `now()`]
 
   indexes {
     org_unit_id
+    left_on
   }
 
   checks {
     `email = lower(email)` [name: 'chk_employees_email_lowercase']
+    `(source in ('api', 'log')) = (sync_run_id is not null)` [name: 'chk_employees_sync_provenance']
+    `(source = 'import') = (import_batch_id is not null)` [name: 'chk_employees_import_provenance']
   }
 
   Note: '''
-    Directory of real employees (decision D2). An employee may have no account.
+    Directory of real employees (decision D2). An employee may have no account:
+    the directory is loaded from an HR file (import_batches of kind employee,
+    D21) or by a connector, so provider identities of people without an ELMS
+    account still match an employee and a department.
     Cost allocation, data scope, and "Unknown department" all read org_unit_id
     here, never from the account. Only the current department is kept (D9):
     past months keep their department through the frozen snapshots and
     cost_allocations.
-    App rule: setting status to left disables the account of the employee in
-    the same transaction (D14).
+    An employee import matches rows on email; the department is given as
+    P&L name and department name. A person missing from a later HR file is
+    not ended automatically: the file must carry the leaving day.
+    App rule: once left_on has passed, the account of the employee is disabled
+    (same transaction when the day is already past, otherwise the daily job)
+    (D14).
   '''
 }
 
@@ -332,8 +368,6 @@ Table role_permissions {
   id bigint [pk, increment]
   role_id bigint [not null, ref: > roles.id]
   permission_id bigint [not null, ref: > permissions.id]
-  granted_by bigint [ref: > user_accounts.id]
-  granted_at timestamptz [not null, default: `now()`]
 
   indexes {
     (role_id, permission_id) [unique, name: 'uq_role_permissions_role_permission']
@@ -351,7 +385,9 @@ Table user_accounts {
   id bigint [pk, increment]
   employee_id bigint [not null, unique, ref: - employees.id, note: 'Every account belongs to one employee; login email = employees.email']
   role_id bigint [not null, ref: > roles.id, note: 'Exactly one role per account (BR-17)']
-  password_hash varchar(255) [note: 'Hashed, never plain (BR-18). NULL until a first password is set; login is refused']
+  password_hash varchar(255) [note: 'Hashed, never plain (BR-18). NULL until the user sets a first password through the one-time link; login is refused']
+  password_token_hash char(64) [unique, note: 'SHA-256 of the one-time link that sets or resets the password (D22); NULL = no link open']
+  password_token_expires_at timestamptz [note: 'End of validity of that link: created + password_link_valid_hours']
   failed_login_count int [not null, default: 0, note: 'Consecutive failures; reset on success']
   locked_until timestamptz [note: 'Set to now + 15 minutes after 5 failures in a row (BR-18)']
   last_login_at timestamptz
@@ -366,14 +402,21 @@ Table user_accounts {
 
   checks {
     `failed_login_count >= 0` [name: 'chk_user_accounts_failed_count']
+    `(password_token_hash is null) = (password_token_expires_at is null)` [name: 'chk_user_accounts_password_token']
   }
 
   Note: '''
     Login accounts (UC19, UC21, UC24). Accounts are disabled, never deleted.
+    First password and reset (D22): creating an account, or "reset password" by
+    Admin, stores the hash of a new random token and shows the link once to
+    Admin, who hands it to the user; no e-mail server is needed. Opening the
+    link before it expires sets password_hash, clears the token, and resets
+    failed_login_count and locked_until. A new link replaces the old one.
     App rule: the last active Admin cannot be disabled or lose the Admin role;
-    an Admin cannot disable themselves (BR-17). An account of an employee with
-    status left cannot be re-enabled (D14). A role change away from MANAGER
-    removes the rows of the account in manager_org_units.
+    an Admin cannot disable themselves (BR-17). An account of an employee whose
+    left_on has passed cannot be re-enabled (D14). A role change away from
+    MANAGER removes the rows of the account in manager_org_units. Disabling an
+    account clears its open password link.
   '''
 }
 
@@ -382,11 +425,7 @@ Table user_sessions {
   user_account_id bigint [not null, ref: > user_accounts.id]
   token_hash char(64) [not null, unique, note: 'SHA-256 of the session id kept in the HttpOnly, Secure cookie']
   created_at timestamptz [not null, default: `now()`]
-  last_seen_at timestamptz
   expires_at timestamptz [not null]
-  revoked_at timestamptz [note: 'Set on logout, on disable, and on role change']
-  ip_address varchar(45)
-  user_agent text
 
   indexes {
     user_account_id
@@ -399,8 +438,9 @@ Table user_sessions {
 
   Note: '''
     Server-side sessions, so disabling an account ends its open sessions at once
-    (UC19, BR-18). A new session id is issued at login (no session fixation);
-    expired and revoked rows are purged by a daily job. Cookie sessions need
+    (UC19, BR-18). A new session id is issued at login (no session fixation).
+    Logout, disabling the account, and a role change delete the rows of the
+    session; expired rows are purged by a daily job. Cookie sessions need
     CSRF protection (SameSite cookie plus a CSRF token on writes).
   '''
 }
@@ -409,8 +449,6 @@ Table manager_org_units {
   id bigint [pk, increment]
   user_account_id bigint [not null, ref: > user_accounts.id]
   org_unit_id bigint [not null, ref: > org_units.id]
-  assigned_by bigint [ref: > user_accounts.id]
-  assigned_at timestamptz [not null, default: `now()`]
 
   indexes {
     (user_account_id, org_unit_id) [unique, name: 'uq_manager_org_units_account_unit']
@@ -419,27 +457,12 @@ Table manager_org_units {
 
   Note: '''
     Units a Manager is responsible for (UC20); the source of Manager data scope
-    (BR-16). A P&L assignment covers the departments under it.
+    (BR-16). A P&L assignment covers the departments under it. Who assigned
+    it and when is in audit_logs.
     App rule: the account has the MANAGER role.
   '''
 }
 
-Table system_settings {
-  id bigint [pk, increment]
-  key varchar(60) [not null, unique]
-  value text [not null]
-  description text
-  updated_by bigint [ref: > user_accounts.id]
-  updated_at timestamptz [not null, default: `now()`]
-
-  Note: '''
-    Global settings, seeded and changed only through a migration or by Admin:
-      reporting_currency         VND (D12); budgets are in this currency
-      inactivity_threshold_days  60 (BR-03)
-      month_close_day            10: day of the next month a month closes (D14)
-      raw_record_retention_days  180
-  '''
-}
 
 // ----------------------------------------------------------------------------
 // 2. License catalog, entitlements, contracts (UC01-UC04)
@@ -448,44 +471,26 @@ Table system_settings {
 Table vendors {
   id bigint [pk, increment]
   name varchar(200) [not null, unique]
+  kind vendor_kind [not null, default: 'publisher', note: 'publisher or reseller (D23)']
   website varchar(500)
   support_contact varchar(500)
-  collection_method data_source [not null, default: 'manual', note: 'How this vendor data is normally collected (UC02)']
   is_active boolean [not null, default: true]
   created_by bigint [ref: > user_accounts.id]
   created_at timestamptz [not null, default: `now()`]
   updated_at timestamptz [not null, default: `now()`]
 
   Note: '''
-    Vendors / providers (UC02).
+    Vendors / providers (UC02): the publishers of the software and the
+    resellers contracts are signed with. In Vietnam Microsoft, Adobe, and
+    others are often bought through a distributor or CSP partner, whose one
+    contract covers plans of several publishers (D23).
+    The "Collection method" column of UC02 is read from the plan_data_sources
+    of the plans of the vendor, not stored here.
     App rule: a vendor with an active contract cannot be marked inactive;
-    creating a vendor creates its default provider account.
+    products and connectors belong to a publisher only.
   '''
 }
 
-Table provider_accounts {
-  id bigint [pk, increment]
-  vendor_id bigint [not null, ref: > vendors.id]
-  name varchar(200) [not null, note: 'e.g. "Microsoft 365 - VinFast tenant"; "Default" for a vendor without tenants']
-  tenant_ref varchar(200) [note: 'Tenant, organization, or billing account id at the provider']
-  org_unit_id bigint [ref: > org_units.id, note: 'P&L that owns the account, if one does']
-  is_active boolean [not null, default: true]
-  created_at timestamptz [not null, default: `now()`]
-  updated_at timestamptz [not null, default: `now()`]
-
-  indexes {
-    (vendor_id, name) [unique, name: 'uq_provider_accounts_vendor_name']
-    (vendor_id, tenant_ref) [unique, name: 'uq_provider_accounts_vendor_tenant']
-  }
-
-  Note: '''
-    One tenant, organization, or billing account at a provider (decision D11).
-    A group of companies often has one Microsoft 365 tenant per P&L; user ids,
-    subscription ids, and billing ids are unique only inside one account.
-    Every vendor has at least one account; a vendor without tenants has one
-    account named "Default".
-  '''
-}
 
 Table software_categories {
   id bigint [pk, increment]
@@ -536,7 +541,6 @@ Table product_links {
   product_id bigint [not null, ref: > software_products.id]
   label varchar(100) [not null]
   url varchar(1000) [not null]
-  sort_order int [not null, default: 0]
 
   indexes {
     product_id
@@ -581,18 +585,17 @@ Table license_plans {
 
 Table contracts {
   id bigint [pk, increment]
-  vendor_id bigint [not null, ref: > vendors.id]
+  vendor_id bigint [not null, ref: > vendors.id, note: 'Party the contract is signed with: the publisher or a reseller (D23)']
   contract_no varchar(100) [note: 'Number on the vendor paper, if any']
   title varchar(200) [not null]
   start_date date [not null]
   renewal_date date
-  notice_period_days int [not null, default: 0]
+  notice_period_days int [note: 'Days before renewal_date the vendor must be told. NULL = Unknown, never read as 0 (BR-04, D16)']
   auto_renew boolean [not null, default: false]
   commitment_amount numeric(18,2) [note: 'Minimum commitment of the agreement, if any']
   total_value numeric(18,2)
   currency char(3)
   ended_on date [note: 'NULL = not ended. Set by "mark ended" (UC04)']
-  attachment_file_id bigint [ref: > files.id]
   notes text
   created_by bigint [ref: > user_accounts.id]
   created_at timestamptz [not null, default: `now()`]
@@ -607,7 +610,7 @@ Table contracts {
   checks {
     `renewal_date is null or renewal_date >= start_date` [name: 'chk_contracts_renewal_after_start']
     `ended_on is null or ended_on >= start_date` [name: 'chk_contracts_ended_after_start']
-    `notice_period_days >= 0` [name: 'chk_contracts_notice_period']
+    `notice_period_days is null or notice_period_days >= 0` [name: 'chk_contracts_notice_period']
     `(total_value is null and commitment_amount is null) or currency is not null` [name: 'chk_contracts_currency']
     `commitment_amount is null or commitment_amount >= 0` [name: 'chk_contracts_commitment']
     `total_value is null or total_value >= 0` [name: 'chk_contracts_total_value']
@@ -618,25 +621,31 @@ Table contracts {
     ended_on is null or later; there is no status column.
     Computed, not stored:
       Notice deadline       = renewal_date - notice_period_days: the last day to
-                              tell the vendor before an auto-renewal (UC13)
+                              tell the vendor before an auto-renewal (UC13);
+                              Unknown when notice_period_days is NULL
       Renewal soon          = renewal_date within 30 days
       Notice period passed  = today > notice deadline
+      Notice period unknown = auto_renew, renewal_date set, and
+                              notice_period_days NULL: shown as a risk (UC17)
     Renewal dates feed the forecast (UC09) and recommendation timing (UC13).
+    With an Unknown notice period, UC13 shows the action date as Unknown and
+    never as "now".
+    Files of a contract (agreement, amendments, PO) are files rows with
+    contract_id set.
   '''
 }
 
 Table entitlement_lines {
   id bigint [pk, increment]
   license_plan_id bigint [not null, ref: > license_plans.id]
-  provider_account_id bigint [not null, ref: > provider_accounts.id, note: 'Account the purchase belongs to (D11)']
   contract_id bigint [ref: > contracts.id, note: 'Contract covering this line; one FK means a line is never under two contracts (UC04)']
-  renews_line_id bigint [ref: > entitlement_lines.id, note: 'The line this one renews, if any; keeps the renewal chain']
   quantity numeric(20,4) [note: 'Purchased quantity or quota. NULL = Unknown, unless is_unlimited']
   is_unlimited boolean [not null, default: false, note: 'True for a line bought without a quota (e.g. metered pay-as-you-go): quantity is NULL and the line can never be over-used (BR-07)']
   valid_from date [not null]
   valid_to date [note: 'Last day of validity, inclusive. NULL = open-ended (perpetual). "End a line" (UC03) sets this date']
   commercial_term commercial_term [not null, note: 'The one field for how the line is paid (BR-02); it also fixes the period of unit_price']
-  unit_price numeric(18,4) [note: 'Price of one unit for the period of the commercial term (see table note). NULL = Unknown']
+  unit_price numeric(18,4) [note: 'Price of price_per_qty units for the period of the commercial term (see table note). NULL = Unknown']
+  price_per_qty numeric(20,4) [not null, default: 1, note: 'How many units unit_price is quoted for, as on the vendor price list: 1 for a seat, 1000000 for "2.50 USD per 1M tokens" (D17)']
   currency char(3) [not null]
   source data_source [not null, default: 'manual', note: 'Source of quantity and validity (BR-14); prices always come from Staff']
   external_ref varchar(200) [note: 'Subscription id at the provider, if synced']
@@ -648,9 +657,7 @@ Table entitlement_lines {
 
   indexes {
     (license_plan_id, valid_from, valid_to)
-    provider_account_id
     contract_id
-    renews_line_id
   }
 
   checks {
@@ -658,7 +665,7 @@ Table entitlement_lines {
     `not is_unlimited or quantity is null` [name: 'chk_entitlement_lines_unlimited']
     `valid_to is null or valid_to >= valid_from` [name: 'chk_entitlement_lines_validity']
     `unit_price is null or unit_price >= 0` [name: 'chk_entitlement_lines_unit_price']
-    `renews_line_id is null or renews_line_id <> id` [name: 'chk_entitlement_lines_not_own_renewal']
+    `price_per_qty > 0` [name: 'chk_entitlement_lines_price_per_qty']
     `(source in ('api', 'log')) = (sync_run_id is not null)` [name: 'chk_entitlement_lines_sync_provenance']
     `(source = 'import') = (import_batch_id is not null)` [name: 'chk_entitlement_lines_import_provenance']
   }
@@ -668,24 +675,27 @@ Table entitlement_lines {
     A renewal or an extra purchase is a new line under the same plan.
     A line is active on a day when valid_from <= day and (valid_to is null or
     valid_to >= day). There is no status column: ending a line sets valid_to.
-    A renewal starts the day after the line it renews ends, so the boundary day
-    is never counted twice.
-    unit_price and effective monthly cost (BR-05) by commercial term:
-      monthly            price per unit per month       quantity x unit_price
-      yearly, multi_year price per unit per year        quantity x unit_price / 12
-      perpetual          maintenance per unit per year  quantity x unit_price / 12
-      prepaid_credit     price per credit               quantity x unit_price /
+    A renewal is a new line that starts the day after the previous line of the
+    plan ends, so the boundary day is never counted twice.
+    Price of one unit p = unit_price / price_per_qty (D17). Staff enter the
+    price as the vendor quotes it, so a token price such as 0.0000025 USD is
+    never rounded to 0 by the four decimals of unit_price.
+    p and effective monthly cost (BR-05) by commercial term:
+      monthly            price per unit per month       quantity x p
+      yearly, multi_year price per unit per year        quantity x p / 12
+      perpetual          maintenance per unit per year  quantity x p / 12
+      prepaid_credit     price per credit               quantity x p /
                                                         months of validity
       pay_as_you_go      reference rate per unit        actual spend of the
                                                         month from expenses
     Quarterly payment is entered as its yearly price.
     Partial unique: one line per subscription at the provider
-    (unique on provider_account_id, external_ref where external_ref is not null),
+    (unique on license_plan_id, external_ref where external_ref is not null),
     so a re-run sync updates the line instead of adding one (A3).
-    App rule: the vendor of the account and of the contract equals the vendor
-    of the plan product; a renewal line belongs to the same plan and starts
-    after the renewed line ends. A connector value edited by Staff needs a row
-    in data_overrides (BR-14).
+    App rule: the vendor of the contract is the vendor of the plan product or
+    a reseller (D23); a renewal line copies the quotas in force on the last
+    day of the line it follows (entitlement_allocations, D19). A connector value edited by Staff needs a
+    row in data_overrides (BR-14).
   '''
 }
 
@@ -694,17 +704,20 @@ Table entitlement_allocations {
   entitlement_line_id bigint [not null, ref: > entitlement_lines.id]
   org_unit_id bigint [not null, ref: > org_units.id]
   quantity numeric(20,4) [not null]
+  valid_from date [not null, note: 'First day of the quota; on or after the valid_from of the line']
+  valid_to date [note: 'Last day, inclusive. NULL = until the line ends (D19)']
   created_by bigint [ref: > user_accounts.id]
   created_at timestamptz [not null, default: `now()`]
   updated_at timestamptz [not null, default: `now()`]
 
   indexes {
-    (entitlement_line_id, org_unit_id) [unique, name: 'uq_entitlement_allocations_line_unit']
+    (entitlement_line_id, org_unit_id, valid_from) [unique, name: 'uq_entitlement_allocations_line_unit_from']
     org_unit_id
   }
 
   checks {
     `quantity > 0` [name: 'chk_entitlement_allocations_quantity']
+    `valid_to is null or valid_to >= valid_from` [name: 'chk_entitlement_allocations_validity']
   }
 
   Note: '''
@@ -713,12 +726,17 @@ Table entitlement_allocations {
     unassigned seats (D10).
     A line with no rows is shared: its seats belong to the owner unit of the
     plan for detection, and no "Unassigned" gap is flagged per unit (BR-04).
-    Quotas apply for the whole validity of the line; a different split is a new
-    line. History per day is kept in plan_unit_daily_snapshots.
+    Quotas have their own validity (D19): moving 5 seats from unit A to unit B
+    in the middle of a line ends the two current rows the day before and adds
+    two new rows from that day. A quota row is active on a day like a line.
+    A renewal line copies the quotas in force on the last day of the renewed
+    line; a synced subscription keeps its line across renewals, so its quotas
+    carry on. History per day is kept in plan_unit_daily_snapshots.
     App rule: quotas are allowed only on a line with a known quantity that is
-    not unlimited, and add up to at most that quantity; the service locks the
-    line row (SELECT ... FOR UPDATE) before checking, so two concurrent changes
-    cannot exceed it.
+    not unlimited; on every day the active quotas of a line add up to at most
+    its quantity, and the rows of one line and unit never overlap. The service
+    locks the line row (SELECT ... FOR UPDATE) before checking, so two
+    concurrent changes cannot exceed it.
   '''
 }
 
@@ -728,7 +746,7 @@ Table entitlement_allocations {
 
 Table connectors {
   id bigint [pk, increment]
-  provider_account_id bigint [not null, ref: > provider_accounts.id]
+  vendor_id bigint [not null, ref: > vendors.id, note: 'Publisher whose API or logs the connector reads']
   name varchar(200) [not null, unique]
   connector_type varchar(60) [not null, note: 'Implementation key, e.g. ms_graph, license_server_log; it also says whether the connector reads an API or a log']
   base_url varchar(500)
@@ -740,11 +758,12 @@ Table connectors {
   updated_at timestamptz [not null, default: `now()`]
 
   indexes {
-    provider_account_id
+    vendor_id
   }
 
   Note: '''
-    One read-only connection to one provider account. The Admin configuration
+    One read-only connection to one vendor; the tenant or organization id is
+    part of its credentials. The Admin configuration
     screen is a later phase (docs/01 section 7), so rows are seeded for now.
   '''
 }
@@ -752,35 +771,41 @@ Table connectors {
 Table plan_data_sources {
   id bigint [pk, increment]
   license_plan_id bigint [not null, ref: > license_plans.id]
-  provider_account_id bigint [not null, ref: > provider_accounts.id]
   data_type data_kind [not null]
-  source_type data_source [not null, note: 'Stamped as source on every row collected for this plan, account, and kind of data']
+  source_type data_source [not null, note: 'Stamped as source on every row collected for this plan and kind of data']
   connector_id bigint [ref: > connectors.id, note: 'Required when source_type is api or log']
   external_ref varchar(200) [note: 'Key of the plan at the provider, e.g. Microsoft Graph skuId']
   granularity usage_granularity [note: 'Required for usage: per subject or aggregate only']
   monitoring_since date [not null, default: `current_date`, note: 'First day this source delivered data; Inactive needs a full threshold of monitoring (D7)']
+  data_as_of date [note: 'Manual or import source of holders or usage: last day Staff confirmed the data is current, by a confirmed import or a "data is current" action (D18)']
   created_at timestamptz [not null, default: `now()`]
   updated_at timestamptz [not null, default: `now()`]
 
   indexes {
-    (license_plan_id, provider_account_id, data_type) [unique, name: 'uq_plan_data_sources_plan_account_type']
+    (license_plan_id, data_type) [unique, name: 'uq_plan_data_sources_plan_type']
     connector_id
   }
 
   checks {
     `(source_type in ('api', 'log')) = (connector_id is not null)` [name: 'chk_plan_data_sources_connector']
     `(data_type = 'usage') = (granularity is not null)` [name: 'chk_plan_data_sources_granularity']
+    `data_as_of is null or (source_type in ('import', 'manual') and data_type in ('assignment', 'usage'))` [name: 'chk_plan_data_sources_data_as_of']
   }
 
   Note: '''
-    The one primary source of each kind of data for a plan in one provider
-    account (BR-14).
+    The one primary source of each kind of data for a plan (BR-14).
     - A plan whose assignment or usage source is a connector refuses manual
       entry and import of that data (UC03).
-    - A plan with no "usage" row for an account, or with an aggregate one, has
-      no per-seat usage there: its seats are "Not monitored" (BR-03, D7) and
+    - A plan with no "usage" row, or with an aggregate one, has no per-seat
+      usage: its seats are "Not monitored" (BR-03, D7) and
       are never counted as waste (BR-04).
-    App rule: the connector reads the same provider account.
+    - Holders or usage entered by Staff for a line without a connector (UC03,
+      AC-US03 #5) need a row here with source_type manual or import; the
+      first entry creates it (usage with granularity per_subject).
+    - data_as_of drives the completeness of manual and imported holders and
+      usage (collection_coverage, D18). Entitlements and expenses entered by
+      Staff are declarations, not observations: they need no data_as_of.
+    App rule: the connector reads the vendor of the plan product.
   '''
 }
 
@@ -792,9 +817,7 @@ Table sync_runs {
   data_date date [not null, note: 'The day the collected figures describe (reports lag 1-2 days)']
   window_start timestamptz [note: 'Incremental window (A3)']
   window_end timestamptz
-  records_read int [not null, default: 0]
-  records_written int [not null, default: 0]
-  error_message text
+  error_message text [note: 'Only when the whole run failed (bad credentials, provider unreachable); errors of one plan are in collection_coverage']
   started_at timestamptz [not null, default: `now()`]
   finished_at timestamptz
 
@@ -807,6 +830,7 @@ Table sync_runs {
     `(status = 'running') = (finished_at is null)` [name: 'chk_sync_runs_finished']
     `finished_at is null or finished_at >= started_at` [name: 'chk_sync_runs_duration']
     `window_end is null or window_start is null or window_end >= window_start` [name: 'chk_sync_runs_window']
+    `(status = 'failed') = (error_message is not null)` [name: 'chk_sync_runs_error']
   }
 
   Note: '''
@@ -814,36 +838,52 @@ Table sync_runs {
     stays Unknown instead of 0 (A4, BR-04); the next run catches up (A3).
     Which plans a run covered completely is in collection_coverage.
     A backfill writes one run per data date.
+    What a run returned is found through sync_run_id: its raw payloads in
+    raw_records, the rows it wrote last in the normalized tables, and its
+    coverage rows. Record counts are not stored: they are counted from those
+    tables while the raw records are kept.
   '''
 }
 
 Table collection_coverage {
   id bigint [pk, increment]
   license_plan_id bigint [not null, ref: > license_plans.id]
-  provider_account_id bigint [not null, ref: > provider_accounts.id]
   data_type data_kind [not null]
   data_date date [not null]
   status coverage_status [not null]
-  sync_run_id bigint [not null, ref: > sync_runs.id, note: 'Latest run that wrote this day']
-  error_code varchar(60)
+  sync_run_id bigint [ref: > sync_runs.id, note: 'Latest run that wrote this day. NULL for a manual or import source: the row is written by the daily coverage job (D18)']
+  error_code varchar(60) [note: 'Why the day is not complete, e.g. permission_denied, anonymized_report, timeout, stale_manual_data']
+  error_message text [note: 'Message returned by the provider for this plan and kind, without secrets']
   collected_at timestamptz [not null, default: `now()`]
 
   indexes {
-    (license_plan_id, provider_account_id, data_type, data_date) [unique, name: 'uq_collection_coverage_plan_account_type_date']
+    (license_plan_id, data_type, data_date) [unique, name: 'uq_collection_coverage_plan_type_date']
     (data_date, status)
     sync_run_id
   }
 
+  checks {
+    `(status = 'complete') = (error_code is null)` [name: 'chk_collection_coverage_error']
+  }
+
   Note: '''
-    Whether the connector data of a plan, account, and kind is complete for a
-    day (decision D8). A connector run writes one row per plan and kind it
+    Whether the data of a plan and kind is complete for a day
+    (decision D8). A connector run writes one row per plan and kind it
     collects; a later run of the same day replaces the row.
     No row, partial, or failed = Unknown for that day: detection reports
     not_evaluated (UC10-UC12, UC17) and daily snapshots are not written.
     A successful run that finds 0 holders writes complete, so a true 0 is
-    told apart from a missing day.
-    Manual and imported data has no daily coverage: it is as of its last entry
-    or confirmed import, with low or medium confidence (BR-14).
+    told apart from a missing day. Data the provider returns but ELMS cannot
+    use is not complete: a usage report with anonymized user names, or
+    signInActivity refused for lack of an Entra ID plan, is failed with its
+    error_code.
+    Manual and imported holders and usage (D18): the daily job writes one row
+    per plan and kind whose source is manual or import: complete
+    when data_as_of of plan_data_sources is at most manual_data_max_age_days
+    before the day, otherwise failed with error_code stale_manual_data. So
+    snapshots and detection read one table for every source.
+    Entitlements and expenses entered by Staff need no coverage row; coverage
+    of those kinds is checked only for a connector source.
   '''
 }
 
@@ -853,22 +893,35 @@ Table raw_records {
   record_type varchar(60) [not null, note: 'Provider object, e.g. subscribedSku, user, activeUserDetail']
   external_id varchar(200)
   payload jsonb [not null]
-  payload_hash char(64) [not null, note: 'SHA-256 of the payload, to skip normalizing unchanged records']
   fetched_at timestamptz [not null, default: `now()`]
-  normalized_at timestamptz [note: 'NULL until normalized into the tables below']
+  normalized_at timestamptz [note: 'NULL until processed; set also when the record failed or was skipped']
+  normalize_error varchar(200) [note: 'NULL = written to the tables below. Otherwise why not, e.g. unmapped_sku, invalid_date, missing_field']
 
   indexes {
     (sync_run_id, record_type)
     (record_type, external_id)
   }
 
+  checks {
+    `normalize_error is null or normalized_at is not null` [name: 'chk_raw_records_normalize_error']
+  }
+
   Note: '''
     Raw provider data kept before normalization, so rules can change and be
-    recomputed without calling the API again (A2).
+    recomputed without calling the API again (A2). Only successful responses
+    are stored; a failed call is reported in collection_coverage or sync_runs.
+    A record ELMS cannot use keeps its reason in normalize_error. A subscribed
+    SKU whose skuId is in no plan_data_sources row is unmapped_sku: the list of
+    "SKUs not linked to a plan" for Staff is these records of the latest run,
+    with name and quantity read from the payload, so no purchase is silently
+    left out.
+    A normalized row points to the run that wrote it (sync_run_id), not to
+    its raw record: raw records are deleted after the retention period. The
+    raw record of a row is found by sync_run_id and external_id.
     Payloads hold personal data (names, emails): only the collection service
     reads this table, and rows older than raw_record_retention_days
-    (system_settings) are deleted. Idempotency is ensured by the unique keys of
-    the normalized tables, not by payload_hash.
+    (application setting) are deleted. Idempotency is ensured by the unique
+    keys of the normalized tables.
   '''
 }
 
@@ -879,26 +932,31 @@ Table files {
   content_type varchar(100) [not null]
   size_bytes bigint [not null]
   checksum char(64) [not null, note: 'SHA-256 of the content']
+  contract_id bigint [ref: > contracts.id, note: 'Set for a contract attachment; a contract can have several (agreement, amendments, PO)']
   uploaded_by bigint [ref: > user_accounts.id]
   uploaded_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    contract_id
+  }
 
   checks {
     `size_bytes > 0 and size_bytes <= 10485760` [name: 'chk_files_size']
   }
 
   Note: '''
-    Uploaded files: contract attachments, expense invoices (PDF or image, at
-    most 10 MB, BR-10), and CSV import files. The service checks the content
-    type from the bytes, not from the name; files are served only through the
-    API with the permission of the row they belong to.
+    Uploaded files: contract attachments (contract_id set), expense invoices
+    (PDF or image, at most 10 MB, BR-10), and CSV import files. The service
+    checks the content type from the bytes, not from the name; files are
+    served only through the API with the permission of the row they belong to.
+    App rule: a contract attachment is not used as an invoice or an import file.
   '''
 }
 
 Table import_batches {
   id bigint [pk, increment]
-  import_type data_kind [not null]
+  import_type import_kind [not null]
   license_plan_id bigint [ref: > license_plans.id, note: 'Set for assignment and usage imports, which target one plan']
-  provider_account_id bigint [ref: > provider_accounts.id, note: 'Set for assignment and usage imports: the account the holders belong to']
   file_id bigint [not null, ref: > files.id]
   status import_status [not null, default: 'previewed']
   rows_total int [not null, default: 0]
@@ -917,12 +975,15 @@ Table import_batches {
 
   checks {
     `(status = 'confirmed') = (confirmed_at is not null)` [name: 'chk_import_batches_confirmed']
-    `(import_type in ('assignment', 'usage')) = (license_plan_id is not null and provider_account_id is not null)` [name: 'chk_import_batches_target']
+    `(import_type in ('assignment', 'usage')) = (license_plan_id is not null)` [name: 'chk_import_batches_target']
   }
 
   Note: '''
-    One CSV import by Staff: preview, then confirm (UC03, UC07). This is the
-    entry history "who, when, file, rows". One invalid row rejects the file.
+    One CSV import: preview, then confirm (UC03, UC07; employee directory by
+    Admin, D21). This is the entry history "who, when, file, rows". One
+    invalid row rejects the file.
+    A confirmed assignment or usage import sets data_as_of of the plan source
+    to the date of the file data (D18).
     App rule: confirm re-validates the same file (checksum) against the current
     data and refuses when the preview is older than 1 hour or the plan has
     gained a connector source since.
@@ -935,20 +996,21 @@ Table import_batches {
 
 Table subjects {
   id bigint [pk, increment]
-  provider_account_id bigint [not null, ref: > provider_accounts.id, note: 'Identities are unique per account (D11)']
+  vendor_id bigint [not null, ref: > vendors.id, note: 'Vendor the identity lives at; identities are unique per vendor (D11)']
   subject_type subject_type [not null, default: 'user']
   identifier varchar(320) [not null, note: 'Provider identity, lowercase: email / userPrincipalName, device name, project, key label']
   external_id varchar(200) [note: 'Immutable id at the provider, if any; survives a rename of the identifier']
   display_name varchar(200)
   employee_id bigint [ref: > employees.id, note: 'Only for user subjects. Matched by company email. NULL = not matched: shown with the provider identity and Unknown department']
   org_unit_id bigint [ref: > org_units.id, note: 'Only for non-person subjects (project, key, device pool) whose department is known (UC06)']
-  is_enabled boolean [note: 'Account enabled at the provider; NULL = Unknown']
+  is_enabled boolean [note: 'Account enabled at the provider; NULL = Unknown. False with an open seat is flagged by the leaver check (D20)']
   source data_source [not null]
+  sync_run_id bigint [ref: > sync_runs.id]
+  import_batch_id bigint [ref: > import_batches.id]
   first_seen_at timestamptz [not null, default: `now()`]
-  last_seen_at timestamptz [not null, default: `now()`]
 
   indexes {
-    (provider_account_id, subject_type, identifier) [unique, name: 'uq_subjects_account_type_identifier']
+    (vendor_id, subject_type, identifier) [unique, name: 'uq_subjects_vendor_type_identifier']
     employee_id
     org_unit_id
   }
@@ -957,6 +1019,8 @@ Table subjects {
     `employee_id is null or org_unit_id is null` [name: 'chk_subjects_one_department_source']
     `subject_type = 'user' or employee_id is null` [name: 'chk_subjects_employee_only_user']
     `identifier = lower(identifier)` [name: 'chk_subjects_identifier_lowercase']
+    `(source in ('api', 'log')) = (sync_run_id is not null)` [name: 'chk_subjects_sync_provenance']
+    `(source = 'import') = (import_batch_id is not null)` [name: 'chk_subjects_import_provenance']
   }
 
   Note: '''
@@ -965,7 +1029,7 @@ Table subjects {
     may match no employee (UC03, UC11).
     Department of a subject = employees.org_unit_id for a matched user,
     otherwise subjects.org_unit_id, otherwise Unknown department.
-    Partial unique: unique on provider_account_id, external_id where external_id
+    Partial unique: unique on vendor_id, external_id where external_id
     is not null; a sync matches on external_id first, so a renamed user keeps
     the same subject and seat history.
     Matching to an employee uses the company email first; Staff can confirm a
@@ -977,11 +1041,10 @@ Table license_assignments {
   id bigint [pk, increment]
   license_plan_id bigint [not null, ref: > license_plans.id]
   subject_id bigint [not null, ref: > subjects.id]
-  entitlement_line_id bigint [ref: > entitlement_lines.id, note: 'Purchase the seat belongs to. Set on Staff entry and by a sync when the plan has one active line in the account. NULL = not known: the provider pools the seats of several purchases']
   assigned_on date [note: 'Assigned date reported by the provider or entered by Staff; NULL = Unknown']
-  first_seen_on date [not null, note: 'First day ELMS saw the assignment']
   ended_on date [note: 'NULL = currently assigned']
   last_active_at timestamptz [note: 'Last recorded activity; NULL = no activity recorded. Only filled from a per-subject usage source']
+  activity_checked_on date [note: 'Manual or import usage source: last day Staff checked the activity of this seat (D18). NULL with no last_active_at = never checked, so Not monitored']
   source data_source [not null]
   sync_run_id bigint [ref: > sync_runs.id]
   import_batch_id bigint [ref: > import_batches.id]
@@ -992,12 +1055,11 @@ Table license_assignments {
   indexes {
     (license_plan_id, ended_on)
     subject_id
-    entitlement_line_id
     last_active_at
   }
 
   checks {
-    `ended_on is null or ended_on >= first_seen_on` [name: 'chk_license_assignments_dates']
+    `ended_on is null or assigned_on is null or ended_on >= assigned_on` [name: 'chk_license_assignments_dates']
     `(source in ('api', 'log')) = (sync_run_id is not null)` [name: 'chk_license_assignments_sync_provenance']
     `(source = 'import') = (import_batch_id is not null)` [name: 'chk_license_assignments_import_provenance']
   }
@@ -1009,32 +1071,33 @@ Table license_assignments {
     Partial unique: one open assignment per plan and subject
     (unique on license_plan_id, subject_id where ended_on is null).
     Seat status (BR-03, D7) is computed, not stored, for an open assignment.
-    S = the usage source of the plan for the account of the subject,
+    S = the usage source of the plan,
     T = inactivity_threshold_days (60):
-      Not monitored = no S, or S.granularity = aggregate
+      Not monitored = no S, or S.granularity = aggregate, or S is manual or
+                      import and the seat has neither last_active_at nor
+                      activity_checked_on (D18)
       Active        = last_active_at within the last T days
       Inactive      = last_active_at older than T days
-      No activity   = last_active_at is null
+      No activity   = last_active_at is null (and, for a manual or import S,
+                      activity_checked_on is set)
+    So when Staff enter activity for 3 of 10 holders, the other 7 stay Not
+    monitored and are never counted as waste (BR-04).
     Detection (UC11) flags Inactive and No activity only when, on the data
     date, the usage coverage is complete, S.monitoring_since is at least T days
     old, and the seat has been held for at least T days (from assigned_on, or
-    first_seen_on when unknown). A new seat is not waste yet.
+    from created_at when unknown). A new seat is not waste yet.
     Unassigned = purchased quantity minus open assignments.
-    Expiry date of a seat (UC23) and its contract (UC13):
-      entitlement_line_id set  = valid_to and contract of that line
-      entitlement_line_id NULL = the earliest valid_to among the active lines
-                                 of the plan in the account, the first day the
-                                 seat may lapse
-    App rule: the line belongs to the same plan and the same provider account
-    as the subject.
+    Expiry date of a seat (UC23) and its contract (UC13): the earliest
+    valid_to among the active lines of the plan, the first day the seat may
+    lapse. Providers pool the seats of several purchases, so a seat is not
+    tied to one line.
   '''
 }
 
 Table usage_records {
   id bigint [pk, increment]
   license_plan_id bigint [not null, ref: > license_plans.id]
-  provider_account_id bigint [not null, ref: > provider_accounts.id]
-  subject_id bigint [ref: > subjects.id, note: 'NULL = aggregate figure for the whole plan in the account']
+  subject_id bigint [ref: > subjects.id, note: 'NULL = aggregate figure for the whole plan']
   metric usage_metric [not null]
   period_start date [not null]
   period_end date [not null, note: 'Inclusive']
@@ -1047,7 +1110,7 @@ Table usage_records {
   updated_at timestamptz [not null, default: `now()`]
 
   indexes {
-    (license_plan_id, provider_account_id, subject_id, metric, period_start, period_end) [unique, name: 'uq_usage_records_period']
+    (license_plan_id, subject_id, metric, period_start, period_end) [unique, name: 'uq_usage_records_period']
     (license_plan_id, metric, period_start)
     subject_id
   }
@@ -1056,7 +1119,7 @@ Table usage_records {
     `period_end >= period_start` [name: 'chk_usage_records_period']
     `quantity >= 0` [name: 'chk_usage_records_quantity']
     `metric <> 'active_subjects' or subject_id is null` [name: 'chk_usage_records_active_subjects_aggregate']
-    `metric not in ('active_subjects', 'peak_concurrent', 'denied_requests') or quantity = trunc(quantity)` [name: 'chk_usage_records_whole_counts']
+    `metric not in ('active_subjects', 'peak_concurrent') or quantity = trunc(quantity)` [name: 'chk_usage_records_whole_counts']
     `(source in ('api', 'log')) = (sync_run_id is not null)` [name: 'chk_usage_records_sync_provenance']
     `(source = 'import') = (import_batch_id is not null)` [name: 'chk_usage_records_import_provenance']
   }
@@ -1068,7 +1131,7 @@ Table usage_records {
     Entering the same period again replaces the row (UC03): the unique index
     must be created with NULLS NOT DISTINCT so it also holds for aggregate rows,
     where subject_id is NULL.
-    App rule: one period length per plan, account, and metric (the period of
+    App rule: one period length per plan and metric (the period of
     the source, usually a day or a month) and no overlapping periods, so sums
     over periods never count a day twice. The metric matches the archetype of
     the plan (see the enum notes).
@@ -1085,7 +1148,6 @@ Table plan_daily_snapshots {
   purchased_qty numeric(20,4) [note: 'Sum of the entitlement lines active that day; NULL = Unknown (one active line Unknown makes the sum Unknown), or unlimited']
   is_unlimited boolean [not null, default: false, note: 'True when an active line of the plan is unlimited; purchased_qty is then NULL']
   effective_monthly_cost numeric(18,2) [note: 'BR-05 cost of a full month at the terms in force that day, in the reporting currency; NULL = Unknown (price or exchange rate missing)']
-  currency char(3) [not null, note: 'Reporting currency (D12)']
   created_at timestamptz [not null, default: `now()`]
 
   indexes {
@@ -1120,7 +1182,6 @@ Table plan_unit_daily_snapshots {
   snapshot_date date [not null]
   license_plan_id bigint [not null, ref: > license_plans.id]
   org_unit_id bigint [ref: > org_units.id, note: 'Department of the holders that day; NULL = Unknown department']
-  assigned_count int [not null]
   active_count int [not null]
   inactive_count int [not null]
   no_activity_count int [not null]
@@ -1135,20 +1196,19 @@ Table plan_unit_daily_snapshots {
   }
 
   checks {
-    `assigned_count = active_count + inactive_count + no_activity_count + not_monitored_count` [name: 'chk_plan_unit_daily_snapshots_sum']
     `active_count >= 0 and inactive_count >= 0 and no_activity_count >= 0 and not_monitored_count >= 0` [name: 'chk_plan_unit_daily_snapshots_counts']
   }
 
   Note: '''
     Daily seat status per plan and department: every assigned seat has exactly
-    one status (BR-03), so the four counts add up to assigned_count. The
+    one status (BR-03), so Assigned is the sum of the four counts. The
     department is the one of that day, so history keeps it after an employee
     moves (D9).
     Feeds the monthly usage charts, "Assigned" / "Used" per unit (BR-09), and
     the seat basis of cost_allocations.
     The unique index needs NULLS NOT DISTINCT because org_unit_id may be NULL.
-    Rows are written only for a day whose assignment coverage is complete in
-    every account of the plan (D8); counts have no default, so a missing day is
+    Rows are written only for a day whose assignment coverage is complete
+    (D8); counts have no default, so a missing day is
     no row, never a row of zeros.
   '''
 }
@@ -1161,11 +1221,9 @@ Table budget_plans {
   id bigint [pk, increment]
   org_unit_id bigint [not null, ref: > org_units.id]
   fiscal_year int [not null]
-  budget_amount numeric(18,2) [not null]
-  currency char(3) [not null, note: 'Reporting currency (D12)']
+  budget_amount numeric(18,2) [not null, note: 'In the reporting currency (D12)']
   note text
-  status budget_plan_status [not null, default: 'draft']
-  activated_at timestamptz
+  activated_at timestamptz [note: 'NULL = draft; set = active (BR-08)']
   activated_by bigint [ref: > user_accounts.id]
   created_by bigint [not null, ref: > user_accounts.id]
   created_at timestamptz [not null, default: `now()`]
@@ -1173,12 +1231,12 @@ Table budget_plans {
 
   indexes {
     (org_unit_id, fiscal_year) [unique, name: 'uq_budget_plans_unit_year']
-    (fiscal_year, status)
+    fiscal_year
   }
 
   checks {
     `budget_amount > 0` [name: 'chk_budget_plans_amount']
-    `(status = 'active') = (activated_at is not null and activated_by is not null)` [name: 'chk_budget_plans_activation']
+    `(activated_at is null) = (activated_by is null)` [name: 'chk_budget_plans_activation']
   }
 
   Note: '''
@@ -1197,9 +1255,8 @@ Table budget_plans {
     App rule: activation shows a warning and needs confirmation when the plan
     lines add up to more than the budget, or when the department budgets of a
     P&L add up to more than the P&L budget (UC05).
-    App rule: only a draft can be deleted. A change to an active plan needs a
+    App rule: only a draft (activated_at NULL) can be deleted. A change to an active plan needs a
     reason and is written to audit_logs with old and new value (BR-08).
-    App rule: the currency is the reporting currency.
   '''
 }
 
@@ -1208,7 +1265,7 @@ Table budget_plan_lines {
   budget_plan_id bigint [not null, ref: > budget_plans.id]
   license_plan_id bigint [not null, ref: > license_plans.id]
   planned_quantity numeric(20,4) [not null]
-  planned_cost numeric(18,2) [not null, note: 'In the currency of the budget plan; suggested = quantity x current yearly unit price, converted with the current rate']
+  planned_cost numeric(18,2) [not null, note: 'In the reporting currency; suggested = quantity x current yearly unit price, converted with the current rate']
   note text
   created_at timestamptz [not null, default: `now()`]
   updated_at timestamptz [not null, default: `now()`]
@@ -1234,9 +1291,7 @@ Table cost_allocations {
   org_unit_id bigint [ref: > org_units.id, note: 'Set when bucket = unit']
   method allocation_method [not null]
   basis_qty numeric(20,4) [note: 'Average seats held (per_seat) or usage (per_usage) of the bucket in the month; NULL for direct and none']
-  amount numeric(18,2) [note: 'Share of the plan cost of the month; NULL = Unknown (price, rate, or seat data missing)']
-  currency char(3) [not null, note: 'Reporting currency (D12)']
-  is_final boolean [not null, default: false, note: 'Set when the month closes; a final row is never recomputed']
+  amount numeric(18,2) [note: 'Share of the plan cost of the month, in the reporting currency; NULL = Unknown (price, rate, or seat data missing)']
   computed_at timestamptz [not null, default: `now()`]
 
   indexes {
@@ -1257,8 +1312,8 @@ Table cost_allocations {
     Plan cost of the month:
       fixed terms     sum over the days of plan_daily_snapshots
                       .effective_monthly_cost / days in the month
-      pay_as_you_go   expenses of the plan whose service period (or date)
-                      falls in the month
+      pay_as_you_go   expenses of the plan whose service_month (or, when
+                      empty, expense_date) falls in the month
     Split, by method:
       per_seat   cost / average purchased seats x average seats of the unit
                  (plan_unit_daily_snapshots); unheld seats go to unallocated,
@@ -1269,9 +1324,10 @@ Table cost_allocations {
                  rest is unallocated
       none       the whole cost is unallocated
     The rows of a plan and month add up to the plan cost (UC06 result).
-    Rows of an open month are recomputed daily; on month close they are
-    computed once more and marked final, so a later move of an employee, a
-    corrected rate, or a changed rule never rewrites a closed month (D9).
+    Rows of an open month are recomputed daily. Closing the month computes
+    them once more in the same transaction; rows of a closed month
+    (accounting_periods.status) are never recomputed, so a later move of an
+    employee, a corrected rate, or a changed rule never rewrites it (D9).
     The unique index needs NULLS NOT DISTINCT because org_unit_id may be NULL.
   '''
 }
@@ -1279,16 +1335,13 @@ Table cost_allocations {
 Table expenses {
   id bigint [pk, increment]
   expense_date date [not null, note: 'Invoice or charge date; decides the closed month (BR-10)']
-  service_period_start date [note: 'First day of the service the expense pays for, if known (D6)']
-  service_period_end date [note: 'Last day of that service, inclusive']
-  amount numeric(18,2) [not null, note: 'Positive; only a correcting entry may be negative']
+  service_month date [note: 'First day of the month whose pay-as-you-go usage the expense pays for, when it differs from the month of expense_date (D6)']
+  amount numeric(18,2) [not null, note: 'Negative only for a correcting entry']
   currency char(3) [not null]
   license_plan_id bigint [not null, ref: > license_plans.id]
   org_unit_id bigint [ref: > org_units.id, note: 'Unit that pays the invoice (BR-10). Required on manual entry and CSV; NULL only for billing API rows without a unit, shown as Unallocated']
   description text
   invoice_file_id bigint [ref: > files.id]
-  corrects_expense_id bigint [ref: > expenses.id, note: 'Set on a correcting entry for an expense of a closed month (BR-10)']
-  provider_account_id bigint [ref: > provider_accounts.id, note: 'Billing account the record came from; set for api rows']
   source data_source [not null, default: 'manual']
   external_ref varchar(200) [note: 'Id of the billing record at the provider, for idempotent sync (A3)']
   sync_run_id bigint [ref: > sync_runs.id]
@@ -1301,17 +1354,12 @@ Table expenses {
     expense_date
     (license_plan_id, expense_date)
     (org_unit_id, expense_date)
-    corrects_expense_id
   }
 
   checks {
     `amount <> 0` [name: 'chk_expenses_amount_not_zero']
-    `amount > 0 or corrects_expense_id is not null` [name: 'chk_expenses_negative_only_correction']
-    `corrects_expense_id is null or corrects_expense_id <> id` [name: 'chk_expenses_not_own_correction']
     `source in ('api', 'log') or org_unit_id is not null` [name: 'chk_expenses_unit_required']
-    `(service_period_start is null) = (service_period_end is null)` [name: 'chk_expenses_service_period_pair']
-    `service_period_end is null or service_period_end >= service_period_start` [name: 'chk_expenses_service_period']
-    `external_ref is null or provider_account_id is not null` [name: 'chk_expenses_external_ref_account']
+    `service_month is null or extract(day from service_month) = 1` [name: 'chk_expenses_service_month']
     `(source in ('api', 'log')) = (sync_run_id is not null)` [name: 'chk_expenses_sync_provenance']
     `(source = 'import') = (import_batch_id is not null)` [name: 'chk_expenses_import_provenance']
   }
@@ -1324,7 +1372,7 @@ Table expenses {
     effective cost of the entitlement line, not a split of this row (D6).
     Pay-as-you-go expenses are also the cost source of cost_allocations.
     Partial unique: one row per billing record
-    (unique on provider_account_id, external_ref where external_ref is not null).
+    (unique on license_plan_id, external_ref where external_ref is not null).
     App rule: an expense is editable until its month is closed
     (accounting_periods); afterwards only a correcting entry is allowed, and it
     is dated in an open month. An expense that came from a billing API needs a
@@ -1337,18 +1385,16 @@ Table accounting_periods {
   fiscal_year int [not null]
   period_year int [not null]
   period_month int [not null]
-  status period_status [not null, default: 'open']
-  closed_at timestamptz
+  closed_at timestamptz [note: 'NULL = open; set = closed']
   closed_by bigint [ref: > user_accounts.id, note: 'NULL when closed by the system job']
 
   indexes {
     (period_year, period_month) [unique, name: 'uq_accounting_periods_month']
-    (fiscal_year, status)
+    fiscal_year
   }
 
   checks {
     `period_month between 1 and 12` [name: 'chk_accounting_periods_month']
-    `(status = 'closed') = (closed_at is not null)` [name: 'chk_accounting_periods_closed']
   }
 
   Note: '''
@@ -1357,27 +1403,27 @@ Table accounting_periods {
     "closed month" for the forecast run rate (BR-11). fiscal_year maps the
     month to a budget year.
     Closing (D14): a system job closes month M on month_close_day of M+1
-    (system_settings, default the 10th); Staff can close it earlier. A closed
-    month is never reopened; later changes are correcting entries.
+    (application setting, default the 10th); Staff can close it earlier. A closed
+    month is never reopened; later changes are correcting entries. The job
+    computes the cost_allocations of the month one last time and closes it in
+    one transaction.
   '''
 }
 
 Table exchange_rates {
   id bigint [pk, increment]
-  from_currency char(3) [not null]
-  to_currency char(3) [not null]
-  rate numeric(18,8) [not null, note: '1 from_currency = rate to_currency']
+  from_currency char(3) [not null, note: 'Any currency but the reporting currency']
+  rate numeric(18,8) [not null, note: '1 from_currency = rate units of the reporting currency']
   effective_from date [not null]
   declared_by bigint [ref: > user_accounts.id]
   created_at timestamptz [not null, default: `now()`]
 
   indexes {
-    (from_currency, to_currency, effective_from) [unique, name: 'uq_exchange_rates_pair_date']
+    (from_currency, effective_from) [unique, name: 'uq_exchange_rates_currency_date']
   }
 
   checks {
     `rate > 0` [name: 'chk_exchange_rates_rate']
-    `from_currency <> to_currency` [name: 'chk_exchange_rates_pair']
   }
 
   Note: '''
@@ -1386,7 +1432,7 @@ Table exchange_rates {
     day. Without a rate, converted figures are Unknown and amounts are shown per
     currency, never added (UC16).
     A corrected rate changes only figures not yet frozen; frozen snapshots and
-    final cost_allocations keep the rate they were computed with.
+    cost_allocations of closed months keep the rate they were computed with.
   '''
 }
 
@@ -1397,7 +1443,7 @@ Table exchange_rates {
 Table detection_runs {
   id bigint [pk, increment]
   data_date date [not null, note: 'Date of the data the run evaluated']
-  inactivity_threshold_days int [not null, default: 60, note: 'Copied from system_settings so old results stay explainable']
+  inactivity_threshold_days int [not null, default: 60, note: 'Copied from the application setting so old results stay explainable']
   rule_version varchar(20) [not null, note: 'Version of the detection rules, e.g. 2026.11']
   status run_status [not null, default: 'running']
   started_at timestamptz [not null, default: `now()`]
@@ -1418,46 +1464,48 @@ Table detection_results {
   id bigint [pk, increment]
   detection_run_id bigint [not null, ref: > detection_runs.id]
   license_plan_id bigint [not null, ref: > license_plans.id]
-  org_unit_id bigint [ref: > org_units.id, note: 'Unit the result belongs to (D10). NULL only for inactive seats of holders with Unknown department']
+  org_unit_id bigint [ref: > org_units.id, note: 'Unit the result belongs to (D10). NULL only for inactive or leaver seats of holders with Unknown department']
   check_type detection_check [not null]
-  outcome detection_outcome [not null]
-  flagged_qty numeric(20,4) [note: 'Unassigned seats, inactive seats, or excess over the entitlement; 0 when clear; NULL when not evaluated']
-  monthly_cost numeric(18,2) [note: 'Monthly cost of the flagged quantity; NULL = Unknown']
-  currency char(3)
+  flagged_qty numeric(20,4) [note: 'Unassigned seats, inactive seats, or excess over the entitlement. NULL = not evaluated; 0 = clear (Compliant for overuse); more than 0 = flagged']
+  monthly_cost numeric(18,2) [note: 'Monthly cost of the flagged quantity, in the reporting currency; NULL = Unknown']
   flagged_since date [note: 'First day of the current unbroken flagged streak ("Since", UC12)']
   created_at timestamptz [not null, default: `now()`]
 
   indexes {
     (detection_run_id, license_plan_id, check_type, org_unit_id) [unique, name: 'uq_detection_results_run_plan_check_unit']
-    (check_type, outcome)
+    check_type
     license_plan_id
     org_unit_id
   }
 
   checks {
-    `check_type = 'inactive' or org_unit_id is not null` [name: 'chk_detection_results_unit']
-    `(outcome = 'not_evaluated') = (flagged_qty is null)` [name: 'chk_detection_results_not_evaluated']
-    `outcome <> 'flagged' or flagged_qty > 0` [name: 'chk_detection_results_flagged']
-    `outcome <> 'clear' or flagged_qty = 0` [name: 'chk_detection_results_clear']
-    `(outcome = 'flagged') = (flagged_since is not null)` [name: 'chk_detection_results_since']
-    `monthly_cost is null or currency is not null` [name: 'chk_detection_results_currency']
+    `check_type in ('inactive', 'leaver') or org_unit_id is not null` [name: 'chk_detection_results_unit']
+    `flagged_qty is null or flagged_qty >= 0` [name: 'chk_detection_results_flagged_qty']
+    `(coalesce(flagged_qty, 0) > 0) = (flagged_since is not null)` [name: 'chk_detection_results_since']
   }
 
   Note: '''
     Result of one check for one plan and unit in one run: only the verdict is
-    stored (outcome, flagged quantity, its cost, since when).
+    stored (flagged quantity, its cost, since when). Not evaluated, clear, and
+    flagged are read from flagged_qty: NULL, 0, more than 0.
     Unit of a result (D10):
       unused   one row per unit with a quota (quota minus its holders), and one
                row for the owner unit of the plan for the shared seats
       overuse  one row for the owner unit of the plan
       inactive one row per department of the holders; NULL = Unknown department
+      leaver   same as inactive (D20)
+    Leaver check (D20): open seats whose subject is disabled at the provider
+    (is_enabled = false) or whose employee has a left_on before the data date.
+    It needs no threshold or usage source, so the seat is flagged the day
+    after leaving. A seat flagged as leaver is not counted again in inactive,
+    so savings are never counted twice.
     Manager data scope (BR-16): a Manager sees the rows of their units, plus the
     Unknown-department rows of the plans their units own. No figure of another
     unit is shown.
     Lists, dashboards, and the compliance view read the same rows, so figures
     tie across screens (UC10, UC12, UC17, UC18).
-    not_evaluated when the coverage of the data date is not complete (D8), or
-    the figures needed are Unknown.
+    Not evaluated (flagged_qty NULL) when the coverage of the data date is not
+    complete (D8), or the figures needed are Unknown; never clear or Compliant.
     The figures shown beside a result are read from their owner table for the
     data date of the run, never copied here:
       Purchased / Entitlement = plan_daily_snapshots.purchased_qty
@@ -1486,13 +1534,12 @@ Table recommendations {
   description text
   evidence jsonb [not null, note: 'Snapshot of the evidence at creation time (BR-13)']
   affected_qty numeric(20,4)
-  estimated_yearly_saving numeric(18,2) [note: 'NULL = Unknown, when the price is not known (D15)']
-  actual_saving numeric(18,2) [note: 'Entered when marked done']
-  currency char(3) [not null]
+  estimated_yearly_saving numeric(18,2) [note: 'In the reporting currency. NULL = Unknown, when the price is not known (D15)']
+  actual_saving numeric(18,2) [note: 'Entered in the reporting currency when marked done']
   status recommendation_status [not null, default: 'proposed']
   rejection_reason text
-  notice_deadline date [note: 'Last day to act before the renewal: renewal_date - notice_period_days of the contract (UC13). NULL = can be acted on at any time (monthly, pay-as-you-go)']
-  due_date date
+  contract_id bigint [ref: > contracts.id, note: 'Contract whose renewal limits when this can be acted on (UC13). NULL = can be acted on at any time (monthly, pay-as-you-go)']
+  due_date date [note: 'Internal deadline set for the owner; not the notice deadline of the contract']
   owner_id bigint [ref: > user_accounts.id]
   created_by bigint [not null, ref: > user_accounts.id]
   decided_by bigint [ref: > user_accounts.id]
@@ -1506,6 +1553,7 @@ Table recommendations {
     status
     org_unit_id
     owner_id
+    contract_id
   }
 
   checks {
@@ -1523,11 +1571,14 @@ Table recommendations {
     required). ELMS never carries one out on the provider (BR-01).
     An Unknown estimated saving is shown as Unknown and left out of saving
     totals, which count it separately (D15).
+    Notice deadline (UC13, D16) is computed on read from the contract:
+    renewal_date - notice_period_days, Unknown when either is NULL. It is not
+    copied here, so a corrected renewal date or notice period is seen at once.
     Partial unique: one open recommendation per plan, type, and unit
     (unique on license_plan_id, type, org_unit_id where status in
     (proposed, accepted), with NULLS NOT DISTINCT).
     App rule: only an accepted recommendation can be marked done; the target
-    plan belongs to the same product.
+    plan belongs to the same product; the contract covers a line of the plan.
   '''
 }
 
@@ -1557,7 +1608,7 @@ Table audit_logs {
   Note: '''
     Append-only record of who changed what, with old value, new value, and time
     (BR-15): license data, expenses, budgets, recommendations, users, units,
-    roles, permissions, and settings. The application database role has INSERT
+    roles, and permissions. The application database role has INSERT
     and SELECT only on this table, so rows cannot be updated or deleted.
   '''
 }
@@ -1607,12 +1658,10 @@ TableGroup organization_and_access {
   user_accounts
   user_sessions
   manager_org_units
-  system_settings
 }
 
 TableGroup license_catalog {
   vendors
-  provider_accounts
   software_categories
   software_products
   product_links

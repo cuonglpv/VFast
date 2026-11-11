@@ -113,11 +113,11 @@ Backlog, per-story INVEST review, and acceptance criteria: [INVEST requirements]
 
 ## 2. Database design
 
-The target schema is PostgreSQL, 41 tables in seven groups: organization and access, license catalog, collection pipeline, holders and usage, budget and expenses, optimization, audit. A license is a plan (tier/SKU); each purchase is an entitlement line; missing data is `Unknown`, never 0; history is kept as frozen daily snapshots and monthly cost allocations.
+The target schema is PostgreSQL, 39 tables in seven groups: organization and access, license catalog, collection pipeline, holders and usage, budget and expenses, optimization, audit. A license is a plan (tier/SKU); each purchase is an entitlement line; missing data is `Unknown`, never 0; history is kept as frozen daily snapshots and monthly cost allocations.
 
 ![Entity overview](docs/database/diagrams/erd_overview.png)
 
-Entity overview, one ERD per group, rule-to-schema traceability, and the decisions still to confirm (D5–D15): [Database design](docs/database/README.md). Source [`elms.dbml`](docs/database/elms.dbml), reference DDL [`schema.sql`](docs/database/schema.sql), draw.io files in [`docs/database/diagrams/`](docs/database/diagrams/).
+Entity overview, one ERD per group, a short explanation of every table, rule-to-schema traceability, and the decisions still to confirm (D5–D23): [Database design](docs/database/README.md). Source [`elms.dbml`](docs/database/elms.dbml), reference DDL [`schema.sql`](docs/database/schema.sql), draw.io files in [`docs/database/diagrams/`](docs/database/diagrams/).
 
 ## 3. Architecture and Folder Structures
 
@@ -225,7 +225,7 @@ Full trees, module table, API conventions, jobs, caching, security, and deployme
 - [INVEST requirements](docs/03-invest-requirements.md) — 24 user stories, INVEST review, acceptance criteria
 - [Information architecture](docs/04-information-architecture-manager.md) — screens, views, and navigation: License Management, Analytics Hub (license health and budget analytics), User Management
 - [Folder structure and architecture](docs/05-folder-structure.md) — solution architecture, frontend structure, backend modules and .NET folder layout, API conventions, jobs, caching, security
-- [Database design](docs/database/README.md) — conventions, entity overview, ERD per group, rule-to-schema traceability, proposed decisions D5–D15
+- [Database design](docs/database/README.md) — conventions, entity overview, ERD per group, every table explained, rule-to-schema traceability, proposed decisions D5–D23; every field in [Tables and fields](docs/database/tables.md)
 
 ## Frontend development
 

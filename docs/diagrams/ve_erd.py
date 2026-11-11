@@ -28,13 +28,13 @@ GAP = 70  # khoảng trống giữa hai cột bảng
 
 LAYOUT = {
     'erd_organization': [
-        ['org_units', 'permissions', 'system_settings'],
+        ['org_units', 'permissions'],
         ['employees', 'manager_org_units', 'role_permissions', 'roles'],
         ['user_accounts', 'user_sessions'],
     ],
     'erd_license_catalog': [
         ['vendors', 'software_categories'],
-        ['software_products', 'provider_accounts', 'contracts'],
+        ['software_products', 'contracts'],
         ['license_plans', 'entitlement_lines', 'product_links'],
         ['entitlement_allocations'],
     ],
