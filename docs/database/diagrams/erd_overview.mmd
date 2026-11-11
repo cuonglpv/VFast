@@ -15,7 +15,6 @@ erDiagram
     user_accounts ||--o{ user_sessions : opens
     user_accounts ||--o{ manager_org_units : manages
     org_units ||--o{ manager_org_units : "managed by"
-    vendors ||--o{ provider_accounts : "has tenant"
     vendors ||--o{ software_products : sells
     vendors ||--o{ contracts : signs
     software_categories ||--o{ software_products : classifies
@@ -23,23 +22,20 @@ erDiagram
     software_products ||--o{ product_links : links
     org_units ||--o{ license_plans : owns
     license_plans ||--o{ entitlement_lines : "purchased as"
-    provider_accounts ||--o{ entitlement_lines : "billed in"
     contracts |o--o{ entitlement_lines : covers
-    entitlement_lines |o--o{ entitlement_lines : renews
     entitlement_lines ||--o{ entitlement_allocations : "split into"
     org_units ||--o{ entitlement_allocations : receives
-    provider_accounts ||--o{ connectors : "read by"
+    vendors ||--o{ connectors : "read by"
     connectors ||--o{ sync_runs : runs
     license_plans ||--o{ plan_data_sources : "collected from"
     connectors |o--o{ plan_data_sources : feeds
     license_plans ||--o{ collection_coverage : "completeness of"
     sync_runs ||--o{ raw_records : stores
     files ||--o{ import_batches : "imported from"
-    provider_accounts ||--o{ subjects : "identity in"
+    vendors ||--o{ subjects : "identity at"
     employees |o--o{ subjects : "matched to"
     license_plans ||--o{ license_assignments : "held as"
     subjects ||--o{ license_assignments : holds
-    entitlement_lines |o--o{ license_assignments : "seat of"
     license_plans ||--o{ usage_records : "used as"
     subjects |o--o{ usage_records : uses
     license_plans ||--o{ plan_daily_snapshots : "daily figures"
@@ -52,7 +48,6 @@ erDiagram
     org_units |o--o{ cost_allocations : carries
     license_plans ||--o{ expenses : "billed for"
     org_units |o--o{ expenses : pays
-    expenses |o--o{ expenses : corrects
     detection_runs ||--o{ detection_results : produces
     license_plans ||--o{ detection_results : "checked in"
     detection_results |o--o{ recommendations : "turned into"
