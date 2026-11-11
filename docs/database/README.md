@@ -212,7 +212,7 @@ Where money is wasted, and what to do about it.
 
 ## Proposed decisions
 
-D1–D4 are agreed. D5–D15 came out of the schema audit of 2026-11-11, and D16–D23 out of the field-by-field review of the same day (columns and enum values only, no new table). The schema applies them all, and they need team confirmation. If the team accepts them, the use case text in the last column changes.
+D1–D4 are agreed. D5–D15 came out of the schema audit of 2026-11-11, and D16–D23 out of the field-by-field review of the same day (columns and enum values only, no new table). The schema applies them all, and they need team confirmation. The use case text of D16–D23 is already updated in [Use cases](../02-use-cases.md) and [INVEST requirements](../03-invest-requirements.md); for D5–D15 the use cases in the last column still have to change if the team accepts them.
 
 | # | Question | Proposal | Use cases to update |
 |---|---|---|---|
