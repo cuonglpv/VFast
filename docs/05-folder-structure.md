@@ -14,7 +14,6 @@ VFast/
 │  ├─ 06-data-model.md              Tables, enums, conventions, tables per module
 │  ├─ database/
 │  │  ├─ elms.dbml                  Database design (source of truth)
-│  │  └─ er-diagram.md              ER diagrams in Mermaid, generated from the DBML
 │  ├─ diagrams/out/                 Use case diagrams (draw.io, png, svg)
 │  └─ mindmap/vfast.xmind           Editable mind map
 └─ src/
@@ -273,4 +272,4 @@ A reverse proxy (Nginx or Caddy) serves the SPA and forwards `/api/*` to `Elms.A
 
 ## 10. Database
 
-37 tables, 19 enums, 7 table groups, PostgreSQL. See [Data model](06-data-model.md) for the table groups, every table and enum, conventions, and tables per backend module; [`database/elms.dbml`](database/elms.dbml) is the source of truth and [`database/er-diagram.md`](database/er-diagram.md) has column-level ER diagrams. Each module maps to one Postgres schema (`identity`, `org`, `catalog`, `ingestion`, `usage`, `finance`, `optimization`, `audit`).
+37 tables, 19 enums, 7 table groups, PostgreSQL. See [Data model](06-data-model.md) for the table groups, every table and enum, conventions, and tables per backend module; [`database/elms.dbml`](database/elms.dbml) is the source of truth. Each module maps to one Postgres schema (`identity`, `org`, `catalog`, `ingestion`, `usage`, `finance`, `optimization`, `audit`).
