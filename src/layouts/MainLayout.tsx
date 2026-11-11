@@ -1,18 +1,18 @@
-import React from 'react';
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import { LicenseProvider } from '@/data/licenses';
 
-export const MainLayout: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-[#f8fafc] text-[#111c2d]">
-      <Sidebar />
-      <Header />
-      <main className="ml-60 pt-20 px-8 pb-12 min-h-screen">
-        <Outlet />
-      </main>
+export default function MainLayout() {
+  const [navigationOpen, setNavigationOpen] = useState(false);
+  return <LicenseProvider>
+    <div className="portal-shell">
+      <a className="skip-link" href="#main-content">Skip to content</a>
+      {navigationOpen && <button className="navigation-backdrop" aria-label="Close navigation" onClick={() => setNavigationOpen(false)} />}
+      <Sidebar open={navigationOpen} onNavigate={() => setNavigationOpen(false)} />
+      <Header onMenu={() => setNavigationOpen(value => !value)} />
+      <main id="main-content" className="portal-main"><Outlet /></main>
     </div>
-  );
-};
-
-export default MainLayout;
+  </LicenseProvider>;
+}
