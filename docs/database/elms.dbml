@@ -25,9 +25,19 @@
 //     different currencies are only added through exchange_rates (BR-05).
 //   - Quantities are numeric(20,4) because one column serves seats, sessions,
 //     tokens, and cores.
-//   - A NULL figure means Unknown and is never read as 0 (BR-04, A4).
+//   - A NULL figure means Unknown and is never read as 0 (BR-04, A4). NULL has
+//     no second meaning: "unlimited" is its own flag (is_unlimited).
 //   - Master data is never deleted, only marked inactive or ended (BR-15), so
 //     no foreign key cascades on delete.
+//   - Where a row has an end date, the date alone says whether it is active
+//     (contracts.ended_on, entitlement_lines.valid_to,
+//     user_accounts.disabled_at); there is no status column beside it.
+//   - Each daily figure has one owner table: Purchased and cost in
+//     plan_daily_snapshots, seat counts in plan_unit_daily_snapshots, period
+//     usage in usage_records. detection_results stores only the verdict.
+//   - Confidence (BR-14, A9) is derived from the source, not stored:
+//     api or log per subject = high; api or log aggregate, or import = medium;
+//     manual = low.
 //   - Rules DBML cannot express (partial unique indexes, cross-table rules) are
 //     written in the table notes as "App rule" or "Partial unique".
 // =============================================================================
@@ -55,11 +65,6 @@ Enum employee_status {
   left [note: 'No longer with the company; seats still held are a waste signal']
 }
 
-Enum account_status {
-  active
-  disabled [note: 'Cannot log in; open sessions are revoked (UC19)']
-}
-
 Enum permission_action {
   read
   write
@@ -70,12 +75,6 @@ Enum data_source {
   log [note: 'Collected by a connector from logs (license server, VPN)']
   import [note: 'CSV file imported by Staff']
   manual [note: 'Typed in by Staff']
-}
-
-Enum data_confidence {
-  high [note: 'Per-subject data from a provider API']
-  medium [note: 'Aggregated data, or data imported from a provider export']
-  low [note: 'Manual entry or estimate']
 }
 
 Enum license_archetype {
@@ -94,29 +93,11 @@ Enum commercial_term {
   perpetual [note: 'Perpetual with maintenance; only maintenance counts as cost (BR-05)']
 }
 
-Enum billing_cycle {
-  monthly
-  quarterly
-  yearly
-  one_time [note: 'Perpetual purchase']
-  usage_based [note: 'Pay-as-you-go; cost is the actual spend of the month']
-}
-
-Enum entitlement_status {
-  active
-  ended
-}
-
-Enum contract_status {
-  active
-  ended
-}
-
-Enum plan_data_type {
+Enum data_kind {
   entitlement [note: 'Purchased quantity and validity']
   assignment [note: 'Who holds the license']
   usage [note: 'Activity, sessions, consumption, deployed units']
-  cost [note: 'Billing data']
+  expense [note: 'Billing data: expenses and invoices']
 }
 
 Enum usage_granularity {
@@ -151,13 +132,6 @@ Enum run_status {
   success
   partial [note: 'Some data collected; the missing part stays Unknown']
   failed [note: 'Nothing written; figures of that day stay Unknown, never 0 (A4)']
-}
-
-Enum import_type {
-  entitlement
-  assignment
-  usage
-  expense
 }
 
 Enum import_status {
@@ -303,11 +277,10 @@ Table user_accounts {
   employee_id bigint [not null, unique, ref: - employees.id, note: 'Every account belongs to one employee; login email = employees.email']
   role_id bigint [not null, ref: > roles.id, note: 'Exactly one role per account (BR-17)']
   password_hash varchar(255) [note: 'Hashed, never plain (BR-18). NULL until a first password is set; login is refused']
-  status account_status [not null, default: 'active']
   failed_login_count int [not null, default: 0, note: 'Consecutive failures; reset on success']
   locked_until timestamptz [note: 'Set to now + 15 minutes after 5 failures in a row (BR-18)']
   last_login_at timestamptz
-  disabled_at timestamptz
+  disabled_at timestamptz [note: 'NULL = active. Set = disabled: cannot log in and open sessions are revoked (UC19); cleared on re-enable']
   created_by bigint [ref: > user_accounts.id]
   created_at timestamptz [not null, default: `now()`]
   updated_at timestamptz [not null, default: `now()`]
@@ -452,7 +425,8 @@ Table license_plans {
     The unit everything else calls "a license" (decision D1): one tier of a
     product with one archetype and one unit. It stays the same across renewals,
     so holders, usage, budget lines, expenses, and recommendations survive a
-    renewal. Purchased = sum of the active entitlement lines of the plan.
+    renewal. Purchased = sum of the entitlement lines of the plan that are
+    active on that day (see entitlement_lines).
   '''
 }
 
@@ -468,8 +442,7 @@ Table contracts {
   commitment_amount numeric(18,2) [note: 'Minimum commitment of the agreement, if any']
   total_value numeric(18,2)
   currency char(3)
-  status contract_status [not null, default: 'active']
-  ended_on date
+  ended_on date [note: 'NULL = active. Set by "mark ended" (UC04)']
   attachment_file_id bigint [ref: > files.id]
   notes text
   created_by bigint [ref: > user_accounts.id]
@@ -479,17 +452,19 @@ Table contracts {
   indexes {
     (vendor_id, contract_no) [unique, name: 'uq_contracts_vendor_no']
     renewal_date
-    status
+    ended_on
   }
 
   checks {
     `renewal_date is null or renewal_date >= start_date` [name: 'chk_contracts_renewal_after_start']
+    `ended_on is null or ended_on >= start_date` [name: 'chk_contracts_ended_after_start']
     `notice_period_days >= 0` [name: 'chk_contracts_notice_period']
     `(total_value is null and commitment_amount is null) or currency is not null` [name: 'chk_contracts_currency']
   }
 
   Note: '''
-    Contracts (UC04). "Renewal soon" (renewal within 30 days) and "Notice period
+    Contracts (UC04). A contract is active while ended_on is null; there is no
+    status column. "Renewal soon" (renewal within 30 days) and "Notice period
     passed" (today > renewal_date - notice_period_days) are computed, not stored.
     Renewal dates feed the forecast (UC09) and the action date of saving
     opportunities (UC13).
@@ -500,17 +475,14 @@ Table entitlement_lines {
   id bigint [pk, increment]
   license_plan_id bigint [not null, ref: > license_plans.id]
   contract_id bigint [ref: > contracts.id, note: 'Contract covering this line; one FK means a line is never under two contracts (UC04)']
-  quantity numeric(20,4) [note: 'Purchased quantity or quota. NULL = unlimited (metered plans without a quota)']
+  quantity numeric(20,4) [note: 'Purchased quantity or quota. NULL = Unknown, unless is_unlimited']
+  is_unlimited boolean [not null, default: false, note: 'True for a line bought without a quota (e.g. metered pay-as-you-go): quantity is NULL and the line can never be over-used (BR-07)']
   valid_from date [not null]
-  valid_to date [note: 'NULL = open-ended (perpetual)']
-  commercial_term commercial_term [not null]
-  billing_cycle billing_cycle [not null]
-  unit_price numeric(18,4) [note: 'Price of one unit for one billing cycle. NULL = Unknown']
-  annual_maintenance_cost numeric(18,2) [note: 'Perpetual lines: yearly maintenance for the whole line']
+  valid_to date [note: 'NULL = open-ended (perpetual). "End a line" (UC03) sets this date']
+  commercial_term commercial_term [not null, note: 'The one field for how the line is paid (BR-02); it also fixes the period of unit_price']
+  unit_price numeric(18,4) [note: 'Price of one unit for the period of the commercial term (see table note). NULL = Unknown']
   currency char(3) [not null]
-  status entitlement_status [not null, default: 'active']
   source data_source [not null, default: 'manual', note: 'Source of quantity and validity (BR-14); prices always come from Staff']
-  confidence data_confidence [not null, default: 'low']
   external_ref varchar(200) [note: 'Subscription id at the provider, if synced']
   sync_run_id bigint [ref: > sync_runs.id]
   import_batch_id bigint [ref: > import_batches.id]
@@ -526,6 +498,7 @@ Table entitlement_lines {
 
   checks {
     `quantity is null or quantity >= 0` [name: 'chk_entitlement_lines_quantity']
+    `not is_unlimited or quantity is null` [name: 'chk_entitlement_lines_unlimited']
     `valid_to is null or valid_to >= valid_from` [name: 'chk_entitlement_lines_validity']
     `unit_price is null or unit_price >= 0` [name: 'chk_entitlement_lines_unit_price']
   }
@@ -533,9 +506,17 @@ Table entitlement_lines {
   Note: '''
     One purchase of a plan (UC03): quantity, validity, and price terms.
     A renewal or an extra purchase is a new line under the same plan.
-    Effective monthly cost (BR-05): quantity x unit_price / months in the billing
-    cycle; one_time counts annual_maintenance_cost / 12; usage_based takes the
-    actual spend of the month from expenses.
+    A line is active on a day when valid_from <= day and (valid_to is null or
+    valid_to >= day). There is no status column: ending a line sets valid_to.
+    unit_price and effective monthly cost (BR-05) by commercial term:
+      monthly            price per unit per month       quantity x unit_price
+      yearly, multi_year price per unit per year        quantity x unit_price / 12
+      perpetual          maintenance per unit per year  quantity x unit_price / 12
+      prepaid_credit     price per credit               quantity x unit_price /
+                                                        months of validity
+      pay_as_you_go      reference rate per unit        actual spend of the
+                                                        month from expenses
+    Quarterly payment is entered as its yearly price.
     App rule: the contract vendor equals the vendor of the plan product. A
     connector value edited by Staff needs a row in data_overrides (BR-14).
   '''
@@ -576,8 +557,7 @@ Table connectors {
   id bigint [pk, increment]
   vendor_id bigint [not null, ref: > vendors.id]
   name varchar(200) [not null, unique]
-  connector_type varchar(60) [not null, note: 'Implementation key, e.g. ms_graph, license_server_log']
-  collection_method data_source [not null, note: 'api or log']
+  connector_type varchar(60) [not null, note: 'Implementation key, e.g. ms_graph, license_server_log; it also says whether the connector reads an API or a log']
   base_url varchar(500)
   credentials_encrypted text [note: 'Encrypted at rest; read-only scopes only (A8)']
   schedule_cron varchar(100) [not null, default: '0 2 * * *', note: 'Daily by default (A1)']
@@ -590,10 +570,6 @@ Table connectors {
     vendor_id
   }
 
-  checks {
-    `collection_method in ('api', 'log')` [name: 'chk_connectors_method']
-  }
-
   Note: '''
     One read-only connection to a provider. The Admin configuration screen is a
     later phase (docs/01 section 7), so rows are seeded for now.
@@ -603,8 +579,8 @@ Table connectors {
 Table plan_data_sources {
   id bigint [pk, increment]
   license_plan_id bigint [not null, ref: > license_plans.id]
-  data_type plan_data_type [not null]
-  source_type data_source [not null]
+  data_type data_kind [not null]
+  source_type data_source [not null, note: 'Stamped as source on every row collected for this plan and kind of data']
   connector_id bigint [ref: > connectors.id, note: 'Required when source_type is api or log']
   external_ref varchar(200) [note: 'Key of the plan at the provider, e.g. Microsoft Graph skuId']
   granularity usage_granularity [note: 'For usage: per subject or aggregate only']
@@ -691,7 +667,7 @@ Table files {
 
 Table import_batches {
   id bigint [pk, increment]
-  import_type import_type [not null]
+  import_type data_kind [not null]
   license_plan_id bigint [ref: > license_plans.id, note: 'Set for assignment and usage imports, which target one plan']
   file_id bigint [not null, ref: > files.id]
   status import_status [not null, default: 'previewed']
@@ -752,12 +728,12 @@ Table license_assignments {
   id bigint [pk, increment]
   license_plan_id bigint [not null, ref: > license_plans.id]
   subject_id bigint [not null, ref: > subjects.id]
+  entitlement_line_id bigint [ref: > entitlement_lines.id, note: 'Purchase the seat belongs to. Set on Staff entry (holders are added on a line, UC03) and by a sync when the plan has one active line. NULL = not known: the provider pools the seats of several purchases']
   assigned_on date [note: 'Assigned date reported by the provider or entered by Staff; NULL = Unknown']
   first_seen_on date [not null, note: 'First day ELMS saw the assignment']
   ended_on date [note: 'NULL = currently assigned']
   last_active_at timestamptz [note: 'Last recorded activity; NULL = no activity recorded']
   source data_source [not null]
-  confidence data_confidence [not null]
   sync_run_id bigint [ref: > sync_runs.id]
   import_batch_id bigint [ref: > import_batches.id]
   entered_by bigint [ref: > user_accounts.id]
@@ -768,6 +744,7 @@ Table license_assignments {
     (license_plan_id, subject_id)
     subject_id
     (license_plan_id, ended_on)
+    entitlement_line_id
     last_active_at
   }
 
@@ -787,6 +764,11 @@ Table license_assignments {
       Active        = last_active_at within the last 60 days
       Inactive      = last_active_at older than 60 days
     Unassigned = purchased quantity minus open assignments.
+    Expiry date of a seat (UC23) and its contract (UC13):
+      entitlement_line_id set  = valid_to and contract of that line
+      entitlement_line_id NULL = the earliest valid_to among the active lines
+                                 of the plan, the first day the seat may lapse
+    App rule: the line belongs to the same plan as the assignment.
   '''
 }
 
@@ -799,7 +781,6 @@ Table usage_records {
   period_end date [not null]
   quantity numeric(20,4) [not null]
   source data_source [not null]
-  confidence data_confidence [not null]
   sync_run_id bigint [ref: > sync_runs.id]
   import_batch_id bigint [ref: > import_batches.id]
   entered_by bigint [ref: > user_accounts.id]
@@ -831,9 +812,8 @@ Table usage_records {
 Table plan_daily_snapshots {
   snapshot_date date [not null]
   license_plan_id bigint [not null, ref: > license_plans.id]
-  purchased_qty numeric(20,4) [note: 'Sum of active entitlement lines; NULL = Unknown or unlimited']
-  assigned_qty numeric(20,4) [note: 'Open assignments (Allocation) or deployed units (Capacity); NULL = Unknown']
-  used_qty numeric(20,4) [note: 'Active seats, peak sessions, consumption, or deployed units by archetype; NULL = Unknown']
+  purchased_qty numeric(20,4) [note: 'Sum of the entitlement lines active that day; NULL = Unknown, unless is_unlimited']
+  is_unlimited boolean [not null, default: false, note: 'True when an active line of the plan is unlimited; purchased_qty is then NULL']
   effective_monthly_cost numeric(18,2) [note: 'BR-05; NULL = Unknown']
   currency char(3)
   created_at timestamptz [not null, default: `now()`]
@@ -843,10 +823,19 @@ Table plan_daily_snapshots {
     license_plan_id
   }
 
+  checks {
+    `not is_unlimited or purchased_qty is null` [name: 'chk_plan_daily_snapshots_unlimited']
+  }
+
   Note: '''
-    Daily history per plan kept by ELMS, because providers give no monthly
-    history (docs/01 section 4.4). Feeds trends, forecast, and "Since" of
-    overuse. No row or a NULL column = Unknown for that day.
+    Daily Purchased and cost per plan, kept by ELMS because providers give no
+    history (docs/01 section 4.4) and because a sync or a Staff correction
+    overwrites the quantity of a line, so past days cannot be recomputed from
+    entitlement_lines. Feeds trends and the forecast.
+    Assigned and Used are not stored here, so each figure has one owner:
+    seat counts are the sum over units of plan_unit_daily_snapshots; peak,
+    consumption, and deployed units of non-seat plans are in usage_records.
+    No row or a NULL column = Unknown for that day.
   '''
 }
 
@@ -912,6 +901,15 @@ Table budget_plans {
   Note: '''
     Yearly license budget of one unit (UC05, BR-08, decision D4): at most one
     plan per unit and fiscal year; only active plans count.
+    P&L and department plans are two separate levels and are never added
+    together (UC08, UC16): a P&L plan is the envelope for the whole P&L, the
+    plans of its departments are shares inside it.
+      Company total = the P&L plans; for a P&L without its own plan, the sum
+                      of its department plans.
+      Inside a P&L  = P&L budget minus the sum of its department budgets is
+                      shown as "Not distributed".
+    App rule: when the department budgets of a P&L add up to more than the P&L
+    budget, activation shows a warning and needs confirmation.
     App rule: only a draft can be deleted. A change to an active plan needs a
     reason and is written to audit_logs with old and new value (BR-08).
   '''
@@ -1050,17 +1048,13 @@ Table detection_results {
   id bigint [pk, increment]
   detection_run_id bigint [not null, ref: > detection_runs.id]
   license_plan_id bigint [not null, ref: > license_plans.id]
-  org_unit_id bigint [ref: > org_units.id, note: 'Unit the result belongs to, for Manager data scope; NULL = company level or Unknown department']
+  org_unit_id bigint [ref: > org_units.id, note: 'Only for the inactive check: department of the flagged seats, NULL = Unknown department. Always NULL for unused and overuse, which are company-level results']
   check_type detection_check [not null]
   outcome detection_outcome [not null]
-  entitled_qty numeric(20,4)
-  assigned_qty numeric(20,4)
-  in_use_qty numeric(20,4) [note: 'Overuse: assigned seats, peak sessions, or deployed units by archetype (BR-07)']
-  flagged_qty numeric(20,4) [note: 'Unassigned seats, inactive seats, or excess over the entitlement']
+  flagged_qty numeric(20,4) [note: 'Unassigned seats, inactive seats, or excess over the entitlement; NULL when not evaluated']
   monthly_cost numeric(18,2) [note: 'Monthly cost of the flagged quantity']
   currency char(3)
   flagged_since date [note: 'First day of the current unbroken flagged streak ("Since", UC12)']
-  evidence jsonb [note: 'Counts, last activity, and data date shown as evidence (BR-12)']
   created_at timestamptz [not null, default: `now()`]
 
   indexes {
@@ -1070,10 +1064,29 @@ Table detection_results {
     org_unit_id
   }
 
+  checks {
+    `check_type = 'inactive' or org_unit_id is null` [name: 'chk_detection_results_unit_only_inactive']
+  }
+
   Note: '''
-    Result of one check for one plan in one run. Lists, dashboards, and the
-    compliance view read the same rows, so figures tie across screens
-    (UC10, UC12, UC17, UC18). The per-seat list of UC11 is read from
+    Result of one check for one plan in one run: only the verdict is stored
+    (outcome, flagged quantity, its cost, since when).
+    Level of a result: an unassigned seat or an excess belongs to no
+    department, so unused and overuse have one company-level row per plan;
+    inactive has one row per department of the holders.
+    Manager data scope (BR-16): a Manager sees the company-level rows of the
+    plans that have a holder in their units, with the same figures for
+    everyone, and the inactive rows of their own units. Lists, dashboards, and
+    the compliance view read the same rows, so figures tie across screens
+    (UC10, UC12, UC17, UC18).
+    The figures shown beside a result are read from their owner table for the
+    data date of the run, never copied here:
+      Purchased / Entitlement = plan_daily_snapshots.purchased_qty
+      Assigned, seat statuses = plan_unit_daily_snapshots
+      Peak, deployed units    = usage_records
+      Unassigned, Excess      = flagged_qty
+    Evidence (BR-12) = these figures, last activity from license_assignments,
+    and the data date. The per-seat list of UC11 is read from
     license_assignments for the same data date.
     Saving opportunities (UC13) are computed from the latest results and the
     contract dates; they are not stored until turned into a recommendation.
@@ -1162,11 +1175,10 @@ Table audit_logs {
 
 Table data_overrides {
   id bigint [pk, increment]
-  entity_type varchar(60) [not null, note: 'Table name, e.g. entitlement_lines, license_assignments, expenses']
+  entity_type varchar(60) [not null, note: 'Table name: entitlement_lines or expenses']
   entity_id bigint [not null]
   field_name varchar(60) [not null]
   original_value text [note: 'Value from the connector; refreshed by each sync']
-  original_source data_source [not null]
   override_value text [not null]
   reason text [not null]
   overridden_by bigint [not null, ref: > user_accounts.id]
@@ -1181,6 +1193,10 @@ Table data_overrides {
     Staff edit of a value that came from a connector (BR-14): the edit needs a
     reason and the original value is kept beside it. While an override is in
     force, a sync updates original_value here and leaves the edited column.
+    Only entitlement lines (quantity, validity) and expenses from a billing API
+    can be overridden. Holders and usage of a plan with a connector cannot:
+    manual entry of that data is refused (UC03), so there is nothing to override.
+    The source of the original value is the source column of the edited row.
     Partial unique: one override in force per field
     (unique on entity_type, entity_id, field_name where reverted_at is null).
   '''
