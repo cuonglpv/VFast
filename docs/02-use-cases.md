@@ -55,8 +55,8 @@ Menus and buttons are hidden when the user lacks permission, but the API enforce
 |---|---|
 | BR-01 | ELMS is read-only toward providers. It never assigns, revokes, buys, renews, or changes a subscription; "Assigned" is data read from the provider. |
 | BR-02 | A license is described by three axes: measurement archetype (Allocation, Concurrent, Metered, Capacity), commercial term, and collection method. Each entitlement line has exactly one archetype. |
-| BR-03 | Every assigned seat has exactly one status: `Active` (activity in the last 60 days), `Inactive` (active before, nothing in the last 60 days), `No activity` (a usage source exists but no activity was ever recorded), `Not monitored` (no usage source). A purchased seat without a holder is `Unassigned`. |
-| BR-04 | Missing data is `Unknown`, never 0. `Not monitored` is never counted as `Inactive` or as waste. |
+| BR-03 | Every assigned seat has exactly one status: `Active` (activity in the last 60 days), `Inactive` (active before, nothing in the last 60 days), `No activity` (a usage source exists but no activity was ever recorded), `Not monitored` (no usage source, or a holder entered by Staff whose activity was never checked). A purchased seat without a holder is `Unassigned`. |
+| BR-04 | Missing data is `Unknown`, never 0. `Not monitored` is never counted as `Inactive` or as waste. Holders and usage entered by Staff count as current for 35 days after Staff last confirmed them; older data is `Unknown`. |
 | BR-05 | Every cost is converted to an effective monthly cost: yearly plans ÷ 12, perpetual licenses count only maintenance, pay-as-you-go uses the actual spend of the month. Amounts in different currencies are added only with a declared exchange rate. |
 | BR-06 | **Cost allocation:** the cost of a license is split evenly over its seats; each seat counts toward the department of its holder. Unassigned seats go to `Unallocated`; holders without a department go to `Unknown department`. The sum of all groups equals the total cost. |
 | BR-07 | **Overuse:** a license is `Over-allocated` when assigned quantity > entitlement (Allocation, Concurrent peak, Capacity deployed). Overuse is a compliance risk and is shown on the compliance dashboard. |
@@ -64,7 +64,7 @@ Menus and buttons are hidden when the user lacks permission, but the API enforce
 | BR-09 | Budget utilization = actual cost / budget: below 80% is normal, from 80% is a warning, from 100% is over budget. Budget reconciliation per unit and license: Planned → Purchased → Assigned → Used → Actual cost. |
 | BR-10 | An expense has a date, amount, currency, license, unit, and an optional invoice file (PDF or image, at most 10 MB). An expense can be edited until its month is closed; afterwards only a correcting entry is allowed. |
 | BR-11 | A forecast is a projection, never presented as actual cost: it uses the run rate of the last 3 closed months, known renewals, and active plan lines, and shows the method used. |
-| BR-12 | **Detection runs daily.** Unused = `Unassigned` seats; inactive = `Inactive` + `No activity`; overuse per BR-07. A result shows its evidence (count, last activity, data date) and its monthly cost. |
+| BR-12 | **Detection runs daily.** Unused = `Unassigned` seats; inactive = `Inactive` + `No activity`; leaver = seats still held by an employee after their last working day or by an account disabled at the provider, flagged the next day without waiting 60 days; overuse per BR-07. A result shows its evidence (count, last activity, data date) and its monthly cost. |
 | BR-13 | **Recommendations need evidence and a decision.** A recommendation (reduce seats, downgrade plan, cancel, reassign) shows its evidence and estimated yearly saving. Status: `Proposed` → `Accepted` or `Rejected` (reason required) → `Done`. ELMS never carries it out on the provider (BR-01). |
 | BR-14 | Every figure carries its source (`api`, `import`, `manual`) and confidence. A value from a connector cannot be overwritten silently: an edit needs a reason and keeps the original value. |
 | BR-15 | Every change to license data, expenses, budgets, recommendations, users, departments, roles, and permissions is recorded with who, old value, new value, and time. Licenses, vendors, and contracts are never deleted, only marked inactive. |
@@ -135,23 +135,23 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 #### UC02 Manage Vendors
 
 - **Actor:** Staff
-- **Main flow:** vendor table (Vendor, Products, Contracts, Collection method, Status) → create a vendor: name, website, support contact, collection method (API, log, import, manual) → edit → mark inactive
-- **Alternative:** duplicate name → open the existing vendor; vendor with an active contract → cannot be marked inactive
-- **Result:** every product and contract points to a vendor
+- **Main flow:** vendor table (Vendor, Kind, Products, Contracts, Collection method, Status) → create a vendor: name, kind (publisher or reseller), website, support contact → edit → mark inactive. Collection method is shown from the data sources of the vendor's licenses (API, log, import, manual), not typed in
+- **Alternative:** duplicate name → open the existing vendor; vendor with an active contract → cannot be marked inactive; a reseller (distributor, CSP partner) owns no product and is chosen only as the party of a contract
+- **Result:** every product points to its publisher; every contract points to the publisher or reseller it is signed with
 
 #### UC03 Manage License Entitlements
 
 - **Actor:** Staff
-- **Main flow (entitlement):** open a product → entitlement lines (Plan, Archetype, Unit, Quantity or quota, Assigned, Active, Valid from–to, Source) → add a line: plan, archetype (BR-02), unit (seat, slot, token, core…), quantity or quota (or unlimited), validity, commercial term, unit price for the period of that term, currency → edit → end a line → import lines from a CSV template
-- **Main flow (assignment and usage, for a line without a connector):** open a line → holders table (User, Assigned date, Last active, Source) → add or remove a holder by employee email → enter the last activity date per holder; for Concurrent, Metered, and Capacity lines enter the peak sessions, consumption, or deployed units per period → or import a CSV template for the line's archetype → preview rows to add, update, reject → confirm → see the entry history (who, when, file, rows)
-- **Alternative:** negative quantity, end before start, or missing currency → field errors; a value from a connector → edit needs a reason and keeps the original (BR-14); CSV with an invalid row → whole file rejected with the error rows; holder email not matched to an employee → stored with the provider identity and `Unknown department`; the line already has a connector for assignments or usage → manual entry of that data is refused (one primary source, BR-14); a period entered twice → replaced, no duplicate
+- **Main flow (entitlement):** open a product → entitlement lines (Plan, Archetype, Unit, Quantity or quota, Assigned, Active, Valid from–to, Source) → add a line: plan, archetype (BR-02), unit (seat, slot, token, core…), quantity or quota (or unlimited), validity, commercial term, unit price for the period of that term as the vendor quotes it, for a number of units (2.50 USD per 1,000,000 tokens), currency → optionally split a line among units: quota per unit from a date; moving seats mid-year ends the current quotas and starts new ones; a renewal line copies the quotas in force → edit → end a line → import lines from a CSV template
+- **Main flow (assignment and usage, for a line without a connector):** open a line → holders table (User, Assigned date, Last active, Source) → add or remove a holder by employee email → enter the last activity date per holder, or mark the holder as checked with no activity; for Concurrent, Metered, and Capacity lines enter the peak sessions, consumption, or deployed units per period → or import a CSV template for the line's archetype → preview rows to add, update, reject → confirm → mark the data as current (a confirmed import does it) → see the entry history (who, when, file, rows)
+- **Alternative:** negative quantity, end before start, or missing currency → field errors; a value from a connector → edit needs a reason and keeps the original (BR-14); CSV with an invalid row → whole file rejected with the error rows; holder email not matched to an employee → stored with the provider identity and `Unknown department`; the line already has a connector for assignments or usage → manual entry of that data is refused (one primary source, BR-14); a period entered twice → replaced, no duplicate; a holder whose activity was never entered or checked → `Not monitored`; holders and usage not confirmed for 35 days → `Unknown`, so detection reports `Not evaluated` (BR-04); quotas adding up to more than the line on any day → refused
 - **Result:** Purchased quantity and price per line; Assigned and usage come from connectors or, where there is none, from Staff entry with source `manual` or `import` (BR-14). A line with neither stays `Not monitored` (BR-03)
 
 #### UC04 Manage Contracts
 
 - **Actor:** Staff
-- **Main flow:** contract table (Contract, Vendor, Start, Renewal date, Notice period, Auto-renew, Value, Status) → create a contract: vendor, entitlement lines it covers, start, renewal date, notice period, auto-renew, commitment, total value, attachment → edit → mark ended
-- **Alternative:** renewal before start → error; an entitlement line already covered by another active contract → refused; renewal within 30 days → marked "Renewal soon"; notice deadline passed → marked "Notice period passed"
+- **Main flow:** contract table (Contract, Vendor, Start, Renewal date, Notice period, Auto-renew, Value, Status) → create a contract: vendor or reseller it is signed with, entitlement lines it covers (a reseller contract may cover licenses of several publishers), start, renewal date, notice period (empty when not known), auto-renew, commitment, total value, attachments (contract, amendments, PO) → edit → mark ended
+- **Alternative:** renewal before start → error; an entitlement line already covered by another active contract → refused; renewal within 30 days → marked "Renewal soon"; notice deadline passed → marked "Notice period passed"; auto-renewing contract with an empty notice period → marked "Notice period unknown" and its notice deadline is `Unknown`, never the renewal date
 - **Result:** renewal dates feed the forecast (UC09) and recommendations timing (UC13)
 
 ### Budget Management
@@ -181,7 +181,7 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 
 - **Actor:** Manager
 - **Main flow:** choose fiscal year → Total budget, Planned cost, Actual cost, Remaining, Utilization → table per unit with utilization colour (BR-09) → open a unit: per license Planned, Purchased, Assigned, Used, Actual cost, Variance, with gap types (`Over plan`, `Under plan`, `Unassigned`, `Unused`)
-- **Alternative:** unit with cost but no plan → Budget "Not set", Utilization "—"; missing data at a level → `Unknown`, no gap flagged at that level; cost outside the plan → group "Outside plan"; a P&L budget not fully shared out to its departments → the rest shown as "Not distributed" (BR-08)
+- **Alternative:** unit with cost but no plan → Budget "Not set", Utilization "—"; missing data at a level → `Unknown`, no gap flagged at that level; cost outside the plan → group "Outside plan"; a P&L budget not fully shared out to its departments → the rest shown as "Not distributed" (BR-08); a quota that changes during the year → Purchased of the unit follows the quota in force on each day
 - **Result:** read-only; the sum of the units plus `Unallocated` equals the company's actual cost
 
 #### UC09 Forecast License Spending
@@ -204,8 +204,8 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 #### UC11 Detect Inactive Usage
 
 - **Actor:** Manager
-- **Main flow:** list of seats in `Inactive` or `No activity` (User, Department, License, Status, Last active, Monthly seat cost) → filter by license, department, status → open the license → create a recommendation (UC14)
-- **Alternative:** `Not monitored` licenses excluded and counted separately (BR-04); holder not matched to an employee → provider identity with `Unknown department`
+- **Main flow:** list of seats in `Inactive`, `No activity`, or `Leaver` (User, Department, License, Status, Last active, Monthly seat cost) → filter by license, department, status → open the license → create a recommendation (UC14)
+- **Alternative:** `Not monitored` licenses excluded and counted separately (BR-04); holder not matched to an employee → provider identity with `Unknown department`; employee past their last working day, or account disabled at the provider, still holding a seat → `Leaver` from the next day, without waiting 60 days, and not counted again as `Inactive` (BR-12)
 - **Result:** BR-03, BR-12
 
 #### UC12 Detect License Overuse
@@ -220,7 +220,7 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 
 - **Actor:** Manager
 - **Main flow:** list of saving opportunities built from UC10–UC12 (reduce seats, downgrade plan, cancel, reassign) with evidence and estimated yearly saving → the earliest date each can be acted on (monthly plan: now; yearly or enterprise: before the renewal, minus the notice period) → turn an opportunity into a recommendation (UC14)
-- **Alternative:** no opportunity → "No saving opportunity found"; the notice period has passed → opportunity moved to the next renewal
+- **Alternative:** no opportunity → "No saving opportunity found"; the notice period has passed → opportunity moved to the next renewal; the notice period of the contract is not known → action date `Unknown`, never "now"
 - **Result:** read-only until a recommendation is created; the system never acts on its own (BR-13)
 
 #### UC14 Manage Recommendations
@@ -249,7 +249,7 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 #### UC17 View Compliance Dashboard
 
 - **Actor:** Manager
-- **Main flow:** licenses `Compliant`, `Over-allocated`, `Not evaluated`; overuse list (UC12); contracts with renewal soon or notice period passed (UC04)
+- **Main flow:** licenses `Compliant`, `Over-allocated`, `Not evaluated`; overuse list (UC12); contracts with renewal soon, notice period passed, or notice period unknown (UC04)
 - **Alternative:** missing data → `Not evaluated`, never `Compliant`
 - **Result:** read-only
 
@@ -265,15 +265,15 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 #### UC19 Manage Users
 
 - **Actor:** Admin
-- **Main flow:** user table (Name, Email, Role, P&L, Department, Managed units, Status, Last login) → create an account: name, email, role, P&L and department → edit → disable or re-enable
-- **Alternative:** email already exists → open that account; disabling oneself or the last active Admin → refused (BR-17); email not in the collected user list → created with a warning that UC23 will be empty
+- **Main flow:** user table (Name, Email, Role, P&L, Department, Managed units, Status, Last login) → create an account: name, email, role, P&L and department → the system shows a one-time link to set the password, which Admin hands to the user → edit → reset password (a new link) → disable or re-enable → import the employee directory from an HR CSV template (name, email, employee code, P&L, department, last working day), so people without an account still get a department
+- **Alternative:** email already exists → open that account; disabling oneself or the last active Admin → refused (BR-17); email not in the collected user list → created with a warning that UC23 will be empty; link expired or lost → Admin creates a new one; employee past their last working day → account disabled automatically and cannot be re-enabled; invalid row in the HR file → whole file rejected with the error rows
 - **Result:** disabling ends open sessions at once and never deletes the account; changes recorded (BR-15)
 
 #### UC20 Manage P&Ls and Departments
 
 - **Actor:** Admin
 - **Main flow:** tree of P&Ls (subsidiaries) and their departments → create a P&L, or a department under a P&L → rename; move a department to another P&L → assign Managers to a P&L or a department → mark inactive
-- **Alternative:** a department without a P&L, or a P&L under a department → refused; duplicate name within the same P&L → refused; a unit with active users or an active budget plan → cannot be marked inactive; units imported from HR data → read-only name, Managers still assignable
+- **Alternative:** a department without a P&L, or a P&L under a department → refused; duplicate name within the same P&L → refused; a unit with active users or an active budget plan → cannot be marked inactive
 - **Result:** units drive data scope (BR-16), cost allocation (UC06), and budgets (UC05)
 
 #### UC21 Manage Roles
@@ -304,7 +304,7 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 
 - **Actor:** Employee, Staff, Manager, Admin
 - **Main flow:** email and password → system checks credentials and status → session created → default screen by role (Manager: License Dashboard; Staff: Software Catalog; Admin: Users; Employee: My Licenses) → logout destroys the session
-- **Alternative:** wrong credentials → generic message; 5 failures → locked 15 minutes; disabled account → refused; session expired → log in again; screen outside the role → `403`
+- **Alternative:** wrong credentials → generic message; 5 failures → locked 15 minutes; disabled account → refused; password not set yet → refused until the user opens the one-time link from Admin and sets one; forgotten password → ask Admin for a new link; session expired → log in again; screen outside the role → `403`
 - **Result:** BR-18; SSO and self-registration are out of scope
 
 **Related:** [Research](01-research-top-down.md) · [INVEST requirements](03-invest-requirements.md)

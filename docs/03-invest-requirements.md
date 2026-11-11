@@ -23,7 +23,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 |---|---|---|---|---|---|
 | **License Management** | | | | | |
 | US01 | As a Staff member, I want to maintain one software catalog for every provider so that everyone talks about the same products. | Single catalog | US24 | M | 5 |
-| US02 | As a Staff member, I want to record vendors and how their data is collected so that every product and contract has an owner. | Vendor master data | US24 | M | 2 |
+| US02 | As a Staff member, I want to record the publishers and resellers we buy from so that every product and contract has an owner. | Vendor master data | US24 | M | 2 |
 | US03 | As a Staff member, I want to record entitlement lines with archetype, quantity, and price, and — where no connector exists — who holds each license and their usage, so that purchased, assigned, and used quantities are known. | Purchased and usage baseline | US01, US02 | M | 8 |
 | US04 | As a Staff member, I want to record contracts with renewal date and notice period so that renewals are never missed. | Renewal control | US02, US03 | M | 3 |
 | **Budget Management** | | | | | |
@@ -44,7 +44,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US17 | As a Manager, I want a compliance dashboard so that overuse and contract deadlines are visible. | Compliance overview | US12, US04 | M | 3 |
 | US18 | As a Manager, I want an optimization dashboard so that I see waste and realized savings. | Savings overview | US10, US11, US14 | S | 3 |
 | **User & Organization** | | | | | |
-| US19 | As an Admin, I want to create, edit, and disable users so that only the right people have access. | Access control | US24 | M | 3 |
+| US19 | As an Admin, I want to create, edit, and disable users, hand them a link to set their password, and import the employee directory so that only the right people have access and every license holder has a department. | Access control | US24 | M | 5 |
 | US20 | As an Admin, I want to maintain the P&Ls and their departments and assign Managers to them so that data scope and budgets follow the group's organization. | Organization | US19 | M | 3 |
 | US21 | As an Admin, I want to change the role of a user so that their access matches their job. | Role control | US19 | M | 2 |
 | US22 | As an Admin, I want to adjust which features each role may read or write so that permissions fit the company. | Permission control | US21 | M | 5 |
@@ -52,7 +52,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US23 | As an employee, I want to see the licenses assigned to me and whether I am recorded as using them so that I can tell my manager when I no longer need one. | Self-service | US24 | M | 2 |
 | US24 | As any user, I want to log in and out and land on the screen of my role so that only I see my data. | Protected access | Seeded accounts | M | 3 |
 
-**Total:** 24 stories, 92 points. Must-have: 21 stories (79 points); forecast, cost optimization, and the optimization dashboard are Should-have.
+**Total:** 24 stories, 94 points. Must-have: 21 stories (81 points); forecast, cost optimization, and the optimization dashboard are Should-have.
 
 ## Per-story INVEST review
 
@@ -61,16 +61,16 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | Story | I | N | V | E | S | T | Notes |
 |---|---|---|---|---|---|---|---|
 | US01 | PASS | PASS | PASS | PASS | PASS | PASS | Duplicate rule and inactive rule are explicit. |
-| US02 | PASS | PASS | PASS | PASS | PASS | PASS | Simple master data; inactive rule explicit. |
-| US03 | PASS | PASS | PASS | PASS | PASS | PASS | Largest story (8). Archetype per line (BR-02); connector values protected and one primary source per data type (BR-14). Splits into: entitlement form, entitlement CSV, holders and usage form, usage CSV per archetype. |
-| US04 | PASS | PASS | PASS | PASS | PASS | PASS | "Renewal soon" and "Notice period passed" are testable with a fixed date. |
+| US02 | PASS | PASS | PASS | PASS | PASS | PASS | Simple master data; publisher or reseller; inactive rule explicit. |
+| US03 | PASS | PASS | PASS | PASS | PASS | PASS | Largest story (8). Archetype per line (BR-02); connector values protected and one primary source per data type (BR-14); price per N units; quotas with dates; manual data current for 35 days. Splits into: entitlement form, entitlement CSV, holders and usage form, usage CSV per archetype. |
+| US04 | PASS | PASS | PASS | PASS | PASS | PASS | "Renewal soon", "Notice period passed", and "Notice period unknown" are testable with a fixed date. |
 | US05 | PASS | PASS | PASS | PASS | PASS | PASS | One plan per unit and year; `Draft`/`Active` (BR-08). |
 | US06 | PASS | PASS | PASS | PASS | PASS | PASS | Split rule BR-06; total ties to the financial dashboard. |
 | US07 | PASS | PASS | PASS | PASS | PASS | PASS | Closed-month rule BR-10. Splits into: form with invoice, CSV import. |
 | US08 | PASS | PASS | PASS | PASS | PASS | PASS | Gap types and `Unknown` rule explicit (BR-04, BR-09). |
 | US09 | PASS | PASS | PASS | PASS | PASS | PASS | Method fixed (BR-11); low-confidence case defined. Should-have. |
 | US10 | PASS | PASS | PASS | PASS | PASS | PASS | Unknown assignment excluded. |
-| US11 | PASS | PASS | PASS | PASS | PASS | PASS | `Not monitored` excluded (BR-04). |
+| US11 | PASS | PASS | PASS | PASS | PASS | PASS | `Not monitored` excluded (BR-04); leavers flagged without the 60-day wait (BR-12). |
 | US12 | PASS | PASS | PASS | PASS | PASS | PASS | Overuse per archetype (BR-07). |
 | US13 | PASS | PASS | PASS | PASS | PASS | PASS | Action date from contract terms. Should-have. |
 | US14 | PASS | PASS | PASS | PASS | PASS | PASS | Status flow and reason rule (BR-13). |
@@ -78,7 +78,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US16 | PASS | PASS | PASS | PASS | PASS | PASS | Totals tie to US06, US08. |
 | US17 | PASS | PASS | PASS | PASS | PASS | PASS | `Not evaluated` never shown as `Compliant`. |
 | US18 | PASS | PASS | PASS | PASS | PASS | PASS | Figures tie to US10, US11, US14. Should-have. |
-| US19 | PASS | PASS | PASS | PASS | PASS | PASS | Last Admin protected (BR-17). |
+| US19 | PASS | PASS | PASS | PASS | PASS | PASS | Last Admin protected (BR-17); one-time password link; HR CSV import. Splits into: accounts, password link, directory import. |
 | US20 | PASS | PASS | PASS | PASS | PASS | PASS | Cycle and inactive rules explicit. |
 | US21 | PASS | PASS | PASS | PASS | PASS | PASS | One role per account. |
 | US22 | PASS | PASS | PASS | PASS | PASS | PASS | Guard rails: Admin permissions and Employee cost access cannot be changed. |
@@ -100,8 +100,9 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 #### AC-US02 Vendors
 
-1. Given a new vendor with a collection method, when saved, then it can be chosen for products and contracts.
+1. Given a new publisher, when saved, then it can be chosen for products and contracts; given a new reseller, then it can be chosen for contracts only.
 2. Given a vendor with an active contract, when it is marked inactive, then it is refused.
+3. Given licenses of a vendor collected by API and by manual entry, then the vendor's collection method shows both.
 
 #### AC-US03 License entitlements
 
@@ -112,12 +113,18 @@ Format: **Given** context, **When** action, **Then** observable result.
 5. Given a line without a connector, when Staff adds 3 holders by email with their last activity dates, then Assigned shows 3 and each holder's status follows BR-03 with source `manual`.
 6. Given a line whose assignments come from a connector, when Staff tries to add a holder by hand, then it is refused.
 7. Given a usage CSV for a Metered line, then the preview shows rows to add, update, and reject before anything is written; importing the same period again creates no duplicate.
+8. Given a price of 2.50 USD per 1,000,000 tokens, when saved, then the line keeps 2.50 per 1,000,000 and 40 million tokens cost 100 USD, never 0.
+9. Given a line without a connector and 10 holders, when Staff enter activity for 3 of them, then the other 7 are `Not monitored`, not `No activity`.
+10. Given manually entered holders last confirmed 40 days ago, then their seats are `Not evaluated` by detection until Staff confirm the data again.
+11. Given 500 seats split 300 Sales and 200 IT, when 50 seats move to IT from 1 July, then Purchased of Sales is 300 in June and 250 in July; given quotas that would add up to more than 500 on a day, then the change is refused.
 
 #### AC-US04 Contracts
 
 1. Given a contract renewing in 20 days, then it is marked "Renewal soon"; given its notice deadline has passed, then it is marked "Notice period passed".
 2. Given an entitlement line already covered by another active contract, when added to a new contract, then it is refused.
 3. Given a renewal date before the start date, then an error is returned.
+4. Given an auto-renewing contract with no notice period, then it is marked "Notice period unknown" and its notice deadline is `Unknown`, never the renewal date.
+5. Given a contract signed with a reseller, when lines of two publishers are added, then it is accepted.
 
 ### Budget Management
 
@@ -164,6 +171,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 1. Given a seat last active 75 days ago, then it is listed as `Inactive`; given a seat with a usage source and no activity ever, then as `No activity`.
 2. Given a license without a usage source, then its seats are not listed and are counted as `Not monitored`.
+3. Given an employee whose last working day was yesterday and who still holds a seat, then the seat is listed as `Leaver` today and is not also counted as `Inactive`.
 
 #### AC-US12 Overuse
 
@@ -175,6 +183,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 1. Given 5 unassigned seats on a monthly plan, then the opportunity "reduce 5 seats" shows its yearly saving and can be acted on now.
 2. Given a yearly contract renewing on 1 March with a 30-day notice period, then the action date is 30 January; given that date has passed, then the opportunity moves to the next renewal.
+3. Given a yearly contract whose notice period is not known, then the action date is `Unknown`, not "now".
 
 #### AC-US14 Recommendations
 
@@ -198,7 +207,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 #### AC-US17 Compliance dashboard
 
 1. Given overuse results, then the same licenses as US12 are listed as `Over-allocated`.
-2. Given contracts marked "Renewal soon" or "Notice period passed", then they are listed.
+2. Given contracts marked "Renewal soon", "Notice period passed", or "Notice period unknown", then they are listed.
 
 #### AC-US18 Optimization dashboard
 
@@ -213,6 +222,9 @@ Format: **Given** context, **When** action, **Then** observable result.
 2. Given a user is disabled, then their open sessions end at once and the account stays listed.
 3. Given the Admin disables themselves or the last active Admin, then it is refused.
 4. Given a non-Admin calls the user API, then it returns `403`.
+5. Given Admin creates an account, then a one-time link to set the password is shown once; the user cannot log in until they open it and set a password; a link past its validity is refused.
+6. Given an HR CSV with 200 employees, when imported, then employees without an account are created with their department, and their provider identities match them by email.
+7. Given an employee whose last working day has passed, then their account is disabled and re-enabling it is refused.
 
 #### AC-US20 Departments
 
@@ -244,6 +256,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 2. Given wrong credentials or a disabled account, then the same generic message is shown.
 3. Given 5 failed attempts in a row, then login is locked for 15 minutes.
 4. Given logout, then the session is destroyed and internal pages redirect to login.
+5. Given an account whose password is not set yet, then login is refused; after the user sets a password through a valid link, login works.
 
 ## Cross-cutting acceptance constraints
 
