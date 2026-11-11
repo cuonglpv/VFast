@@ -111,19 +111,202 @@ US23–US24   My licenses, login / logout                                       
 
 Backlog, per-story INVEST review, and acceptance criteria: [INVEST requirements](docs/03-invest-requirements.md).
 
-## Documentation
+## 2. Database Diagrams (DBML / ER)
 
-- [Top-down research](docs/01-research-top-down.md) — problem, stakeholders, goals, license models, data sources, process, epics, scope, risks
-- [Use cases](docs/02-use-cases.md) — actors, role × feature matrix, business rules, use case diagrams per role, 24 use cases
-- [INVEST requirements](docs/03-invest-requirements.md) — 24 user stories, INVEST review, acceptance criteria
-- [Information architecture](docs/04-information-architecture-manager.md) — screens, views, and navigation: License Management, Analytics Hub (license health and budget analytics), User Management
-- [Code structure and architecture](docs/05-code-structure.md) — solution architecture, backend modules and .NET folder layout, API conventions, jobs, caching, security, frontend structure
-- [Database design (DBML)](docs/database/elms.dbml) — 37 tables, 19 enums, PostgreSQL; paste into [dbdiagram.io](https://dbdiagram.io) to render
-- [ER diagrams (Mermaid)](docs/database/er-diagram.md) — one diagram per table group, generated from the DBML
+The PostgreSQL data model has 37 tables in seven groups, written in DBML: [elms.dbml](docs/database/elms.dbml). Paste it into [dbdiagram.io](https://dbdiagram.io) or run `npx -p @dbml/cli dbml2sql docs/database/elms.dbml --postgres`. It is a **target design**; nothing is migrated yet.
 
-## Architecture and code structure
+### 2.1 Table groups
+
+```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 30, "rankSpacing": 60}}}%%
+flowchart LR
+  subgraph org ["Organization & access"]
+    OU[org_units] --> EMP[employees]
+    RO[roles] --> RP[role_permissions]
+    PE[permissions] --> RP
+    UA[user_accounts] --> US[user_sessions]
+    MOU[manager_org_units]
+  end
+  subgraph cat ["License catalog"]
+    V[vendors] --> SP[software_products] --> LP[license_plans]
+    SC[software_categories] --> SP
+    LP --> EL[entitlement_lines] --> EA[entitlement_allocations]
+    C[contracts] --> EL
+  end
+  subgraph pipe ["Collection pipeline"]
+    CN[connectors] --> SR[sync_runs] --> RR[raw_records]
+    IB[import_batches]
+    F[files]
+  end
+  subgraph use ["Holders & usage"]
+    SU[subjects] --> LA[license_assignments]
+    UR[usage_records]
+    PDS[plan_daily_snapshots]
+    PUS[plan_unit_daily_snapshots]
+  end
+  subgraph fin ["Budget & expenses"]
+    BP[budget_plans] --> BPL[budget_plan_lines]
+    EX[expenses]
+    AP[accounting_periods]
+    FX[exchange_rates]
+  end
+  subgraph opt ["Optimization"]
+    DR[detection_runs] --> DRE[detection_results] --> REC[recommendations]
+  end
+  subgraph aud ["Audit"]
+    AL[audit_logs]
+    DO[data_overrides]
+  end
+
+  OU --> EX
+  OU --> DRE
+  LP --> LA
+  EL --> LA
+  LP --> BPL
+  LP --> EX
+  LP --> UR
+  LP --> DRE
+  LP --> REC
+  SR --> UR
+  SR --> LA
+  SR --> EX
+  F --> EX
+  IB --> LA
+  IB --> UR
+  EMP --> SU
+  EMP --> UA
+```
+
+### 2.2 Entity-relationship diagram
+
+Relationships between all tables (label = foreign key column). Columns, types, and per-group diagrams: [ER diagrams](docs/database/er-diagram.md).
+
+```mermaid
+erDiagram
+  org_units ||--o{ org_units : "parent_id"
+  org_units ||--o{ employees : "org_unit_id"
+  roles ||--o{ role_permissions : "role_id"
+  permissions ||--o{ role_permissions : "permission_id"
+  user_accounts ||--o{ role_permissions : "granted_by"
+  employees ||--o| user_accounts : "employee_id"
+  roles ||--o{ user_accounts : "role_id"
+  user_accounts ||--o{ user_accounts : "created_by"
+  user_accounts ||--o{ user_sessions : "user_account_id"
+  user_accounts ||--o{ manager_org_units : "user_account_id"
+  org_units ||--o{ manager_org_units : "org_unit_id"
+  user_accounts ||--o{ manager_org_units : "assigned_by"
+  user_accounts ||--o{ vendors : "created_by"
+  software_categories ||--o{ software_categories : "parent_id"
+  vendors ||--o{ software_products : "vendor_id"
+  software_categories ||--o{ software_products : "category_id"
+  user_accounts ||--o{ software_products : "created_by"
+  software_products ||--o{ product_links : "product_id"
+  software_products ||--o{ license_plans : "product_id"
+  user_accounts ||--o{ license_plans : "created_by"
+  vendors ||--o{ contracts : "vendor_id"
+  files ||--o{ contracts : "attachment_file_id"
+  user_accounts ||--o{ contracts : "created_by"
+  license_plans ||--o{ entitlement_lines : "license_plan_id"
+  contracts ||--o{ entitlement_lines : "contract_id"
+  sync_runs ||--o{ entitlement_lines : "sync_run_id"
+  import_batches ||--o{ entitlement_lines : "import_batch_id"
+  user_accounts ||--o{ entitlement_lines : "created_by"
+  entitlement_lines ||--o{ entitlement_allocations : "entitlement_line_id"
+  org_units ||--o{ entitlement_allocations : "org_unit_id"
+  user_accounts ||--o{ entitlement_allocations : "created_by"
+  vendors ||--o{ connectors : "vendor_id"
+  license_plans ||--o{ plan_data_sources : "license_plan_id"
+  connectors ||--o{ plan_data_sources : "connector_id"
+  connectors ||--o{ sync_runs : "connector_id"
+  sync_runs ||--o{ raw_records : "sync_run_id"
+  user_accounts ||--o{ files : "uploaded_by"
+  license_plans ||--o{ import_batches : "license_plan_id"
+  files ||--o{ import_batches : "file_id"
+  user_accounts ||--o{ import_batches : "imported_by"
+  vendors ||--o{ subjects : "vendor_id"
+  employees ||--o{ subjects : "employee_id"
+  org_units ||--o{ subjects : "org_unit_id"
+  license_plans ||--o{ license_assignments : "license_plan_id"
+  subjects ||--o{ license_assignments : "subject_id"
+  entitlement_lines ||--o{ license_assignments : "entitlement_line_id"
+  sync_runs ||--o{ license_assignments : "sync_run_id"
+  import_batches ||--o{ license_assignments : "import_batch_id"
+  user_accounts ||--o{ license_assignments : "entered_by"
+  license_plans ||--o{ usage_records : "license_plan_id"
+  subjects ||--o{ usage_records : "subject_id"
+  sync_runs ||--o{ usage_records : "sync_run_id"
+  import_batches ||--o{ usage_records : "import_batch_id"
+  user_accounts ||--o{ usage_records : "entered_by"
+  license_plans ||--o{ plan_daily_snapshots : "license_plan_id"
+  license_plans ||--o{ plan_unit_daily_snapshots : "license_plan_id"
+  org_units ||--o{ plan_unit_daily_snapshots : "org_unit_id"
+  org_units ||--o{ budget_plans : "org_unit_id"
+  user_accounts ||--o{ budget_plans : "activated_by"
+  user_accounts ||--o{ budget_plans : "created_by"
+  budget_plans ||--o{ budget_plan_lines : "budget_plan_id"
+  license_plans ||--o{ budget_plan_lines : "license_plan_id"
+  license_plans ||--o{ expenses : "license_plan_id"
+  org_units ||--o{ expenses : "org_unit_id"
+  files ||--o{ expenses : "invoice_file_id"
+  expenses ||--o{ expenses : "corrects_expense_id"
+  sync_runs ||--o{ expenses : "sync_run_id"
+  import_batches ||--o{ expenses : "import_batch_id"
+  user_accounts ||--o{ expenses : "created_by"
+  user_accounts ||--o{ accounting_periods : "closed_by"
+  user_accounts ||--o{ exchange_rates : "declared_by"
+  detection_runs ||--o{ detection_results : "detection_run_id"
+  license_plans ||--o{ detection_results : "license_plan_id"
+  org_units ||--o{ detection_results : "org_unit_id"
+  license_plans ||--o{ recommendations : "license_plan_id"
+  license_plans ||--o{ recommendations : "target_plan_id"
+  org_units ||--o{ recommendations : "org_unit_id"
+  detection_results ||--o{ recommendations : "detection_result_id"
+  user_accounts ||--o{ recommendations : "owner_id"
+  user_accounts ||--o{ recommendations : "created_by"
+  user_accounts ||--o{ recommendations : "decided_by"
+  user_accounts ||--o{ audit_logs : "actor_id"
+  user_accounts ||--o{ data_overrides : "overridden_by"
+```
+
+### 2.3 Key rules
+
+The schema itself keeps the most important rules:
+
+- Missing data is `NULL` = Unknown and is never read as 0 (BR-04); "unlimited" is its own flag.
+- Money is `numeric(18,2)` with a currency; different currencies are only added through `exchange_rates` (BR-05).
+- Master data is never deleted, only ended or deactivated (BR-15), so no foreign key cascades on delete.
+- Each daily figure has one owner table: Purchased and cost, seat counts, and period usage are stored once; `detection_results` stores only the verdict.
+- Every account belongs to exactly one employee and has exactly one role (BR-17); sessions are server-side so a disabled account ends at once.
+- ELMS never writes to a provider (BR-01).
+
+Tables, enums, conventions, and tables per backend module: [Data model](docs/06-data-model.md).
+
+## 3. Architecture and Folder Structures
 
 ELMS is designed as one monolith with Clean Architecture, deployed as two processes (API and worker) that share one PostgreSQL database. The API serves users; slow work (provider sync, CSV import, detection) runs in the worker through a PostgreSQL-backed job queue, so no Redis or message broker is required.
+
+### 3.1 Container view
+
+```mermaid
+flowchart TB
+    people(["Employee / Staff / Manager / Admin"])
+    providers["Software providers<br/><i>[External]</i><br/>read-only APIs"]
+    subgraph platform["ELMS [System boundary]"]
+        direction TB
+        web["Web Frontend<br/><i>[React + Vite SPA]</i>"]
+        api["Elms.Api<br/><i>[ASP.NET Core 10]</i><br/>Auth, RBAC, data scope"]
+        worker["Elms.Worker<br/><i>[.NET Worker + Hangfire]</i><br/>Sync, import, detection"]
+        db[("PostgreSQL 16<br/>data, queue, sessions")]
+        files[("S3 / MinIO<br/>invoices, CSV")]
+    end
+    people --> web
+    web -- "REST / JSON, cookie session" --> api
+    api --> db
+    api --> files
+    worker --> db
+    worker --> files
+    worker -- "read-only" --> providers
+```
 
 | Layer | Technology | Status |
 |---|---|---|
@@ -131,22 +314,66 @@ ELMS is designed as one monolith with Clean Architecture, deployed as two proces
 | Backend | ASP.NET Core 10, EF Core + Dapper, Hangfire worker | Proposed |
 | Database | PostgreSQL 16 | Designed in `docs/database/elms.dbml` |
 
+### 3.2 Repository layout
+
 ```text
 VFast/
-├─ docs/                  Research, use cases, INVEST, IA, code structure
-│  ├─ database/           elms.dbml and er-diagram.md
-│  ├─ diagrams/out/       Use case diagrams
-│  └─ mindmap/            XMind source
+├─ README.md
+├─ docs/
+│  ├─ 01 … 04               Research, use cases, INVEST, information architecture
+│  ├─ 05-folder-structure.md
+│  ├─ 06-data-model.md
+│  ├─ database/             elms.dbml, er-diagram.md
+│  ├─ diagrams/out/         Use case diagrams
+│  └─ mindmap/              XMind source
 └─ src/
-   ├─ frontend/           React SPA: routes, layouts, components, sections, pages, types, utils, theme
-   └─ backend/            (proposed) Elms.Domain, Application, Infrastructure, Api, Worker
+   ├─ frontend/             React SPA (implemented)
+   └─ backend/              .NET solution (proposed)
 ```
 
-Full folder trees, module boundaries, and conventions: [Code structure and architecture](docs/05-code-structure.md).
+### 3.3 Frontend (implemented)
 
-## Database
+```text
+src/frontend/
+├─ routes/        paths.ts, router.tsx
+├─ layouts/       Header, Sidebar, MainLayout
+├─ components/    cards/, layout/, shared charts and icons
+├─ sections/      licenses/, budget/  (feature blocks that compose pages)
+├─ pages/         licenses/, budget/, analytics/, users/  (one per screen)
+├─ types/  utils/  data/  theme/
+└─ App.tsx, main.tsx, index.css
+```
 
-The schema has 37 tables in seven groups: organization and access, license catalog, collection pipeline, holders and usage, budget and expenses, optimization, and audit. Money is `numeric(18,2)` with a currency, and `NULL` always means Unknown, never zero. Master data is never deleted, only ended or deactivated. Source: [`docs/database/elms.dbml`](docs/database/elms.dbml); diagrams: [`docs/database/er-diagram.md`](docs/database/er-diagram.md). The schema is a target design; nothing is migrated yet.
+Call flow: `routes → pages → sections → components → types / utils`.
+
+### 3.4 Backend (proposed)
+
+```text
+src/backend/
+├─ src/
+│  ├─ SharedKernel/
+│  ├─ Elms.Domain/           Entities/<Module>/, Enums/, Rules/
+│  ├─ Elms.Application/      <Module>/<Feature>/{Commands,Queries,DTO}, Interfaces/
+│  ├─ Elms.Infrastructure/   Data/ (AppDbContext, Configurations/, Migrations/), Connectors/, Storage/
+│  ├─ Elms.Api/              Controllers/, Program.cs
+│  └─ Elms.Worker/           Jobs/, Program.cs
+└─ tests/                    Unit, Integration (Testcontainers), Architecture
+```
+
+Dependency direction: `Api / Worker → Infrastructure → Application → Domain → SharedKernel`. The eight business modules (`identity`, `organization`, `catalog`, `ingestion`, `usage`, `finance`, `optimization`, `analytics`, plus shared `audit`) are feature folders inside each layer; boundaries are enforced by architecture tests.
+
+Full trees, module table, API conventions, jobs, caching, security, and deployment: [Folder structure and architecture](docs/05-folder-structure.md).
+
+## Documentation
+
+- [Top-down research](docs/01-research-top-down.md) — problem, stakeholders, goals, license models, data sources, process, epics, scope, risks
+- [Use cases](docs/02-use-cases.md) — actors, role × feature matrix, business rules, use case diagrams per role, 24 use cases
+- [INVEST requirements](docs/03-invest-requirements.md) — 24 user stories, INVEST review, acceptance criteria
+- [Information architecture](docs/04-information-architecture-manager.md) — screens, views, and navigation: License Management, Analytics Hub (license health and budget analytics), User Management
+- [Folder structure and architecture](docs/05-folder-structure.md) — solution architecture, frontend structure, backend modules and .NET folder layout, API conventions, jobs, caching, security
+- [Data model](docs/06-data-model.md) — table groups, tables, enums, conventions, tables per backend module
+- [Database design (DBML)](docs/database/elms.dbml) — 37 tables, 19 enums, PostgreSQL; paste into [dbdiagram.io](https://dbdiagram.io) to render
+- [ER diagrams (Mermaid)](docs/database/er-diagram.md) — one diagram per table group, generated from the DBML
 
 ## Frontend development
 
