@@ -133,11 +133,11 @@ flowchart TB
     files["CSV files<br/>[Input, no API]<br/>entitlements, holders, usage, expenses, HR directory"]
 
     users -- "HTTPS, role-based screens" --> elms
-    elms -- "reads licenses, assignments, usage, cost<br/>[read-only]" --> providers
+    elms -- "reads licenses, assignments, usage, cost<br/>[read-only connectors]" --> providers
     files -. "Staff upload: preview, then confirm" .-> elms
 ```
 
-Four roles use ELMS; each account has exactly one. Providers are only read, never changed. Where a provider has no API, data enters through CSV import or manual entry.
+Four roles use ELMS; each account has exactly one. Data from providers is collected daily through read-only connectors and is never changed on the provider. Where a provider has no connector, Staff enter the data manually or import CSV files.
 
 ### 3.2 Container view (C4 level 2)
 
