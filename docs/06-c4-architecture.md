@@ -11,7 +11,7 @@ The [C4 model](https://c4model.com) describes a system at four zoom levels. Each
 
 Two supplementary views follow the four levels: a **dynamic view** (the daily pipeline) and a **deployment view**.
 
-Diagrams use Mermaid flowcharts so they render on GitHub. Notation: a person is a rounded shape, an external system is grey, the system boundary is a dashed frame, and every arrow is labelled with what flows and over which protocol.
+Diagrams use Mermaid flowcharts so they render in GitLab Markdown. Notation: a person is a rounded shape, an external system is grey, the system boundary is a dashed frame, and every arrow is labelled with what flows and over which protocol.
 
 ## 1. Level 1 — System Context
 
@@ -84,9 +84,9 @@ flowchart TB
     subgraph elms["ELMS [System boundary]"]
         direction TB
         proxy["Reverse proxy<br/>[Nginx or Caddy]<br/>Serves the SPA, forwards /api/* (same domain, no CORS)"]
-        web["Web Frontend<br/>[React 19, Vite, TypeScript, MUI v6]<br/>Screens by role, dashboards, imports.<br/>Status: implemented, mock data"]
-        api["Elms.Api<br/>[ASP.NET Core 10]<br/>Authentication, RBAC, data scope,<br/>commands and queries. Status: proposed"]
-        worker["Elms.Worker<br/>[.NET Worker Service + Hangfire server]<br/>Provider sync, CSV import confirm,<br/>detection, view refresh. Status: proposed"]
+        web["Web Frontend<br/>[React 19, Vite, TypeScript, MUI v6]<br/>Screens by role, dashboards, imports"]
+        api["Elms.Api<br/>[ASP.NET Core 10]<br/>Authentication, RBAC, data scope,<br/>commands and queries"]
+        worker["Elms.Worker<br/>[.NET Worker Service + Hangfire server]<br/>Provider sync, CSV import confirm,<br/>detection, view refresh"]
         db[("PostgreSQL 16<br/>[Database]<br/>Business data, Hangfire job queue,<br/>server-side sessions. 39 tables, 7 groups")]
     end
 
@@ -110,13 +110,13 @@ flowchart TB
 
 ### Containers
 
-| Container | Technology | Responsibility | Status |
-|---|---|---|---|
-| Web Frontend | React 19, Vite, TypeScript, MUI v6, Tailwind CSS v4, ApexCharts, React Router v7 | Role-based screens, dashboards, CSV upload with preview. Mock data until the backend exists | Implemented in `src/frontend` |
-| Elms.Api | ASP.NET Core 10 (.NET 10 LTS), controllers, command/query handlers | Serves users only: three checks per request (authentication, RBAC, data scope), validation, audit | Proposed |
-| Elms.Worker | .NET Worker Service, Hangfire server | Runs every slow job; the only process that calls providers and decrypts connector credentials | Proposed |
-| PostgreSQL 16 | PostgreSQL, Hangfire.PostgreSql | One database for business data, the job queue, and sessions; one schema per module | Designed in [`elms.dbml`](database/elms.dbml) |
-| Reverse proxy | Nginx or Caddy | Serves the SPA and forwards `/api/*` to `Elms.Api` on the same domain | Proposed |
+| Container | Technology | Responsibility |
+|---|---|---|
+| Web Frontend | React 19, Vite, TypeScript, MUI v6, Tailwind CSS v4, ApexCharts, React Router v7 | Role-based screens, dashboards, CSV upload with preview |
+| Elms.Api | ASP.NET Core 10 (.NET 10 LTS), controllers, command/query handlers | Serves users only: three checks per request (authentication, RBAC, data scope), validation, audit |
+| Elms.Worker | .NET Worker Service, Hangfire server | Runs every slow job; the only process that calls providers and decrypts connector credentials |
+| PostgreSQL 16 | PostgreSQL, Hangfire.PostgreSql | One database for business data, the job queue, and sessions; one schema per module (see [`elms.dbml`](database/elms.dbml)) |
+| Reverse proxy | Nginx or Caddy | Serves the SPA and forwards `/api/*` to `Elms.Api` on the same domain |
 
 ### Relationships
 
@@ -143,7 +143,7 @@ Non-functional assumptions: about 5,000 accounts, 100–300 daily users, about 2
 
 ## 3. Level 3 — Component
 
-### 3.1 Elms.Api and Elms.Worker (shared code)
+### 3.1 Elms.Api and Elms.Worker
 
 Both processes are built from the same Clean Architecture layers and run the same handlers. `Controllers/` exist only in the Api and `Jobs/` only in the Worker. Modules are feature folders inside each layer, not separate projects; boundaries are kept by namespaces and architecture tests (NetArchTest).
 
@@ -255,7 +255,7 @@ flowchart TB
     sections["sections<br/>licenses (list, detail drawer),<br/>budget (KPI, renewals drawer)"]
     components["components<br/>KpiCard, charts, StatusBadge, tooltips"]
     layouts["layouts<br/>Header, Sidebar, MainLayout"]
-    data["data<br/>repositories + mock data<br/>(replaced by the API client)"]
+    data["data<br/>repositories calling the Elms.Api REST endpoints"]
     shared["types, utils, theme"]
 
     router --> layouts
@@ -281,7 +281,7 @@ C4 level 4 is left to the source, because a code-level diagram drawn by hand goe
 | Component | Where to look |
 |---|---|
 | Frontend components | `src/frontend/` (one barrel `index.ts` per folder) |
-| Backend solution layout | [05 §4.2](05-folder-structure.md); the solution will live in `src/backend/` (not created yet) |
+| Backend solution layout | [05 §4.2](05-folder-structure.md); the solution lives in `src/backend/` |
 | Entities and fields | [`database/tables.md`](database/tables.md), [`database/elms.dbml`](database/elms.dbml) |
 | Reference DDL | [`database/schema.sql`](database/schema.sql) |
 | Pure business rules | `Elms.Domain/Rules` (BR-03 seat status, BR-05 cost normalization, BR-06 allocation, BR-09 reconciliation) |
@@ -341,7 +341,7 @@ flowchart TB
         migrate["migration step<br/>[EF migration bundle]<br/>runs before apps start"]
     end
 
-    ci["GitHub Actions<br/>[CI: build, test, architecture tests]"]
+    ci["GitLab CI/CD<br/>[CI: build, test, architecture tests]"]
     prov["Providers<br/>[staging: Microsoft 365 developer tenant]"]
 
     browser -- "HTTPS" --> proxy

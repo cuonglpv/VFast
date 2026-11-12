@@ -123,8 +123,6 @@ Entity overview, one ERD per group, a short explanation of every table, rule-to-
 
 ELMS is designed as one monolith with Clean Architecture, deployed as two processes (API and worker) that share one PostgreSQL database. The API serves users; slow work (provider sync, CSV import, detection) runs in the worker through a PostgreSQL-backed job queue, so no Redis or message broker is required.
 
-The architecture is documented with the [C4 model](https://c4model.com). This section shows the first two levels; the component level, the daily pipeline, and the deployment view are in [C4 Architecture](docs/06-c4-architecture.md).
-
 ### 3.1 System context (C4 level 1)
 
 ```mermaid
@@ -161,11 +159,11 @@ flowchart TB
     worker -- "read-only" --> providers
 ```
 
-| Layer | Technology | Status |
-|---|---|---|
-| Frontend | React 19, Vite, TypeScript, MUI v6, Tailwind CSS v4, ApexCharts | Implemented in `src/frontend` |
-| Backend | ASP.NET Core 10, EF Core + Dapper, Hangfire worker | Proposed |
-| Database | PostgreSQL 16 | Designed in `docs/database/elms.dbml` |
+| Layer | Technology |
+|---|---|
+| Frontend | React 19, Vite, TypeScript, MUI v6, Tailwind CSS v4, ApexCharts |
+| Backend | ASP.NET Core 10, EF Core + Dapper, Hangfire worker |
+| Database | PostgreSQL 16 |
 
 Deeper levels in [C4 Architecture](docs/06-c4-architecture.md): [components of the API, worker, modules, and frontend](docs/06-c4-architecture.md#3-level-3--component), [the daily pipeline](docs/06-c4-architecture.md#5-dynamic-view--the-daily-pipeline), and [deployment](docs/06-c4-architecture.md#6-deployment-view).
 
