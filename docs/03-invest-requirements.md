@@ -48,11 +48,16 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US20 | As an Admin, I want to maintain the P&Ls and their departments and assign Managers to them so that data scope and budgets follow the group's organization. | Organization | US19 | M | 3 |
 | US21 | As an Admin, I want to change the role of a user so that their access matches their job. | Role control | US19 | M | 2 |
 | US22 | As an Admin, I want to adjust which features each role may read or write so that permissions fit the company. | Permission control | US21 | M | 5 |
+| **Connector Management** | | | | | |
+| US25 | As an Admin, I want to configure a read-only connector with its credentials and schedule so that provider data arrives every night without manual work. | Automatic collection | US19, US02 | M | 5 |
+| US26 | As an Admin, I want to check a connector against the ELMS Connector Standard before activating it so that only data in the agreed shape enters ELMS. | Trustworthy input | US25 | M | 5 |
+| US27 | As a Staff member, I want to map provider plans to our licenses and choose the primary source per kind of data so that connector figures land on the right license. | Correct attribution | US26, US03 | M | 3 |
+| US28 | As a Staff member, I want to see every sync run, its coverage, and its rejected records, rerun a failed day, and upload standard files so that missing data is visible and fixed instead of read as zero. | Data completeness | US25, US27 | M | 5 |
 | **Self-service** | | | | | |
 | US23 | As an employee, I want to see the licenses assigned to me and whether I am recorded as using them so that I can tell my manager when I no longer need one. | Self-service | US24 | M | 2 |
 | US24 | As any user, I want to log in and out and land on the screen of my role so that only I see my data. | Protected access | Seeded accounts | M | 3 |
 
-**Total:** 24 stories, 94 points. Must-have: 21 stories (81 points); forecast, cost optimization, and the optimization dashboard are Should-have.
+**Total:** 28 stories, 112 points. Must-have: 25 stories (99 points); forecast, cost optimization, and the optimization dashboard are Should-have. US25–US28 are numbered after US24 so existing references keep their numbers; they follow the mind-map branch Connector Management.
 
 ## Per-story INVEST review
 
@@ -84,6 +89,10 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US22 | PASS | PASS | PASS | PASS | PASS | PASS | Guard rails: Admin permissions and Employee cost access cannot be changed. |
 | US23 | PASS | PASS | PASS | PASS | PASS | PASS | Own data only; no price or cost. |
 | US24 | PASS | PASS | PASS | PASS | PASS | PASS | Lockout and cookie rules BR-18. |
+| US25 | PASS | PASS | PASS | PASS | PASS | PASS | Testable with the simulated ECS provider; read-only scope and write-only credentials (BR-01, BR-20). |
+| US26 | PASS | PASS | PASS | PASS | PASS | PASS | Check list and levels L1–L3 fixed in the [connector standard](06-connector-standard.md#47-validation); report shows counts, never record contents. |
+| US27 | PASS | PASS | PASS | PASS | PASS | PASS | Reuses `plan_data_sources`; one primary source per kind of data (BR-14). |
+| US28 | PASS | PASS | PASS | PASS | PASS | PASS | Failed run stays `Unknown` (BR-04, BR-19); file upload all-or-nothing against its manifest. |
 
 ## Acceptance criteria
 
@@ -243,6 +252,39 @@ Format: **Given** context, **When** action, **Then** observable result.
 2. Given an attempt to give Employee access to price or cost, then it is refused.
 3. Given an attempt to remove the permission Admin needs to manage permissions, then it is refused.
 
+### Connector Management
+
+#### AC-US25 Connectors
+
+1. Given an Admin creates a native connector with a base URL and read-only credentials, when the connection test passes, then the provider's capabilities are shown and the connector is saved as `Draft`.
+2. Given credentials that grant write scope, when the connector is saved, then it is refused.
+3. Given a saved connector, when its detail or the API response is read, then the credentials are never returned, and the audit log records the change without the secret.
+4. Given an `Active` connector whose credentials are replaced, then it returns to `Draft` and stops running until it passes UC26 again.
+5. Given a Staff, Manager, or Employee calls the connector configuration API, then it returns `403`.
+
+#### AC-US26 Conformance check
+
+1. Given the simulated ECS provider declaring L3, when the check runs, then every required check passes and the connector becomes `Validated`.
+2. Given an `assignments` sample with a record pointing to an unknown `subject_ref`, then that check fails, the report shows the count and the error code, and the connector stays `Draft`.
+3. Given a provider answering an unsupported dataset with an empty list instead of `Not supported`, then the check fails.
+4. Given a provider declaring L3 whose `activity` dataset fails, then the level shown is lowered to L2 with a warning.
+5. Given the Admin opens the report, then it shows counts, field names, and error codes but no record contents.
+
+#### AC-US27 Data mapping
+
+1. Given a provider plan `ENTERPRISEPACK` mapped to the ELMS plan "Microsoft 365 E3" with the connector as primary source for assignments, when the next run finishes, then E3 shows the assigned seats with source `api`, and Staff can no longer add E3 holders by hand.
+2. Given a plan whose assignments come from a CSV import, when Staff make the connector the primary source, then a reason is required and the import stops counting from that date.
+3. Given an unmapped provider plan, then its records are counted on no screen and are listed as waiting for mapping.
+4. Given a connector that reports usage only as a total, then the plan's seats are `Not monitored`, never `Inactive`.
+
+#### AC-US28 Sync monitoring
+
+1. Given a nightly run that fails with invalid credentials, then nothing is written, the run shows `failed` with the reason, and the next day's detection shows the connector's plans as `Not evaluated`, not as unused.
+2. Given a run where one plan fails and the others succeed, then the run is `partial` and only that plan's day is `Unknown`.
+3. Given a Staff member uploads an ECS file whose `record_count` differs from its manifest, then the whole file is refused.
+4. Given the same day is rerun, then the data is replaced without duplicates.
+5. Given an Admin opens a run, then statuses, counts, and error codes are shown, and the rejected-record list returns `403`.
+
 ### Self-service
 
 #### AC-US23 My licenses
@@ -268,5 +310,6 @@ Format: **Given** context, **When** action, **Then** observable result.
 - Figures tie across screens: cost allocation total = financial dashboard spend by department; detection counts = optimization dashboard; overuse list = compliance dashboard.
 - Every change to master data, expenses, budgets, recommendations, and access is recorded (BR-15).
 - Providers sit behind a connector interface with fakes, so every story is testable without real tenants.
+- Every connector delivers data in the ELMS Connector Standard, checked on every run (BR-19); a simulated ECS provider is the fake used by US25–US28.
 
 **Related:** [Research](01-research-top-down.md) · [Use cases](02-use-cases.md)
