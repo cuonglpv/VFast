@@ -129,14 +129,14 @@ Note: `src/frontend/README.md` still describes alias folders (`layout/`, `page/`
 
 ### 4.1 Modules
 
-Eight modules follow the five mind-map branches, plus two technical modules (`ingestion`, `usage`) where data errors are most likely. A module owns its tables; other modules read them only through a service or a public view.
+Eight modules follow the mind-map branches, plus two technical modules (`ingestion`, `usage`) where data errors are most likely. A module owns its tables; other modules read them only through a service or a public view.
 
 | Module | Use cases | Owns | Responsibility |
 |---|---|---|---|
 | `identity` | UC19, UC21, UC22, UC24 | user accounts, roles, permissions, sessions | Login, lockout, RBAC, policies |
 | `organization` | UC20 | org units, employees, manager scope | P&L → department tree, email → employee, Manager data scope |
 | `catalog` | UC01–UC04 | vendors, products, plans, entitlements, contracts | Catalog, entitlements per archetype, "renewal soon" flags |
-| `ingestion` | UC03 (import / manual) | connectors, sync runs, raw records, import batches | Run connectors, CSV import (preview → confirm, all-or-nothing) |
+| `ingestion` | UC03 (connector, import, manual), UC25, UC26 | connectors, sync runs, raw records, import batches | Set up and test connectors, run them, validate ECS payloads, CSV and ECS file import (preview → confirm, all-or-nothing) |
 | `usage` | UC10–UC12, UC23 | assignments, usage records, snapshots | Normalize to assignment and usage, daily seat status (BR-03) |
 | `finance` | UC05–UC09 | expenses, FX rates, budget plans and lines, periods | Cost normalization (BR-05), allocation (BR-06), reconciliation (BR-09), forecast (BR-11) |
 | `optimization` | UC10–UC14 | detection results, recommendations | Daily detection, savings, recommendation lifecycle |
@@ -152,7 +152,7 @@ Eight modules follow the five mind-map branches, plus two technical modules (`in
 
 Request flow: Controller (`Mediator.Send`) → pipeline behaviours (logging, validation, authorization) → handler → `IAppDbContext` (filtered by `AccessScope`) → interceptor writes the audit log.
 
-Connectors are plugins implementing one interface: `fetchEntitlements`, `fetchAssignments`, `fetchActivity`, `fetchUsage(period)`, `fetchCost(period)`. A method a provider does not support returns `NotSupported`, never an empty list, so "no source" stays distinct from "source reports zero".
+Connectors are plugins implementing one interface: `fetchEntitlements`, `fetchAssignments`, `fetchActivity`, `fetchUsage(period)`, `fetchCost(period)`. A method a provider does not support returns `NotSupported`, never an empty list, so "no source" stays distinct from "source reports zero". The methods return records of the ELMS Connector Standard (ECS): a provider that implements ECS is read by one generic connector, other providers get an adapter that maps their API to ECS, and both pass the same validator ([Connector standard](06-connector-standard.md#4-proposal-elms-connector-standard-ecs-v1)).
 
 ### 4.2 Folder structure
 

@@ -1089,8 +1089,8 @@ COMMENT ON COLUMN "entitlement_allocations"."valid_from" IS 'First day of the qu
 COMMENT ON COLUMN "entitlement_allocations"."valid_to" IS 'Last day, inclusive. NULL = until the line ends (D19)';
 
 COMMENT ON TABLE "connectors" IS 'One read-only connection to one vendor; the tenant or organization id is
-part of its credentials. The Admin configuration
-screen is a later phase (docs/01 section 7), so rows are seeded for now.
+part of its credentials. Staff set connectors up when adding a license
+(UC03, docs/06); until that screen exists, rows are seeded.
 ';
 
 COMMENT ON COLUMN "connectors"."vendor_id" IS 'Publisher whose API or logs the connector reads';

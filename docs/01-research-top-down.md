@@ -107,7 +107,7 @@ Sources are used in this order of preference: **API → log → file import → 
 | Capacity | Very low | Inventory scripts, manual entry |
 | Enterprise contract | Terms by hand, usage per line | Contract |
 
-For Microsoft 365, the Graph v1.0 endpoints below cover the first phase. They must be checked against Microsoft's official documentation before a connector is built.
+For Microsoft 365, the Graph v1.0 endpoints below cover the first phase. They must be checked against Microsoft's official documentation before a connector is built. Every connector, including this one, outputs the ELMS Connector Standard; providers and standards reviewed for it are in [Connector standard](06-connector-standard.md#3-research).
 
 | Data | Endpoint |
 |---|---|
@@ -129,7 +129,7 @@ Graph does not provide prices, cost, P&L, or monthly history: prices and cost co
 ## 5. Process (to-be)
 
 ```text
-1. Connect provider (once) → 2. Collect data (daily) → 3. Normalize → 4. Analyze usage and budget
+1. Connect provider when the license is added (once) → 2. Collect data (daily) → 3. Normalize → 4. Analyze usage and budget
   → 5. Detect inefficiency → 6. Saving opportunities and recommendations → 7. Dashboards → Manager decides
 ```
 
@@ -149,7 +149,7 @@ Pipeline principles:
 
 ## 6. Functional decomposition (Epic → Feature)
 
-The epics are the five branches of the agreed mind map; each leaf is one use case.
+The epics are the six branches of the agreed mind map; each leaf is one use case.
 
 ![ELMS mind map](mindmap.png)
 
@@ -162,6 +162,7 @@ The epics are the five branches of the agreed mind map; each leaf is one use cas
 | | Savings & Recommendation | Cost Optimization (UC13), Recommendation Management (UC14) |
 | E4 Analytics | Dashboards | License (UC15), Financial (UC16), Compliance (UC17), Optimization (UC18) |
 | E5 User & Organization | Administration | User (UC19), P&L and Department (UC20), Role (UC21), Permission Management (UC22) |
+| E6 Connector Management | Sync & Data Quality | Data Source Mapping (UC25), Sync Monitoring (UC26); connectors are set up in License Entitlement (UC03) |
 | — Self-service and access | | View My Licenses (UC23), Login / Logout (UC24) |
 
 ## 7. Scope
@@ -171,6 +172,7 @@ The epics are the five branches of the agreed mind map; each leaf is one use cas
 - License catalog and information for every provider and every license model.
 - Budget plans per P&L, department, and fiscal year; tracking of planned, purchased, assigned, and used quantities.
 - Automatic usage collection through connectors; file import and manual entry where no connector exists.
+- One connector standard (ELMS Connector Standard, ECS) for every connector, set up when Staff add a license, with data mapping, a validator on every run, and sync monitoring ([Connector standard](06-connector-standard.md)).
 - Software catalog, vendors, entitlements, contracts, and expenses maintained by the license team.
 - Utilization, consumption, and cost-efficiency analysis; unused, inactive, and overuse detection; saving opportunities and recommendations; budget forecast; license, financial, compliance, and optimization dashboards.
 - Users, departments, roles, and permissions.
@@ -183,7 +185,7 @@ The epics are the five branches of the agreed mind map; each leaf is one use cas
 - Changing subscriptions or permissions on a provider automatically.
 - Carrying out a recommendation automatically; anomaly detection with machine learning.
 - Notifications outside the application (email, chat).
-- Data-source configuration screens for Admin (later phase).
+- Push delivery (providers sending data to ELMS) and SFTP drop folders for ECS files (later phase).
 
 ## 8. Constraints and assumptions
 

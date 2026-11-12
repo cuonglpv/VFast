@@ -245,7 +245,7 @@ Prior art: FOCUS billed vs effective cost ([FinOps](https://www.finops.org/asset
 | `roles` | `ADMIN`, `MANAGER`, `STAFF`, `EMPLOYEE` |
 | `permissions`, `role_permissions` | The role × feature matrix of [Use cases](../02-use-cases.md) |
 | `org_units`, `employees`, `user_accounts` | One P&L, one employee, and one `ADMIN` account from deployment secrets |
-| `vendors`, `connectors` | Demo vendors and simulated connectors (`is_simulated = true`) until the Admin configuration screen exists |
+| `vendors`, `connectors` | Demo vendors and simulated connectors (`is_simulated = true`) until the connector step of UC03 exists |
 
 ## Regenerating
 
