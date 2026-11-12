@@ -135,14 +135,11 @@ flowchart TB
         api["Elms.Api<br/><i>[ASP.NET Core 10]</i><br/>Auth, RBAC, data scope"]
         worker["Elms.Worker<br/><i>[.NET Worker + Hangfire]</i><br/>Sync, import, detection"]
         db[("PostgreSQL 16<br/>data, queue, sessions")]
-        files[("S3 / MinIO<br/>invoices, CSV")]
     end
     people --> web
     web -- "REST / JSON, cookie session" --> api
     api --> db
-    api --> files
     worker --> db
-    worker --> files
     worker -- "read-only" --> providers
 ```
 
@@ -199,7 +196,7 @@ ELMS/
 │  │  ├─ Enums/                       Archetype, SeatStatus, RecommendationStatus
 │  │  └─ Rules/                       SeatStatusRule, CostNormalizer, CostAllocator
 │  ├─ Elms.Application/
-│  │  ├─ Interfaces/                  IAppDbContext, IProviderConnector, IFileStorage
+│  │  ├─ Interfaces/                  IAppDbContext, IProviderConnector
 │  │  ├─ <Module>/<Feature>/          e.g. Catalog/Products, Finance/BudgetPlans
 │  │  │  └─ Commands/  Queries/  DTO/
 │  │  ├─ Analytics/<Dashboard>/Queries/   Read views with Dapper
@@ -207,7 +204,7 @@ ELMS/
 │  │  └─ ConfigureServices.cs
 │  ├─ Elms.Infrastructure/
 │  │  ├─ Data/                        AppDbContext, Configurations/, Migrations/
-│  │  ├─ Connectors/MicrosoftGraph/, Storage/
+│  │  ├─ Connectors/MicrosoftGraph/
 │  │  └─ ConfigureServices.cs
 │  ├─ Elms.Api/                       Controllers/<Module>/, Program.cs
 │  └─ Elms.Worker/                    Program.cs, Jobs/DailyPipelineJob.cs
