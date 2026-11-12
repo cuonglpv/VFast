@@ -34,7 +34,6 @@ One monolith built with Clean Architecture, deployed as two processes (`Elms.Api
 | Database | PostgreSQL 16 |
 | Jobs | Hangfire + Hangfire.PostgreSql |
 | Connectors | Microsoft Graph SDK + Azure.Identity; `IHttpClientFactory` + Polly |
-| Files | S3 or MinIO (invoices up to 10 MB) |
 | Auth | ASP.NET Core Identity, server-side cookie session, antiforgery |
 | API contract | OpenAPI + Scalar; TypeScript client generated with `openapi-typescript` |
 | Libraries | FluentValidation, CsvHelper, Serilog / OpenTelemetry, HybridCache |
@@ -75,15 +74,12 @@ flowchart TB
         api["Elms.Api<br/><i>[ASP.NET Core 10]</i><br/>Auth, RBAC, data scope, commands and queries"]
         worker["Elms.Worker<br/><i>[.NET Worker + Hangfire]</i><br/>Sync, import, detection, view refresh"]
         db[("PostgreSQL 16<br/>data, job queue, sessions")]
-        files[("S3 / MinIO<br/>invoices, contracts, CSV")]
     end
     people --> web
     web -- "REST / JSON, cookie session" --> api
     api -- "SQL" --> db
-    api -- "files" --> files
     worker -- "SQL, queue" --> db
     worker -- "read-only API calls" --> providers
-    worker --> files
 ```
 
 
@@ -176,7 +172,7 @@ ELMS/
 │  │  ├─ Enums/                       Archetype, SeatStatus, RecommendationStatus
 │  │  └─ Rules/                       SeatStatusRule, CostNormalizer, CostAllocator
 │  ├─ Elms.Application/
-│  │  ├─ Interfaces/                  IAppDbContext, IProviderConnector, IFileStorage
+│  │  ├─ Interfaces/                  IAppDbContext, IProviderConnector
 │  │  ├─ <Module>/<Feature>/          e.g. Catalog/Products, Finance/BudgetPlans
 │  │  │  └─ Commands/  Queries/  DTO/
 │  │  ├─ Analytics/<Dashboard>/Queries/   Read views with Dapper
@@ -184,7 +180,7 @@ ELMS/
 │  │  └─ ConfigureServices.cs
 │  ├─ Elms.Infrastructure/
 │  │  ├─ Data/                        AppDbContext, Configurations/, Migrations/
-│  │  ├─ Connectors/MicrosoftGraph/, Storage/
+│  │  ├─ Connectors/MicrosoftGraph/
 │  │  └─ ConfigureServices.cs
 │  ├─ Elms.Api/                       Controllers/<Module>/, Program.cs
 │  └─ Elms.Worker/                    Program.cs, Jobs/DailyPipelineJob.cs
@@ -216,7 +212,7 @@ HTTP request → Controller → Mediator.Send → behaviours (log, validate, aut
 Worker       → Hangfire job → handler / pipeline step → IProviderConnector / IAppDbContext
 ```
 
-Rules: Domain depends on nothing; Application depends on interfaces only (`IAppDbContext`, `IProviderConnector`, `IFileStorage`); only Infrastructure references EF Core, Npgsql, Graph SDK, and S3; `Controllers/` run only in the Api and `Jobs/` only in the Worker, both using the same handlers. NetArchTest fails the build on a violation.
+Rules: Domain depends on nothing; Application depends on interfaces only (`IAppDbContext`, `IProviderConnector`); only Infrastructure references EF Core, Npgsql, and Graph SDK; `Controllers/` run only in the Api and `Jobs/` only in the Worker, both using the same handlers. NetArchTest fails the build on a violation.
 
 ## 5. API conventions
 
@@ -271,7 +267,7 @@ Also: Employees get a dedicated DTO (`/api/v1/me/licenses`) with no price or cos
 
 ## 9. Deployment
 
-A reverse proxy (Nginx or Caddy) serves the SPA and forwards `/api/*` to `Elms.Api` on the same domain, so no CORS is needed. One Api and one Worker instance; Hangfire's distributed lock prevents duplicate jobs. Migrations run as a separate pipeline step (EF migration bundle) before the apps start, never at application startup. Environments: dev (Docker Compose: postgres, minio, api, worker, web), staging (Microsoft 365 developer tenant), prod. Operations: `/health`, structured logs with `request_id`, Hangfire dashboard (Admin only), alert when a source fails two days in a row.
+A reverse proxy (Nginx or Caddy) serves the SPA and forwards `/api/*` to `Elms.Api` on the same domain, so no CORS is needed. One Api and one Worker instance; Hangfire's distributed lock prevents duplicate jobs. Migrations run as a separate pipeline step (EF migration bundle) before the apps start, never at application startup. Environments: dev (Docker Compose: postgres, api, worker, web), staging (Microsoft 365 developer tenant), prod. Operations: `/health`, structured logs with `request_id`, Hangfire dashboard (Admin only), alert when a source fails two days in a row.
 
 
 ## 10. Database
