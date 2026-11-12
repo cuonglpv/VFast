@@ -10,7 +10,7 @@ Requirements are derived top-down: business problem → stakeholders → goals �
 
 ![ELMS mind map](docs/mindmap.png)
 
-The map has six branches: **License Management** (catalog & entitlement), **Budget Management** (planning & cost allocation, spending & monitoring), **Optimization** (detection, savings & recommendation), **Analytics** (four dashboards), **User & Organization**, and **Connector Management** (connection & standard, sync & data quality). Each of the 26 leaves is one use case: UC01–UC22 in branch order for the first five branches, and UC25–UC28 for Connector Management, numbered after the existing ones so references stay stable. UC23 View My Licenses and UC24 Login / Logout are self-service use cases every role has.
+The map has six branches: **License Management** (catalog & entitlement), **Budget Management** (planning & cost allocation, spending & monitoring), **Optimization** (detection, savings & recommendation), **Analytics** (four dashboards), **User & Organization**, and **Connector Management** (sync & data quality). Each of the 24 leaves is one use case: UC01–UC22 in branch order for the first five branches, and UC25–UC26 for Connector Management, numbered after the existing ones so references stay stable. A connector is set up inside License Entitlement (UC03), when Staff add the license. UC23 View My Licenses and UC24 Login / Logout are self-service use cases every role has.
 
 Editable source: [`docs/mindmap/vfast.xmind`](docs/mindmap/vfast.xmind) (open with XMind); `docs/mindmap.png` is exported from it.
 
@@ -47,16 +47,16 @@ There are four roles. One diagram per actor shows every use case that actor can 
 | Role | Use cases |
 |---|---|
 | **Employee** (every employee) | UC23 View My Licenses · UC24 Login / Logout |
-| **Staff** (reports to a Manager; hands-on data entry) | UC01–UC04 License Management · UC07 Manage Expenses · UC27, UC28 Connector data mapping and sync monitoring · UC23, UC24 |
+| **Staff** (reports to a Manager; hands-on data entry) | UC01–UC04 License Management · UC07 Manage Expenses · UC25, UC26 Connector data mapping and sync monitoring · UC23, UC24 |
 | **Manager** (manager of a P&L or a department; plans and decides) | UC05, UC06, UC08, UC09 Budget · UC10–UC14 Optimization · UC15–UC18 Analytics · UC23, UC24 |
-| **Admin** (system operator) | UC19–UC22 User & Organization (users, P&Ls and departments, roles, permissions) · UC25, UC26, UC28 Connectors, conformance check, sync status · UC23, UC24 |
+| **Admin** (system operator) | UC19–UC22 User & Organization (users, P&Ls and departments, roles, permissions) · UC26 Sync status · UC23, UC24 |
 
 | | |
 |---|---|
 | ![Employee](docs/diagrams/out/uc_employee.png) | ![Staff](docs/diagrams/out/uc_staff.png) |
 | ![Manager](docs/diagrams/out/uc_manager.png) | ![Admin](docs/diagrams/out/uc_admin.png) |
 
-Diagram sources are draw.io files in [`docs/diagrams/out/`](docs/diagrams/out/). Role × feature matrix, 20 business rules, and the specification of all 28 use cases: [Use cases](docs/02-use-cases.md).
+Diagram sources are draw.io files in [`docs/diagrams/out/`](docs/diagrams/out/). Role × feature matrix, 20 business rules, and the specification of all 26 use cases: [Use cases](docs/02-use-cases.md).
 
 ### 1.4 Roles and permissions
 
@@ -65,9 +65,9 @@ There are four roles; each account has exactly one. Every account belongs to a r
 | Role | Who | Responsibility | Data scope |
 |---|---|---|---|
 | **Employee** | Every employee of the group | Sees the licenses assigned to them and whether they are recorded as used | Own licenses only, without price or cost |
-| **Staff** | License management team member, reports to a Manager | Hands-on work: enters and corrects license data, holders and usage where there is no connector, and expenses; maps connector data to licenses and watches its quality | Every license and expense; no budget, no dashboards |
+| **Staff** | License management team member, reports to a Manager | Hands-on work: enters and corrects license data, holders and usage where there is no connector, and expenses; connects licenses to their providers, maps provider data to licenses, and watches the data syncs | Every license and expense; no budget, no dashboards |
 | **Manager** | Manager of a P&L (subsidiary) or a department | Plans the budget, monitors spending, reviews waste, decides on recommendations | Only the P&Ls or departments assigned to them |
-| **Admin** | System operator | Users, P&Ls and departments, roles, permissions; connectors (credentials, schedule, conformance check) | Access settings and connector status only; no license, budget, or cost data |
+| **Admin** | System operator | Users, P&Ls and departments, roles, permissions; watches the status of data syncs | Access settings and connector status only; no license, budget, or cost data |
 
 | Capability | Admin | Manager | Staff | Employee |
 |---|---|---|---|---|
@@ -82,9 +82,9 @@ There are four roles; each account has exactly one. Every account belongs to a r
 | License, financial, compliance, optimization dashboards | — | Read, own units | — | — |
 | Users, roles, permissions | Create / edit | — | — | — |
 | P&Ls and departments | Create / edit | — | — | — |
-| Connectors, conformance check | Create / edit | — | — | — |
+| Connectors (set up when adding a license) | — | — | Create / edit | — |
 | Connector data mapping | — | — | Create / edit | — |
-| Sync runs | Read status, rerun | — | Read / rerun / upload | — |
+| Sync runs | Read status | — | Read / rerun / upload | — |
 | My licenses | Read own | Read own | Read own | Read own |
 
 - The backend enforces every cell of this table and the data scope; hiding a button in the interface is not enough, and a call outside the role returns `403`.
@@ -95,7 +95,7 @@ Staff and Manager compared, and the full role × feature matrix with the busines
 
 ### 1.5 INVEST requirements
 
-The backlog contains **28 user stories (112 story points)**, one per use case (USxx implements UCxx). Every story passes the INVEST review and has Given/When/Then acceptance criteria.
+The backlog contains **26 user stories (107 story points)**, one per use case (USxx implements UCxx). Every story passes the INVEST review and has Given/When/Then acceptance criteria.
 
 | Criterion | Meaning in ELMS |
 |---|---|
@@ -113,7 +113,7 @@ US10–US14   Optimization: unused, inactive, overuse, savings, recommendations 
 US15–US18   Analytics: license, financial, compliance, optimization dashboards  Manager
 US19–US22   User & Organization: users, P&Ls and departments, roles, permissions Admin
 US23–US24   My licenses, login / logout                                         Every role
-US25–US28   Connector Management: connectors, conformance, mapping, sync        Admin (US27, US28: Staff)
+US25–US26   Connector Management: data mapping, sync monitoring                Staff (US26: Admin sees status)
 ```
 
 Backlog, per-story INVEST review, and acceptance criteria: [INVEST requirements](docs/03-invest-requirements.md).
@@ -226,8 +226,8 @@ Full trees, module table, API conventions, jobs, caching, security, and deployme
 ## Documentation
 
 - [Top-down research](docs/01-research-top-down.md) — problem, stakeholders, goals, license models, data sources, process, epics, scope, risks
-- [Use cases](docs/02-use-cases.md) — actors, role × feature matrix, business rules, use case diagrams per role, 28 use cases
-- [INVEST requirements](docs/03-invest-requirements.md) — 28 user stories, INVEST review, acceptance criteria
+- [Use cases](docs/02-use-cases.md) — actors, role × feature matrix, business rules, use case diagrams per role, 26 use cases
+- [INVEST requirements](docs/03-invest-requirements.md) — 26 user stories, INVEST review, acceptance criteria
 - [Information architecture](docs/04-information-architecture-manager.md) — screens, views, and navigation: License Management, Analytics Hub (license health and budget analytics), User Management
 - [Folder structure and architecture](docs/05-folder-structure.md) — solution architecture, frontend structure, backend modules and .NET folder layout, API conventions, jobs, caching, security
 - [Connector standard](docs/06-connector-standard.md) — research on FOCUS, SCIM, ISO/IEC 19770 and provider APIs; the ELMS Connector Standard (ECS) v1 proposal, Connector Management use cases, rollout plan

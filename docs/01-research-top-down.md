@@ -129,7 +129,7 @@ Graph does not provide prices, cost, P&L, or monthly history: prices and cost co
 ## 5. Process (to-be)
 
 ```text
-1. Connect provider and check it against ECS (once) → 2. Collect data (daily) → 3. Normalize → 4. Analyze usage and budget
+1. Connect provider when the license is added (once) → 2. Collect data (daily) → 3. Normalize → 4. Analyze usage and budget
   → 5. Detect inefficiency → 6. Saving opportunities and recommendations → 7. Dashboards → Manager decides
 ```
 
@@ -162,8 +162,7 @@ The epics are the six branches of the agreed mind map; each leaf is one use case
 | | Savings & Recommendation | Cost Optimization (UC13), Recommendation Management (UC14) |
 | E4 Analytics | Dashboards | License (UC15), Financial (UC16), Compliance (UC17), Optimization (UC18) |
 | E5 User & Organization | Administration | User (UC19), P&L and Department (UC20), Role (UC21), Permission Management (UC22) |
-| E6 Connector Management | Connection & Standard | Connector Configuration (UC25), Conformance Validation (UC26) |
-| | Sync & Data Quality | Data Source Mapping (UC27), Sync Monitoring (UC28) |
+| E6 Connector Management | Sync & Data Quality | Data Source Mapping (UC25), Sync Monitoring (UC26); connectors are set up in License Entitlement (UC03) |
 | — Self-service and access | | View My Licenses (UC23), Login / Logout (UC24) |
 
 ## 7. Scope
@@ -173,7 +172,7 @@ The epics are the six branches of the agreed mind map; each leaf is one use case
 - License catalog and information for every provider and every license model.
 - Budget plans per P&L, department, and fiscal year; tracking of planned, purchased, assigned, and used quantities.
 - Automatic usage collection through connectors; file import and manual entry where no connector exists.
-- One connector standard (ELMS Connector Standard, ECS) for every connector, with connector configuration, conformance check, data mapping, and sync monitoring ([Connector standard](06-connector-standard.md)).
+- One connector standard (ELMS Connector Standard, ECS) for every connector, set up when Staff add a license, with data mapping, a validator on every run, and sync monitoring ([Connector standard](06-connector-standard.md)).
 - Software catalog, vendors, entitlements, contracts, and expenses maintained by the license team.
 - Utilization, consumption, and cost-efficiency analysis; unused, inactive, and overuse detection; saving opportunities and recommendations; budget forecast; license, financial, compliance, and optimization dashboards.
 - Users, departments, roles, and permissions.

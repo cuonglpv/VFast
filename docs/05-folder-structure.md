@@ -136,7 +136,7 @@ Eight modules follow the mind-map branches, plus two technical modules (`ingesti
 | `identity` | UC19, UC21, UC22, UC24 | user accounts, roles, permissions, sessions | Login, lockout, RBAC, policies |
 | `organization` | UC20 | org units, employees, manager scope | P&L → department tree, email → employee, Manager data scope |
 | `catalog` | UC01–UC04 | vendors, products, plans, entitlements, contracts | Catalog, entitlements per archetype, "renewal soon" flags |
-| `ingestion` | UC03 (import / manual), UC25–UC28 | connectors, conformance checks, sync runs, raw records, import batches | Configure and validate connectors, run them, validate ECS payloads, CSV and ECS file import (preview → confirm, all-or-nothing) |
+| `ingestion` | UC03 (connector, import, manual), UC25, UC26 | connectors, sync runs, raw records, import batches | Set up and test connectors, run them, validate ECS payloads, CSV and ECS file import (preview → confirm, all-or-nothing) |
 | `usage` | UC10–UC12, UC23 | assignments, usage records, snapshots | Normalize to assignment and usage, daily seat status (BR-03) |
 | `finance` | UC05–UC09 | expenses, FX rates, budget plans and lines, periods | Cost normalization (BR-05), allocation (BR-06), reconciliation (BR-09), forecast (BR-11) |
 | `optimization` | UC10–UC14 | detection results, recommendations | Daily detection, savings, recommendation lifecycle |

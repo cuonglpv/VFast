@@ -11,9 +11,9 @@ System: **Enterprise License Management System (ELMS)**, built by team VFast. Us
 | Actor | Description |
 |---|---|
 | `EMPLOYEE` | Every employee of the company. Sees only the licenses assigned to them and whether they are recorded as used |
-| `STAFF` | Member of the license management team who reports to a Manager. Does the hands-on work: enters and edits license information (catalog, vendors, entitlements, contracts) and expenses; maps connector data to licenses and checks its quality |
+| `STAFF` | Member of the license management team who reports to a Manager. Does the hands-on work: enters and edits license information (catalog, vendors, entitlements, contracts) and expenses; connects a license to its provider when adding it, maps provider data to licenses, and watches the data syncs |
 | `MANAGER` | Manager of a unit (a P&L or a department). Mainly uses dashboards and analytics; plans and monitors the unit's budget; reviews optimization results. Sees license data and cost through the dashboards |
-| `ADMIN` | Operates the system: users, roles, permissions, the P&L / department tree, and connectors (connection, credentials, schedule, conformance check). Has no access to license, budget, or cost data |
+| `ADMIN` | Operates the system: users, roles, permissions, and the P&L / department tree; sees the status of data syncs. Has no access to license, budget, or cost data |
 | License providers | External systems (Microsoft Graph and other provider APIs, logs, exports). ELMS only reads from them, always in the ELMS Connector Standard (ECS): natively, through an adapter, or as a file ([Connector standard](06-connector-standard.md)) |
 
 Every account belongs to a real employee (matched by company email), so View My Licenses and Login / Logout belong to every role.
@@ -28,7 +28,7 @@ Staff work under a Manager. Staff do the hands-on work: they enter and correct t
 |---|---|---|
 | Position | License management team member, reports to a Manager | Manager of a P&L or a department |
 | Kind of work | Hands-on data entry and correction | Planning, monitoring, and decisions |
-| Works on | Software catalog, vendors, entitlements, license holders and usage where there is no connector, contracts, expenses and invoices, connector data mapping and sync quality (UC01–UC04, UC07, UC27, UC28) | Budget plans, cost allocation, budget monitoring and forecast, optimization, recommendations, dashboards (UC05, UC06, UC08–UC18) |
+| Works on | Software catalog, vendors, entitlements, license holders and usage where there is no connector, contracts, expenses and invoices, connections to providers, connector data mapping, and sync quality (UC01–UC04, UC07, UC25, UC26) | Budget plans, cost allocation, budget monitoring and forecast, optimization, recommendations, dashboards (UC05, UC06, UC08–UC18) |
 | Typical day | Add a new contract, update seat quantities and prices, enter who holds a license and their last activity, import an expense file, attach invoices | Check budget utilization, review unused and inactive seats, accept or reject a recommendation |
 | Data scope | Every license and expense; no budget, no dashboards | Only their units; license data and cost through dashboards; never edits license data or expenses |
 | Output | Correct, complete source data | Budget plans and decisions on recommendations |
@@ -37,7 +37,7 @@ Staff work under a Manager. Staff do the hands-on work: they enter and correct t
 
 | Mind-map branch | Feature | Admin | Manager | Staff | Employee |
 |---|---|---|---|---|---|
-| License Management | Software catalog, vendors, entitlements, contracts (UC01–UC04) | | | ✓ | |
+| License Management | Software catalog, vendors, entitlements and their connectors, contracts (UC01–UC04) | | | ✓ | |
 | Budget Management | Budget planning, cost allocation (UC05, UC06) | | ✓ own units | | |
 | | Expense management (UC07) | | | ✓ | |
 | | Budget monitoring, financial forecast (UC08, UC09) | | ✓ own units | | |
@@ -45,9 +45,8 @@ Staff work under a Manager. Staff do the hands-on work: they enter and correct t
 | | Cost optimization, recommendations (UC13, UC14) | | ✓ own units | | |
 | Analytics | License, financial, compliance, optimization dashboards (UC15–UC18) | | ✓ own units | | |
 | User & Organization | Users, P&Ls and departments, roles, permissions (UC19–UC22) | ✓ | | | |
-| Connector Management | Connectors and conformance check (UC25, UC26) | ✓ | | | |
-| | Connector data mapping (UC27) | | | ✓ | |
-| | Sync monitoring (UC28) | ✓ status only | | ✓ | |
+| Connector Management | Connector data mapping (UC25) | | | ✓ | |
+| | Sync monitoring (UC26) | ✓ status only | | ✓ | |
 | Self-service | My licenses, login / logout (UC23, UC24) | ✓ | ✓ | ✓ | ✓ |
 
 Menus and buttons are hidden when the user lacks permission, but the API enforces every rule in this table; a URL outside the role returns `403`.
@@ -75,7 +74,7 @@ Menus and buttons are hidden when the user lacks permission, but the API enforce
 | BR-17 | Each account has exactly one role: Admin, Manager, Staff, or Employee. Permissions are granted to roles, not to individual users. The last active Admin cannot be disabled or lose the Admin role. |
 | BR-18 | Wrong credentials show one generic message; 5 failed attempts in a row lock login for 15 minutes; passwords are stored hashed; the session lives in an `HttpOnly`, `Secure` cookie. |
 | BR-19 | Every connector delivers data in the ELMS Connector Standard (ECS): natively, through an adapter written by ELMS, or as an ECS file ([Connector standard](06-connector-standard.md)). The validator checks every run: a record that fails is rejected with its reason; a run whose envelope fails writes nothing and the day stays `Unknown` (BR-04). A dataset the provider cannot supply is `Not supported`, never an empty list. |
-| BR-20 | A connector becomes `Active` only after a test connection and a conformance check pass for the datasets it declares. Credentials are write-only: never shown, exported, or logged. Changing credentials or the ECS version sends the connector back to validation. Admin sees connector status, counts, and error codes, never the license data a connector returns (BR-16). |
+| BR-20 | A connector is saved only after its test connection passes with read-only credentials (BR-01). Credentials are write-only: never shown, exported, or logged; replacing them needs a new test connection. One connector serves every license of its provider account. Admin sees connector status, counts, and error codes, never the license data a connector returns (BR-16). |
 
 ## Use case diagrams
 
@@ -125,10 +124,8 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 | UC22 | Manage Permissions | Permission Management | Admin |
 | UC23 | View My Licenses | — (self-service) | Employee, Staff, Manager, Admin |
 | UC24 | Login / Logout | — (access) | Employee, Staff, Manager, Admin |
-| UC25 | Manage Connectors | Connector Configuration | Admin |
-| UC26 | Validate Connector Conformance | Conformance Validation | Admin |
-| UC27 | Map Connector Data | Data Source Mapping | Staff |
-| UC28 | Monitor Data Synchronization | Sync Monitoring | Staff, Admin |
+| UC25 | Map Connector Data | Data Source Mapping | Staff |
+| UC26 | Monitor Data Synchronization | Sync Monitoring | Staff, Admin |
 
 ## Use cases
 
@@ -152,9 +149,10 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 
 - **Actor:** Staff
 - **Main flow (entitlement):** open a product → entitlement lines (Plan, Archetype, Unit, Quantity or quota, Assigned, Active, Valid from–to, Source) → add a line: plan, archetype (BR-02), unit (seat, slot, token, core…), quantity or quota (or unlimited), validity, commercial term, unit price for the period of that term as the vendor quotes it, for a number of units (2.50 USD per 1,000,000 tokens), currency → optionally split a line among units: quota per unit from a date; moving seats mid-year ends the current quotas and starts new ones; a renewal line copies the quotas in force → edit → end a line → import lines from a CSV template
+- **Main flow (connector):** when adding a line, or later from the line → choose where its holders and usage come from: connector, import, or manual entry → for a connector: choose one already set up for the product's vendor, or set up a new one: name, delivery (`native` ECS endpoint, `adapter` such as Microsoft Graph or OpenAI, `file`), base URL for native, credentials (OAuth client or API key with read-only scope), schedule (default every night at 2:00) → test the connection → ELMS reads the provider's capabilities (datasets, granularity, history depth) and lists the plans it sees at the provider (Provider plan, Archetype, Quantity) → choose the provider plan of this license, for example `ENTERPRISEPACK` for Microsoft 365 E3 → choose, per kind of data (entitlement, assignment, usage, expense), whether this connector is the primary source → save → the next run fills the line and loads its history; the link to the provider plan is then kept and changed in UC25
 - **Main flow (assignment and usage, for a line without a connector):** open a line → holders table (User, Assigned date, Last active, Source) → add or remove a holder by employee email → enter the last activity date per holder, or mark the holder as checked with no activity; for Concurrent, Metered, and Capacity lines enter the peak sessions, consumption, or deployed units per period → or import a CSV template for the line's archetype → preview rows to add, update, reject → confirm → mark the data as current (a confirmed import does it) → see the entry history (who, when, file, rows)
-- **Alternative:** negative quantity, end before start, or missing currency → field errors; a value from a connector → edit needs a reason and keeps the original (BR-14); CSV with an invalid row → whole file rejected with the error rows; holder email not matched to an employee → stored with the provider identity and `Unknown department`; the line already has a connector for assignments or usage → manual entry of that data is refused (one primary source, BR-14); a period entered twice → replaced, no duplicate; a holder whose activity was never entered or checked → `Not monitored`; holders and usage not confirmed for 35 days → `Unknown`, so detection reports `Not evaluated` (BR-04); quotas adding up to more than the line on any day → refused
-- **Result:** Purchased quantity and price per line; Assigned and usage come from connectors or, where there is none, from Staff entry with source `manual` or `import` (BR-14). A line with neither stays `Not monitored` (BR-03)
+- **Alternative:** negative quantity, end before start, or missing currency → field errors; a value from a connector → edit needs a reason and keeps the original (BR-14); CSV with an invalid row → whole file rejected with the error rows; holder email not matched to an employee → stored with the provider identity and `Unknown department`; the line already has a connector for assignments or usage → manual entry of that data is refused (one primary source, BR-14); a period entered twice → replaced, no duplicate; a holder whose activity was never entered or checked → `Not monitored`; holders and usage not confirmed for 35 days → `Unknown`, so detection reports `Not evaluated` (BR-04); quotas adding up to more than the line on any day → refused; connector test fails → the error code and the provider's message are shown, the connector is not saved, and the line can still be saved with manual entry; credentials with write scope → refused (BR-01); the plan already has another primary source for that kind of data → switching needs a reason, and the old source stops writing from the switch date (BR-14); the connector reports usage only as a total → the plan's seats stay `Not monitored` (BR-03); a provider plan chosen by mistake → choosing again reprocesses the raw data still within the retention period
+- **Result:** Purchased quantity and price per line; Assigned and usage come from connectors or, where there is none, from Staff entry with source `manual` or `import` (BR-14). A line with neither stays `Not monitored` (BR-03). Every figure from a connector belongs to one license and carries source `api` or `log`
 
 #### UC04 Manage Contracts
 
@@ -301,37 +299,22 @@ One diagram per actor. Each diagram shows every use case that actor can start, g
 
 ### Connector Management
 
-Connectors read license data from providers into ELMS, always in the ELMS Connector Standard (BR-19). UC25–UC28 are numbered after UC24 so existing references keep their numbers. Research, the standard, and the rollout plan: [Connector standard](06-connector-standard.md).
+Connectors read license data from providers into ELMS, always in the ELMS Connector Standard (BR-19). Staff set up a connector when they add a license that has one (UC03); UC25 links the plans a connector finds at the provider to licenses, and UC26 watches and operates the syncs. UC25 and UC26 are numbered after UC24 so existing references keep their numbers. Research, the standard, and the rollout plan: [Connector standard](06-connector-standard.md).
 
-#### UC25 Manage Connectors
-
-- **Actor:** Admin
-- **Main flow:** connector table (Connector, Vendor, Delivery, ECS version, Level, Status, Schedule, Last run) → create a connector: vendor, name, delivery (`native` ECS endpoint, `adapter` such as Microsoft Graph or OpenAI, `file`), base URL for native, credentials (OAuth client or API key with read-only scope), schedule (default every night at 2:00) → test the connection → ELMS reads the provider's capabilities (datasets, granularity, history depth, data delay) → saved as `Draft` → after the conformance check passes (UC26) → activate → pause or resume → edit the schedule
-- **Alternative:** test connection fails → the error code and the provider's message are shown and the connector stays `Draft`; credentials with write scope → refused (BR-01); saved credentials are never shown again, only replaced (BR-20); credentials or ECS version changed → back to `Draft` until validated again; the vendor already has an active connector for the same tenant → refused; a paused connector → its plans' data becomes `Unknown` once the data date passes, never 0 (BR-04)
-- **Result:** a connector is configured once and runs on its schedule; changes recorded without the secret (BR-15)
-
-#### UC26 Validate Connector Conformance
-
-- **Actor:** Admin
-- **Main flow:** open a `Draft` connector → run the conformance check → ELMS pulls a sample of each declared dataset → checks: envelope and JSON Schema per dataset and version, required datasets for the declared level (L1 Entitlement, L2 Assignment, L3 Usage), references (assignments to known subjects and plans), duplicates, unsupported datasets answered as `Not supported`, two pulls of the same day equal → report per check (passed, failed, warning) with record counts and error codes → all required checks passed → connector `Validated`, ready to activate (UC25) → see the history of checks
-- **Alternative:** a required check fails → `Failed`, the connector stays `Draft` with the failing checks listed; the provider supports fewer datasets than the level declared → the level is lowered to what passed, with a warning; an unsupported ECS version → refused with the list of supported versions; adapter connectors are checked the same way as native ones
-- **Data scope:** the report shows counts, field names, and error codes, never record contents (BR-16, BR-20)
-- **Result:** BR-20; only a connector that passed can feed data
-
-#### UC27 Map Connector Data
+#### UC25 Map Connector Data
 
 - **Actor:** Staff
-- **Main flow:** choose an active connector → list of provider plans seen in its data (Provider plan, Archetype, Quantity, Mapped to, Datasets) → map a provider plan to an ELMS license plan (UC03), or create the plan from it → choose, per kind of data (entitlement, assignment, usage, expense), whether this connector is the primary source → the next run normalizes the data kept for that plan
-- **Alternative:** the plan already has another primary source for that kind of data → switching needs a reason, and the old source stops writing from the switch date (one primary source, BR-14); an unmapped provider plan → its records wait in raw data and are counted nowhere; aggregate usage only → the plan's seats stay `Not monitored` (BR-03); a plan mapped by mistake → remapping reprocesses the raw data still within the retention period
+- **Main flow:** choose a connector → list of provider plans seen in its data (Provider plan, Archetype, Quantity, Linked license, Primary source for) → a plan linked when its license was added (UC03) shows as linked → link a waiting provider plan to an ELMS license, or create the license from it (UC03) → choose, per kind of data (entitlement, assignment, usage, expense), whether this connector is the primary source → the next run normalizes the data kept for that plan
+- **Alternative:** a new plan appears at the provider (Microsoft adds Copilot) → listed as "Waiting for a license"; its records wait in raw data and are counted nowhere; the plan already has another primary source for that kind of data → switching needs a reason, and the old source stops writing from the switch date (one primary source, BR-14); aggregate usage only → the plan's seats stay `Not monitored` (BR-03); a plan linked by mistake → linking again reprocesses the raw data still within the retention period
 - **Result:** every figure from a connector belongs to one license and carries source `api` or `log` (BR-14); manual entry of that data is refused in UC03
 
-#### UC28 Monitor Data Synchronization
+#### UC26 Monitor Data Synchronization
 
 - **Actor:** Staff, Admin
-- **Main flow:** run table (Connector, Trigger, Data date, Status, Records received, accepted, rejected, Duration) → open a run: coverage per plan and kind of data (`complete`, `partial`, `failed`) with the reason → Staff: rejected records with the check that failed → run now, or rerun a failed day → for a `file` connector, upload an ECS file → preview the manifest (dataset, data date, record count) → confirm
-- **Alternative:** a run failed → nothing written, the day stays `Unknown` and detection reports `Not evaluated` (BR-04, BR-19); some plans missing → run `partial`, only those plans are `Unknown`; an uploaded file whose record count or checksum does not match its manifest → whole file refused; the same day uploaded or rerun twice → replaced, no duplicate; no successful run for 3 days → the connector is marked "Stale"
-- **Data scope:** Admin sees runs, statuses, counts, and error codes; record contents and rejected records are Staff-only (BR-16)
-- **Result:** read and rerun only; ELMS never writes to the provider (BR-01)
+- **Main flow:** connector table (Connector, Vendor, Delivery, Licenses, Status, Schedule, Last run) → run table (Connector, Trigger, Data date, Status, Records received, accepted, rejected, Duration) → open a run: coverage per plan and kind of data (`complete`, `partial`, `failed`) with the reason → Staff: rejected records with the check that failed → run now, or rerun a failed day → for a `file` connector, upload an ECS file → preview the manifest (dataset, data date, record count) → confirm → Staff: pause or resume a connector, change its schedule, replace its credentials
+- **Alternative:** a run failed → nothing written, the day stays `Unknown` and detection reports `Not evaluated` (BR-04, BR-19); some plans missing → run `partial`, only those plans are `Unknown`; an uploaded file whose record count or checksum does not match its manifest → whole file refused; the same day uploaded or rerun twice → replaced, no duplicate; no successful run for 3 days → the connector is marked "Stale"; a paused connector → its plans' data becomes `Unknown` once the data date passes, never 0 (BR-04); credentials replaced → the test connection must pass before they are saved (BR-20)
+- **Data scope:** Admin sees connectors, runs, statuses, counts, and error codes; record contents, rejected records, and connector settings are Staff-only (BR-16)
+- **Result:** read and rerun only; ELMS never writes to the provider (BR-01); connector changes recorded without the secret (BR-15)
 
 ### Self-service
 
