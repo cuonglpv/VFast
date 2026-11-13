@@ -23,7 +23,7 @@ FONTS = {False: r'C:\Windows\Fonts\segoeui.ttf', True: r'C:\Windows\Fonts\segoeu
 # Màu theo nhánh (tên nhánh → màu nền nhánh, màu chữ đậm). Nhánh mới chưa có màu thì lấy theo thứ tự.
 COLORS = {
     'License Management': ('#E57373', '#7A2222'),
-    'Actual Usage': ('#EF93B6', '#7A2347'),
+    'Usage': ('#EF93B6', '#7A2347'),
     'Budget Management': ('#EBA676', '#7A3F14'),
     'Optimization': ('#93D5C4', '#1F5C4D'),
     'Analytics': ('#8EC5EA', '#1D4F72'),
