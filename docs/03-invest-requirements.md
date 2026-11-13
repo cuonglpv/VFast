@@ -12,7 +12,7 @@ Each story is small enough to implement and test independently. Authentication, 
 | Negotiable | Layout and implementation details may change while the outcome, permissions, and business rules stay fixed. |
 | Valuable | Every story names the benefit for one role: Employee, Staff, Manager, or Admin. |
 | Estimable | Inputs, outputs, roles, data scope, and failure outcomes are explicit; each story has a story-point estimate. |
-| Small | One mind-map leaf per story; only US03 reaches 8 points, every other story is 5 or less. |
+| Small | One mind-map leaf per story; only US03 reaches 13 points and is split into five deliverable parts, every other story is 5 or less. |
 | Testable | Every story has observable Given/When/Then criteria, including rules that tie figures across screens. |
 
 ## Product backlog
@@ -24,7 +24,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | **License Management** | | | | | |
 | US01 | As a Staff member, I want to maintain one software catalog for every provider so that everyone talks about the same products. | Single catalog | US24 | M | 5 |
 | US02 | As a Staff member, I want to record the publishers and resellers we buy from so that every product and contract has an owner. | Vendor master data | US24 | M | 2 |
-| US03 | As a Staff member, I want to record entitlement lines with archetype, quantity, and price, and — where no connector exists — who holds each license and their usage, so that purchased, assigned, and used quantities are known. | Purchased and usage baseline | US01, US02 | M | 8 |
+| US03 | As a Staff member, I want to record entitlement lines with archetype, quantity, and price, connect a line to its provider when the provider has a connector, and — where no connector exists — record who holds each license and their usage, so that purchased, assigned, and used quantities are known. | Purchased and usage baseline | US01, US02 | M | 13 |
 | US04 | As a Staff member, I want to record contracts with renewal date and notice period so that renewals are never missed. | Renewal control | US02, US03 | M | 3 |
 | **Budget Management** | | | | | |
 | US05 | As a Manager, I want to plan my unit's yearly license budget with planned quantity and cost per license so that spending has a target. | Planning | US03, US20 | M | 5 |
@@ -48,11 +48,14 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US20 | As an Admin, I want to maintain the P&Ls and their departments and assign Managers to them so that data scope and budgets follow the group's organization. | Organization | US19 | M | 3 |
 | US21 | As an Admin, I want to change the role of a user so that their access matches their job. | Role control | US19 | M | 2 |
 | US22 | As an Admin, I want to adjust which features each role may read or write so that permissions fit the company. | Permission control | US21 | M | 5 |
+| **Connector Management** | | | | | |
+| US25 | As a Staff member, I want to see the plans each connector finds at the provider, link them to our licenses, and choose the primary source per kind of data so that connector figures land on the right license. | Correct attribution | US03 | M | 3 |
+| US26 | As a Staff member, I want to see every sync run, its coverage, and its rejected records, rerun a failed day, pause a connector, and upload standard files so that missing data is visible and fixed instead of read as zero. | Data completeness | US25 | M | 5 |
 | **Self-service** | | | | | |
 | US23 | As an employee, I want to see the licenses assigned to me and whether I am recorded as using them so that I can tell my manager when I no longer need one. | Self-service | US24 | M | 2 |
 | US24 | As any user, I want to log in and out and land on the screen of my role so that only I see my data. | Protected access | Seeded accounts | M | 3 |
 
-**Total:** 24 stories, 94 points. Must-have: 21 stories (81 points); forecast, cost optimization, and the optimization dashboard are Should-have.
+**Total:** 26 stories, 107 points. Must-have: 23 stories (94 points); forecast, cost optimization, and the optimization dashboard are Should-have. US25 and US26 are numbered after US24 so existing references keep their numbers; they follow the mind-map branch Connector Management. Setting up a connector is part of US03, when Staff add the license.
 
 ## Per-story INVEST review
 
@@ -62,7 +65,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 |---|---|---|---|---|---|---|---|
 | US01 | PASS | PASS | PASS | PASS | PASS | PASS | Duplicate rule and inactive rule are explicit. |
 | US02 | PASS | PASS | PASS | PASS | PASS | PASS | Simple master data; publisher or reseller; inactive rule explicit. |
-| US03 | PASS | PASS | PASS | PASS | PASS | PASS | Largest story (8). Archetype per line (BR-02); connector values protected and one primary source per data type (BR-14); price per N units; quotas with dates; manual data current for 35 days. Splits into: entitlement form, entitlement CSV, holders and usage form, usage CSV per archetype. |
+| US03 | PASS | PASS | PASS | PASS | PASS | PASS | Largest story (13). Archetype per line (BR-02); connector values protected and one primary source per data type (BR-14); price per N units; quotas with dates; manual data current for 35 days; connector set up with read-only, write-only credentials (BR-01, BR-20), testable with the simulated ECS provider. Splits into: entitlement form, entitlement CSV, holders and usage form, usage CSV per archetype, connector step. |
 | US04 | PASS | PASS | PASS | PASS | PASS | PASS | "Renewal soon", "Notice period passed", and "Notice period unknown" are testable with a fixed date. |
 | US05 | PASS | PASS | PASS | PASS | PASS | PASS | One plan per unit and year; `Draft`/`Active` (BR-08). |
 | US06 | PASS | PASS | PASS | PASS | PASS | PASS | Split rule BR-06; total ties to the financial dashboard. |
@@ -84,6 +87,8 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US22 | PASS | PASS | PASS | PASS | PASS | PASS | Guard rails: Admin permissions and Employee cost access cannot be changed. |
 | US23 | PASS | PASS | PASS | PASS | PASS | PASS | Own data only; no price or cost. |
 | US24 | PASS | PASS | PASS | PASS | PASS | PASS | Lockout and cookie rules BR-18. |
+| US25 | PASS | PASS | PASS | PASS | PASS | PASS | Reuses `plan_data_sources`; one primary source per kind of data (BR-14); a plan linked in US03 shows here as linked. |
+| US26 | PASS | PASS | PASS | PASS | PASS | PASS | Failed run stays `Unknown` (BR-04, BR-19); file upload all-or-nothing against its manifest; checks fixed in the [connector standard](06-connector-standard.md#47-validation); Admin sees status only. |
 
 ## Acceptance criteria
 
@@ -117,6 +122,10 @@ Format: **Given** context, **When** action, **Then** observable result.
 9. Given a line without a connector and 10 holders, when Staff enter activity for 3 of them, then the other 7 are `Not monitored`, not `No activity`.
 10. Given manually entered holders last confirmed 40 days ago, then their seats are `Not evaluated` by detection until Staff confirm the data again.
 11. Given 500 seats split 300 Sales and 200 IT, when 50 seats move to IT from 1 July, then Purchased of Sales is 300 in June and 250 in July; given quotas that would add up to more than 500 on a day, then the change is refused.
+12. Given Staff add a line for Microsoft 365 E3 and set up a new connector with read-only credentials, when the connection test passes, then the plans seen at the provider are listed; choosing `ENTERPRISEPACK` with the connector as primary source for assignments makes the next run show E3's assigned seats with source `api`.
+13. Given a connector test that fails, then the error code and the provider's message are shown, the connector is not saved, and the line can still be saved with manual entry.
+14. Given credentials that grant write scope, when the connector is saved, then it is refused; given a saved connector, when its detail or the API response is read, then the credentials are never returned, and the audit log records the change without the secret.
+15. Given a connector already set up for Microsoft, when Staff add a second Microsoft license, then they choose that connector without entering credentials again.
 
 #### AC-US04 Contracts
 
@@ -243,6 +252,25 @@ Format: **Given** context, **When** action, **Then** observable result.
 2. Given an attempt to give Employee access to price or cost, then it is refused.
 3. Given an attempt to remove the permission Admin needs to manage permissions, then it is refused.
 
+### Connector Management
+
+#### AC-US25 Data mapping
+
+1. Given the Microsoft connector finds `ENTERPRISEPACK`, `SPE_E5`, and `VISIOCLIENT`, and only `ENTERPRISEPACK` was linked when Microsoft 365 E3 was added (US03), then E3 shows as linked and the other two are listed as waiting for a license, their records counted on no screen.
+2. Given Staff link `SPE_E5` to the license "Microsoft 365 E5" with the connector as primary source for assignments, when the next run finishes, then E5 shows its assigned seats with source `api`, and Staff can no longer add E5 holders by hand.
+3. Given a plan whose assignments come from a CSV import, when Staff make the connector the primary source, then a reason is required and the import stops counting from that date.
+4. Given a connector that reports usage only as a total, then the plan's seats are `Not monitored`, never `Inactive`.
+5. Given a provider plan linked to the wrong license, when Staff link it again, then the raw data still within the retention period is reprocessed for the right license.
+
+#### AC-US26 Sync monitoring
+
+1. Given a nightly run that fails with invalid credentials, then nothing is written, the run shows `failed` with the reason, and the next day's detection shows the connector's plans as `Not evaluated`, not as unused.
+2. Given a run where one plan fails and the others succeed, then the run is `partial` and only that plan's day is `Unknown`.
+3. Given a Staff member uploads an ECS file whose `record_count` differs from its manifest, then the whole file is refused.
+4. Given the same day is rerun, then the data is replaced without duplicates.
+5. Given Staff pause a connector, then no run starts and its plans' days become `Unknown` once the data date passes, never 0.
+6. Given an Admin opens a run, then statuses, counts, and error codes are shown; the rejected-record list and any change to a connector return `403`.
+
 ### Self-service
 
 #### AC-US23 My licenses
@@ -268,5 +296,6 @@ Format: **Given** context, **When** action, **Then** observable result.
 - Figures tie across screens: cost allocation total = financial dashboard spend by department; detection counts = optimization dashboard; overuse list = compliance dashboard.
 - Every change to master data, expenses, budgets, recommendations, and access is recorded (BR-15).
 - Providers sit behind a connector interface with fakes, so every story is testable without real tenants.
+- Every connector delivers data in the ELMS Connector Standard, checked on every run (BR-19); a simulated ECS provider is the fake used by the connector step of US03 and by US25, US26.
 
 **Related:** [Research](01-research-top-down.md) · [Use cases](02-use-cases.md)

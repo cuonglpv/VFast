@@ -1,6 +1,6 @@
-# 06 — C4 Architecture
+# 07 — C4 Architecture
 
-The [C4 model](https://c4model.com) describes a system at four zoom levels. Each level answers one question for one audience:
+The C4 model describes a system at four zoom levels. Each level answers one question for one audience:
 
 | Level | Diagram | Question it answers | Audience |
 |---|---|---|---|
@@ -20,21 +20,21 @@ ELMS is one system. It reads license, assignment, usage, and cost data from soft
 ```mermaid
 flowchart TB
     employee(["Employee<br/>Sees own licenses<br/>and whether they are used"])
-    staff(["Staff<br/>Maintains catalog, entitlements,<br/>contracts, expenses"])
+    staff(["Staff<br/>Sets up connectors, maintains catalog,<br/>entitlements, contracts, expenses"])
     manager(["Manager<br/>Plans budget, reviews waste,<br/>decides on recommendations"])
     admin(["Admin<br/>Users, P&Ls, departments,<br/>roles, permissions"])
 
     elms["ELMS<br/>Enterprise License Management System<br/>[Software system]<br/>Centralizes licenses, measures usage and cost,<br/>compares budget with reality, recommends savings"]
 
     providers["Software providers<br/>[External systems]<br/>Microsoft 365 / Entra ID, Google, Adobe, JetBrains,<br/>OpenAI, Anthropic, AWS, VPN and license servers"]
-    files["CSV files<br/>[Input, no API]<br/>Entitlements, holders, usage,<br/>expenses, HR employee directory"]
+    files["ECS and CSV files<br/>[Input]<br/>ECS files for file connectors,<br/>CSV templates for manual import"]
 
     employee -- "Views own licenses<br/>[HTTPS]" --> elms
-    staff -- "Enters and imports license data<br/>[HTTPS]" --> elms
+    staff -- "Sets up connectors, enters<br/>and imports license data<br/>[HTTPS]" --> elms
     manager -- "Plans budget, decides<br/>[HTTPS]" --> elms
     admin -- "Manages access<br/>[HTTPS]" --> elms
-    elms -- "Reads licenses, assignments, usage, cost<br/>[read-only APIs, logs]" --> providers
-    staff -. "Uploads<br/>[CSV import]" .-> files
+    elms -- "Reads licenses, assignments, usage, cost<br/>[read-only connectors, ECS]" --> providers
+    staff -. "Uploads<br/>[ECS or CSV file]" .-> files
     files -. "Preview, then confirm" .-> elms
 
     classDef person fill:#0F67B1,stroke:#0B4F8A,color:#fff
@@ -50,23 +50,25 @@ flowchart TB
 | Person | Role in ELMS | Data scope |
 |---|---|---|
 | Employee | `EMPLOYEE` — every employee | Own licenses only, without price or cost |
-| Staff | `STAFF` — license management team | Every license and expense; no budget, no dashboards |
+| Staff | `STAFF` — license management team | Every license and expense; sets up and monitors connectors; no budget, no dashboards |
 | Manager | `MANAGER` — manager of a P&L or department | Only the units assigned to them |
-| Admin | `ADMIN` — system operator | Access settings only; no license, budget, or cost data |
+| Admin | `ADMIN` — system operator | Access settings only; sees connector status, counts, and error codes, but no license, budget, or cost data (BR-16) |
 
 Each account has exactly one role (BR-17). The full capability matrix is in [Use cases](02-use-cases.md).
 
 ### External systems
 
-| System | What ELMS takes | How | Automation (from [research §4.4](01-research-top-down.md)) |
+| System | What ELMS takes | Delivery | Automation (from [research §4.4](01-research-top-down.md)) |
 |---|---|---|---|
-| Microsoft 365 / Entra ID | Plans and quantities, assigned licenses, activity, last sign-in | Microsoft Graph, read-only | High (first connector) |
-| Usage and cost APIs of OpenAI, Anthropic, AWS | Token / credit consumption, cost | Provider APIs, read-only | High |
-| License servers, VPN | Concurrent sessions, denials | Logs | Medium |
-| MDM / endpoint agents | Devices | Export or API | Low |
-| Inventory scripts, contracts | Cores, deployed units, contract terms | CSV import or manual entry | Very low |
+| Microsoft 365 / Entra ID | Plans and quantities, assigned licenses, activity, last sign-in | Adapter over Microsoft Graph, read-only | High (first connector) |
+| Usage and cost APIs of OpenAI, Anthropic | Token / credit consumption, cost | Adapter over the provider API, read-only | High |
+| AWS, Azure, Google Cloud | Cost (FOCUS export) | Adapter or file | High |
+| License servers, VPN | Peak concurrent sessions (denials are not collected in v1) | Adapter reading logs, or an agent inside the company | Medium |
+| MDM / endpoint agents | Devices | File or adapter | Low |
+| Inventory scripts, contracts | Cores, deployed units, contract terms | ECS file, or manual entry | Very low |
+| In-house applications, resellers, local vendors | Their own license data | Native ECS endpoint, where ELMS can require it | Depends on the provider |
 
-Collection order of preference: **API → log → file import → manual entry**. A provider without an API still enters ELMS through import or manual entry instead of being left out.
+Every connector hands ELMS data in the ELMS Connector Standard (ECS, see the [Connector standard proposal](06-connector-standard.md), BR-19), delivered one of three ways: **native** (the provider exposes an ECS endpoint), **adapter** (ELMS writes a connector that maps the provider's own API to ECS), or **file** (an ECS file uploaded in UC26). One validator checks all three. A license line without a connector is filled by Staff through manual entry or CSV import (UC03), so a provider is never left out.
 
 ### Out of scope at this level
 
@@ -74,7 +76,7 @@ ELMS does not assign or revoke licenses on a provider, does not buy or cancel co
 
 ## 2. Level 2 — Container
 
-A container is something that runs or stores data. ELMS is one monolith deployed as **two processes** that share **one PostgreSQL database**. The API serves users; every slow operation (provider calls, large CSV imports, detection) is queued in PostgreSQL and run by the worker, so no Redis or message broker is required.
+A container is something that runs or stores data. ELMS is one monolith deployed as **two processes** that share **one PostgreSQL database**. The API serves users; every slow operation (provider calls, large imports, detection) is queued in PostgreSQL and run by the worker, so no Redis or message broker is required.
 
 ```mermaid
 flowchart TB
@@ -84,9 +86,9 @@ flowchart TB
     subgraph elms["ELMS [System boundary]"]
         direction TB
         proxy["Reverse proxy<br/>[Nginx or Caddy]<br/>Serves the SPA, forwards /api/* (same domain, no CORS)"]
-        web["Web Frontend<br/>[React 19, Vite, TypeScript, MUI v6]<br/>Screens by role, dashboards, imports"]
+        web["Web Frontend<br/>[React 19, Vite, TypeScript, MUI v6]<br/>Screens by role, dashboards,<br/>connector management, imports"]
         api["Elms.Api<br/>[ASP.NET Core 10]<br/>Authentication, RBAC, data scope,<br/>commands and queries"]
-        worker["Elms.Worker<br/>[.NET Worker Service + Hangfire server]<br/>Provider sync, CSV import confirm,<br/>detection, view refresh"]
+        worker["Elms.Worker<br/>[.NET Worker Service + Hangfire server]<br/>Provider sync, ECS validation,<br/>file and CSV import confirm,<br/>detection, view refresh"]
         db[("PostgreSQL 16<br/>[Database]<br/>Business data, Hangfire job queue,<br/>server-side sessions. 39 tables, 7 groups")]
     end
 
@@ -96,7 +98,7 @@ flowchart TB
     api -- "SQL (EF Core writes,<br/>Dapper reads over views)" --> db
     api -- "enqueue jobs" --> db
     worker -- "SQL, dequeue jobs" --> db
-    worker -- "read-only API calls<br/>[Polly retry]" --> providers
+    worker -- "read-only connector calls<br/>[HTTPS, Polly retry]" --> providers
 
     classDef person fill:#0F67B1,stroke:#0B4F8A,color:#fff
     classDef container fill:#2F7FC1,stroke:#0F67B1,color:#fff
@@ -112,9 +114,9 @@ flowchart TB
 
 | Container | Technology | Responsibility |
 |---|---|---|
-| Web Frontend | React 19, Vite, TypeScript, MUI v6, Tailwind CSS v4, ApexCharts, React Router v7 | Role-based screens, dashboards, CSV upload with preview |
+| Web Frontend | React 19, Vite, TypeScript, MUI v6, Tailwind CSS v4, ApexCharts, React Router v7 | Role-based screens, dashboards, connector set-up and sync monitoring (UC03, UC25, UC26), CSV and ECS file upload with preview |
 | Elms.Api | ASP.NET Core 10 (.NET 10 LTS), controllers, command/query handlers | Serves users only: three checks per request (authentication, RBAC, data scope), validation, audit |
-| Elms.Worker | .NET Worker Service, Hangfire server | Runs every slow job; the only process that calls providers and decrypts connector credentials |
+| Elms.Worker | .NET Worker Service, Hangfire server | Runs every slow job and validates ECS payloads; the only process that calls providers and decrypts connector credentials |
 | PostgreSQL 16 | PostgreSQL, Hangfire.PostgreSql | One database for business data, the job queue, and sessions; one schema per module (see [`elms.dbml`](database/elms.dbml)) |
 | Reverse proxy | Nginx or Caddy | Serves the SPA and forwards `/api/*` to `Elms.Api` on the same domain |
 
@@ -126,7 +128,7 @@ flowchart TB
 | Web Frontend → Elms.Api | REST / JSON, `HttpOnly` `Secure` `SameSite=Lax` cookie, CSRF token | Every business request; OpenAPI contract with a generated TypeScript client |
 | Elms.Api → PostgreSQL | SQL over Npgsql | Writes through EF Core; dashboard reads through Dapper over views; enqueue of jobs |
 | Elms.Worker → PostgreSQL | SQL over Npgsql | Reads and writes data; dequeues jobs |
-| Elms.Worker → Providers | HTTPS (Graph SDK, `IHttpClientFactory` + Polly) | Read-only calls; credentials are read-only scope and encrypted with Data Protection |
+| Elms.Worker → Providers | HTTPS (native ECS endpoints, provider APIs and SDKs through adapters, `IHttpClientFactory` + Polly) | Read-only calls; credentials are read-only scope and encrypted with Data Protection |
 
 The API never calls a provider, and the worker never serves a user request.
 
@@ -164,7 +166,8 @@ flowchart TB
         pipe["Pipeline behaviours<br/>logging, validation, authorization"]
         handlers["Command and query handlers<br/>one folder per use case"]
         analytics["Dashboard queries<br/>read views with Dapper"]
-        ingest["Ingestion pipeline steps<br/>fetch, store raw, normalize"]
+        ingest["Ingestion pipeline steps<br/>fetch, validate, store raw, normalize"]
+        ecsval["ECS validator<br/>JSON Schema and rules (BR-19)"]
         ifaces["Interfaces<br/>IAppDbContext, IProviderConnector"]
     end
 
@@ -177,8 +180,9 @@ flowchart TB
     subgraph infra["Elms.Infrastructure"]
         direction TB
         efctx["AppDbContext<br/>EF Core 10 + Npgsql, audit and scope interceptor"]
-        graphconn["MicrosoftGraph connector<br/>Graph SDK + Azure.Identity"]
-        otherconn["Other connectors<br/>plugins implementing IProviderConnector"]
+        ecshttp["EcsHttpConnector<br/>native ECS endpoints"]
+        ecsfile["EcsFileReader<br/>ECS files uploaded in UC26"]
+        adapters["Adapters<br/>Microsoft Graph, Google, OpenAI,<br/>Anthropic, FOCUS exports"]
     end
 
     kernel["SharedKernel.*<br/>Domain, Application, Infrastructure, Api<br/>BaseEntity, Money, AccessScope, BaseDbContext, GlobalExceptionHandler"]
@@ -194,12 +198,14 @@ flowchart TB
     handlers --> ifaces
     analytics --> ifaces
     ingest --> ifaces
+    ingest --> ecsval
     ifaces -. "implemented by" .-> efctx
-    ifaces -. "implemented by" .-> graphconn
-    ifaces -. "implemented by" .-> otherconn
+    ifaces -. "implemented by" .-> ecshttp
+    ifaces -. "implemented by" .-> ecsfile
+    ifaces -. "implemented by" .-> adapters
     efctx -- "SQL" --> db
-    graphconn -- "read-only HTTPS" --> providers
-    otherconn -- "read-only" --> providers
+    ecshttp -- "read-only HTTPS" --> providers
+    adapters -- "read-only" --> providers
     entities -. "built on" .-> kernel
     rules -. "built on" .-> kernel
 ```
@@ -210,14 +216,14 @@ Request flow: controller → `Mediator.Send` → behaviours (log, validate, auth
 
 ### 3.2 Business modules
 
-Eight business modules follow the five mind-map branches, plus a shared `audit` module. A module owns its tables (one Postgres schema each) and other modules read them only through a service or a public view.
+Eight business modules follow the six mind-map branches, plus a shared `audit` module. A module owns its tables (one Postgres schema each) and other modules read them only through a service or a public view.
 
 ```mermaid
 flowchart LR
     identity["identity<br/>UC19, UC21, UC22, UC24<br/>accounts, roles, permissions, sessions"]
     organization["organization<br/>UC20<br/>P&L → department tree,<br/>employees, manager scope"]
     catalog["catalog<br/>UC01–UC04<br/>vendors, products, plans,<br/>entitlements, contracts"]
-    ingestion["ingestion<br/>UC03 import / manual<br/>connectors, sync runs,<br/>raw records, import batches"]
+    ingestion["ingestion<br/>UC03 (connector, import, manual), UC25, UC26<br/>connectors, sync runs,<br/>raw records, import batches"]
     usage["usage<br/>UC10–UC12, UC23<br/>assignments, usage records,<br/>daily snapshots, seat status"]
     finance["finance<br/>UC05–UC09<br/>expenses, FX rates, budgets,<br/>cost allocation, forecast"]
     optimization["optimization<br/>UC10–UC14<br/>detection results,<br/>recommendations"]
@@ -244,7 +250,7 @@ Dependency rules, enforced by NetArchTest (from [05 §4.1](05-folder-structure.m
 - Only `identity` and `organization` decide access; other modules receive an `AccessScope`.
 - Every module writes through the audit interceptor, which is why `audit` has no drawn arrows.
 
-Connectors are plugins behind one interface: `fetchEntitlements`, `fetchAssignments`, `fetchActivity`, `fetchUsage(period)`, `fetchCost(period)`. A method a provider does not support returns `NotSupported`, never an empty list, so "no source" stays distinct from "source reports zero" (BR-04).
+Connectors are plugins behind one interface, `IProviderConnector`: `fetchEntitlements`, `fetchAssignments`, `fetchActivity`, `fetchUsage(period)`, `fetchCost(period)`. What they return is the ELMS Connector Standard (ECS): six datasets (`entitlements`, `subjects`, `assignments`, `activity`, `usage`, `costs`) inside an envelope that carries `completeness`, `granularity`, and `total_count`. A dataset a provider cannot supply is `NotSupported` (HTTP 501, `ecs:not-supported`), never an empty list, so "no source" stays distinct from "source reports zero" (BR-04). Details: [Connector standard](06-connector-standard.md).
 
 ### 3.3 Web Frontend
 
@@ -295,6 +301,7 @@ sequenceDiagram
     autonumber
     participant H as Hangfire (Worker)
     participant C as Connector
+    participant V as ECS validator
     participant P as Provider (read-only)
     participant D as PostgreSQL
     participant A as Elms.Api
@@ -306,10 +313,11 @@ sequenceDiagram
         C->>P: read-only call (Polly retry)
         alt success
             P-->>C: records
-            C->>D: store raw_records, then normalize (upsert by source key + data date)
-            C->>D: collection_coverage = complete
-        else retries exhausted
-            C->>D: sync_runs = failed, figures stay Unknown (never 0)
+            C->>V: validate against ECS (schema, total_count, duplicates)
+            V->>D: store raw_records, then normalize (upsert by source key + data date)
+            V->>D: collection_coverage = complete or partial
+        else retries exhausted, or validation fails the run
+            C->>D: sync_runs = failed, nothing written, figures stay Unknown (never 0)
         end
     end
     H->>D: compute seat status (BR-03), effective cost (BR-05), allocation (BR-06)
@@ -320,7 +328,7 @@ sequenceDiagram
     A-->>M: figures with dataDate and data source (BR-14)
 ```
 
-Other jobs: `ImportConfirmJob` writes a confirmed CSV file in one transaction; `RecomputeLineJob` recomputes one entitlement line after an edit; `RenewalFlagJob` flags "Renewal soon" and "Notice period passed" (UC04). All jobs are idempotent, never overlap, and run as `SystemUser`, so the audit actor is `system`.
+Other jobs: `ImportConfirmJob` writes a confirmed CSV or ECS file in one transaction; `RecomputeLineJob` recomputes one entitlement line after an edit; `RenewalFlagJob` flags "Renewal soon" and "Notice period passed" (UC04). Records that fail a check are rejected one by one, with the reason kept in `raw_records.normalize_error`; a record count that does not match `total_count` fails the whole run. All jobs are idempotent, never overlap, and run as `SystemUser`, so the audit actor is `system`.
 
 ## 6. Deployment view
 
@@ -368,11 +376,11 @@ flowchart TB
 |---|---|---|
 | Authentication | Api | Server-side cookie session via ASP.NET Core Identity; the account must be `ACTIVE`; lockout after 5 failures for 15 minutes (BR-18); disabling a user or changing a role deletes their sessions at once |
 | Authorization | Api | Three independent checks per request: authentication (401), RBAC policy (403), data scope via `AccessScope` global query filter (404 outside scope). Hiding a button is not protection (BR-16) |
-| Data scope | Api, Worker | Managers see only their P&Ls or departments; Employees get a dedicated DTO without price or cost |
+| Data scope | Api, Worker | Managers see only their P&Ls or departments; Employees get a dedicated DTO without price or cost; Admin sees connector status only, not record contents or connector settings (BR-16) |
 | Audit | Api, Worker | An interceptor writes who, old value, new value, time, and reason to an append-only log (BR-15) |
 | Missing data | Everywhere | `null` / `Unknown`, never 0 (BR-04); every figure carries source and confidence (BR-14) |
 | Caching | Api | `HybridCache`, L1 in-memory; Redis only when the API scales to several instances. Keys include the user's scope; dashboard keys include `dataVersion` |
-| Secrets | Worker | Connector credentials: read-only scope, encrypted with Data Protection, decrypted only by the worker |
+| Secrets | Worker | Connector credentials: read-only scope (BR-01), write-only after saving and never shown or exported (BR-20), encrypted with Data Protection, decrypted only by the worker |
 | Errors | Api | One global `IExceptionHandler` returns `ProblemDetails` (RFC 9457) |
 
-**Related:** [Folder structure and architecture](05-folder-structure.md) · [Database design](database/README.md) · [Use cases](02-use-cases.md)
+**Related:** [Connector standard](06-connector-standard.md) · [Folder structure and architecture](05-folder-structure.md) · [Database design](database/README.md) · [Use cases](02-use-cases.md)
