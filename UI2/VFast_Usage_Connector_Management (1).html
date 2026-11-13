@@ -1,0 +1,2785 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VFast | Usage &amp; Connector Management</title>
+    <style>
+      :root {
+        --bg: #eef2f6;
+        --white: #ffffff;
+        --text: #1e2a3b;
+        --muted: #8491a4;
+        --soft: #88acd8;
+        --blue: #315e9b;
+        --blue-hover: #234778;
+        --lightblue: #e1ecf8;
+        --lavender: #b9a1d8;
+        --violet: #7768a5;
+        --amber: #c9985e;
+        --danger: #ba5d4e;
+        --ok: #488b76;
+        --shadow: 0 4px 20px rgba(18, 38, 63, 0.04);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font:
+          13px/1.45 "Segoe UI",
+          Inter,
+          Arial,
+          sans-serif;
+        color: var(--text);
+        background: var(--bg);
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+        border: none;
+      }
+      button:focus-visible,
+      select:focus-visible,
+      input:focus-visible {
+        outline: 2px solid #5c8ec7;
+        outline-offset: 2px;
+      }
+      svg {
+        display: block;
+      }
+      .app {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Subtitle and eyebrow hiding rule */
+      .eyebrow,
+      .subtitle,
+      .strip-sub,
+      .analytics-head p,
+      #analyticsHint,
+      .chart-card-sub,
+      .table-head p {
+        display: none !important;
+      }
+
+      /* Sidebar: borderless, distinguished by soft card elevation */
+      .sidebar {
+        width: 277px;
+        min-width: 277px;
+        background: #ffffff;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        z-index: 3;
+        box-shadow: 4px 0 24px rgba(18, 38, 63, 0.035);
+        border: none;
+      }
+      .side-head {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 24px 20px 20px;
+        border: none;
+      }
+      .brandmark {
+        height: 37px;
+        width: 37px;
+        background: var(--blue);
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 19px;
+        font-weight: 800;
+        letter-spacing: -1px;
+      }
+      .brandname {
+        font-size: 19px;
+        color: #2e5386;
+        font-weight: 750;
+        letter-spacing: -0.5px;
+      }
+      .brandtag {
+        font-size: 9px;
+        letter-spacing: 1.2px;
+        color: #94a1b2;
+        font-weight: 700;
+        margin-top: 1px;
+      }
+      .side-scroll {
+        overflow-y: auto;
+        flex: 1;
+        padding: 16px 14px 12px;
+        scrollbar-width: thin;
+      }
+      .side-eyebrow {
+        font-size: 10px;
+        color: #9aa6b6;
+        letter-spacing: 1.2px;
+        font-weight: 750;
+        margin: 0 8px 10px;
+      }
+      .navbtn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        border: 0;
+        background: transparent;
+        border-radius: 8px;
+        color: #66768d;
+        text-align: left;
+        padding: 12px 11px;
+        font-weight: 600;
+        margin-bottom: 4px;
+        cursor: pointer;
+      }
+      .navbtn-left {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        flex: 1;
+        min-width: 0;
+      }
+      .navbtn-left svg {
+        width: 17px;
+        height: 17px;
+        flex-shrink: 0;
+      }
+      .nav-arrow {
+        font-size: 13px;
+        color: #94a1b2;
+        margin-left: 6px;
+        line-height: 1;
+        user-select: none;
+        padding: 2px 4px;
+        border-radius: 4px;
+      }
+      .navbtn.current {
+        color: #2c568e;
+        background: #e8f0fa;
+      }
+      .navbtn:hover:not(.current) {
+        background: #f3f6fa;
+      }
+      .divider {
+        height: 0;
+        margin: 18px 2px 16px;
+        border: none;
+      }
+      .org-header {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 0;
+        background: transparent;
+        color: #63728a;
+        font-weight: 750;
+        font-size: 12px;
+        padding: 9px 9px;
+        border-radius: 8px;
+      }
+      .org-header:hover {
+        background: #f3f6fa;
+      }
+      .org-tree {
+        margin-top: 4px;
+        margin-bottom: 8px;
+      }
+      .tree-scroll {
+        max-height: calc(100vh - 210px);
+        min-height: 120px;
+        overflow: auto;
+        scrollbar-width: thin;
+        padding-right: 3px;
+      }
+      .org-root,
+      .org-row {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 0;
+        min-height: 37px;
+        border-radius: 8px;
+      }
+      .org-root.active,
+      .org-row.active {
+        background: #e8f0fa;
+      }
+      .org-root:hover,
+      .org-row:hover {
+        background: #f3f6fa;
+      }
+      .org-button {
+        border: 0;
+        display: flex;
+        align-items: center;
+        min-width: 0;
+        flex: 1;
+        gap: 8px;
+        text-align: left;
+        background: transparent;
+        color: #62728a;
+        padding: 6px 3px 6px 8px;
+        font-size: 11.5px;
+        font-weight: 590;
+      }
+      .active > .org-button {
+        color: #2c568e;
+        font-weight: 750;
+      }
+      .org-button .org-label {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .chevron {
+        border: 0;
+        background: transparent;
+        color: #96a6b8;
+        height: 28px;
+        width: 24px;
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        flex: none;
+      }
+      .chevron:hover {
+        color: var(--blue);
+      }
+      .tree-children {
+        padding-left: 14px;
+        margin-left: 14px;
+        border-left: none;
+      }
+      .tree-search {
+        height: 36px;
+        width: 100%;
+        margin: 6px 0 10px;
+        border: none;
+        background: #f1f4f8;
+        border-radius: 8px;
+        padding: 0 12px;
+        font-size: 11px;
+        color: var(--text);
+      }
+      .side-foot {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f8fafd;
+        border-radius: 10px;
+        margin: 12px 14px 16px;
+        padding: 12px 14px;
+        color: #66748a;
+        border: none;
+      }
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: #eae5f5;
+        color: #7262a3;
+        font-weight: 760;
+        font-size: 11px;
+      }
+      .person {
+        font-weight: 700;
+        font-size: 11.5px;
+      }
+      .person-sub {
+        font-size: 10px;
+        color: #9aa5b4;
+      }
+
+      /* Topbar: borderless with soft elevation */
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+      .topbar {
+        height: 65px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 33px;
+        box-shadow: 0 2px 14px rgba(18, 38, 63, 0.03);
+        border: none;
+      }
+      .topcrumb {
+        color: #728298;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .topcrumb strong {
+        color: #38577e;
+      }
+      .top-tools {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        color: #8090a4;
+      }
+      .sync-dot {
+        height: 7px;
+        width: 7px;
+        display: inline-block;
+        border-radius: 50%;
+        background: #4ea383;
+        margin-right: 5px;
+      }
+      .top-pill {
+        background: #eef2f7;
+        color: #6a798c;
+        padding: 7px 12px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        border: none;
+      }
+      .top-avatar {
+        background: #eae5f5;
+        border-radius: 50%;
+        height: 31px;
+        width: 31px;
+        color: var(--violet);
+        font-size: 11px;
+        font-weight: 750;
+        display: grid;
+        place-items: center;
+      }
+
+      /* Content Area */
+      .content {
+        max-width: 1740px;
+        margin: auto;
+        padding: 30px 34px 60px;
+      }
+      .bread {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+      }
+      .bread button {
+        border: 0;
+        padding: 0;
+        background: transparent;
+        color: #8290a2;
+        font-size: 11px;
+      }
+      .bread button:hover {
+        color: var(--blue);
+      }
+      .bread strong {
+        font-size: 11px;
+        color: #5a7295;
+      }
+      .sep {
+        color: #bec8d4;
+      }
+
+      .intro {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+      h1 {
+        font-size: 26px;
+        letter-spacing: -0.7px;
+        font-weight: 740;
+        margin: 0;
+        line-height: 1.25;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .btn {
+        border: none;
+        padding: 10px 14px;
+        border-radius: 8px;
+        background: #e8eef5;
+        color: #4b6079;
+        font-size: 11.5px;
+        font-weight: 600;
+        transition: background 0.15s ease;
+      }
+      .btn:hover {
+        background: #dde5f0;
+      }
+      .btn.primary {
+        background: var(--blue);
+        color: #fff;
+      }
+      .btn.primary:hover {
+        background: #234778;
+      }
+      .control {
+        background: #e8eef5;
+        border: none;
+        padding: 10px 12px;
+        border-radius: 8px;
+        color: #37475e;
+        min-height: 37px;
+        max-width: 210px;
+        font-size: 12px;
+        font-weight: 550;
+      }
+
+      /* Card panels - borderless, distinguished by surface colors and soft elevation */
+      .panel {
+        border: none;
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+      }
+
+      /* Overview Strip: two distinct card surfaces */
+      .overview-strip {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(250px, 0.65fr);
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+      .balance-panel {
+        background: #ffffff;
+        padding: 22px 24px;
+      }
+      .donut-panel {
+        background: #f8fafd;
+        padding: 22px 24px;
+      }
+      .balance-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 6px;
+      }
+      .strip-title {
+        font-weight: 750;
+        font-size: 14.5px;
+        color: #2d3d52;
+      }
+
+      /* Balance Badge (savings in green, exceed in red) */
+      .balance-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 5px 11px;
+        border-radius: 6px;
+        white-space: nowrap;
+        letter-spacing: -0.1px;
+      }
+      .balance-badge.save {
+        background: #eaf5ee;
+        color: #2e7d4e;
+      }
+      .balance-badge.exceed {
+        background: #fdeeeb;
+        color: #c0392b;
+      }
+
+      .summary-line {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        margin-top: 18px;
+      }
+      .summary-line .lab {
+        min-width: 105px;
+        color: #798a9e;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .summary-line .bar {
+        height: 12px;
+        border-radius: 6px;
+        background: #eef2f7;
+        flex: 1;
+        overflow: hidden;
+      }
+      .summary-line .bar > div {
+        height: 100%;
+        border-radius: 6px;
+      }
+      .summary-line .val {
+        font-size: 12px;
+        color: #3a4c62;
+        min-width: 72px;
+        text-align: right;
+        font-weight: 700;
+      }
+      .donut-row {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-top: 18px;
+      }
+      .donut {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        flex: none;
+      }
+      .donut-hole {
+        width: 70px;
+        height: 70px;
+        background: #f8fafd;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .donut-hole b {
+        font-size: 21px;
+        letter-spacing: -0.6px;
+        color: #24354a;
+      }
+      .donut-hole span {
+        font-size: 9px;
+        color: #8897a8;
+      }
+      .donut-details {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        flex: 1;
+      }
+      .dline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 11px;
+        color: #798a9f;
+      }
+      .dline b {
+        font-size: 12px;
+        color: #2f4158;
+        font-weight: 700;
+      }
+      .dot {
+        height: 8px;
+        width: 8px;
+        display: inline-block;
+        border-radius: 2px;
+        margin-right: 7px;
+      }
+
+      /* Analytics section */
+      .analytics {
+        background: #ffffff;
+        margin-bottom: 18px;
+        overflow: hidden;
+      }
+      .analytics-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 22px 24px 18px;
+        border: none;
+      }
+      .analytics-head h2,
+      .table-head h2 {
+        font-size: 16px;
+        letter-spacing: -0.25px;
+        margin: 0;
+        color: #28394e;
+        font-weight: 740;
+      }
+
+      /* Analytics toolbar: view selection cards on the left, search on the right */
+      .analytics-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 0 24px 18px;
+        flex-wrap: wrap;
+      }
+      .view-tabs {
+        display: flex;
+        gap: 4px;
+        background: #edf2f7;
+        border: none;
+        padding: 4px;
+        border-radius: 9px;
+        max-width: max-content;
+        flex-wrap: wrap;
+        margin: 0;
+      }
+      .viewtab {
+        border: 0;
+        background: transparent;
+        color: #6c7d94;
+        font-size: 11.5px;
+        font-weight: 640;
+        padding: 9px 16px;
+        border-radius: 7px;
+        transition: all 0.15s ease;
+      }
+      .viewtab.selected {
+        background: #ffffff;
+        color: #28548e;
+        box-shadow: 0 2px 8px rgba(20, 35, 60, 0.06);
+      }
+      .toolbar-search {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .toolbar-search .search-field {
+        width: 230px;
+        max-width: 100%;
+      }
+      .countbox {
+        color: #7d8ca0;
+        font-size: 11.5px;
+        white-space: nowrap;
+      }
+      .countbox b {
+        color: var(--blue);
+      }
+
+      /* Chart Zone: subtle soft tinted card zone, borderless */
+      .chart-zone {
+        border: none;
+        background: #f4f7fb;
+        border-radius: 12px;
+        margin: 0 20px 22px;
+        padding: 20px 22px 22px;
+      }
+      .zone-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+
+      /* Zone filters with Currency placed next to Sort by */
+      .zone-filters {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .filter-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .zone-filters .filter-label {
+        font-size: 11px;
+        color: #6c7e93;
+        font-weight: 650;
+      }
+      .zone-filters .control {
+        background: #ffffff;
+        border: none;
+        box-shadow: 0 1px 4px rgba(18, 38, 63, 0.05);
+        min-height: 34px;
+        padding: 6px 10px;
+        border-radius: 7px;
+        font-size: 11.5px;
+        color: #37475e;
+      }
+
+      .legend {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        flex-wrap: wrap;
+        font-size: 11px;
+        color: #77879c;
+      }
+      .legend i {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        vertical-align: -1px;
+        margin-right: 5px;
+      }
+      .chart-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+
+      /* Individual chart cards inside chart zone: clean white elevated cards */
+      .chart-card {
+        background: #ffffff;
+        border: none;
+        border-radius: 12px;
+        padding: 20px 22px 18px;
+        overflow: hidden;
+        box-shadow: 0 3px 14px rgba(25, 45, 75, 0.04);
+      }
+      .chart-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .chart-card-title {
+        font-size: 13px;
+        font-weight: 750;
+        color: #384f6c;
+      }
+      .chart-card-sum {
+        font-size: 11px;
+        color: #72849a;
+        font-variant-numeric: tabular-nums;
+      }
+      .chart-card-sum b {
+        color: #2b3d53;
+      }
+      .chart-surface {
+        display: flex;
+        gap: 12px;
+        min-width: 0;
+      }
+      .y-axis {
+        height: 236px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-end;
+        min-width: 52px;
+        flex: none;
+        padding-bottom: 0;
+        color: #9aa7b6;
+        font-size: 10px;
+        font-variant-numeric: tabular-nums;
+      }
+      .chart-main {
+        flex: 1;
+        min-width: 0;
+      }
+      .plot {
+        height: 236px;
+        display: flex;
+        align-items: stretch;
+        position: relative;
+        border: none;
+        background: repeating-linear-gradient(
+          to top,
+          transparent 0,
+          transparent calc(25% - 1px),
+          #edf1f6 calc(25% - 1px),
+          #edf1f6 25%
+        );
+      }
+      .plot-bars {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        justify-content: space-around;
+        gap: 7px;
+        padding: 0 4px;
+      }
+      .group-bars {
+        min-width: 0;
+        flex: 1;
+        display: flex;
+        align-items: end;
+        justify-content: center;
+        gap: 5px;
+        position: relative;
+        cursor: pointer;
+        border-radius: 6px;
+      }
+      .group-bars:hover {
+        background: rgba(235, 242, 250, 0.6);
+      }
+      .bar-col {
+        width: min(26%, 29px);
+        border-radius: 3px 3px 0 0;
+        min-height: 2px;
+        position: relative;
+        transition: height 0.2s;
+      }
+      .bar-col.plan {
+        background: #cbddf0;
+      }
+      .bar-col.use {
+        background: #4d7cb4;
+      }
+      .group-bars:hover .bar-col.plan {
+        background: #aecdeb;
+      }
+      .group-bars:hover .bar-col.use {
+        background: #315f99;
+      }
+      .bar-caption {
+        height: 72px;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 4px 0;
+        gap: 7px;
+      }
+      .company-cap {
+        min-width: 0;
+        flex: 1;
+        text-align: center;
+        border: 0;
+        background: transparent;
+        padding: 0 2px;
+        color: #4d627d;
+        cursor: pointer;
+      }
+      .company-cap:hover .cap-name {
+        color: #28548e;
+      }
+      .cap-icon {
+        height: 25px;
+        width: 25px;
+        border-radius: 7px;
+        margin: 0 auto 5px;
+      }
+      .cap-name {
+        font-size: 10.5px;
+        line-height: 1.24;
+        white-space: normal;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        max-height: 28px;
+        word-break: break-word;
+      }
+      .empty {
+        padding: 55px 20px;
+        text-align: center;
+        color: #93a0af;
+        font-size: 12px;
+      }
+
+      /* Brand icon styling */
+      .brand-icon {
+        position: relative;
+        width: 27px;
+        height: 27px;
+        border-radius: 8px;
+        background: #e8eff9;
+        color: #396395;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        font-weight: 850;
+        font-size: 10px;
+        letter-spacing: -0.4px;
+        flex: none;
+        vertical-align: middle;
+      }
+      .brand-icon img {
+        max-width: 22px;
+        max-height: 22px;
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        background: #e8eff9;
+        border-radius: 3px;
+      }
+      .brand-icon.small {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        font-size: 9px;
+      }
+      .brand-icon.small img {
+        width: 17px;
+        height: 17px;
+      }
+      .brand-icon.pseudo {
+        background: #eef2f6;
+        color: #8391a3;
+      }
+      .entityname {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        min-width: 0;
+      }
+      .entityname-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .entityname-text b {
+        font-weight: 700;
+        color: #315785;
+      }
+      .entityname-text span {
+        display: block;
+        font-size: 10px;
+        color: #92a0b0;
+        font-weight: 500;
+        margin-top: 2px;
+      }
+
+      /* Trend cards */
+      .trend-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+      }
+      .trend-card {
+        background: #ffffff;
+        border: none;
+        border-radius: 12px;
+        padding: 18px 20px;
+        box-shadow: 0 3px 14px rgba(25, 45, 75, 0.04);
+      }
+      .trend-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 9px;
+      }
+      .trend-card-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        min-width: 0;
+        color: #384f6c;
+        font-size: 12px;
+        font-weight: 750;
+      }
+      .trend-card-title span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .trend-detail {
+        font-size: 10px;
+        color: #798b9f;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .trend-bars {
+        height: 138px;
+        margin-top: 21px;
+        display: flex;
+        align-items: stretch;
+        justify-content: space-around;
+        gap: 4px;
+        padding-left: 30px;
+        position: relative;
+        border: none;
+        background: repeating-linear-gradient(
+          to top,
+          transparent 0,
+          transparent calc(25% - 1px),
+          #edf1f6 calc(25% - 1px),
+          #edf1f6 25%
+        );
+      }
+      .trend-pair {
+        flex: 1;
+        display: flex;
+        align-items: end;
+        justify-content: center;
+        gap: 2px;
+        position: relative;
+        min-width: 0;
+      }
+      .trend-bar {
+        width: min(32%, 13px);
+        border-radius: 2px 2px 0 0;
+        min-height: 1px;
+      }
+      .trend-bar.plan {
+        background: #cbddf0;
+      }
+      .trend-bar.use {
+        background: #4d7cb4;
+      }
+      .trend-labels {
+        display: flex;
+        justify-content: space-around;
+        padding-left: 30px;
+        margin-top: 8px;
+        gap: 4px;
+        font-size: 9px;
+        color: #9aa7b6;
+      }
+      .trend-labels span {
+        flex: 1;
+        text-align: center;
+        min-width: 0;
+      }
+      .trend-foot {
+        border: none;
+        background: #f8fafd;
+        border-radius: 8px;
+        margin-top: 15px;
+        padding: 10px 14px;
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+        color: #74869c;
+        font-size: 10.5px;
+      }
+      .trend-foot b {
+        color: #374e6b;
+      }
+      .trend-foot b.waste {
+        color: #ba6e3b;
+      }
+
+      /* Table Panel: borderless, distinct card background with zebra striping */
+      .table-panel {
+        background: #ffffff;
+        border: none;
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .table-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 22px 24px 18px;
+        border: none;
+      }
+      .table-scroll {
+        overflow: auto;
+        padding: 0 20px 8px;
+      }
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 4px;
+        min-width: 900px;
+        font-variant-numeric: tabular-nums;
+      }
+      th {
+        background: #eef3f8;
+        color: #55677d;
+        font-size: 10.5px;
+        text-align: right;
+        padding: 12px 16px;
+        white-space: nowrap;
+        border: none;
+        font-weight: 700;
+      }
+      th:first-child {
+        text-align: left;
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+      }
+      th:last-child {
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+      }
+      td {
+        padding: 12px 16px;
+        text-align: right;
+        color: #4d6077;
+        font-size: 11.5px;
+        border: none;
+        white-space: nowrap;
+      }
+      td:first-child {
+        text-align: left;
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+      }
+      td:last-child {
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+      }
+      tbody tr:nth-child(even) {
+        background: #f8fafd;
+      }
+      tbody tr:hover {
+        background: #ebf2fa;
+      }
+      .row-link {
+        border: 0;
+        background: transparent;
+        padding: 0;
+        text-align: left;
+      }
+      .row-link:hover .entityname-text b {
+        text-decoration: underline;
+      }
+      .rank {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #97a6b8;
+      }
+      .rank-num {
+        width: 18px;
+        font-size: 10px;
+      }
+      .bad {
+        color: #ba5d4e;
+        font-weight: 750;
+      }
+      .good {
+        color: #3e846f;
+        font-weight: 750;
+      }
+      .track {
+        width: 65px;
+        height: 6px;
+        border-radius: 5px;
+        background: #e8eef5;
+        overflow: hidden;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 8px;
+      }
+      .track > div {
+        height: 100%;
+        background: #4d7cb4;
+      }
+
+      /* Pagination container and controls */
+      .table-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 24px;
+        color: #72849a;
+        font-size: 11px;
+        background: #f8fafd;
+        border: none;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .table-bottom-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .page-size-wrap {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #6c7e93;
+        font-size: 11px;
+      }
+      .page-select {
+        background: #eef3f8;
+        border: none;
+        border-radius: 6px;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #384c62;
+        cursor: pointer;
+        min-height: 28px;
+      }
+      .page-select:focus-visible {
+        outline: 2px solid #5c8ec7;
+        outline-offset: 1px;
+      }
+      .page-range {
+        font-weight: 600;
+        color: #55687f;
+        font-size: 11px;
+      }
+      .pagination-controls {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .page-btn {
+        border: none;
+        background: transparent;
+        color: #55687f;
+        font-size: 11px;
+        font-weight: 600;
+        min-width: 28px;
+        height: 28px;
+        padding: 0 8px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+        user-select: none;
+      }
+      .page-btn.nav {
+        padding: 0 10px;
+        background: #eef3f8;
+      }
+      .page-btn.num:hover:not(.active),
+      .page-btn.nav:hover:not(:disabled) {
+        background: #e2eaf3;
+        color: #244a7c;
+      }
+      .page-btn.active {
+        background: var(--blue);
+        color: #ffffff;
+        font-weight: 700;
+      }
+      .page-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      .bottom-note {
+        font-size: 10.5px;
+        color: #94a2b2;
+        line-height: 1.7;
+        margin-top: 18px;
+        padding: 0 4px;
+      }
+      .hidden {
+        display: none !important;
+      }
+
+      @media (max-width: 1300px) {
+        .sidebar {
+          width: 242px;
+          min-width: 242px;
+        }
+        .content {
+          padding: 26px 20px;
+        }
+        .trend-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 1040px) {
+        .sidebar {
+          width: 220px;
+          min-width: 220px;
+        }
+        .topbar {
+          padding: 0 20px;
+        }
+        .overview-strip {
+          grid-template-columns: 1fr;
+        }
+        .trend-grid {
+          grid-template-columns: 1fr;
+        }
+        .chart-zone {
+          padding: 16px 14px;
+          margin: 0 14px 18px;
+        }
+        .chart-card {
+          padding: 15px 14px;
+        }
+      }
+      @media (max-width: 720px) {
+        .sidebar {
+          display: none;
+        }
+        .topbar {
+          height: 55px;
+          padding: 0 15px;
+        }
+        .content {
+          padding: 18px 12px;
+        }
+        .intro {
+          display: block;
+        }
+        .header-actions {
+          margin-top: 14px;
+          justify-content: start;
+        }
+        .analytics-head {
+          padding: 16px;
+        }
+        .analytics-toolbar {
+          padding: 0 14px 14px;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 10px;
+        }
+        .toolbar-search {
+          width: 100%;
+        }
+        .toolbar-search .search-field {
+          flex: 1;
+          width: 100%;
+        }
+        .zone-head {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .chart-zone {
+          margin: 0 10px 14px;
+          padding: 12px 10px;
+        }
+        .chart-card {
+          padding: 12px 10px;
+        }
+        .bar-caption {
+          height: 80px;
+        }
+        .cap-name {
+          font-size: 9px;
+        }
+        .y-axis {
+          min-width: 30px;
+          font-size: 9px;
+        }
+        .plot {
+          height: 170px;
+        }
+        .y-axis {
+          height: 170px;
+        }
+        .chart-card-sum {
+          display: none;
+        }
+        .company-cap {
+          padding: 0;
+        }
+        .top-pill {
+          display: none;
+        }
+        .table-scroll {
+          padding: 0 8px;
+        }
+        .table-bottom {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  <style>#connectorPane{--blue:#3D6BA5;--blue-deep:#214d82;--blue-soft:#eaf1fb;--light:#f6f8fb;--ink:#1b2c42;--text:#46566c;--muted:#8b98a9;--border:#e4e9f0;--green:#278455;--warn:#a86a1e;--red:#ba4250;--violet:#7966a9}#connectorPane *{box-sizing:border-box}#connectorPane{scroll-behavior:smooth}#connectorPane{font:13px/1.45 'Segoe UI',Tahoma,Arial,sans-serif;background:var(--light);color:var(--ink);margin:0;-webkit-font-smoothing:antialiased}#connectorPane button,#connectorPane input,#connectorPane select,#connectorPane textarea{font:inherit}#connectorPane button{cursor:pointer}#connectorPane button:disabled{opacity:.45;cursor:not-allowed}#connectorPane button:focus-visible,#connectorPane input:focus-visible,#connectorPane select:focus-visible,#connectorPane textarea:focus-visible,#connectorPane [tabindex]:focus-visible{outline:2px solid #679bdd;outline-offset:2px}#connectorPane svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}#connectorPane .app{display:flex;min-height:100vh}#connectorPane .sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;width:222px;flex:none;background:#fff;border-right:1px solid var(--border);padding:23px 12px;display:flex;flex-direction:column}#connectorPane .brand{display:flex;gap:11px;align-items:center;margin:2px 11px 38px;font-size:23px;color:#20569b;font-weight:750;letter-spacing:-1px}#connectorPane .brand-mark{display:grid;place-items:center;width:31px;height:31px;background:#2c63aa;color:white;clip-path:polygon(0 0,42% 0,58% 45%,75% 0,100% 0,61% 100%,41% 100%);font-size:0}#connectorPane .nav{display:grid;gap:5px}#connectorPane .nav-item{border:0;background:none;color:#5d6e84;border-radius:8px;padding:11px 13px;display:flex;align-items:center;gap:12px;text-align:left;font-size:13px;font-weight:550;width:100%}#connectorPane .nav-item svg{width:19px;height:19px}#connectorPane .nav-item:hover{background:#f4f7fc;color:var(--blue-deep)}#connectorPane .nav-item.active{background:#e8f0fd;color:#225ba6;font-weight:700}#connectorPane .side-footer{border-top:1px solid var(--border);padding:18px 10px 0;margin-top:auto;display:flex;align-items:center;gap:9px}#connectorPane .avatar{border-radius:50%;display:grid;place-items:center;height:35px;width:35px;background:#e0eafb;color:#25579b;font-weight:750}#connectorPane .side-footer strong{display:block;font-size:12px}#connectorPane .side-footer span{color:var(--muted);font-size:11px}#connectorPane .main{flex:1;min-width:0}#connectorPane .topbar{height:65px;background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:flex-end;align-items:center;padding:0 30px;gap:17px}#connectorPane .topbar .avatar{height:31px;width:31px;font-size:11px}#connectorPane .topbar .bell{color:#62758f;border:0;background:none;padding:5px}#connectorPane .content{max-width:1650px;margin:0 auto;padding:29px 31px 45px}#connectorPane .page-head{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:24px}#connectorPane .page-head h1{margin:0;font-size:28px;letter-spacing:-.65px;font-weight:740}#connectorPane .page-actions{display:flex;align-items:center;gap:9px}#connectorPane .btn{border:1px solid #d9e1ea;background:#fff;border-radius:8px;min-height:37px;padding:8px 13px;display:inline-flex;align-items:center;justify-content:center;gap:7px;color:#485e78;font-weight:600;white-space:nowrap}#connectorPane .btn:hover{background:#f7faff;border-color:#b8cce5}#connectorPane .btn.primary{background:#2f66b1;border-color:#2f66b1;color:#fff}#connectorPane .btn.primary:hover{background:#23558f}#connectorPane .btn.small{min-height:33px;padding:7px 10px;font-size:12px}#connectorPane .btn.icon{padding:8px;min-width:34px}#connectorPane .btn svg{width:16px;height:16px}#connectorPane .search{position:relative;min-width:265px}#connectorPane .search svg{position:absolute;left:12px;top:10px;color:#8090a4;width:17px;height:17px}#connectorPane .search input{height:38px;width:100%;border-radius:8px;border:1px solid #d9e1ec;padding:0 11px 0 37px;color:#263e5c;background:white;outline:none}#connectorPane .search input:focus{border-color:#83a9d8;box-shadow:0 0 0 3px #eaf3fd}#connectorPane .search input::placeholder{color:#98a4b3}#connectorPane .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:0 0 23px}#connectorPane .metric{border:1px solid var(--border);background:#fff;border-radius:11px;padding:18px;min-height:112px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}#connectorPane .metric h2{font-size:13px;margin:0 0 12px;font-weight:650;color:#4d607a}#connectorPane .metric .value{font-size:29px;font-weight:750;line-height:1;color:#172d4a;letter-spacing:-.7px}#connectorPane .metric .metric-icon{height:40px;width:40px;display:grid;place-items:center;border-radius:10px;background:#eef3fc;color:#386cae}#connectorPane .metric:last-child .metric-icon{background:#fff0f0;color:#b84d4d}#connectorPane .metric .metric-icon svg{width:20px;height:20px}#connectorPane .panel{background:white;border:1px solid var(--border);border-radius:11px;overflow:hidden}#connectorPane .filters{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:20px 20px 17px}#connectorPane .select-wrap{position:relative}#connectorPane .select-wrap select{height:35px;min-width:151px;appearance:none;border:1px solid #dfe6ef;background:#fff;border-radius:7px;padding:0 30px 0 11px;color:#526782;cursor:pointer;outline:none}#connectorPane .select-wrap:after{content:'';position:absolute;pointer-events:none;border-right:1.5px solid #7d90a8;border-bottom:1.5px solid #7d90a8;width:6px;height:6px;transform:rotate(45deg);right:13px;top:12px}#connectorPane .filters .sort-select select{min-width:174px}#connectorPane .filters .sort-select{margin-left:auto}#connectorPane .active-filter{display:none;background:#edf4fc;border:1px solid #ccddf2;border-radius:99px;color:#376da7;padding:6px 10px;font-size:12px}#connectorPane .active-filter:not(:empty){display:inline-flex}#connectorPane .table-wrap{overflow-x:auto;scrollbar-width:thin}#connectorPane .tree-table{width:100%;min-width:1120px;border-collapse:collapse;table-layout:fixed}#connectorPane .tree-table th{text-align:left;font-size:11.5px;font-weight:700;color:#788ba3;background:#f8fafd;padding:12px 13px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);white-space:nowrap}#connectorPane .tree-table th:first-child,#connectorPane .tree-table td:first-child{padding-left:24px}#connectorPane .tree-table td{border-bottom:1px solid #edf0f4;padding:11px 13px;vertical-align:middle;font-size:12.5px;white-space:nowrap}#connectorPane .tree-table tr:last-child td{border-bottom:0}#connectorPane .tree-table tbody tr:hover{background:#f9fbfe}#connectorPane .tree-table .company-row{background:#fff}#connectorPane .tree-table .company-row.is-open{background:#fafdff}#connectorPane .tree-table .company-row td{height:58px}#connectorPane .tree-table .provider-row{background:#f8fafd}#connectorPane .tree-table .provider-row td{height:55px}#connectorPane .tree-table .license-row{background:#fff}#connectorPane .tree-table .license-row td{height:46px}#connectorPane .name-cell{display:flex;align-items:center;gap:9px;min-width:0}#connectorPane .indent-provider{padding-left:6px}#connectorPane .indent-license{padding-left:9px}#connectorPane .chevron{height:25px;width:25px;padding:4px;display:grid;place-items:center;color:#71839c;border:0;background:transparent;border-radius:6px}#connectorPane .chevron:hover{background:#e9f0f8;color:#346aa6}#connectorPane .chevron svg{height:15px;width:15px;transition:transform .16s}#connectorPane .chevron[aria-expanded="true"] svg{transform:rotate(90deg)}#connectorPane .name-cell .spacer-chevron{width:25px;flex:none}#connectorPane .entity-name{font-weight:660;color:#243b58;overflow:hidden;text-overflow:ellipsis}#connectorPane .company-row .entity-name{font-weight:740}#connectorPane .company-logo,#connectorPane .provider-logo,#connectorPane .license-icon{height:30px;width:30px;border:1px solid #e8ecf1;background:white;border-radius:8px;display:grid;place-items:center;flex:none;overflow:hidden}#connectorPane .company-logo{position:relative;color:var(--logo-color,#2f649f);font-size:11px;font-weight:800}#connectorPane .company-logo img{display:none;width:100%;height:100%;object-fit:contain;padding:2px;position:absolute;inset:0;background:white}#connectorPane .provider-logo{background:var(--provider-bg,#f2f5fb);color:var(--provider-color,#31619a);font-size:12px;font-weight:800;letter-spacing:-.45px}#connectorPane .provider-logo .ms-logo{display:grid;grid-template-columns:repeat(2,7px);grid-template-rows:repeat(2,7px);gap:2px}#connectorPane .ms-logo i:nth-child(1){background:#f25022}#connectorPane .ms-logo i:nth-child(2){background:#7fba00}#connectorPane .ms-logo i:nth-child(3){background:#00a4ef}#connectorPane .ms-logo i:nth-child(4){background:#ffb900}#connectorPane .license-icon{height:26px;width:26px;background:#f3f6fa;border-color:#edf1f5;color:#8193a8}#connectorPane .license-icon svg{width:14px;height:14px}#connectorPane .mono{font-variant-numeric:tabular-nums;letter-spacing:.1px;color:#59718c;font-size:12px}#connectorPane .soft{color:#8291a4}#connectorPane .cover{color:#526b86;font-weight:580}#connectorPane .contact strong{display:block;color:#364e68;font-weight:640;font-size:12px;overflow:hidden;text-overflow:ellipsis}#connectorPane .contact a{display:block;font-size:11px;color:#6c89aa;text-decoration:none;overflow:hidden;text-overflow:ellipsis;max-width:192px;margin-top:2px}#connectorPane .contact a:hover{text-decoration:underline}#connectorPane .date{font-variant-numeric:tabular-nums;color:#4f637d;font-size:12px}#connectorPane .date span{display:block;font-size:11px;color:#97a3b2;margin-top:2px}#connectorPane .pill{border-radius:100px;padding:5px 8px;display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:660}#connectorPane .pill::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}#connectorPane .pill.healthy{background:#eaf7ef;color:var(--green)}#connectorPane .pill.delayed{background:#fff4e4;color:var(--warn)}#connectorPane .pill.failed{background:#ffeaec;color:var(--red)}#connectorPane .pill.pending{background:#f2eefb;color:var(--violet)}#connectorPane .action-menu{background:transparent;border:0;color:#73859a;border-radius:6px;padding:5px;display:inline-flex}#connectorPane .action-menu:hover{background:#e9f0f8;color:#32679f}#connectorPane .action-menu svg{width:17px;height:17px}#connectorPane .empty{padding:54px!important;text-align:center;color:#7d8ea4;font-weight:500}#connectorPane .empty svg{display:inline-block;margin-bottom:9px;color:#8ca1ba}#connectorPane .pager{padding:15px 19px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:13px;color:#8291a4;font-size:12px}#connectorPane .pager-left{display:flex;align-items:center;gap:12px}#connectorPane .pager select{border:1px solid var(--border);border-radius:7px;padding:7px 10px;background:white;color:#546b83}#connectorPane .pagination{display:flex;gap:5px}#connectorPane .pagination button{height:31px;min-width:31px;border:1px solid #dce4ef;border-radius:7px;background:white;color:#657c98}#connectorPane .pagination button.active{background:#2c68b2;border-color:#2c68b2;color:#fff}#connectorPane .pagination button:hover:not(:disabled):not(.active){background:#f1f6fc}#connectorPane .overlay{display:none;position:fixed;inset:0;background:rgba(18,32,53,.39);z-index:30;align-items:center;justify-content:center;padding:16px}#connectorPane .overlay.open{display:flex}#connectorPane .modal{width:min(650px,100%);max-height:calc(100vh - 32px);display:flex;flex-direction:column;border-radius:13px;background:#fff;box-shadow:0 15px 55px rgba(17,35,59,.19);overflow:hidden}#connectorPane .dialog-head{padding:19px 23px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:15px}#connectorPane .dialog-head h2{margin:0;font-size:19px;font-weight:720}#connectorPane .dialog-body{overflow-y:auto;padding:21px 23px}#connectorPane .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}#connectorPane .field{display:flex;flex-direction:column;gap:6px}#connectorPane .field.span2{grid-column:1/-1}#connectorPane .field label{font-size:12px;font-weight:650;color:#405470}#connectorPane .field input,#connectorPane .field select,#connectorPane .field textarea{border:1px solid #dae3ed;border-radius:8px;padding:10px 12px;color:#203752;min-height:39px;background:#fff;outline:none}#connectorPane .field textarea{min-height:84px;resize:vertical}#connectorPane .field input:focus,#connectorPane .field select:focus,#connectorPane .field textarea:focus{border-color:#8bb1dc}#connectorPane .dialog-foot{padding:16px 23px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}#connectorPane .drawer-overlay{display:none;position:fixed;inset:0;background:rgba(18,32,53,.36);z-index:30;justify-content:flex-end}#connectorPane .drawer-overlay.open{display:flex}#connectorPane .drawer{background:#fff;height:100%;width:min(490px,100%);display:flex;flex-direction:column;box-shadow:-12px 0 40px #1d35512b}#connectorPane .drawer .dialog-body{padding:23px 24px}#connectorPane .detail-entity{display:flex;align-items:center;gap:12px;font-size:16px;font-weight:720;margin-bottom:25px}#connectorPane .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px}#connectorPane .detail-grid small{display:block;font-size:11px;color:#8393a7;margin-bottom:4px}#connectorPane .detail-grid strong{font-size:12px;color:#2f4865;overflow-wrap:anywhere}#connectorPane .detail-section{margin:26px 0 12px;font-size:13px;font-weight:730}#connectorPane .detail-license{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);gap:8px;font-size:12px}#connectorPane .detail-license strong{font-weight:630}#connectorPane .detail-license small{color:#8393a7;display:block;margin-top:3px}#connectorPane .toast{position:fixed;right:24px;bottom:22px;background:#233a57;color:white;padding:11px 16px;border-radius:8px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;z-index:50}#connectorPane .toast.show{opacity:1;transform:none}#connectorPane .mobile-head{display:none}#connectorPane .hidden{display:none!important}@media(max-width:1190px){#connectorPane .content{padding:25px 18px 40px}#connectorPane .sidebar{width:191px}#connectorPane .metrics{gap:10px}#connectorPane .metric{padding:14px}#connectorPane .metric .value{font-size:25px}#connectorPane .search{min-width:210px}}@media(max-width:780px){#connectorPane .sidebar{display:none}#connectorPane .mobile-head{display:block;color:var(--blue);font-weight:750;margin-right:auto}#connectorPane .content{padding:20px 12px 35px}#connectorPane .topbar{height:55px;padding:0 15px}#connectorPane .page-head{align-items:flex-start;flex-direction:column}#connectorPane .page-head h1{font-size:24px}#connectorPane .page-actions{width:100%}#connectorPane .search{flex:1;min-width:0}#connectorPane .metrics{grid-template-columns:1fr 1fr}#connectorPane .filters{padding-left:13px;padding-right:13px}#connectorPane .filters .sort-select{margin-left:0}#connectorPane .pager{padding:12px;flex-wrap:wrap}#connectorPane .form-grid{grid-template-columns:1fr}#connectorPane .field.span2{grid-column:auto}}#connectorPane .tree-table th{font-size:12px;color:#657a95;letter-spacing:.04px}#connectorPane .tree-table .company-row td{height:57px;background:#f8fbff}#connectorPane .tree-table .company-row td:first-child{box-shadow:inset 3px 0 #c1d7f4}#connectorPane .tree-table .provider-row{background:#fff}#connectorPane .tree-table .provider-row td{height:55px}#connectorPane .tree-table .license-row{background:#fcfdff}#connectorPane .tree-table .license-row td{height:47px}#connectorPane .tree-table .company-row .entity-name{font-size:13px}#connectorPane .tree-table .provider-row .entity-name{font-weight:650}#connectorPane .tree-table .license-row .entity-name{font-weight:530}#connectorPane .tree-table .name-cell{gap:8px}#connectorPane .tree-table .company-logo,#connectorPane .tree-table .provider-logo{width:31px;height:31px}#connectorPane .tree-table .license-icon{width:27px;height:27px}#connectorPane .tree-table tbody tr:hover td{background:#f2f7fe}#connectorPane .count-mini{display:inline-flex;align-items:center;border-radius:6px;padding:4px 7px;background:#edf3fa;color:#5f7694;font-size:11px;font-weight:600;white-space:nowrap}#connectorPane .provider-row .count-mini{background:#f3f6fa}#connectorPane .hierarchy-mark{display:flex;align-items:center;height:31px;padding-left:29px;color:#b7c7d8;font-size:18px}#connectorPane .hierarchy-mark svg{width:16px;height:16px}#connectorPane .hierarchy-line{height:20px;width:17px;border-left:1px solid #d2dfee;border-bottom:1px solid #d2dfee;border-bottom-left-radius:7px;transform:translateY(-9px)}#connectorPane .license-trail{height:25px;width:33px;margin-left:4px;border-left:1px solid #d8e2ee;border-bottom:1px solid #d8e2ee;border-bottom-left-radius:8px;transform:translateY(-12px)}#connectorPane .tree-table .license-name{padding-left:12px}#connectorPane .tree-table .provider-name{padding-left:4px}#connectorPane .tree-table td:empty{min-height:36px}@media(max-width:1380px){#connectorPane .tree-table{min-width:1120px}#connectorPane .tree-table td{padding-left:10px;padding-right:10px}#connectorPane .tree-table th{padding-left:10px;padding-right:10px}#connectorPane .tree-table th:first-child,#connectorPane .tree-table td:first-child{padding-left:19px}}#connectorPane{--border:#dde5ed}#connectorPane .sidebar,#connectorPane .metric,#connectorPane .panel,#connectorPane .btn,#connectorPane .search input,#connectorPane .select-wrap select,#connectorPane .pagination button,#connectorPane .pager select,#connectorPane .company-logo,#connectorPane .provider-logo,#connectorPane .license-icon,#connectorPane .modal,#connectorPane .drawer,#connectorPane .field input,#connectorPane .field select,#connectorPane .field textarea{border-radius:4px}#connectorPane .nav-item{border-radius:4px}#connectorPane .metric .metric-icon{border-radius:4px}#connectorPane .pill{border-radius:3px}#connectorPane .panel{border-color:#dae2eb}#connectorPane .metric{min-height:100px}#connectorPane .tree-table{min-width:1000px}#connectorPane .tree-table th{background:#f5f7fa;color:#586c82;font-size:12px;letter-spacing:0;text-transform:none;padding:11px 10px}#connectorPane .tree-table th:first-child,#connectorPane .tree-table td:first-child{padding-left:18px}#connectorPane .tree-table td{padding:10px;font-size:12px}#connectorPane .tree-table tbody tr:hover td{background:#f3f7fc}#connectorPane .tree-table .company-row td{height:58px;background:#f8fafc}#connectorPane .tree-table .company-row td:first-child{box-shadow:inset 2px 0 #9ebfe2}#connectorPane .tree-table .provider-row td{height:54px;background:#fff}#connectorPane .tree-table .license-row td{height:48px;background:#fff}#connectorPane .tree-table .name-cell{display:flex;gap:9px;align-items:center;min-width:0}#connectorPane .tree-table .tree-level-0{padding-left:0}#connectorPane .tree-table .tree-level-1{padding-left:21px;position:relative}#connectorPane .tree-table .tree-level-2{padding-left:43px;position:relative}#connectorPane .tree-level-1:before,#connectorPane .tree-level-2:before{content:'';position:absolute;top:-8px;left:12px;height:30px;width:9px;border-left:1px solid #cfdae7;border-bottom:1px solid #cfdae7;border-bottom-left-radius:0}#connectorPane .tree-level-2:before{left:34px}#connectorPane .tree-table .entity-name{font-weight:650;max-width:230px}#connectorPane .tree-table .license-row .entity-name{font-weight:560}#connectorPane .tree-table .company-logo,#connectorPane .tree-table .provider-logo{height:28px;width:28px;border-radius:4px}#connectorPane .tree-table .license-icon{height:25px;width:25px;border-radius:4px}#connectorPane .tree-table .chevron{height:20px;width:20px;padding:2px;border-radius:2px}#connectorPane .tree-table .chevron svg{height:14px;width:14px}#connectorPane .tree-table .spacer-chevron{height:20px;width:20px}#connectorPane .level-label{display:inline-block;padding:2px 5px;border:1px solid #e2e9f0;border-radius:3px;font-size:10px;font-weight:500;color:#8595a7;background:#fff;letter-spacing:.1px;line-height:1.2}#connectorPane .coverage{font-size:11.5px;color:#526982;white-space:nowrap}#connectorPane .coverage-sep{color:#b5c0cf;margin:0 2px}#connectorPane .contact a{max-width:195px}#connectorPane .date span{margin-top:1px}#connectorPane .pill{padding:4px 7px}#connectorPane .modal{width:min(850px,calc(100vw - 36px));max-height:calc(100vh - 38px);border-radius:5px}#connectorPane .dialog-head{padding:17px 23px}#connectorPane .dialog-head h2{font-size:20px}#connectorPane .form-body{padding:15px 24px 6px}#connectorPane .form-section{margin-bottom:17px}#connectorPane .form-section-title{font-size:14px;font-weight:720;color:#203955;border-bottom:1px solid #e4eaf0;padding:4px 0 9px;margin-bottom:13px}#connectorPane .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px;row-gap:13px}#connectorPane .field label{font-size:12px;font-weight:630;color:#495d74}#connectorPane .field input,#connectorPane .field select,#connectorPane .field textarea{height:38px;min-height:38px;border-radius:4px;padding:8px 11px;background:#fff}#connectorPane .field input::placeholder{color:#9ba7b6}#connectorPane .req{color:#cb4a4a;font-weight:750}#connectorPane .field[hidden]{display:none}#connectorPane .secret-wrap{display:flex;width:100%;position:relative}#connectorPane .secret-wrap input{width:100%;padding-right:41px}#connectorPane .secret-toggle{position:absolute;right:4px;top:4px;bottom:4px;display:grid;place-items:center;width:32px;border:0;border-radius:3px;color:#6b819b;background:#f5f8fb}#connectorPane .secret-toggle svg{height:16px;width:16px}#connectorPane .license-add-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}#connectorPane .license-add-row .field{min-width:0}#connectorPane .license-add-row button{height:38px;border-radius:4px}#connectorPane .selected-licenses{display:flex;flex-wrap:wrap;gap:7px;min-height:45px;padding:11px 0 0}#connectorPane .license-chip{display:flex;align-items:center;gap:7px;border:1px solid #dce5ef;border-radius:3px;background:#f8fafd;padding:4px 6px 4px 5px;color:#35506e;font-size:12px}#connectorPane .license-chip .license-icon{width:23px;height:23px;border:0;background:#eef2f8}#connectorPane .license-chip svg{height:14px;width:14px}#connectorPane .remove-license{width:20px;height:20px;border:0;background:transparent;color:#8798ac;display:grid;place-items:center;border-radius:2px}#connectorPane .remove-license:hover{background:#e8eef6;color:#a42e39}#connectorPane .licenses-empty{display:flex;align-items:center;font-size:12px;color:#98a5b3;padding-left:1px}#connectorPane .field-invalid{font-size:11px;color:#b3414a;margin-top:7px}#connectorPane .dialog-foot{padding:14px 24px}#connectorPane .sr-only{position:absolute!important;height:1px;width:1px;clip:rect(0,0,0,0);overflow:hidden;white-space:nowrap}@media(max-width:1200px){#connectorPane .tree-table{min-width:940px}#connectorPane .tree-table .entity-name{max-width:180px}}@media(max-width:700px){#connectorPane .form-grid{grid-template-columns:1fr}#connectorPane .form-body{padding:14px 16px}#connectorPane .modal{width:calc(100vw - 20px)}#connectorPane .page-actions{flex-wrap:wrap}}#connectorPane .filters .search{min-width:210px;flex:0 1 260px}#connectorPane .filters .search input{height:35px;border-radius:4px}#connectorPane .filters .search svg{top:9px}@media(max-width:1250px){#connectorPane .filters .search{flex:1 1 215px}#connectorPane .filters .sort-select{margin-left:0}}@media(max-width:780px){#connectorPane .filters .search{flex:1 1 100%;min-width:0;order:0}#connectorPane .filters .sort-select{margin-left:0}}#connectorPane{--light:#f7f8fa;--border:#edf0f4}#connectorPane .sidebar{border-right:1px solid #f0f2f5}#connectorPane .topbar{border-bottom:1px solid #f0f2f5}#connectorPane .content{padding-top:31px}#connectorPane .metrics{gap:16px;margin-bottom:25px}#connectorPane .metric{border:0;border-radius:5px;box-shadow:0 1px 4px rgba(22,41,67,.035);padding:19px 21px;min-height:108px}#connectorPane .metric .metric-icon{background:#f1f5fb;border:0}#connectorPane .panel{border:0;border-radius:5px;box-shadow:0 1px 5px rgba(22,41,67,.045)}#connectorPane .filters{padding:0 24px 19px;gap:10px}#connectorPane .select-wrap select,#connectorPane .filters .search input{border:1px solid transparent;background:#f3f5f8;border-radius:4px;height:37px}#connectorPane .select-wrap select:hover,#connectorPane .filters .search input:hover{background:#eef2f7}#connectorPane .select-wrap select:focus,#connectorPane .filters .search input:focus{background:#fff;border-color:#92b6e2;box-shadow:0 0 0 2px #e4edf9}#connectorPane .btn:not(.primary){border-color:transparent;background:#f3f5f8;border-radius:4px}#connectorPane .btn:not(.primary):hover{background:#eaf0f7}#connectorPane .btn.primary{border-radius:4px}#connectorPane .tree-table th{background:#f6f8fa;border-top:0;border-bottom:0;padding:13px 10px;color:#708298}#connectorPane .tree-table td{border-bottom:0;padding-top:12px;padding-bottom:12px}#connectorPane .tree-table tbody .company-row td{background:#f4f7fa;height:63px;border-top:1px solid #e8edf3}#connectorPane .tree-table tbody .company-row:first-child td{border-top:0}#connectorPane .tree-table tbody .company-row td:first-child{box-shadow:none}#connectorPane .tree-table tbody .provider-row td{background:white;height:57px}#connectorPane .tree-table tbody .license-row td{background:#fff;height:49px}#connectorPane .tree-table tbody tr.provider-row + tr.provider-row td,#connectorPane .tree-table tbody tr.license-row + tr.provider-row td{border-top:1px solid #f1f3f6}#connectorPane .tree-table tbody tr.license-row td{color:#65788e}#connectorPane .tree-table tbody tr:hover td{background:#edf3fa!important}#connectorPane .tree-table .company-logo,#connectorPane .tree-table .provider-logo,#connectorPane .tree-table .license-icon{border:0;border-radius:4px}#connectorPane .level-label{border:0;background:#edf2f8;color:#7c8ea3}#connectorPane .tree-level-1:before,#connectorPane .tree-level-2:before,#connectorPane .hierarchy-line,#connectorPane .license-trail{border-color:#e7edf4}#connectorPane .count-mini{background:#eef3f9;border:0}#connectorPane .pager{border-top:1px solid #f0f2f5}#connectorPane .pager select,#connectorPane .pagination button{border-color:transparent!important;background:#f3f5f8}#connectorPane .modal,#connectorPane .drawer{border:0;border-radius:6px}#connectorPane .dialog-head{border-bottom:1px solid #f1f3f5}#connectorPane .form-section-title{border-bottom:0;padding-bottom:3px}#connectorPane .field input,#connectorPane .field select,#connectorPane .field textarea{border:1px solid #e8edf2;background:#fbfcfd}#connectorPane .field input:focus,#connectorPane .field select:focus,#connectorPane .field textarea:focus{background:white}#connectorPane .license-chip{border:0;background:#eef3f8}#connectorPane .dialog-foot{border-top:1px solid #f1f3f5}@media(max-width:780px){#connectorPane .filters{padding-left:15px;padding-right:15px}}#connectorPane .filters{display:grid;grid-template-columns:minmax(260px,1.35fr) auto minmax(150px,180px);align-items:center;gap:12px;padding:1px 24px 22px}#connectorPane .filters .search{min-width:0;width:100%;flex:none}#connectorPane .filters .search input{height:39px;width:100%;background:#f3f5f8}#connectorPane .filters .search svg{top:11px}#connectorPane .filter-selects{display:flex;align-items:center;gap:8px;min-width:0}#connectorPane .filter-selects .select-wrap select{min-width:136px;height:39px}#connectorPane .filters .sort-select{margin-left:0;width:100%}#connectorPane .filters .sort-select select{width:100%;min-width:0;height:39px}#connectorPane .filters .active-filter{display:none!important}@media(max-width:1350px){#connectorPane .filters{grid-template-columns:minmax(260px,1fr) minmax(145px,175px)}#connectorPane .filter-selects{grid-column:1;grid-row:2;flex-wrap:wrap}#connectorPane .filters .sort-select{grid-column:2;grid-row:1}#connectorPane .filters .search{grid-column:1;grid-row:1}}@media(max-width:850px){#connectorPane .filters{display:flex;flex-wrap:wrap;padding:0 15px 16px;gap:9px}#connectorPane .filters .search{flex:1 1 100%;min-width:0;order:0}#connectorPane .filter-selects{flex:1 1 auto;order:1;flex-wrap:wrap}#connectorPane .filter-selects .select-wrap{flex:1 1 130px}#connectorPane .filter-selects .select-wrap select{width:100%;min-width:0}#connectorPane .filters .sort-select{order:2;flex:1 1 160px}#connectorPane .filters .sort-select select{width:100%}}
+</style><style>
+/* Shared workspace navigation. The hierarchy owns the only sidebar scrollbar. */
+[hidden]{display:none!important}
+body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.sidebar{width:304px;min-width:304px;flex-shrink:0;align-self:flex-start}
+.side-head{padding:24px 22px 22px;flex:none}
+.brandmark{border-radius:5px}.brandtag{display:none}
+.side-scroll{display:flex;flex-direction:column;min-height:0;overflow:hidden;padding:0 12px 8px}
+.workspace-nav{display:flex;flex-direction:column;min-height:0;max-height:100%;overflow:hidden;gap:4px}
+.usage-nav-row{display:flex;align-items:center;flex:none;min-height:44px;border-radius:5px;color:#2c568e;background:#e8f0fa}
+.usage-nav-row:not(.is-current){background:transparent;color:#66768d}
+.usage-nav-row .navbtn{margin:0;background:transparent;flex:1;min-width:0}
+.navbtn{flex:none;min-height:44px;border-radius:5px;margin-bottom:0;padding:12px;font-size:13px;font-weight:600}
+.navbtn-left{gap:10px}.navbtn-left>span{line-height:1.35}
+.usage-toggle{background:transparent;display:grid;place-items:center;width:34px;min-height:36px;flex:none;margin-right:4px;color:inherit;border-radius:4px}
+.usage-toggle:hover{background:#dce7f5}.usage-toggle svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7;transform:rotate(90deg);transition:transform .15s}
+.usage-toggle[aria-expanded="false"] svg{transform:rotate(0)}
+.usage-nav-row:not(.is-current) .usage-toggle:hover{background:#eef2f7}
+.org-panel{display:flex;flex-direction:column;min-height:0;flex:0 1 auto;margin:4px 0 6px;padding:0 0 4px}
+.org-search{position:relative;display:block;flex:none;margin:0 5px 8px}
+.org-search svg{position:absolute;left:11px;top:10px;width:15px;height:15px;fill:none;stroke:#8192a7;stroke-width:1.7}
+.org-search input{font:inherit;font-size:11.5px;width:100%;height:35px;border:0;border-radius:4px;background:#f2f5f8;color:#394f6b;padding:0 10px 0 33px;min-width:0}
+.org-search input::placeholder{color:#8190a3}
+.tree-scroll{max-height:none;min-height:0;flex:1;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:3px;scrollbar-color:#cad4e1 transparent}
+.org-root,.org-row{border-radius:4px;min-height:38px;align-items:stretch;gap:2px;margin:1px 0}
+.org-row:hover,.org-root:hover{background:#f3f6fa}
+.org-row.active,.org-root.active{background:#e8f0fa}
+.org-button{flex:1;min-width:0;gap:8px;padding:8px 4px 8px 9px;align-items:center;font-size:12px;font-weight:500;line-height:1.35;border-radius:4px}
+.org-button .org-label{white-space:normal;overflow-wrap:anywhere;overflow:visible;text-overflow:clip}
+.org-root .org-button{font-weight:650}
+.org-row.active .org-button,.org-root.active .org-button{font-weight:650;color:#2c568e}
+.tree-children{margin:0 0 0 10px;padding-left:7px;border:0}
+.root-children{padding-left:0;margin-left:0}
+.org-unit-icon{display:inline-flex;align-items:center;justify-content:center;width:19px;min-width:19px;height:22px;color:#8b9aae}
+.org-unit-icon svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.55;fill:none;stroke-linejoin:round;stroke-linecap:round}
+.org-button .brand-icon.small{width:23px;height:23px;border-radius:4px}
+.org-root .brand-icon.small{background:#3d6ba5;color:#fff}
+.org-row .chevron{width:24px;min-width:24px;height:auto;min-height:36px;padding:0 4px;color:#8b9aae;border-radius:4px}
+.org-row .chevron:hover{background:#e4ecf6;color:#315e9b}
+.org-row .chevron svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.6;transition:transform .15s}
+.org-row .chevron[aria-expanded="true"] svg{transform:rotate(90deg)}
+.org-empty{padding:22px 12px;color:#8190a3;font-size:12px;line-height:1.7;text-align:center}
+.side-foot{flex:none;border-radius:5px;margin:8px 16px 16px;padding:11px 12px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.header-scope-control{display:inline-flex;align-items:center;gap:8px;border:0;max-width:310px;min-width:0;background:#fff;cursor:pointer;text-align:left}
+.header-scope-control .scope-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header-scope-control .scope-arrow{width:13px;height:13px;flex:none;stroke:currentColor;stroke-width:1.7;fill:none}
+.header-scope-control:hover{background:#e4ecf6}
+.header-scope-control .org-unit-icon{height:18px}
+.topbar{position:relative;z-index:2}
+#connectorPane{background:var(--bg);min-height:calc(100vh - 65px)}
+#connectorPane .content{max-width:1740px;padding:30px 34px 60px}
+#connectorPane .page-head h1{font-size:25px}
+#connectorPane .panel{padding-top:19px}
+#connectorPane .tree-table{min-width:1080px}
+#connectorPane .metric{border-radius:5px}
+@media(max-width:1300px){.sidebar{width:286px;min-width:286px}#connectorPane .content{padding:26px 20px}}
+@media(max-width:1040px){.sidebar{width:264px;min-width:264px}.org-button{font-size:11.5px}.tree-children{margin-left:7px;padding-left:6px}#connectorPane .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){
+ .app{flex-direction:column}.sidebar{position:relative;display:flex;width:100%;min-width:0;height:auto;box-shadow:none;z-index:3}
+ .side-head{padding:13px 16px 8px}.brandmark{width:29px;height:29px;font-size:16px}.brandname{font-size:18px}
+ .side-scroll{padding:4px 10px 10px;overflow:visible}.side-foot{display:none}
+ .workspace-nav{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr);overflow:visible;gap:5px}
+ .usage-nav-row{grid-column:1;grid-row:1}.usage-nav-row .navbtn{padding:10px}.navbtn{font-size:12px;min-height:43px;padding:10px}.navbtn-left{gap:7px}
+ #connectorTab{grid-column:2;grid-row:1}#orgPanel{grid-column:1/-1;grid-row:2;max-height:300px;max-height:min(44vh,300px);margin:3px 0 0;padding:6px 3px;background:#fff;border-radius:4px}
+ .org-button{font-size:12px}.org-search{margin-bottom:5px}.topbar{box-shadow:none;background:#eef2f6;height:44px;padding:0 16px}.top-tools{gap:10px}.top-tools>.top-pill{display:none}
+ .tree-children{margin-left:10px;padding-left:7px}.header-actions{flex-wrap:wrap}.header-scope-control{max-width:calc(100vw - 140px)}
+ #connectorPane .content{padding:18px 12px 35px}#connectorPane .page-head{flex-direction:row;align-items:center;gap:8px}#connectorPane .page-head h1{font-size:21px}#connectorPane .page-actions{width:auto}#connectorPane .page-actions .btn{padding:8px;font-size:11px}
+ #connectorPane .metrics{gap:10px}#connectorPane .metric{padding:14px}#connectorPane .metric h2{font-size:12px}#connectorPane .metric .metric-icon{width:30px;height:30px}
+ #connectorPane .overlay{padding:10px}#connectorPane .modal{max-height:calc(100dvh - 20px)}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.usage-toggle svg,.org-row .chevron svg{transition:none}}
+</style></head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="side-head">
+          <div class="brandmark">V</div>
+          <div>
+            <div class="brandname">VFast</div>
+            <div class="brandtag">LICENSE INTELLIGENCE</div>
+          </div>
+        </div>
+        <div class="side-scroll">
+  <nav class="workspace-nav" aria-label="Main navigation">
+    <div class="usage-nav-row">
+      <button class="navbtn current" id="usageTab" type="button" aria-current="page" aria-controls="usagePane">
+        <span class="navbtn-left"><svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 4v16h17M8 16v-5m5 5V8m5 8V5"></path></svg><span>Usage</span></span>
+      </button>
+      <button class="usage-toggle" id="usageToggle" type="button" aria-label="Collapse Usage menu" aria-expanded="true" aria-controls="orgPanel"><svg viewbox="0 0 24 24" aria-hidden="true"><path d="m8 5 7 7-7 7"></path></svg></button>
+    </div>
+    <div id="orgPanel" class="org-panel">
+      <label class="org-search"><svg viewbox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"></path></svg><input id="treeSearch" type="search" placeholder="Search company or unit..." aria-label="Search Usage hierarchy" autocomplete="off"></label>
+      <div class="tree-scroll" id="orgTree" aria-label="Organization hierarchy"></div>
+      <span class="sr-only" id="treeSearchStatus" role="status"></span>
+    </div>
+    <button class="navbtn" id="connectorTab" type="button" aria-controls="connectorPane">
+      <span class="navbtn-left"><svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M8 3v6m8-6v6M5 9h14v3a7 7 0 0 1-14 0V9Zm7 10v3"></path></svg><span>Connector Management</span></span>
+    </button>
+  </nav>
+</div><div class="side-foot">
+          <div class="avatar">LM</div>
+          <div>
+            <div class="person">License Manager</div>
+            <div class="person-sub">Enterprise workspace</div>
+          </div>
+        </div>
+      </aside>
+      <main class="main">
+        <div class="topbar">
+          <div class="topcrumb" id="workspaceCrumb"><strong>VFast</strong><span aria-hidden="true">/</span><span id="activeWorkspaceLabel">Usage</span></div><div class="top-tools">
+            <span style="font-size: 11px"><span class="sync-dot"></span>Synced</span><span class="top-pill">Fiscal year 2026</span>
+            <div class="top-avatar">LM</div>
+          </div>
+        </div>
+        <section id="usagePane" aria-labelledby="usageTab"><div class="content">
+          <div class="bread" id="breadcrumb"></div>
+          <div class="intro">
+            <div>
+              <h1 id="pageTitle">License Cost &amp; Efficiency Analytics</h1>
+            </div>
+            <div class="header-actions">
+              <button id="headerScope" class="control header-scope-control" type="button" aria-label="Choose organization in Usage menu" aria-controls="orgPanel" aria-expanded="true"><span>Vingroup Corporation</span></button><button class="btn primary" id="exportBtn">↓ Export CSV</button>
+            </div>
+          </div>
+
+          <section class="overview-strip">
+            <div class="panel balance-panel">
+              <div class="balance-card-head">
+                <div class="strip-title">Plan vs. Utilization Balance</div>
+                <span class="balance-badge" id="balanceVariance">—</span>
+              </div>
+              <div class="summary-line">
+                <span class="lab">Plan Budget</span>
+                <div class="bar">
+                  <div id="balancePlan" style="width: 100%; background: #cbddf0"></div>
+                </div>
+                <b class="val" id="balancePlanValue">—</b>
+              </div>
+              <div class="summary-line" style="margin-top: 12px">
+                <span class="lab">Purchased Cost</span>
+                <div class="bar">
+                  <div id="balanceSpend" style="background: #b9a1d8"></div>
+                </div>
+                <b class="val" id="balanceSpendValue">—</b>
+              </div>
+              <div class="summary-line" style="margin-top: 12px">
+                <span class="lab">Actual Used</span>
+                <div class="bar">
+                  <div id="balanceUsed" style="background: #4d7cb4"></div>
+                </div>
+                <b class="val" id="balanceUsedValue">—</b>
+              </div>
+            </div>
+            <div class="panel donut-panel">
+              <div class="strip-title">Cost Utilization Rate</div>
+              <div class="donut-row">
+                <div class="donut" id="donut">
+                  <div class="donut-hole">
+                    <b id="donutPct">—</b><span>utilized</span>
+                  </div>
+                </div>
+                <div class="donut-details">
+                  <div class="dline">
+                    <span><i class="dot" style="background: #4d7cb4"></i>Utilized</span><b id="donutUsed">—</b>
+                  </div>
+                  <div class="dline">
+                    <span><i class="dot" style="background: #e2b068"></i>Wasted</span><b id="donutWaste">—</b>
+                  </div>
+                  <div class="dline">
+                    <span><i class="dot" style="background: #b9a1d8"></i>Purchased</span><b id="donutSpend">—</b>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel analytics" id="analyticsPanel">
+            <div class="analytics-head">
+              <div><h2 id="analyticsTitle">Subsidiary Analytics</h2></div>
+            </div>
+
+            <!-- Toolbar: Selection cards on left, search entity name on right -->
+            <div class="analytics-toolbar">
+              <div class="view-tabs" role="tablist" aria-label="Chart view mode">
+                <button role="tab" aria-selected="true" data-mode="ytd" class="viewtab selected">
+                  Year-to-Date (YTD)
+                </button>
+                <button role="tab" aria-selected="false" data-mode="month" class="viewtab">
+                  Monthly Comparison
+                </button>
+                <button role="tab" aria-selected="false" data-mode="trend" class="viewtab">
+                  Annual Trend
+                </button>
+              </div>
+              <div class="toolbar-search">
+                <input id="chartSearch" class="control search-field" placeholder="⌕ Search entity name..." aria-label="Search entity on chart">
+                <span class="countbox" id="filteredCount">31 / 31</span>
+              </div>
+            </div>
+
+            <!-- Chart Zone: zone-head contains Year, Sort by, and Currency selection on the left, Legend on the right -->
+            <div class="chart-zone">
+              <div class="zone-head">
+                <div class="zone-filters">
+                  <div class="filter-item">
+                    <span class="filter-label">Year</span>
+                    <select class="control" id="yearSelect">
+                      <option value="2026">2026</option>
+                      <option value="2025">2025</option>
+                      <option value="2024">2024</option>
+                      <option value="2023">2023</option>
+                    </select>
+                  </div>
+                  <div class="filter-item hidden" id="monthFilterWrap">
+                    <span class="filter-label" id="monthLabel">Month</span>
+                    <select class="control hidden" id="monthSelect" aria-label="Select month"></select>
+                  </div>
+                  <div class="filter-item">
+                    <span class="filter-label">Sort by</span>
+                    <select class="control" id="sortSelect" style="min-width: 165px">
+                      <option value="waste">Waste: High → Low</option>
+                      <option value="name">Name: A → Z</option>
+                      <option value="name_desc">Name: Z → A</option>
+                      <option value="waste_asc">Waste: Low → High</option>
+                      <option value="plan">Plan Budget: High → Low</option>
+                      <option value="used">Actual Used: High → Low</option>
+                      <option value="efficiency">Efficiency: Low → High</option>
+                    </select>
+                  </div>
+                  <div class="filter-item">
+                    <span class="filter-label">Currency</span>
+                    <select class="control" id="currencySelect" style="min-width: 105px" aria-label="Select currency">
+                      <option value="USD" selected>USD ($)</option>
+                      <option value="VND">VND (₫)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="legend">
+                  <span><i style="background: #cbddf0"></i>Plan Budget</span>
+                  <span><i style="background: #4d7cb4"></i>Actual Used</span>
+                </div>
+              </div>
+              <div id="chartGrid" class="chart-grid"></div>
+            </div>
+          </section>
+
+          <section class="panel table-panel" id="rankingPanel">
+            <div class="table-head">
+              <div><h2 id="tableTitle">Subordinate Subsidiaries</h2></div>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Entity / Unit</th>
+                    <th>Plan Budget</th>
+                    <th>Purchased Cost</th>
+                    <th>Actual Used</th>
+                    <th>Wasted Spend</th>
+                    <th>Utilization Rate</th>
+                    <th>Variance vs Plan</th>
+                  </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+              </table>
+            </div>
+            <div class="table-bottom" id="tablePagination">
+              <div class="table-bottom-left">
+                <div class="page-size-wrap">
+                  <span>Rows per page:</span>
+                  <select id="pageSizeSelect" class="page-select" aria-label="Rows per page">
+                    <option value="10" selected>10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                  </select>
+                </div>
+                <span class="page-range" id="tablePageRange">Showing 1–10 of 31 entities</span>
+              </div>
+              <div class="pagination-controls" id="paginationControls"></div>
+            </div>
+          </section>
+          <div class="bottom-note">
+            VFast · Enterprise License Intelligence Platform. 31 business units
+            are displayed for layout verification; certain brand names refer to
+            public entities, remaining items are simulated. Utilization cost
+            represents license value computed from active usage telemetry, not
+            an additional billable fee.
+          </div>
+        </div>
+      </section><section id="connectorPane" aria-labelledby="connectorTab" hidden=""><svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+<symbol id="i-home" viewbox="0 0 24 24"><path d="m3 11 9-8 9 8v10H3zM9 21v-7h6v7"></path></symbol>
+<symbol id="i-budget" viewbox="0 0 24 24"><rect x="3" y="5" width="18" height="15" rx="2"></rect><path d="M3 10h18m-5 5h2"></path></symbol>
+<symbol id="i-license" viewbox="0 0 24 24"><path d="M8 3h8l4 4v14H4V3h4zM16 3v5h4M8 12h8m-8 4h6"></path></symbol>
+<symbol id="i-plug" viewbox="0 0 24 24"><path d="M8 3v6m8-6v6M5 9h14v3a7 7 0 0 1-14 0V9Zm7 10v3"></path></symbol>
+<symbol id="i-chart" viewbox="0 0 24 24"><path d="M4 4v16h17M8 17v-5m5 5V8m5 9V5"></path></symbol>
+<symbol id="i-settings" viewbox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M19 5l-2 2M7 17l-2 2"></path></symbol>
+<symbol id="i-bell" viewbox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"></path></symbol>
+<symbol id="i-search" viewbox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m16 16 5 5"></path></symbol>
+<symbol id="i-plus" viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></symbol>
+<symbol id="i-building" viewbox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M8 7h2m4 0h2M8 11h2m4 0h2M8 15h2m4 0h2M10 21v-4h4v4"></path></symbol>
+<symbol id="i-layers" viewbox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"></path></symbol>
+<symbol id="i-alert" viewbox="0 0 24 24"><path d="M12 3 2 21h20L12 3zM12 9v5m0 3v1"></path></symbol>
+<symbol id="i-chevron" viewbox="0 0 24 24"><path d="m9 5 7 7-7 7"></path></symbol>
+<symbol id="i-more" viewbox="0 0 24 24"><circle cx="5" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle></symbol>
+<symbol id="i-x" viewbox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19"></path></symbol>
+<symbol id="i-mail" viewbox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></symbol>
+<symbol id="i-calendar" viewbox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4m8-4v4"></path></symbol>
+<symbol id="i-eye" viewbox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+<symbol id="i-reset" viewbox="0 0 24 24"><path d="M4 11a8 8 0 1 1 3 7M4 4v7h7"></path></symbol>
+</defs></svg>
+<div class="content">
+    <div class="page-head"><h1>Connector Management</h1><div class="page-actions"><button class="btn primary" id="newBtn"><svg><use href="#i-plus"></use></svg>New Connector</button></div></div>
+    <section class="metrics" aria-label="Metrics">
+      <div class="metric"><div><h2>Companies</h2><div class="value" id="metricCompanies">0</div></div><span class="metric-icon"><svg><use href="#i-building"></use></svg></span></div>
+      <div class="metric"><div><h2>Providers</h2><div class="value" id="metricProviders">0</div></div><span class="metric-icon"><svg><use href="#i-layers"></use></svg></span></div>
+      <div class="metric"><div><h2>Licenses</h2><div class="value" id="metricLicenses">0</div></div><span class="metric-icon"><svg><use href="#i-license"></use></svg></span></div>
+      <div class="metric"><div><h2>Sync Issues</h2><div class="value" id="metricIssues">0</div></div><span class="metric-icon"><svg><use href="#i-alert"></use></svg></span></div>
+    </section>
+    <section class="panel" aria-label="Company provider license table">
+      <div class="filters">
+        <label class="search"><svg><use href="#i-search"></use></svg><input id="searchInput" type="search" placeholder="Search company, provider, license..." aria-label="Search connectors"></label>
+        <div class="filter-selects">
+          <label class="select-wrap"><select id="companyFilter" aria-label="Filter company"><option value="">All companies</option></select></label>
+          <label class="select-wrap"><select id="providerFilter" aria-label="Filter provider"><option value="">All providers</option></select></label>
+          <label class="select-wrap"><select id="statusFilter" aria-label="Filter license status"><option value="">All statuses</option><option value="healthy">Active</option><option value="delayed">Delayed</option><option value="failed">Failed</option><option value="pending">Pending</option></select></label>
+        </div>
+        <label class="select-wrap sort-select"><select id="sortFilter" aria-label="Sort companies"><option value="name">Name A–Z</option><option value="nameDesc">Name Z–A</option><option value="providers">Most providers</option><option value="licenses">Most licenses</option><option value="recent">Recent sync</option></select></label>
+        <span class="active-filter" id="filterTag"></span>
+      </div>
+      <div class="table-wrap"><table class="tree-table">
+        <colgroup><col style="width:35%"><col style="width:13%"><col style="width:21%"><col style="width:11%"><col style="width:11%"><col style="width:8%"><col style="width:42px"></colgroup>
+        <thead><tr><th>Company / Provider / License</th><th>Coverage</th><th>API Contact</th><th>Created</th><th>Last Sync</th><th>Status</th><th aria-label="Actions"></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></div>
+      <div class="pager"><div class="pager-left"><span id="resultCount">0 companies</span><select id="pageSize" aria-label="Companies per page"><option value="5">5 / page</option><option value="8" selected>8 / page</option><option value="10">10 / page</option></select></div><div class="pagination" id="pages"></div></div>
+    </section>
+  </div>
+<div class="overlay" id="modalOverlay"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="dialog-head"><h2 id="modalTitle">New Connector</h2><button class="btn icon" id="closeModal" aria-label="Close"><svg><use href="#i-x"></use></svg></button></div>
+  <form id="createForm" autocomplete="off">
+  <div class="dialog-body form-body">
+    <div class="form-section"><div class="form-section-title">General</div>
+      <div class="form-grid">
+        <div class="field"><label for="formCompany">Company <span class="req">*</span></label><select id="formCompany" required></select></div>
+        <div class="field"><label for="formProvider">Provider <span class="req">*</span></label><select id="formProvider" required></select></div>
+        <div class="field"><label for="formName">Connector Name <span class="req">*</span></label><input id="formName" required maxlength="80" placeholder="e.g. VinFast – Microsoft Usage"></div>
+        <div class="field"><label for="formFrequency">Sync Frequency <span class="req">*</span></label><select id="formFrequency" required><option>Hourly</option><option selected>Every 6 hours</option><option>Daily</option><option>Weekly</option></select></div>
+        <div class="field"><label for="formOwner">API Contact <span class="req">*</span></label><input id="formOwner" required placeholder="Full name"></div>
+        <div class="field"><label for="formEmail">Contact Email <span class="req">*</span></label><input type="email" id="formEmail" required placeholder="contact@company.com"></div>
+      </div>
+    </div>
+    <div class="form-section"><div class="form-section-title">API Configuration</div>
+      <div class="form-grid">
+        <div class="field"><label for="formBaseUrl">API Base URL <span class="req">*</span></label><input id="formBaseUrl" type="url" pattern="https://.*" title="HTTPS URL required" required placeholder="https://api.provider.com/v1"></div>
+        <div class="field"><label for="formAuth">Authentication <span class="req">*</span></label><select id="formAuth" required><option value="api-key">API Key</option><option value="bearer">Bearer Token</option><option value="oauth">OAuth 2.0</option><option value="basic">Basic Auth</option><option value="none">None</option></select></div>
+        <div class="field" id="usernameField" hidden><label for="formUsername">Username <span class="req">*</span></label><input id="formUsername" autocomplete="off" placeholder="API username"></div>
+        <div class="field" id="secretField"><label for="formSecret" id="secretLabel">API Key <span class="req">*</span></label><div class="secret-wrap"><input id="formSecret" type="password" required autocomplete="new-password" placeholder="Enter API key"><button type="button" class="secret-toggle" id="toggleSecret" aria-label="Show credential" title="Show / hide"> <svg><use href="#i-eye"></use></svg></button></div></div>
+        <div class="field" id="headerField"><label for="formHeader">Header Name</label><input id="formHeader" value="X-API-Key" placeholder="X-API-Key"></div>
+        <div class="field"><label for="formEndpoint">Usage Endpoint</label><input id="formEndpoint" placeholder="/usage or /reports/usage"></div>
+      </div>
+    </div>
+    <div class="form-section"><div class="form-section-title">Licenses <span class="req">*</span></div>
+      <div class="license-add-row"><div class="field"><label class="sr-only" for="licenseInput">License name</label><input id="licenseInput" list="licenseSuggestions" placeholder="Enter or select a license"><datalist id="licenseSuggestions"></datalist></div><button class="btn" id="addLicenseBtn" type="button"><svg><use href="#i-plus"></use></svg>Add License</button></div>
+      <div class="selected-licenses" id="selectedLicenses" aria-live="polite"></div>
+      <div class="field-invalid" id="licenseError" role="alert" hidden>At least one license is required.</div>
+    </div>
+  </div>
+  <div class="dialog-foot"><button class="btn" id="cancelBtn" type="button">Cancel</button><button class="btn primary" type="submit"><svg><use href="#i-plus"></use></svg>Create Connector</button></div>
+  </form>
+</div></div>
+<div class="drawer-overlay" id="drawerOverlay"><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle"><div class="dialog-head"><h2 id="drawerTitle">Connector</h2><button id="closeDrawer" class="btn icon" aria-label="Close"><svg><use href="#i-x"></use></svg></button></div><div class="dialog-body" id="drawerBody"></div><div class="dialog-foot"><button class="btn" id="drawerDone">Close</button></div></aside></div>
+<div class="toast" id="toast" role="status"></div>
+</section></main>
+    </div>
+    <script>
+      (() => {
+        "use strict";
+        const MONTH_NOW = 11,
+          YEAR_NOW = 2026;
+        const monthNames = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+        const fullMonthNames = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+
+        const seedBrands = [
+          ["VinFast", "VF", "vinfastauto.com"],
+          ["VinAI", "AI", "vinai.io"],
+          ["VinBigData", "BD", "vinbigdata.com"],
+          ["VinCSS", "CS", "vincss.net"],
+          ["VinRobotics", "VR", "vinrobotics.net"],
+          ["VinMotion", "VM", "vinmotion.net"],
+          ["VinDynamics", "VD", "vindynamics.net"],
+          ["V-Green", "VG", "vgreen.net"],
+          ["VinHMS", "VH", "vinhms.com"],
+          ["VinSmart", "VS", null],
+          ["VinSmart Future", "SF", null],
+          ["VinSOC", "SO", null],
+          ["Vin3S", "3S", null],
+          ["VinES Ha Tinh", "VE", null],
+          ["VinEG", "EG", null],
+          ["VinMetal", "MT", null],
+        ];
+        const labels = [
+          "Engineering Co. 17",
+          "Engineering Co. 18",
+          "Engineering Co. 19",
+          "Engineering Co. 20",
+          "Engineering Co. 21",
+          "Engineering Co. 22",
+          "Engineering Co. 23",
+          "Engineering Co. 24",
+          "Engineering Co. 25",
+          "Engineering Co. 26",
+          "Engineering Co. 27",
+          "Engineering Co. 28",
+          "Engineering Co. 29",
+          "Engineering Co. 30",
+          "Engineering Co. 31",
+        ];
+        const brandList = [
+          ...seedBrands.map(([name, initial, domain]) => ({
+            name,
+            initial,
+            domain,
+            verified: true,
+          })),
+          ...labels.map((name, i) => ({
+            name,
+            initial: "E" + String(i + 17),
+            domain: null,
+            verified: false,
+          })),
+        ];
+        const byId = {},
+          root = {
+            id: "root",
+            name: "Vingroup Corporation",
+            type: "group",
+            parent: null,
+            children: [],
+            share: 1,
+          };
+        byId[root.id] = root;
+        const blockNames = [
+          "Technology Division",
+          "Engineering Division",
+          "Operations Division",
+        ];
+        const deptNames = [
+          ["Software Development", "Data & AI"],
+          ["R&D", "Technical Infrastructure"],
+          ["IT Operations", "Enterprise Systems"],
+        ];
+        const blockWeights = [0.4, 0.35, 0.25],
+          deptWeights = [0.56, 0.44],
+          projectWeights = [0.53, 0.47],
+          licenseWeights = [0.32, 0.28, 0.24, 0.16];
+        for (let i = 0; i < brandList.length; i++) {
+          const b = brandList[i],
+            co = {
+              id: "c" + i,
+              name: b.name,
+              type: "company",
+              companyIndex: i,
+              share: 1,
+              brand: b,
+              parent: root,
+              children: [],
+            };
+          byId[co.id] = co;
+          root.children.push(co);
+          for (let k = 0; k < 3; k++) {
+            let block = {
+              id: `c${i}-b${k}`,
+              name: blockNames[k],
+              type: "block",
+              companyIndex: i,
+              share: blockWeights[k],
+              parent: co,
+              children: [],
+            };
+            byId[block.id] = block;
+            co.children.push(block);
+            for (let d = 0; d < 2; d++) {
+              let dep = {
+                id: `c${i}-b${k}-d${d}`,
+                name: deptNames[k][d],
+                type: "department",
+                companyIndex: i,
+                share: blockWeights[k] * deptWeights[d],
+                parent: block,
+                children: [],
+              };
+              byId[dep.id] = dep;
+              block.children.push(dep);
+              for (let p = 0; p < 2; p++) {
+                let proj = {
+                  id: `c${i}-b${k}-d${d}-p${p}`,
+                  name: [
+                    "Project " +
+                      [
+                        "Core Platform",
+                        "Customer App",
+                        "Data Hub",
+                        "Infra Cloud",
+                        "ERP Integration",
+                        "Automation Suite",
+                      ][(i + k * 2 + d + p) % 6],
+                    "Project " +
+                      [
+                        "API Gateway",
+                        "Device Portal",
+                        "Analytics Engine",
+                        "Cloud Security",
+                        "Business Suite",
+                        "Internal Services",
+                      ][(i * 3 + k + d + p) % 6],
+                  ][p],
+                  type: "project",
+                  companyIndex: i,
+                  share: dep.share * projectWeights[p],
+                  parent: dep,
+                  children: [],
+                };
+                byId[proj.id] = proj;
+                dep.children.push(proj);
+                [
+                  "Microsoft 365",
+                  "GitHub Enterprise",
+                  "Jira Software",
+                  "Power BI Pro",
+                ].forEach((app, li) => {
+                  const lic = {
+                    id: proj.id + "-l" + li,
+                    name: app,
+                    type: "license",
+                    companyIndex: i,
+                    share: proj.share * licenseWeights[li],
+                    parent: proj,
+                    children: [],
+                  };
+                  byId[lic.id] = lic;
+                  proj.children.push(lic);
+                });
+              }
+            }
+          }
+        }
+        const state = {
+          scope: root,
+          mode: "ytd",
+          year: 2026,
+          month: MONTH_NOW,
+          sort: "waste",
+          search: "",
+          treeSearch: "",
+          expanded: new Set(),
+          panelOpen: true,
+          activeTab: "usage",
+          page: 1,
+          pageSize: 10,
+          currency: "USD",
+        };
+        const $ = (id) => document.getElementById(id);
+        const num = (n, d = 1) =>
+          new Intl.NumberFormat("en-US", {
+            maximumFractionDigits: d,
+            minimumFractionDigits: d,
+          }).format(n);
+
+        /* Dual currency formatter (USD & VND) */
+        const money = (n) => {
+          const sign = n < 0 ? "-" : "";
+          const abs = Math.abs(n);
+          if (state.currency === "VND") {
+            if (abs >= 1) {
+              return sign + num(abs, abs < 10 ? 2 : 1) + "B VND";
+            } else if (abs >= 0.001) {
+              return sign + num(abs * 1000, 0) + "M VND";
+            }
+            return "0 VND";
+          } else {
+            if (abs >= 1) {
+              return sign + "$" + num(abs, abs < 10 ? 2 : 1) + "M";
+            } else if (abs >= 0.001) {
+              return sign + "$" + num(abs * 1000, 0) + "K";
+            }
+            return "$0";
+          }
+        };
+
+        const pct = (a, b) => (b ? (100 * a) / b : 0);
+        const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+        function clean(s) {
+          return String(s).replace(
+            /[&<>"']/g,
+            (x) =>
+              ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;",
+              })[x],
+          );
+        }
+        function metricsMonth(i, y, m) {
+          const baseline = 0.29 + ((i * 11) % 24) * 0.029 + (i < 8 ? 0.17 : 0);
+          const seasonal = 1 + 0.11 * Math.sin(m * 0.72 + i * 0.49);
+          const plan = baseline * seasonal * (1 + (y - 2024) * 0.055);
+          const spend = plan * (0.78 + ((i * 7 + m * 5) % 18) / 100);
+          const util = clamp(0.54 + ((i * 11 + m * 3 + y) % 31) / 100, 0, 0.98);
+          return { plan, spend, used: spend * util, waste: spend * (1 - util) };
+        }
+        function months() {
+          if (state.mode === "month") return [state.month];
+          return Array.from(
+            { length: state.year === YEAR_NOW ? MONTH_NOW : 12 },
+            (_, i) => i + 1,
+          );
+        }
+        function metric(n, mons = months(), year = state.year) {
+          if (n.type === "group")
+            return n.children.reduce(
+              (a, ch) => sumMetric(a, metric(ch, mons, year)),
+              zero(),
+            );
+          const a = mons.reduce(
+            (a, m) => sumMetric(a, metricsMonth(n.companyIndex, year, m)),
+            zero(),
+          );
+          return scaleMetric(a, n.share);
+        }
+        function zero() {
+          return { plan: 0, spend: 0, used: 0, waste: 0 };
+        }
+        function sumMetric(a, b) {
+          return {
+            plan: a.plan + b.plan,
+            spend: a.spend + b.spend,
+            used: a.used + b.used,
+            waste: a.waste + b.waste,
+          };
+        }
+        function scaleMetric(a, v) {
+          return {
+            plan: a.plan * v,
+            spend: a.spend * v,
+            used: a.used * v,
+            waste: a.waste * v,
+          };
+        }
+        function ico(node, size = "") {
+          const b =
+            node.type === "company"
+              ? node.brand
+              : brandList[node.companyIndex] || brandList[0];
+          const initial =
+            node.type === "company"
+              ? b.initial
+              : node.type === "group"
+                ? "V"
+                : node.type === "block"
+                  ? "DIV"
+                  : node.type === "department"
+                    ? "DEP"
+                    : "PRJ";
+          const cls = `brand-icon ${size} ${node.type === "company" && !b.verified ? "pseudo" : ""}`;
+          const title = clean(node.name);
+          if (node.type === "company" && b.domain) {
+            const uri =
+              "https://www.google.com/s2/favicons?domain=" +
+              encodeURIComponent(b.domain) +
+              "&sz=128";
+            return `<span class="${cls}" title="${title}"><span>${clean(initial)}</span><img src="${uri}" alt="" loading="lazy" onerror="this.remove()"></span>`;
+          }
+          return `<span class="${cls}" title="${title}">${clean(initial)}</span>`;
+        }
+        function lineage(n) {
+          const out = [];
+          while (n) {
+            out.unshift(n);
+            n = n.parent;
+          }
+          return out;
+        }
+        function visibleRows() {
+          return state.scope.children || [];
+        }
+        function sortedRows() {
+          const needle = state.search.trim().toLowerCase();
+          const r = visibleRows().filter((x) =>
+            x.name.toLowerCase().includes(needle),
+          );
+          r.sort((a, b) => {
+            const A = metric(a),
+              B = metric(b);
+            if (state.sort === "name")
+              return a.name.localeCompare(b.name, "en");
+            if (state.sort === "name_desc")
+              return b.name.localeCompare(a.name, "en");
+            if (state.sort === "waste_asc") return A.waste - B.waste;
+            if (state.sort === "plan") return B.plan - A.plan;
+            if (state.sort === "used") return B.used - A.used;
+            if (state.sort === "efficiency")
+              return pct(A.used, A.spend) - pct(B.used, B.spend);
+            return B.waste - A.waste;
+          });
+          return r;
+        }
+        function dateText() {
+          const cap = state.year === YEAR_NOW ? MONTH_NOW : 12;
+          if (state.mode === "month")
+            return `${fullMonthNames[state.month - 1]} ${state.year}`;
+          return `Jan–${monthNames[cap - 1]} ${state.year}`;
+        }
+        function shortDateText() {
+          const cap = state.year === YEAR_NOW ? MONTH_NOW : 12;
+          if (state.mode === "month")
+            return `${monthNames[state.month - 1]} ${state.year}`;
+          return `Jan–${monthNames[cap - 1]} ${state.year}`;
+        }
+        function setScope(n) {
+          state.scope = n;
+          state.activeTab = "usage";
+          state.search = "";
+          state.page = 1;
+          $("chartSearch").value = "";
+          lineage(n).forEach((x) => state.expanded.add(x.id));
+          renderAll();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          try {
+            history.replaceState(null, "", "#" + encodeURIComponent(n.id));
+          } catch (e) {}
+        }
+        function hierarchyIcon(n) {
+          if (n.type === "group") return '<span class="brand-icon small">V</span>';
+          if (n.type === "company") return ico(n, "small");
+          const paths = {
+            block: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 7h2m4 0h2M8 11h2m4 0h2M10 21v-5h4v5"/>',
+            department: '<path d="M12 3v6M5 21v-6h14v6M5 15v-4h14v4"/><rect x="8" y="3" width="8" height="6" rx="1"/><path d="M12 15v6"/>',
+            project: '<path d="M3 7h7l2 2h9v11H3zM3 7V4h7l2 3"/>',
+            license: '<path d="M6 3h9l4 4v14H6zM14 3v5h5M9 12h7m-7 4h5"/>'
+          };
+          return `<span class="org-unit-icon"><svg viewBox="0 0 24 24" aria-hidden="true">${paths[n.type] || paths.project}</svg></span>`;
+        }
+        function syncNavigation() {
+          const usage = state.activeTab === "usage";
+          $("usagePane").hidden = !usage;
+          $("connectorPane").hidden = usage;
+          $("usageTab").classList.toggle("current", usage);
+          $("usageTab").parentElement.classList.toggle("is-current", usage);
+          $("connectorTab").classList.toggle("current", !usage);
+          const current = usage ? $("usageTab") : $("connectorTab");
+          const other = usage ? $("connectorTab") : $("usageTab");
+          current.setAttribute("aria-current", "page");
+          other.removeAttribute("aria-current");
+          const open = usage && state.panelOpen;
+          $("orgPanel").classList.toggle("hidden", !open);
+          $("usageToggle").setAttribute("aria-expanded", String(open));
+          $("usageToggle").setAttribute("aria-label", `${open ? "Collapse" : "Expand"} Usage menu`);
+          $("headerScope").setAttribute("aria-expanded", String(open));
+          $("activeWorkspaceLabel").textContent = usage ? "Usage" : "Connector Management";
+          document.title = `VFast | ${usage ? "Usage" : "Connector Management"}`;
+        }
+        function showWorkspaceTab(tab) {
+          state.activeTab = tab;
+          syncNavigation();
+          try {
+            history.replaceState(null, "", tab === "connectors" ? "#connectors" : "#" + encodeURIComponent(state.scope.id));
+          } catch (e) {}
+        }
+        function renderTree() {
+          const q = state.treeSearch.trim().toLowerCase();
+          const matches = new Map();
+          function hasMatch(n) {
+            if (matches.has(n.id)) return matches.get(n.id);
+            const found = !q || n.name.toLowerCase().includes(q) || n.children.some(hasMatch);
+            matches.set(n.id, found);
+            return found;
+          }
+          const arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 7 7-7 7"/></svg>';
+          function branch(n, depth, inherited = false) {
+            if (q && !inherited && !hasMatch(n)) return "";
+            const selfMatch = !!q && n.name.toLowerCase().includes(q);
+            const has = n.children.length > 0;
+            const matchingChild = !!q && !inherited && !selfMatch && n.children.some(hasMatch);
+            const expanded = n.type === "group" || state.expanded.has(n.id) || matchingChild;
+            const active = state.scope.id === n.id;
+            const head = `<div class="${n.type === "group" ? "org-root" : "org-row"} ${active ? "active" : ""}"><button type="button" class="org-button" data-scope="${n.id}" data-tree-depth="${depth}" ${active ? 'aria-current="true"' : ''} title="${clean(n.name)}">${hierarchyIcon(n)}<span class="org-label">${clean(n.name)}</span></button>${has && n.type !== "group" ? `<button type="button" class="chevron" data-expand="${n.id}" aria-label="${expanded ? "Collapse" : "Expand"} ${clean(n.name)}" aria-expanded="${expanded}">${arrow}</button>` : ""}</div>`;
+            if (!has || !expanded) return head;
+            const children = n.children.map(ch => branch(ch, depth + 1, inherited || selfMatch)).join("");
+            return head + `<div class="tree-children ${n.type === "group" ? "root-children" : ""}">${children}</div>`;
+          }
+          const children = root.children.map(n => branch(n, 1)).join("");
+          const rootHead = `<div class="org-root ${state.scope.id === "root" ? "active" : ""}"><button class="org-button" type="button" data-scope="root" data-tree-depth="0" ${state.scope.id === "root" ? 'aria-current="true"' : ''}>${hierarchyIcon(root)}<span class="org-label">Vingroup Corporation</span></button></div>`;
+          const tree = $("orgTree");
+          const scrollTop = tree.scrollTop;
+          tree.innerHTML = rootHead + (children || '<div class="org-empty">No matching company or unit</div>');
+          tree.scrollTop = scrollTop;
+          $("treeSearchStatus").textContent = q ? `${root.children.filter(hasMatch).length} matching companies` : "";
+        }
+        function renderCrumbs() {
+          const parts = lineage(state.scope);
+          $("breadcrumb").innerHTML = parts
+            .map((p, i) =>
+              i === parts.length - 1
+                ? `<strong>${clean(p.name)}</strong>`
+                : `<button data-scope="${p.id}">${clean(p.name)}</button><span class="sep">/</span>`,
+            )
+            .join("");
+          $("pageTitle").textContent =
+            state.scope.type === "group"
+              ? "License Cost & Efficiency Analytics"
+              : state.scope.name;
+          $("headerScope").innerHTML = hierarchyIcon(state.scope) + `<span class="scope-name">${clean(state.scope.name)}</span><svg class="scope-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
+          const typPlural = {
+            group: "subsidiaries",
+            company: "divisions",
+            block: "departments",
+            department: "projects",
+            project: "licenses",
+            license: "licenses",
+          };
+          const unitLabel = typPlural[state.scope.type] || "units";
+          $("analyticsTitle").textContent =
+            state.scope.type === "project"
+              ? "License Monitoring"
+              : state.scope.type === "group"
+                ? "Subsidiary Analytics"
+                : `${state.scope.name} Analytics`;
+          $("tableTitle").textContent =
+            `Subordinate ${unitLabel.charAt(0).toUpperCase() + unitLabel.slice(1)}`;
+        }
+        function renderOverview() {
+          const m = metric(state.scope);
+          const ratio = pct(m.used, m.spend),
+            w = pct(m.waste, m.spend),
+            delta = m.spend - m.plan;
+          const max = Math.max(m.plan, m.spend, m.used, 0.001);
+          for (const [key, el, el2] of [
+            ["plan", "balancePlan", "balancePlanValue"],
+            ["spend", "balanceSpend", "balanceSpendValue"],
+            ["used", "balanceUsed", "balanceUsedValue"],
+          ]) {
+            $(el).style.width = (m[key] / max) * 100 + "%";
+            $(el2).textContent = money(m[key]);
+          }
+          const varianceEl = $("balanceVariance");
+          if (varianceEl) {
+            if (delta > 0) {
+              varianceEl.className = "balance-badge exceed";
+              varianceEl.textContent = `Over budget +${money(delta)}`;
+            } else {
+              varianceEl.className = "balance-badge save";
+              varianceEl.textContent = `Savings vs budget -${money(-delta)}`;
+            }
+          }
+          $("donut").style.background =
+            `conic-gradient(#4D7CB4 0 ${ratio}%,#E2B068 ${ratio}% 100%)`;
+          $("donutPct").textContent = num(ratio, 0) + "%";
+          $("donutUsed").textContent = money(m.used);
+          $("donutWaste").textContent = money(m.waste);
+          $("donutSpend").textContent = money(m.spend);
+        }
+        function getMax(points) {
+          const high = Math.max(
+            ...points.map((x) => x.plan),
+            ...points.map((x) => x.used),
+            0.001,
+          );
+          return high < 0.1
+            ? Math.ceil(high * 100) / 100
+            : high < 0.5
+              ? Math.ceil(high * 20) / 20
+              : Math.ceil(high * 2) / 2;
+        }
+        function makeBars(rows, offset) {
+          const pairs = rows.map((n) => ({ n, m: metric(n) }));
+          const max = getMax(pairs.map((x) => x.m));
+          const steps = Array.from(
+            { length: 5 },
+            (_, i) => (max * (4 - i)) / 4,
+          );
+          const yAxis = `<div class="y-axis">${steps.map((t) => `<span>${t === 0 ? (state.currency === "VND" ? "0" : "$0") : state.currency === "VND" ? num(t, t < 10 ? 1 : 0) + "B" : "$" + num(t, t < 10 ? 1 : 0) + "M"}</span>`).join("")}</div>`;
+          const cols = pairs
+            .map(
+              ({ n, m }) =>
+                `<div class="group-bars" title="${clean(n.name)}\nPlan: ${money(m.plan)}\nUsed: ${money(m.used)}\nWasted: ${money(m.waste)}" data-scope="${n.id}"><div class="bar-col plan" style="height:${(m.plan / max) * 100}%"></div><div class="bar-col use" style="height:${(m.used / max) * 100}%"></div></div>`,
+            )
+            .join("");
+          const caps = pairs
+            .map(
+              ({ n }) =>
+                `<button class="company-cap" data-scope="${n.id}" title="Open ${clean(n.name)}"><span class="cap-icon">${ico(n)}</span><span class="cap-name">${clean(n.name)}</span></button>`,
+            )
+            .join("");
+          const total = pairs.reduce((a, x) => sumMetric(a, x.m), zero());
+          return `<div class="chart-card"><div class="chart-card-head"><div><div class="chart-card-title">Group ${String(offset + 1).padStart(2, "0")}–${String(offset + rows.length).padStart(2, "0")}</div></div><span class="chart-card-sum">Plan <b>${money(total.plan)}</b> &nbsp; · &nbsp; Used <b>${money(total.used)}</b></span></div><div class="chart-surface">${yAxis}<div class="chart-main"><div class="plot"><div class="plot-bars">${cols}</div></div><div class="bar-caption">${caps}</div></div></div></div>`;
+        }
+        function makeTrend(n) {
+          const mons = Array.from(
+            { length: state.year === YEAR_NOW ? MONTH_NOW : 12 },
+            (_, i) => i + 1,
+          );
+          const values = mons.map((m) => metric(n, [m]));
+          const max = getMax(values);
+          const sums = values.reduce(sumMetric, zero());
+          const bars = values
+            .map(
+              (m, i) =>
+                `<div class="trend-pair" title="${monthNames[i]}: Plan ${money(m.plan)}; Used ${money(m.used)}; Wasted ${money(m.waste)}"><div class="trend-bar plan" style="height:${(m.plan / max) * 100}%"></div><div class="trend-bar use" style="height:${(m.used / max) * 100}%"></div></div>`,
+            )
+            .join("");
+          return `<div class="trend-card"><div class="trend-card-head"><button class="row-link trend-card-title" data-scope="${n.id}">${ico(n)}<span>${clean(n.name)} ↗</span></button><span class="trend-detail">Efficiency ${num(pct(sums.used, sums.spend), 0)}%</span></div><div class="trend-bars">${bars}</div><div class="trend-labels">${mons.map((m, i) => `<span>${monthNames[i]}</span>`).join("")}</div><div class="trend-foot"><span>Plan <b>${money(sums.plan)}</b></span><span>Used <b>${money(sums.used)}</b></span><span>Wasted <b class="waste">${money(sums.waste)}</b></span></div></div>`;
+        }
+        function renderCharts(rows) {
+          $("filteredCount").textContent =
+            rows.length + " / " + visibleRows().length;
+          const grid = $("chartGrid");
+          if (!rows.length) {
+            grid.className = "chart-grid";
+            grid.innerHTML =
+              '<div class="empty">No units match the selected filter.</div>';
+            return;
+          }
+          if (state.mode === "trend") {
+            grid.className = "trend-grid";
+            grid.innerHTML = rows.map(makeTrend).join("");
+          } else {
+            grid.className = "chart-grid";
+            const groups = [];
+            for (let i = 0; i < rows.length; i += 8)
+              groups.push(makeBars(rows.slice(i, i + 8), i));
+            grid.innerHTML = groups.join("");
+          }
+        }
+        function renderTable(rows) {
+          const b = $("tableBody");
+          const typeMap = {
+            company: "Subsidiary",
+            block: "Division",
+            department: "Department",
+            project: "Project",
+            license: "License",
+          };
+          const total = rows.length;
+          const totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+          if (state.page > totalPages) state.page = totalPages;
+          if (state.page < 1) state.page = 1;
+          const start = (state.page - 1) * state.pageSize;
+          const end = Math.min(start + state.pageSize, total);
+          const pagedRows = rows.slice(start, end);
+
+          if (!pagedRows.length) {
+            b.innerHTML =
+              '<tr><td colspan="7" style="text-align:center;padding:25px;color:#97A3B3">No matching results found</td></tr>';
+          } else {
+            b.innerHTML = pagedRows
+              .map((n, idx) => {
+                const i = start + idx;
+                const m = metric(n),
+                  ratio = pct(m.used, m.spend),
+                  delta = m.spend - m.plan;
+                return `<tr><td><div class="rank"><span class="rank-num">${i + 1}</span><button class="row-link" data-scope="${n.id}"><span class="entityname">${ico(n)}<span class="entityname-text"><b>${clean(n.name)}</b><span>${typeMap[n.type] || n.type}</span></span></span></button></div></td><td>${money(m.plan)}</td><td>${money(m.spend)}</td><td>${money(m.used)}</td><td class="bad">${money(m.waste)}</td><td><span class="track"><div style="width:${ratio}%"></div></span>${num(ratio)}%</td><td class="${delta > 0 ? "bad" : "good"}">${delta > 0 ? "+" : "-"}${money(Math.abs(delta))}</td></tr>`;
+              })
+              .join("");
+          }
+
+          $("tablePageRange").textContent = total
+            ? `Showing ${start + 1}–${end} of ${total} entities`
+            : "Showing 0 entities";
+
+          // Render pagination buttons
+          const controls = $("paginationControls");
+          if (totalPages <= 1) {
+            controls.innerHTML = "";
+            return;
+          }
+          let pageButtons = `<button type="button" class="page-btn nav" data-page="prev" ${state.page === 1 ? "disabled" : ""} aria-label="Previous page">‹ Prev</button>`;
+          for (let p = 1; p <= totalPages; p++) {
+            pageButtons += `<button type="button" class="page-btn num ${p === state.page ? "active" : ""}" data-page="${p}" aria-label="Page ${p}" ${p === state.page ? 'aria-current="page"' : ""}>${p}</button>`;
+          }
+          pageButtons += `<button type="button" class="page-btn nav" data-page="next" ${state.page === totalPages ? "disabled" : ""} aria-label="Next page">Next ›</button>`;
+          controls.innerHTML = pageButtons;
+        }
+        function renderAll() {
+          syncNavigation();
+          renderTree();
+          renderCrumbs();
+          renderOverview();
+          const r = sortedRows();
+          renderCharts(r);
+          renderTable(r);
+          if ($("monthFilterWrap")) {
+            $("monthFilterWrap").classList.toggle(
+              "hidden",
+              state.mode !== "month",
+            );
+          }
+          $("monthSelect").classList.toggle("hidden", state.mode !== "month");
+          $("monthLabel").classList.toggle("hidden", state.mode !== "month");
+          document.querySelectorAll("[data-mode]").forEach((el) => {
+            const active = el.dataset.mode === state.mode;
+            el.classList.toggle("selected", active);
+            el.setAttribute("aria-selected", String(active));
+          });
+          $("yearSelect").value = String(state.year);
+          $("sortSelect").value = state.sort;
+          $("monthSelect").value = String(state.month);
+          $("pageSizeSelect").value = String(state.pageSize);
+          $("currencySelect").value = state.currency;
+        }
+        function initMonth() {
+          const select = $("monthSelect");
+          select.innerHTML = fullMonthNames
+            .map((m, i) => `<option value="${i + 1}">${m}</option>`)
+            .join("");
+        }
+        document.addEventListener("click", (e) => {
+          if (e.target.closest("#connectorPane")) return;
+          const expand = e.target.closest("[data-expand]");
+          if (expand) {
+            const id = expand.dataset.expand;
+            state.expanded.has(id)
+              ? state.expanded.delete(id)
+              : state.expanded.add(id);
+            renderTree();
+            $("orgTree").querySelector(`[data-expand="${id}"]`)?.focus({preventScroll:true});
+            return;
+          }
+          const btn = e.target.closest("[data-scope]");
+          if (btn && byId[btn.dataset.scope]) {
+            const fromTree = btn.closest("#orgTree");
+            const id = btn.dataset.scope;
+            setScope(byId[id]);
+            if (fromTree) $("orgTree").querySelector(`[data-scope="${id}"]`)?.focus({preventScroll:true});
+          }
+        });
+        document.querySelectorAll("[data-mode]").forEach((btn) =>
+          btn.addEventListener("click", () => {
+            state.mode = btn.dataset.mode;
+            state.page = 1;
+            renderAll();
+          }),
+        );
+        $("yearSelect").addEventListener("change", (e) => {
+          state.year = +e.target.value;
+          state.month = Math.min(
+            state.month,
+            state.year === YEAR_NOW ? MONTH_NOW : 12,
+          );
+          state.page = 1;
+          renderAll();
+        });
+        $("monthSelect").addEventListener("change", (e) => {
+          state.month = +e.target.value;
+          state.page = 1;
+          renderAll();
+        });
+        $("sortSelect").addEventListener("change", (e) => {
+          state.sort = e.target.value;
+          state.page = 1;
+          renderAll();
+        });
+        $("currencySelect").addEventListener("change", (e) => {
+          state.currency = e.target.value;
+          renderAll();
+        });
+        $("chartSearch").addEventListener("input", (e) => {
+          state.search = e.target.value;
+          state.page = 1;
+          const r = sortedRows();
+          renderCharts(r);
+          renderTable(r);
+        });
+        $("headerScope").addEventListener("click", () => {
+          state.panelOpen = true;
+          showWorkspaceTab("usage");
+          $("treeSearch").focus();
+        });
+        $("usageTab").addEventListener("click", () => {
+          state.panelOpen = true;
+          showWorkspaceTab("usage");
+        });
+        $("usageToggle").addEventListener("click", () => {
+          state.panelOpen = state.activeTab === "usage" ? !state.panelOpen : true;
+          showWorkspaceTab("usage");
+        });
+        $("connectorTab").addEventListener("click", () => showWorkspaceTab("connectors"));
+        $("treeSearch").addEventListener("input", e => {
+          state.treeSearch = e.target.value;
+          $("orgTree").scrollTop = 0;
+          renderTree();
+        });
+        $("orgPanel").addEventListener("keydown", e => {
+          if (e.key === "Escape") {
+            if (state.treeSearch) {
+              state.treeSearch = "";
+              $("treeSearch").value = "";
+              renderTree();
+            } else {
+              state.panelOpen = false;
+              syncNavigation();
+              $("usageToggle").focus();
+            }
+            e.preventDefault();
+            return;
+          }
+          const buttons = [...$("orgTree").querySelectorAll("[data-scope]")];
+          if (e.target.id === "treeSearch" && e.key === "ArrowDown") {
+            buttons[0]?.focus(); e.preventDefault(); return;
+          }
+          const scopeButton = e.target.closest("[data-scope]");
+          if (!scopeButton) return;
+          const idx = buttons.indexOf(scopeButton);
+          if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+            buttons[Math.max(0, Math.min(buttons.length - 1, idx + (e.key === "ArrowDown" ? 1 : -1)))]?.focus();
+            e.preventDefault();
+          } else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+            const node = byId[scopeButton.dataset.scope];
+            const arrowButton = scopeButton.parentElement.querySelector("[data-expand]");
+            if (e.key === "ArrowRight") {
+              if (arrowButton?.getAttribute("aria-expanded") === "false") arrowButton.click();
+              else buttons[idx + 1]?.focus();
+            } else if (arrowButton?.getAttribute("aria-expanded") === "true") arrowButton.click();
+            else if (node.parent) $("orgTree").querySelector(`[data-scope="${node.parent.id}"]`)?.focus();
+            e.preventDefault();
+          }
+        });
+
+        /* Pagination event listeners */
+        $("tablePagination").addEventListener("click", (e) => {
+          const btn = e.target.closest(".page-btn");
+          if (!btn || btn.disabled) return;
+          const target = btn.dataset.page;
+          if (target === "prev") {
+            state.page = Math.max(1, state.page - 1);
+          } else if (target === "next") {
+            state.page++;
+          } else {
+            state.page = +target;
+          }
+          renderTable(sortedRows());
+          $("rankingPanel").scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+        });
+
+        $("pageSizeSelect").addEventListener("change", (e) => {
+          state.pageSize = +e.target.value;
+          state.page = 1;
+          renderTable(sortedRows());
+        });
+
+        $("exportBtn").addEventListener("click", () => {
+          const rows = sortedRows();
+          const curLabel = state.currency === "VND" ? "VND" : "USD";
+          const csv = [
+            [
+              "Entity / Unit",
+              "Type",
+              "Period",
+              `Plan Budget (${curLabel})`,
+              `Purchased Cost (${curLabel})`,
+              `Actual Used (${curLabel})`,
+              `Wasted Spend (${curLabel})`,
+              "Utilization Rate (%)",
+            ],
+            ...rows.map((n) => {
+              const m = metric(n);
+              return [
+                n.name,
+                n.type,
+                dateText(),
+                num(m.plan * 1000000, 0),
+                num(m.spend * 1000000, 0),
+                num(m.used * 1000000, 0),
+                num(m.waste * 1000000, 0),
+                num(pct(m.used, m.spend), 2),
+              ];
+            }),
+          ]
+            .map((row) =>
+              row
+                .map((x) => '"' + String(x).replace(/"/g, '""') + '"')
+                .join(","),
+            )
+            .join("\r\n");
+          const blob = new Blob(["\ufeff" + csv], {
+            type: "text/csv;charset=utf-8",
+          });
+          const href = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = href;
+          a.download = `vfast_${state.scope.id}_${state.year}_${state.mode}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(href), 1000);
+        });
+        initMonth();
+        const initial = decodeURIComponent((location.hash || "#root").slice(1));
+        if (byId[initial]) {
+          state.scope = byId[initial];
+          lineage(state.scope).forEach((n) => state.expanded.add(n.id));
+          if (initial !== "root") {
+            state.panelOpen = true;
+
+          }
+        }
+        if (initial === "connectors") state.activeTab = "connectors";
+        renderAll();
+      })();
+    </script>
+  <script>(function(){
+
+'use strict';
+const connectorRoot = document.getElementById('connectorPane');
+const companies={
+  vinfast:{id:'CMP-001',name:'VinFast',short:'VF',color:'#1c3d64',logo:'https://webp.vp.cdn.pxr.nl/tag/e0ff5c06f0b6642cae4b45bc492b7b376a454ecb.jpg?width=400'},
+  vinhomes:{id:'CMP-002',name:'Vinhomes',short:'VH',color:'#bd8433',logo:'https://cdn.haitrieu.com/wp-content/uploads/2022/01/Logo-Vinhomes.png'},
+  vinmec:{id:'CMP-003',name:'Vinmec',short:'VM',color:'#227fa9',logo:'https://cdn.brandfetch.io/idTRWn9_4q/w/1440/h/1440/theme/dark/icon.jpeg?c=1bxid64Mup7aczewSAYMX&t=1744123105261'},
+  vinpearl:{id:'CMP-004',name:'Vinpearl',short:'VP',color:'#a6894a',logo:'https://images.seeklogo.com/logo-png/62/1/vinpearl-logo-png_seeklogo-624623.png'},
+  vinschool:{id:'CMP-005',name:'Vinschool',short:'VS',color:'#a94750',logo:'https://teachinvietnam.com.vn/uploads/_img_companies/17_vinschool-logo.jpg'},
+  vinuni:{id:'CMP-006',name:'VinUniversity',short:'VU',color:'#a84b51',logo:'https://lwfiles.mycourse.app/6673e78305c5f7f5b79b3e21-public/83f6bd0e51f5c31fbc17fbf0cfd091f0.png'},
+  vincom:{id:'CMP-007',name:'Vincom Retail',short:'VC',color:'#b65361',logo:'https://longtruongvu.vn/UserFile/editor/images/Customer/vincomretail.jpg'},
+  vinrobotics:{id:'CMP-008',name:'VinRobotics',short:'VR',color:'#587ba8',logo:''},
+  vinsmart:{id:'CMP-009',name:'Vinsmart Future',short:'VFu',color:'#6582b2',logo:''},
+  vincss:{id:'CMP-010',name:'VinCSS',short:'VCs',color:'#518ca0',logo:''}
+};
+const providers={
+  microsoft:{name:'Microsoft',short:'MS',bg:'#f1f6fc',color:'#2462a0'},
+  atlassian:{name:'Atlassian',short:'A',bg:'#eaf3ff',color:'#236bd0'},
+  adobe:{name:'Adobe',short:'Ad',bg:'#fff1f1',color:'#cf3643'},
+  github:{name:'GitHub',short:'GH',bg:'#e9edf2',color:'#252c37'},
+  google:{name:'Google Workspace',short:'G',bg:'#eff6ff',color:'#4285f4'},
+  figma:{name:'Figma',short:'F',bg:'#f4edfc',color:'#8256b3'},
+  jetbrains:{name:'JetBrains',short:'JB',bg:'#f2edfb',color:'#7049a4'},
+  zoom:{name:'Zoom',short:'Z',bg:'#edf4fe',color:'#2f6dcc'},
+  sap:{name:'SAP',short:'SAP',bg:'#eaf5fd',color:'#1873b2'}
+};
+const people={
+  vinfast:['Nguyễn Minh Anh','api.vinfast@example.com'],vinhomes:['Trần Bảo Ngọc','it.vinhomes@example.com'],
+  vinmec:['Phạm Quốc Huy','tech.vinmec@example.com'],vinpearl:['Lê Khánh Linh','it.vinpearl@example.com'],
+  vinschool:['Vũ Thu Hà','it.vinschool@example.com'],vinuni:['Đỗ Hoàng Long','digital.vinuni@example.com'],
+  vincom:['Hoàng Minh Đức','integration.vincom@example.com'],vinrobotics:['Bùi Thanh Bình','ops.vinrobotics@example.com'],
+  vinsmart:['Ngô Phương Mai','it.vinsmart@example.com'],vincss:['Đặng Anh Tuấn','api.vincss@example.com']
+};
+// Fictional design data. Company names are illustrative and do not assert legal ownership relationships.
+const fixtures=[
+ ['vinfast','microsoft',['Microsoft 365 E3','Power BI Pro','Teams Premium'],'healthy'],
+ ['vinfast','atlassian',['Jira Software','Confluence'],'healthy'],
+ ['vinfast','adobe',['Creative Cloud','Acrobat Pro'],'delayed'],
+ ['vinfast','sap',['SAP S/4HANA','SAP Analytics Cloud'],'healthy'],
+ ['vinhomes','salesforce',['Sales Cloud Enterprise'],'healthy'],
+ ['vinhomes','microsoft',['Microsoft 365 E5','Power BI Pro'],'healthy'],
+ ['vinmec','microsoft',['Microsoft 365 E3','Teams Premium'],'healthy'],
+ ['vinmec','zoom',['Zoom Workplace Pro','Zoom Rooms'],'failed'],
+ ['vinpearl','adobe',['Creative Cloud','Acrobat Pro'],'healthy'],
+ ['vinpearl','sap',['SAP Ariba','SAP SuccessFactors'],'pending'],
+ ['vinschool','google',['Workspace Enterprise','Google Meet'],'healthy'],
+ ['vinschool','zoom',['Zoom Workplace Pro'],'healthy'],
+ ['vinuni','figma',['Figma Organization','FigJam'],'healthy'],
+ ['vinuni','microsoft',['Microsoft 365 E3'],'healthy'],
+ ['vincom','microsoft',['Microsoft 365 E3','Visio Plan 2'],'healthy'],
+ ['vincom','google',['Workspace Business Plus'],'healthy'],
+ ['vinrobotics','github',['GitHub Enterprise','GitHub Copilot'],'healthy'],
+ ['vinrobotics','atlassian',['Jira Software','Confluence'],'delayed'],
+ ['vinsmart','github',['GitHub Enterprise','GitHub Copilot'],'failed'],
+ ['vinsmart','figma',['Figma Organization'],'healthy'],
+ ['vincss','jetbrains',['IntelliJ Ultimate','All Products Pack'],'healthy'],
+ ['vincss','microsoft',['Microsoft 365 E5'],'pending']
+];
+providers.salesforce={name:'Salesforce',short:'SF',bg:'#e9f8ff',color:'#2196d2'};
+let connectors=fixtures.map((item,i)=>{
+ const [company,provider,names,status]=item;
+ const created=new Date(Date.UTC(2026,9,2+(i%28),9+(i%8),0)).toISOString();
+ const sync=(status==='pending'?null:new Date(Date.UTC(2026,10,status==='failed'?10:status==='delayed'?12:13,2+(i%8),10+(i*7)%50)).toISOString());
+ return {id:'CON-'+String(101+i).padStart(4,'0'),company,provider,owner:people[company][0],email:people[company][1],created,sync,frequency:'Every 6 hours',licenses:names.map((name,j)=>({id:'LIC-'+String(1001+i*4+j).padStart(4,'0'),name,status:status==='healthy' && i===0 && j===2?'delayed':status}))};
+});
+const state={search:'',company:'',provider:'',status:'',sort:'name',page:1,size:8};
+const expandedCompanies=new Set(['vinfast','vinhomes']);
+const expandedProviders=new Set(['CON-0101','CON-0105']);
+const labelStatus={healthy:'Active',delayed:'Delayed',failed:'Failed',pending:'Pending'};
+const $=id=>connectorRoot.querySelector("#"+id);
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const icon=id=>`<svg aria-hidden="true"><use href="#i-${id}"/></svg>`;
+function dateOnly(d){return d?new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric',timeZone:'Asia/Bangkok'}):'—'}
+function timeOnly(d){return d?new Date(d).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'Asia/Bangkok'}):''}
+function dateHtml(d){return d?`<div class="date">${dateOnly(d)}<span>${timeOnly(d)}</span></div>`:'<span class="soft">—</span>'}
+function companyLogo(k){let c=companies[k];return `<span class="company-logo" style="--logo-color:${c.color}" title="${esc(c.name)}"><span>${esc(c.short)}</span>${c.logo?`<img src="${esc(c.logo)}" referrerpolicy="no-referrer" alt="" loading="lazy" onload="this.style.display='block'" onerror="this.remove()"/>`:''}</span>`}
+function providerLogo(k){let p=providers[k];return `<span class="provider-logo" style="--provider-color:${p.color};--provider-bg:${p.bg}">${k==='microsoft'?'<span class="ms-logo"><i></i><i></i><i></i><i></i></span>':esc(p.short)}</span>`}
+function statusHtml(s){return `<span class="pill ${s}">${labelStatus[s]}</span>`}
+function chevron(open,command,key){return `<button class="chevron" aria-label="${open?'Collapse':'Expand'}" aria-expanded="${open}" data-${command}="${esc(key)}">${icon('chevron')}</button>`}
+function licenseKey(c,l){return [companies[c.company].id,companies[c.company].name,providers[c.provider].name,c.id,c.owner,c.email,l.name,l.id].join(' ').toLowerCase()}
+function filtered(){const q=state.search.trim().toLowerCase();return connectors.map(c=>{
+ const licenseMatches=c.licenses.filter(l=>(!state.status||l.status===state.status)&&(!q||licenseKey(c,l).includes(q)));
+ if((state.company&&c.company!==state.company)||(state.provider&&c.provider!==state.provider)||!licenseMatches.length)return null;
+ return {...c,shownLicenses:licenseMatches};
+ }).filter(Boolean)}
+function grouped(){const by={};for(const c of filtered())(by[c.company]??=[]).push(c);
+ const keys=Object.keys(by),sum=k=>by[k].reduce((n,c)=>n+c.shownLicenses.length,0),last=k=>Math.max(...by[k].map(c=>c.sync?Date.parse(c.sync):0));
+ keys.sort((a,b)=>({name:()=>companies[a].name.localeCompare(companies[b].name),nameDesc:()=>companies[b].name.localeCompare(companies[a].name),providers:()=>by[b].length-by[a].length||companies[a].name.localeCompare(companies[b].name),licenses:()=>sum(b)-sum(a)||companies[a].name.localeCompare(companies[b].name),recent:()=>last(b)-last(a)})[state.sort]());
+ for(const k of keys)by[k].sort((a,b)=>providers[a.provider].name.localeCompare(providers[b.provider].name));return {by,keys}}
+function metrics(){let allLic=connectors.flatMap(c=>c.licenses);$('metricCompanies').textContent=Object.keys(companies).length;$('metricProviders').textContent=new Set(connectors.map(c=>c.provider)).size;$('metricLicenses').textContent=allLic.length;$('metricIssues').textContent=allLic.filter(l=>l.status==='failed'||l.status==='delayed').length}
+function tag(kind){return `<span class="level-label">${kind}</span>`}
+function trCompany(k,list){const c=companies[k],lc=list.reduce((s,r)=>s+r.shownLicenses.length,0),open=expandedCompanies.has(k),dates=list.map(r=>r.sync).filter(Boolean).sort();return `<tr class="company-row ${open?'is-open':''}"><td><div class="name-cell tree-level-0">${chevron(open,'company',k)}${companyLogo(k)}<span class="entity-name" title="${esc(c.name)}">${esc(c.name)}</span>${tag('Company')}</div></td><td><span class="coverage">${list.length} providers <span class="coverage-sep">·</span> ${lc} licenses</span></td><td><div class="contact"><strong>${esc(people[k][0])}</strong><a href="mailto:${esc(people[k][1])}">${esc(people[k][1])}</a></div></td><td><span class="soft">—</span></td><td>${dateHtml(dates.at(-1))}</td><td></td><td><button class="action-menu" data-add="${k}" title="Add connector" aria-label="Add connector for ${esc(c.name)}">${icon('plus')}</button></td></tr>`}
+function trProvider(c){const open=expandedProviders.has(c.id);return `<tr class="provider-row"><td><div class="name-cell tree-level-1">${chevron(open,'provider',c.id)}${providerLogo(c.provider)}<span class="entity-name" title="${esc(providers[c.provider].name)}">${esc(providers[c.provider].name)}</span>${tag('Provider')}</div></td><td><span class="coverage">${c.shownLicenses.length} licenses</span></td><td><div class="contact"><strong>${esc(c.owner)}</strong><a href="mailto:${esc(c.email)}">${esc(c.email)}</a></div></td><td>${dateHtml(c.created)}</td><td>${dateHtml(c.sync)}</td><td></td><td><button class="action-menu" data-detail="${esc(c.id)}" title="Connector details" aria-label="Details: ${esc(providers[c.provider].name)}">${icon('more')}</button></td></tr>`}
+function trLicense(c,l){return `<tr class="license-row"><td><div class="name-cell tree-level-2"><span class="spacer-chevron"></span><span class="license-icon">${icon('license')}</span><span class="entity-name" title="${esc(l.name)}">${esc(l.name)}</span>${tag('License')}</div></td><td><span class="soft">—</span></td><td></td><td></td><td>${dateHtml(c.sync)}</td><td>${statusHtml(l.status)}</td><td><button class="action-menu" data-detail="${esc(c.id)}" title="License details" aria-label="Details: ${esc(l.name)}">${icon('more')}</button></td></tr>`}
+function render(){metrics();const {by,keys}=grouped(),totalPages=Math.max(1,Math.ceil(keys.length/state.size));state.page=Math.min(state.page,totalPages);const visible=keys.slice((state.page-1)*state.size,state.page*state.size);let html='';
+ for(const k of visible){html+=trCompany(k,by[k]);if(expandedCompanies.has(k))for(const c of by[k]){html+=trProvider(c);if(expandedProviders.has(c.id))for(const l of c.shownLicenses)html+=trLicense(c,l)}}
+ $('rows').innerHTML=html||`<tr><td class="empty" colspan="7">${icon('search')}<div>No matching results</div></td></tr>`;
+ $('resultCount').textContent=keys.length?`${(state.page-1)*state.size+1}–${Math.min(state.page*state.size,keys.length)} of ${keys.length} companies`:'0 companies';
+ let pages=`<button data-page="${Math.max(1,state.page-1)}" ${state.page===1?'disabled':''} aria-label="Previous page">‹</button>`;
+ for(let p=1;p<=totalPages;p++)pages+=`<button data-page="${p}" class="${p===state.page?'active':''}" ${p===state.page?'aria-current="page"':''}>${p}</button>`;
+ pages+=`<button data-page="${Math.min(totalPages,state.page+1)}" ${state.page===totalPages?'disabled':''} aria-label="Next page">›</button>`;$('pages').innerHTML=pages;
+
+ $('filterTag').textContent='';
+ connectorRoot.querySelectorAll('[data-company]').forEach(b=>b.onclick=()=>{const k=b.dataset.company;expandedCompanies.has(k)?expandedCompanies.delete(k):expandedCompanies.add(k);render()});
+ connectorRoot.querySelectorAll('[data-provider]').forEach(b=>b.onclick=()=>{const k=b.dataset.provider;expandedProviders.has(k)?expandedProviders.delete(k):expandedProviders.add(k);render()});
+ connectorRoot.querySelectorAll('[data-detail]').forEach(b=>b.onclick=()=>showDetails(b.dataset.detail));
+ connectorRoot.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>showForm(b.dataset.add));
+ connectorRoot.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{state.page=Number(b.dataset.page);render()});
+}
+function populateOptions(){const c=Object.entries(companies).sort((a,b)=>a[1].name.localeCompare(b[1].name));const p=Object.entries(providers).sort((a,b)=>a[1].name.localeCompare(b[1].name));$('companyFilter').innerHTML='<option value="">All companies</option>'+c.map(([k,v])=>`<option value="${k}">${esc(v.name)}</option>`).join('');$('providerFilter').innerHTML='<option value="">All providers</option>'+p.map(([k,v])=>`<option value="${k}">${esc(v.name)}</option>`).join('');$('formCompany').innerHTML=c.map(([k,v])=>`<option value="${k}">${esc(v.name)}</option>`).join('');$('formProvider').innerHTML=p.map(([k,v])=>`<option value="${k}">${esc(v.name)}</option>`).join('')}
+function toast(s){const t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(window.toastTimeout);window.toastTimeout=setTimeout(()=>t.classList.remove('show'),2800)}
+let selectedLicenseNames=[];
+function listProviderLicenses(){const k=$('formProvider').value;return [...new Set(connectors.filter(c=>c.provider===k).flatMap(c=>c.licenses.map(l=>l.name)))].sort()}
+function renderSelectedLicenses(){const host=$('selectedLicenses');host.innerHTML=selectedLicenseNames.length?selectedLicenseNames.map((n,i)=>`<div class="license-chip"><span class="license-icon">${icon('license')}</span><span>${esc(n)}</span><button type="button" class="remove-license" data-remove-license="${i}" aria-label="Remove ${esc(n)}">${icon('x')}</button></div>`).join(''):'<div class="licenses-empty">No licenses selected</div>';host.querySelectorAll('[data-remove-license]').forEach(b=>b.onclick=()=>{selectedLicenseNames.splice(Number(b.dataset.removeLicense),1);renderSelectedLicenses()});$('licenseError').hidden=true}
+function refreshLicenseSuggestions(){$('licenseSuggestions').innerHTML=listProviderLicenses().map(x=>`<option value="${esc(x)}"></option>`).join('')}
+function addLicense(){const input=$('licenseInput');const val=input.value.trim();if(!val){input.focus();return}if(selectedLicenseNames.some(n=>n.toLowerCase()===val.toLowerCase())){toast('License already selected');input.select();return}selectedLicenseNames.push(val);input.value='';renderSelectedLicenses();input.focus()}
+function updateAuth(){const v=$('formAuth').value;const username=v==='basic',secret=v!=='none',header=v==='api-key';$('usernameField').hidden=!username;$('formUsername').required=username;$('secretField').hidden=!secret;$('formSecret').required=secret;$('headerField').hidden=!header;$('secretLabel').innerHTML=(v==='api-key'?'API Key':v==='basic'?'Password':v==='oauth'?'Client Secret':'Access Token')+' <span class="req">*</span>';$('formSecret').placeholder=v==='api-key'?'Enter API key':v==='basic'?'Enter password':v==='oauth'?'Enter client secret':'Enter access token'}
+function showForm(company=''){$('createForm').reset();$('formCompany').value=company||'vinfast';updateOwner();$('formName').value=companies[$('formCompany').value].name+' – '+providers[$('formProvider').value].name+' Usage';selectedLicenseNames=[];refreshLicenseSuggestions();renderSelectedLicenses();updateAuth();$('formSecret').type='password';$('modalOverlay').classList.add('open');document.body.style.overflow='hidden';$('formCompany').focus()}
+function closeForm(){$('modalOverlay').classList.remove('open');document.body.style.overflow='';$('formSecret').value='';$('formUsername').value=''}
+function updateOwner(){const [name,email]=people[$('formCompany').value]||['',''];$('formOwner').value=name;$('formEmail').value=email}
+function showDetails(id){const c=connectors.find(x=>x.id===id);if(!c)return;const comp=companies[c.company],p=providers[c.provider];$('drawerTitle').textContent='Connector Details';$('drawerBody').innerHTML=`<div class="detail-entity">${providerLogo(c.provider)}<span>${esc(p.name)}</span></div><div class="detail-grid">
+ <div><small>Company</small><strong>${esc(comp.name)}</strong></div><div><small>Connector ID</small><strong>${esc(c.id)}</strong></div>
+ <div><small>API Contact</small><strong>${esc(c.owner)}</strong></div><div><small>Email</small><strong>${esc(c.email)}</strong></div>
+ <div><small>Created</small><strong>${dateOnly(c.created)}</strong></div><div><small>Last Sync</small><strong>${dateOnly(c.sync)} ${timeOnly(c.sync)}</strong></div>
+ <div><small>Sync Frequency</small><strong>${esc(c.frequency)}</strong></div><div><small>Licenses</small><strong>${c.licenses.length}</strong></div>${c.baseUrl?`<div><small>API Base URL</small><strong>${esc(c.baseUrl)}</strong></div>`:""}${c.auth?`<div><small>Authentication</small><strong>${esc(c.auth)}</strong></div>`:""}
+ </div><div class="detail-section">Licenses</div>${c.licenses.map(l=>`<div class="detail-license"><div><strong>${esc(l.name)}</strong><small>${esc(l.id)}</small></div>${statusHtml(l.status)}</div>`).join('')}<div class="detail-section">Contact</div><a style="color:#376aa7" href="mailto:${esc(c.email)}">${icon('mail')} ${esc(c.email)}</a>`;$('drawerOverlay').classList.add('open')}
+function closeDrawer(){$('drawerOverlay').classList.remove('open')}
+$('newBtn').onclick=()=>showForm();$('closeModal').onclick=closeForm;$('cancelBtn').onclick=closeForm;$('closeDrawer').onclick=closeDrawer;$('drawerDone').onclick=closeDrawer;
+$('modalOverlay').onclick=e=>{if(e.target===$('modalOverlay'))closeForm()};$('drawerOverlay').onclick=e=>{if(e.target===$('drawerOverlay'))closeDrawer()};document.addEventListener('keydown',e=>{if(!connectorRoot.hidden&&e.key==='Escape'){closeForm();closeDrawer()}});
+$('formCompany').onchange=()=>{updateOwner();$('formName').value=companies[$('formCompany').value].name+' – '+providers[$('formProvider').value].name+' Usage'};
+$('formProvider').onchange=()=>{$('formName').value=companies[$('formCompany').value].name+' – '+providers[$('formProvider').value].name+' Usage';refreshLicenseSuggestions()};
+$('formAuth').onchange=updateAuth;
+$('addLicenseBtn').onclick=addLicense;
+$('licenseInput').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addLicense()}};
+$('toggleSecret').onclick=()=>{const field=$('formSecret');field.type=field.type==='password'?'text':'password';$('toggleSecret').setAttribute('aria-label',field.type==='password'?'Show credential':'Hide credential')};
+$('createForm').onsubmit=e=>{e.preventDefault();if(!selectedLicenseNames.length){$('licenseError').hidden=false;$('licenseInput').focus();return}if(!$('createForm').reportValidity())return;
+const id='CON-'+String(Math.max(...connectors.map(c=>parseInt(c.id.split('-')[1])))+1).padStart(4,'0');const nextLicense=Math.max(...connectors.flatMap(c=>c.licenses.map(l=>parseInt(l.id.split('-')[1]))))+1;const company=$('formCompany').value,provider=$('formProvider').value;
+// This is a local UI prototype. Never save, print or persist API keys, tokens, passwords or client secrets.
+const baseUrl=$('formBaseUrl').value.trim(),auth=$('formAuth').value,endpoint=$('formEndpoint').value.trim(),name=$('formName').value.trim();
+connectors.unshift({id,company,provider,name,baseUrl,auth,endpoint,owner:$('formOwner').value.trim(),email:$('formEmail').value.trim(),frequency:$('formFrequency').value,created:new Date().toISOString(),sync:null,licenses:selectedLicenseNames.map((licenseName,i)=>({id:'LIC-'+String(nextLicense+i).padStart(4,'0'),name:licenseName,status:'pending'}))});
+expandedCompanies.add(company);expandedProviders.add(id);state.company=company;state.provider='';state.status='';state.search='';state.page=1;$('searchInput').value='';$('companyFilter').value=company;$('providerFilter').value='';$('statusFilter').value='';closeForm();render();toast('Connector added to local preview')};
+$('searchInput').oninput=e=>{state.search=e.target.value;state.page=1;if(state.search)autoExpandMatches();render()};
+$('companyFilter').onchange=e=>{state.company=e.target.value;state.page=1;autoExpandMatches();render()};
+$('providerFilter').onchange=e=>{state.provider=e.target.value;state.page=1;autoExpandMatches();render()};
+$('statusFilter').onchange=e=>{state.status=e.target.value;state.page=1;autoExpandMatches();render()};
+$('sortFilter').onchange=e=>{state.sort=e.target.value;state.page=1;render()};$('pageSize').onchange=e=>{state.size=Number(e.target.value);state.page=1;render()};
+function autoExpandMatches(){if(!(state.search||state.company||state.provider||state.status))return;for(const c of filtered()){expandedCompanies.add(c.company);expandedProviders.add(c.id)}}
+
+populateOptions();render();
+
+})();</script></body>
+</html>
