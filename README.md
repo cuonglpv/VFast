@@ -130,17 +130,33 @@ Entity overview, one ERD per group, a short explanation of every table, rule-to-
 
 ELMS is designed as one monolith with Clean Architecture, deployed as two processes (API and worker) that share one PostgreSQL database. The API serves users; slow work (provider sync, CSV import, detection) runs in the worker through a PostgreSQL-backed job queue, so no Redis or message broker is required.
 
-### 3.1 Container view
+### 3.1 System context (C4 level 1)
+
+```mermaid
+flowchart TB
+    users(["Employee / Staff / Manager / Admin"])
+    elms["ELMS<br/>[Software system]<br/>Centralizes licenses, measures usage and cost,<br/>compares budget with reality, recommends savings"]
+    providers["Software providers<br/>[External systems]<br/>Microsoft 365, Google, Adobe, OpenAI, Anthropic, AWS, VPN..."]
+    files["ECS and CSV files<br/>[Input]<br/>ECS files, CSV templates"]
+
+    users -- "HTTPS, role-based screens" --> elms
+    elms -- "reads licenses, assignments, usage, cost<br/>[read-only connectors]" --> providers
+    files -. "Staff upload: preview, then confirm" .-> elms
+```
+
+Four roles use ELMS; each account has exactly one. Data from providers is collected daily through read-only connectors, in the ELMS Connector Standard (ECS), and is never changed on the provider. Where a provider has no connector, Staff enter the data manually or import CSV files.
+
+### 3.2 Container view (C4 level 2)
 
 ```mermaid
 flowchart TB
     people(["Employee / Staff / Manager / Admin"])
-    providers["Software providers<br/><i>[External]</i><br/>read-only APIs"]
+    providers["Software providers<br/>[External]<br/>read-only APIs"]
     subgraph platform["ELMS [System boundary]"]
         direction TB
-        web["Web Frontend<br/><i>[React + Vite SPA]</i>"]
-        api["Elms.Api<br/><i>[ASP.NET Core 10]</i><br/>Auth, RBAC, data scope"]
-        worker["Elms.Worker<br/><i>[.NET Worker + Hangfire]</i><br/>Sync, import, detection"]
+        web["Web Frontend<br/>[React + Vite SPA]"]
+        api["Elms.Api<br/>[ASP.NET Core 10]<br/>Auth, RBAC, data scope"]
+        worker["Elms.Worker<br/>[.NET Worker + Hangfire]<br/>Sync, import, detection"]
         db[("PostgreSQL 16<br/>data, queue, sessions")]
     end
     people --> web
@@ -150,13 +166,15 @@ flowchart TB
     worker -- "read-only" --> providers
 ```
 
-| Layer | Technology | Status |
-|---|---|---|
-| Frontend | React 19, Vite, TypeScript, MUI v6, Tailwind CSS v4, ApexCharts | Implemented in `src/frontend` |
-| Backend | ASP.NET Core 10, EF Core + Dapper, Hangfire worker | Proposed |
-| Database | PostgreSQL 16 | Designed in `docs/database/elms.dbml` |
+| Layer | Technology |
+|---|---|
+| Frontend | React 19, Vite, TypeScript, MUI v6, Tailwind CSS v4, ApexCharts |
+| Backend | ASP.NET Core 10, EF Core + Dapper, Hangfire worker |
+| Database | PostgreSQL 16 |
 
-### 3.2 Repository layout
+Deeper levels in [C4 Architecture](docs/07-c4-architecture.md): [components of the API, worker, modules, and frontend](docs/07-c4-architecture.md#3-level-3--component), [the daily pipeline](docs/07-c4-architecture.md#5-dynamic-view--the-daily-pipeline), and [deployment](docs/07-c4-architecture.md#6-deployment-view).
+
+### 3.3 Repository layout
 
 ```text
 VFast/
@@ -165,7 +183,8 @@ VFast/
 │  ├─ 01 … 04               Research, use cases, INVEST, information architecture
 │  ├─ 05-folder-structure.md
 │  ├─ 06-connector-standard.md
-│  ├─ database/             elms.dbml
+│  ├─ 07-c4-architecture.md
+│  ├─ database/             elms.dbml, schema.sql, tables.md, ERDs
 │  ├─ diagrams/out/         Use case diagrams
 │  └─ mindmap/              XMind source
 └─ src/
@@ -173,7 +192,7 @@ VFast/
    └─ backend/              .NET solution
 ```
 
-### 3.3 Frontend
+### 3.4 Frontend
 
 ```text
 src/frontend/
@@ -188,7 +207,7 @@ src/frontend/
 
 Call flow: `routes → pages → sections → components → types / utils`.
 
-### 3.4 Backend
+### 3.5 Backend
 
 ```text
 ELMS/
@@ -221,7 +240,7 @@ ELMS/
 
 Dependency direction: `Api / Worker → Infrastructure → Application → Domain → SharedKernel`. The eight business modules (`identity`, `organization`, `catalog`, `ingestion`, `usage`, `finance`, `optimization`, `analytics`, plus shared `audit`) are feature folders inside each layer; boundaries are enforced by architecture tests.
 
-Full trees, module table, API conventions, jobs, caching, security, and deployment: [Folder structure and architecture](docs/05-folder-structure.md).
+Full trees, module table, API conventions, jobs, caching, security, and deployment: [Folder structure and architecture](docs/05-folder-structure.md). The same design as C4 diagrams (context, container, component, daily pipeline, deployment): [C4 Architecture](docs/07-c4-architecture.md).
 
 ## Documentation
 
@@ -231,6 +250,7 @@ Full trees, module table, API conventions, jobs, caching, security, and deployme
 - [Information architecture](docs/04-information-architecture-manager.md) — screens, views, and navigation: License Management, Analytics Hub (license health and budget analytics), User Management
 - [Folder structure and architecture](docs/05-folder-structure.md) — solution architecture, frontend structure, backend modules and .NET folder layout, API conventions, jobs, caching, security
 - [Connector standard](docs/06-connector-standard.md) — research on FOCUS, SCIM, ISO/IEC 19770 and provider APIs; the ELMS Connector Standard (ECS) v1 proposal, Connector Management use cases, rollout plan
+- [C4 Architecture](docs/07-c4-architecture.md) — system context, containers, components, daily pipeline, deployment, cross-cutting concerns
 - [Database design](docs/database/README.md) — conventions, entity overview, ERD per group, every table explained, rule-to-schema traceability, proposed decisions D5–D23; every field in [Tables and fields](docs/database/tables.md)
 
 ## Frontend development
