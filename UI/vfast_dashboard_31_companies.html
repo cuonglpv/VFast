@@ -134,7 +134,8 @@
         width: 100%;
         display: flex;
         align-items: center;
-        gap: 11px;
+        justify-content: space-between;
+        gap: 8px;
         border: 0;
         background: transparent;
         border-radius: 8px;
@@ -143,10 +144,28 @@
         padding: 12px 11px;
         font-weight: 600;
         margin-bottom: 4px;
+        cursor: pointer;
       }
-      .navbtn svg {
+      .navbtn-left {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        flex: 1;
+        min-width: 0;
+      }
+      .navbtn-left svg {
         width: 17px;
         height: 17px;
+        flex-shrink: 0;
+      }
+      .nav-arrow {
+        font-size: 13px;
+        color: #94a1b2;
+        margin-left: 6px;
+        line-height: 1;
+        user-select: none;
+        padding: 2px 4px;
+        border-radius: 4px;
       }
       .navbtn.current {
         color: #2c568e;
@@ -177,10 +196,11 @@
         background: #f3f6fa;
       }
       .org-tree {
-        margin-top: 7px;
+        margin-top: 4px;
+        margin-bottom: 8px;
       }
       .tree-scroll {
-        max-height: calc(100vh - 385px);
+        max-height: calc(100vh - 210px);
         min-height: 120px;
         overflow: auto;
         scrollbar-width: thin;
@@ -1382,42 +1402,23 @@
         <div class="side-scroll">
           <div class="side-eyebrow">WORKSPACE</div>
           <button class="navbtn current" id="overviewNav">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.7"
-            >
-              <rect x="3" y="3" width="7" height="7" rx="1" />
-              <rect x="14" y="3" width="7" height="7" rx="1" />
-              <rect x="3" y="14" width="7" height="7" rx="1" />
-              <rect x="14" y="14" width="7" height="7" rx="1" /></svg
-            >Cost & Usage Overview
+            <span class="navbtn-left">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+              >
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+              <span>Cost & Usage Overview</span>
+            </span>
+            <span id="overviewArrow" class="nav-arrow">›</span>
           </button>
-          <button class="navbtn" id="wasteNav">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.7"
-            >
-              <path d="M12 3l10 18H2L12 3z" />
-              <path d="M12 9v5m0 3v1" /></svg
-            >Waste Ranking
-          </button>
-          <div class="divider"></div>
-          <div class="side-eyebrow">ORGANIZATION SCOPE</div>
-          <button class="org-header" id="orgDropdown">
-            <span>▦ &nbsp; Organization Structure</span
-            ><span id="orgArrow">⌄</span>
-          </button>
-          <div id="orgPanel" class="org-tree">
-            <input
-              class="tree-search"
-              id="treeSearch"
-              placeholder="Search subsidiaries..."
-              aria-label="Search subsidiaries"
-            />
+          <div id="orgPanel" class="org-tree hidden">
             <div class="tree-scroll" id="orgTree"></div>
           </div>
         </div>
@@ -1887,7 +1888,7 @@
           search: "",
           treeSearch: "",
           expanded: new Set(),
-          panelOpen: true,
+          panelOpen: false,
           page: 1,
           pageSize: 10,
           currency: "USD",
@@ -2064,7 +2065,7 @@
           } catch (e) {}
         }
         function renderTree() {
-          const q = state.treeSearch.trim().toLowerCase();
+          const q = (state.treeSearch || "").trim().toLowerCase();
           const all = brandList.map((_, i) => byId["c" + i]);
           const filtered = q
             ? all.filter((n) => n.name.toLowerCase().includes(q))
@@ -2363,25 +2364,30 @@
           renderCharts(r);
           renderTable(r);
         });
-        $("treeSearch").addEventListener("input", (e) => {
-          state.treeSearch = e.target.value;
-          renderTree();
-        });
         $("headerScope").addEventListener("change", (e) => {
           if (byId[e.target.value]) setScope(byId[e.target.value]);
         });
-        $("orgDropdown").addEventListener("click", () => {
-          state.panelOpen = !state.panelOpen;
-          $("orgPanel").classList.toggle("hidden", !state.panelOpen);
-          $("orgArrow").textContent = state.panelOpen ? "⌄" : "›";
-        });
-        $("overviewNav").addEventListener("click", () => setScope(root));
-        $("wasteNav").addEventListener("click", () => {
-          setScope(root);
-          state.sort = "waste";
-          state.page = 1;
-          renderAll();
-          $("rankingPanel").scrollIntoView({ behavior: "smooth" });
+        $("overviewNav").addEventListener("click", (e) => {
+          if (e.target.closest("#overviewArrow")) {
+            state.panelOpen = !state.panelOpen;
+            $("orgPanel").classList.toggle("hidden", !state.panelOpen);
+            $("overviewArrow").textContent = state.panelOpen ? "⌄" : "›";
+            return;
+          }
+          if (!state.panelOpen) {
+            state.panelOpen = true;
+            $("orgPanel").classList.remove("hidden");
+            $("overviewArrow").textContent = "⌄";
+            setScope(root);
+          } else {
+            if (state.scope.id !== "root") {
+              setScope(root);
+            } else {
+              state.panelOpen = false;
+              $("orgPanel").classList.add("hidden");
+              $("overviewArrow").textContent = "›";
+            }
+          }
         });
 
         /* Pagination event listeners */
@@ -2460,6 +2466,11 @@
         if (byId[initial]) {
           state.scope = byId[initial];
           lineage(state.scope).forEach((n) => state.expanded.add(n.id));
+          if (initial !== "root") {
+            state.panelOpen = true;
+            $("orgPanel").classList.remove("hidden");
+            $("overviewArrow").textContent = "⌄";
+          }
         }
         renderAll();
       })();
