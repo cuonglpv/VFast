@@ -1,95 +1,42 @@
-import React from 'react';
-import { Card, CardContent, Typography, Box, Tooltip, IconButton, Chip } from '@mui/material';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import type { ReactNode } from 'react';
+import { Tooltip } from '@mui/material';
+import { InfoTooltip } from '@/components/InfoTooltip';
+import { Button } from '@/components/ui/Button';
 
 export interface KpiCardProps {
   title: string;
-  value: string | number;
+  value: ReactNode;
   subtitle?: string;
   tooltipText?: string;
+  valueTooltip?: string;
   chipLabel?: string;
   chipColor?: 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
   actionLabel?: string;
   onActionClick?: () => void;
+  variant?: 'health' | 'budget' | 'summary' | 'compact';
+  status?: ReactNode;
+  footer?: ReactNode;
+  valueClassName?: string;
 }
 
-/**
- * Strict 4-Element Minimalist KPI Card (IA v5.3 Rules Contract)
- * Row 1: Header + Tooltip
- * Row 2: Hero Value
- * Row 3: Single Status Chip / Subtitle
- * Row 4: Optional Action Trigger Link
- */
-export const KpiCard: React.FC<KpiCardProps> = ({
-  title,
-  value,
-  subtitle,
-  tooltipText,
-  chipLabel,
-  chipColor = 'default',
-  actionLabel,
-  onActionClick,
-}) => {
-  return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-        {/* Row 1: Header + Tooltip */}
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-          <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary' }}>
-            {title}
-          </Typography>
-          {tooltipText && (
-            <Tooltip title={tooltipText} arrow placement="top">
-              <IconButton size="small" sx={{ p: 0.25, color: 'text.secondary' }}>
-                <InfoOutlinedIcon sx={{ fontSize: 16 }} />
-              </IconButton>
-            </Tooltip>
-          )}
-        </Box>
+export function KpiCard({ title, value, subtitle, tooltipText, valueTooltip, chipLabel, chipColor = 'default', actionLabel, onActionClick, variant = 'health', status, footer, valueClassName }: KpiCardProps) {
+  const tone = chipColor === 'error' ? 'negative' : chipColor === 'warning' ? 'warning' : chipColor === 'success' || chipColor === 'primary' ? 'positive' : 'neutral';
+  const note = status ?? (chipLabel ? <span className={`metric-note ${tone}`}>{chipLabel}</span> : subtitle ? <span className="metric-note">{subtitle}</span> : null);
+  const action = actionLabel && <Button variant="plain" className="budget-renewals-link" onClick={onActionClick}>{actionLabel}</Button>;
+  const valueElement = <strong className={variant === 'budget' ? 'budget-kpi-value' : valueClassName}>{value}</strong>;
 
-        {/* Row 2: Hero Value */}
-        <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary', mb: 0.75 }}>
-          {value}
-        </Typography>
+  if (variant === 'budget') return <article className="budget-kpi-card">
+    <div className="budget-kpi-heading"><h2>{title}</h2>{tooltipText && <InfoTooltip title={tooltipText} />}</div>
+    {valueTooltip ? <Tooltip title={valueTooltip} placement="top-start" arrow>{valueElement}</Tooltip> : valueElement}
+    <div className="budget-kpi-footer"><div className="budget-kpi-state">{note}{action}</div>{footer}</div>
+  </article>;
 
-        {/* Row 3: Single Status Chip or Selective Subtitle */}
-        <Box sx={{ display: 'flex', alignItems: 'center', minHeight: 24, mb: actionLabel ? 1 : 0 }}>
-          {chipLabel ? (
-            <Chip
-              label={chipLabel}
-              size="small"
-              color={chipColor}
-              sx={{ height: 22, fontSize: '0.75rem', fontWeight: 500 }}
-            />
-          ) : subtitle ? (
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              {subtitle}
-            </Typography>
-          ) : null}
-        </Box>
-
-        {/* Row 4: Optional Action Trigger */}
-        {actionLabel && (
-          <Box sx={{ mt: 'auto', pt: 0.5 }}>
-            <Typography
-              variant="caption"
-              onClick={onActionClick}
-              sx={{
-                color: 'primary.main',
-                fontWeight: 600,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                '&:hover': { textDecoration: 'underline' },
-              }}
-            >
-              {actionLabel}
-            </Typography>
-          </Box>
-        )}
-      </CardContent>
-    </Card>
-  );
-};
+  return <article className={`portal-card${variant === 'health' ? ' health-metric' : variant === 'summary' ? ' summary-card' : ''}`}>
+    {variant === 'compact' ? <span>{title}</span> : <h2>{title}{tooltipText && <InfoTooltip title={tooltipText} />}</h2>}
+    {valueElement}
+    {variant === 'compact' ? subtitle && <small>{subtitle}</small> : note}
+    {action}{footer}
+  </article>;
+}
 
 export default KpiCard;
