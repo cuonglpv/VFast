@@ -94,25 +94,7 @@ Rule numbers are kept from the previous model so references stay valid; BR-21 to
 
 ## Use case diagrams
 
-One diagram per actor. Sources (draw.io) are in [`diagrams/out/`](diagrams/out/); the PNG and SVG files are exported from them.
-
-> The four diagrams below still show the previous model. They are redrawn after this use case list is agreed.
-
-### Employee
-
-![Employee use cases](diagrams/out/uc_employee.png)
-
-### Staff
-
-![Staff use cases](diagrams/out/uc_staff.png)
-
-### Manager
-
-![Manager use cases](diagrams/out/uc_manager.png)
-
-### Admin
-
-![Admin use cases](diagrams/out/uc_admin.png)
+The diagrams are being redrawn for the agreed use cases; the old ones in [`diagrams/out/`](diagrams/out/) show the previous model and are no longer shown here.
 
 ### Use case list
 
