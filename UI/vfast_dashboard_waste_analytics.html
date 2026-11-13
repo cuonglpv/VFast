@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VFast — Corporate License Intelligence</title>
+<style>
+:root{--bg:#F5F7FA;--white:#fff;--text:#1E2A3B;--muted:#8491A4;--soft:#88ACD8;--blue:#3D6BA5;--lightblue:#D4E2F3;--lavender:#B9A1D8;--violet:#7768A5;--yellow:#E9E38C;--amber:#C9985E;--line:#E6EAF1;--ok:#4F8B7A;--shadow:0 3px 18px rgba(39,62,101,.035)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font:13px/1.45 'Segoe UI',Inter,Arial,sans-serif;color:var(--text);background:var(--bg)}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #749DCF;outline-offset:2px}svg{display:block} .app{display:flex;min-height:100vh}
+.sidebar{width:277px;min-width:277px;border-right:1px solid var(--line);background:#fff;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;z-index:3}.side-head{display:flex;align-items:center;gap:11px;padding:25px 20px 22px;border-bottom:1px solid var(--line)}.brandmark{height:37px;width:37px;background:var(--blue);border-radius:10px;display:grid;place-items:center;color:#fff;font-size:19px;font-weight:800;letter-spacing:-1px}.brandname{font-size:19px;color:#2E5386;font-weight:750;letter-spacing:-.5px}.brandtag{font-size:9px;letter-spacing:1.2px;color:#94A1B2;font-weight:700;margin-top:1px}.side-scroll{overflow-y:auto;flex:1;padding:22px 14px 12px;scrollbar-width:thin}.side-eyebrow{font-size:10px;color:#9AA6B6;letter-spacing:1.2px;font-weight:750;margin:0 8px 10px}.navbtn{width:100%;display:flex;align-items:center;gap:11px;border:0;background:transparent;border-radius:8px;color:#66768D;text-align:left;padding:12px 11px;font-weight:600;margin-bottom:4px}.navbtn svg{width:17px;height:17px}.navbtn.current{color:#315E99;background:#EAF1FA}.navbtn:hover:not(.current){background:#F6F8FB}.divider{height:1px;background:var(--line);margin:23px 2px 20px}.org-header{width:100%;display:flex;align-items:center;justify-content:space-between;border:0;background:transparent;color:#63728A;font-weight:750;font-size:12px;padding:9px 9px;border-radius:8px}.org-header:hover{background:#F6F8FB}.org-tree{margin-top:7px}.tree-scroll{max-height:calc(100vh - 385px);min-height:120px;overflow:auto;scrollbar-width:thin;padding-right:3px}.org-root,.org-row{display:flex;align-items:center;width:100%;gap:0;min-height:37px;border-radius:8px}.org-root.active,.org-row.active{background:#EDF3FB}.org-root:hover,.org-row:hover{background:#F3F6FA}.org-button{border:0;display:flex;align-items:center;min-width:0;flex:1;gap:8px;text-align:left;background:transparent;color:#62728A;padding:6px 3px 6px 8px;font-size:11.5px;font-weight:590}.active>.org-button{color:#315E99;font-weight:750}.org-button .org-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chevron{border:0;background:transparent;color:#96A6B8;height:28px;width:24px;display:grid;place-items:center;font-size:12px;flex:none}.chevron:hover{color:var(--blue)}.tree-children{padding-left:17px;border-left:1px dashed #E2E9F2;margin-left:18px}.tree-search{height:34px;width:100%;margin:8px 0 10px;border:1px solid var(--line);background:#FAFBFD;border-radius:7px;padding:0 10px;font-size:11px;color:var(--text)}.side-foot{display:flex;align-items:center;gap:9px;border-top:1px solid var(--line);padding:16px 20px;color:#66748A}.avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#ECE7F6;color:#7569A6;font-weight:760;font-size:11px}.person{font-weight:700;font-size:11.5px}.person-sub{font-size:10px;color:#9AA5B4}
+.main{flex:1;min-width:0}.topbar{height:65px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 33px}.topcrumb{color:#728298;font-size:12px;display:flex;align-items:center;gap:7px}.topcrumb strong{color:#38577E}.top-tools{display:flex;gap:15px;align-items:center;color:#8090A4}.sync-dot{height:7px;width:7px;display:inline-block;border-radius:50%;background:#80AE9C;margin-right:5px}.top-pill{border:1px solid var(--line);background:#F9FAFC;color:#788698;padding:7px 11px;border-radius:7px;font-size:11px}.top-avatar{background:#ECE8F5;border-radius:50%;height:31px;width:31px;color:var(--violet);font-size:11px;font-weight:750;display:grid;place-items:center}
+.content{max-width:1740px;margin:auto;padding:32px 34px 60px}.bread{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:15px}.bread button{border:0;padding:0;background:transparent;color:#8290A2;font-size:11px}.bread button:hover{color:var(--blue)}.bread strong{font-size:11px;color:#5A7295}.sep{color:#BEC8D4}.intro{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:25px}.eyebrow{font-size:10.5px;color:#6D92BF;font-weight:800;letter-spacing:1.2px;margin-bottom:6px;text-transform:uppercase}h1{font-size:27px;letter-spacing:-.85px;font-weight:740;margin:0 0 6px;line-height:1.3}.subtitle{font-size:12px;color:#8290A2}.header-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}.btn{border:1px solid #DCE4EE;padding:10px 13px;border-radius:8px;background:#fff;color:#5E7390;font-size:11.5px;font-weight:600}.btn:hover{background:#F8FAFD}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.primary:hover{background:#315C92}.control{background:#fff;border:1px solid #DDE5EF;padding:10px 12px;border-radius:8px;color:#516782;min-height:37px;max-width:200px;font-size:12px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:19px}.kpi{background:#fff;border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow);padding:20px 20px 17px;min-width:0}.kpi-row{display:flex;justify-content:space-between;align-items:center;color:#75849A;font-size:12px;font-weight:650}.kpi-icon{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:#ECF3FB;color:#5578A7;font-size:15px}.kpi-icon.amber{background:#FBF2E8;color:#BD9155}.kpi-icon.green{background:#EBF5F1;color:#578A7C}.kpi-icon.violet{background:#F2EDF8;color:var(--violet)}.kpi-main{display:flex;align-items:baseline;gap:6px;margin:13px 0 7px}.kpi-value{font-size:28px;font-weight:760;letter-spacing:-1px;font-variant-numeric:tabular-nums}.kpi-unit{font-size:13px;color:#8795A7;font-weight:570}.kpi-note{font-size:11px;color:#96A2B0}.kpi-note .warn{color:#B78550;font-weight:750}.kpi-note .good{color:#548D7C;font-weight:750}.kpi-note .strong{color:#5B7598;font-weight:750}
+.panel{border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:var(--shadow)}.overview-strip{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(230px,.65fr);gap:17px;margin-bottom:18px}.strip-panel{padding:20px 23px}.strip-title{font-weight:730;font-size:14px}.strip-sub{font-size:11px;color:#95A2B0;margin-top:3px}.summary-line{display:flex;align-items:center;gap:13px;margin-top:21px}.summary-line .lab{min-width:100px;color:#8998AA;font-size:11px}.summary-line .bar{height:11px;border-radius:3px;background:#F0F3F8;flex:1;overflow:hidden}.summary-line .bar>div{height:100%;border-radius:3px}.summary-line .val{font-size:12px;color:#50657F;min-width:56px;text-align:right;font-weight:650}.pill-list{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.mini-pill{font-size:10.5px;color:#6E7F93;border:1px solid #EAF0F6;background:#FAFBFD;border-radius:6px;padding:5px 8px}.donut-row{display:flex;align-items:center;gap:17px;margin-top:17px}.donut{width:95px;height:95px;border-radius:50%;display:grid;place-items:center;flex:none}.donut-hole{width:70px;height:70px;background:#fff;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center}.donut-hole b{font-size:21px;letter-spacing:-.6px}.donut-hole span{font-size:9px;color:#98A4B3}.donut-details{display:flex;flex-direction:column;gap:10px;flex:1}.dline{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;color:#8090A3}.dline b{font-size:12px;color:#35465D}.dot{height:8px;width:8px;display:inline-block;border-radius:2px;margin-right:7px}
+.analytics{margin-bottom:18px}.analytics-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;padding:22px 23px 17px;border-bottom:1px solid var(--line)}.analytics-head h2,.table-head h2{font-size:16px;letter-spacing:-.25px;margin:0 0 4px}.analytics-head p,.table-head p{font-size:11.5px;color:#96A2B0;margin:0}.view-tabs{display:flex;gap:4px;background:#F2F5F9;border:1px solid #E8EDF4;padding:4px;border-radius:9px;margin:20px 23px 17px;max-width:max-content;flex-wrap:wrap}.viewtab{border:0;background:transparent;color:#72849B;font-size:11.5px;font-weight:640;padding:10px 16px;border-radius:6px}.viewtab.selected{background:#fff;color:#315E9B;box-shadow:0 1px 5px #dfe5ee}.filterbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:0 23px 21px}.filterbar .control{min-height:36px;padding:8px 10px}.filterbar .search-field{width:215px;max-width:100%}.filterbar .stretch{flex:1}.filter-label{font-size:11px;color:#8A98A9;font-weight:650}.countbox{color:#7D8CA0;font-size:11.5px;white-space:nowrap}.countbox b{color:var(--blue)}.chart-zone{border-top:1px solid var(--line);background:#FBFCFE;padding:21px 23px 22px}.zone-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}.zone-head .left{font-size:12px;color:#6E7F95;font-weight:650}.legend{display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:11px;color:#7F8FA3}.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;margin-right:5px}.chart-grid{display:grid;grid-template-columns:1fr;gap:15px}.chart-card{background:#fff;border:1px solid #E8EDF4;border-radius:10px;padding:20px 21px 16px;overflow:hidden}.chart-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}.chart-card-title{font-size:12.5px;font-weight:750;color:#455A75}.chart-card-sub{font-size:10.5px;color:#9BA7B6;margin-top:3px}.chart-card-sum{font-size:11px;color:#8092A8;font-variant-numeric:tabular-nums}.chart-surface{display:flex;gap:12px;min-width:0}.y-axis{height:236px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;min-width:42px;flex:none;padding-bottom:0;color:#9BA9B8;font-size:10px;font-variant-numeric:tabular-nums}.chart-main{flex:1;min-width:0}.plot{height:236px;display:flex;align-items:stretch;position:relative;border-bottom:1px solid #CFD9E5;background:repeating-linear-gradient(to top,transparent 0,transparent calc(25% - 1px),#ECF0F5 calc(25% - 1px),#ECF0F5 25%)}.plot-bars{position:absolute;inset:0;display:flex;justify-content:space-around;gap:7px;padding:0 4px}.group-bars{min-width:0;flex:1;display:flex;align-items:end;justify-content:center;gap:5px;position:relative;cursor:pointer}.group-bars:hover{background:linear-gradient(180deg,transparent,#F8FAFD)}.bar-col{width:min(26%,29px);border-radius:3px 3px 0 0;min-height:2px;position:relative;transition:height .2s}.bar-col.plan{background:#CCDDED}.bar-col.use{background:#648FC3}.group-bars:hover .bar-col.plan{background:#B2CBE5}.group-bars:hover .bar-col.use{background:#3D6BA5}.bar-caption{height:72px;display:flex;justify-content:space-around;padding:10px 4px 0;gap:7px}.company-cap{min-width:0;flex:1;text-align:center;border:0;background:transparent;padding:0 2px;color:#526680;cursor:pointer}.company-cap:hover .cap-name{text-decoration:underline;color:#315F96}.cap-icon{height:25px;width:25px;border-radius:7px;margin:0 auto 5px}.cap-name{font-size:10.5px;line-height:1.24;white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-height:28px;word-break:break-word}.chart-note{margin-top:13px;font-size:10.5px;color:#98A6B5;display:flex;justify-content:space-between;gap:10px}.chart-note b{color:#7C8EA5;font-weight:700}.empty{padding:55px 20px;text-align:center;color:#98A5B4;font-size:12px}
+.brand-icon{position:relative;width:27px;height:27px;border-radius:8px;background:#E8EFF9;color:#476D9F;display:inline-flex;align-items:center;justify-content:center;overflow:hidden;font-weight:850;font-size:10px;letter-spacing:-.4px;flex:none;vertical-align:middle}.brand-icon img{max-width:22px;max-height:22px;width:22px;height:22px;object-fit:contain;position:absolute;inset:0;margin:auto;background:#E8EFF9;border-radius:3px}.brand-icon.small{width:22px;height:22px;border-radius:6px;font-size:9px}.brand-icon.small img{width:17px;height:17px}.brand-icon.large{width:34px;height:34px;border-radius:9px;font-size:12px}.brand-icon.large img{width:28px;height:28px}.brand-icon.pseudo{background:#F1F3F7;color:#8794A7}.entityname{display:flex;align-items:center;gap:9px;min-width:0}.entityname-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.entityname-text b{font-weight:700;color:#395F8D}.entityname-text span{display:block;font-size:10px;color:#9AA7B5;font-weight:500;margin-top:2px}
+.trend-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.trend-card{background:#fff;border:1px solid #E6EBF3;border-radius:10px;padding:17px 18px}.trend-card-head{display:flex;align-items:center;justify-content:space-between;gap:9px}.trend-card-title{display:flex;align-items:center;gap:9px;min-width:0;color:#425B7C;font-size:12px;font-weight:750}.trend-card-title span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.trend-detail{font-size:10px;color:#8594A7;white-space:nowrap}.trend-bars{height:138px;margin-top:21px;display:flex;align-items:stretch;justify-content:space-around;gap:4px;padding-left:30px;position:relative;border-bottom:1px solid #CCD7E5;background:repeating-linear-gradient(to top,transparent 0,transparent calc(25% - 1px),#EBEFF5 calc(25% - 1px),#EBEFF5 25%)}.trend-pair{flex:1;display:flex;align-items:end;justify-content:center;gap:2px;position:relative;min-width:0}.trend-bar{width:min(32%,13px);border-radius:2px 2px 0 0;min-height:1px}.trend-bar.plan{background:#D1DFF0}.trend-bar.use{background:#608BBE}.trend-labels{display:flex;justify-content:space-around;padding-left:30px;margin-top:8px;gap:4px;font-size:9px;color:#A0ACBA}.trend-labels span{flex:1;text-align:center;min-width:0}.trend-foot{border-top:1px solid #F0F2F6;margin-top:16px;padding-top:12px;display:flex;gap:10px;justify-content:space-between;color:#8292A6;font-size:10.5px}.trend-foot b{color:#456485}.trend-foot b.waste{color:#B4895B}
+.table-panel{overflow:hidden}.table-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:21px 23px}.table-head small{color:#9AA7B6;font-size:11px}.table-scroll{overflow:auto}table{width:100%;border-collapse:collapse;min-width:900px;font-variant-numeric:tabular-nums}th{background:#F8FAFD;color:#8A98AB;font-size:10.5px;text-align:right;padding:13px 17px;white-space:nowrap;border-bottom:1px solid var(--line);font-weight:690}th:first-child{text-align:left}td{padding:12px 17px;text-align:right;color:#586B83;font-size:11.5px;border-bottom:1px solid #EDF0F5;white-space:nowrap}td:first-child{text-align:left}tr:last-child td{border-bottom:0}tbody tr:hover{background:#FAFBFD}.row-link{border:0;background:transparent;padding:0;text-align:left}.row-link:hover .entityname-text b{text-decoration:underline}.rank{display:inline-flex;align-items:center;gap:8px;color:#97A6B8}.rank-num{width:18px;font-size:10px}.bad{color:#B48556;font-weight:750}.good{color:#548D7B;font-weight:750}.track{width:65px;height:6px;border-radius:5px;background:#EBF0F5;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px}.track>div{height:100%;background:#86A9C9}.table-bottom{display:flex;justify-content:space-between;padding:14px 23px;color:#96A3B2;font-size:10.5px;border-top:1px solid var(--line)}.bottom-note{font-size:10.5px;color:#97A5B5;line-height:1.7;margin-top:17px}.bottom-note a{color:#6C8FB8;text-decoration:none}
+.hidden{display:none!important}
+@media(max-width:1300px){.sidebar{width:242px;min-width:242px}.content{padding:26px 23px}.kpi{padding:17px 15px}.kpi-value{font-size:24px}.trend-grid{grid-template-columns:1fr 1fr}}@media(max-width:1040px){.sidebar{width:220px;min-width:220px}.topbar{padding:0 20px}.overview-strip{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.trend-grid{grid-template-columns:1fr}.chart-zone{padding:17px 13px}.chart-card{padding:15px 12px}}@media(max-width:720px){.sidebar{display:none}.topbar{height:55px;padding:0 15px}.content{padding:20px 14px}.intro{display:block}.header-actions{margin-top:15px;justify-content:start}.kpis{grid-template-columns:repeat(2,1fr);gap:9px}.kpi-value{font-size:21px}.kpi{padding:13px}.kpi-row{font-size:10px}.analytics-head{padding:17px}.view-tabs{margin:14px}.viewtab{padding:9px 10px}.filterbar{padding:0 14px 16px}.chart-card{padding:12px 10px}.bar-caption{height:80px}.cap-name{font-size:9px}.y-axis{min-width:30px;font-size:9px}.plot{height:170px}.y-axis{height:170px}.chart-card-sum{display:none}.company-cap{padding:0}.chart-zone{padding:12px}.top-pill{display:none}}
+
+/* VFast refinement: compact typography and readable, non-overlapping org tree */
+.brand-icon img{opacity:0;background:transparent}.brand-icon img.loaded{opacity:1}
+body, button, input, select { font-family:"Segoe UI","Segoe UI Variable",Tahoma,Arial,sans-serif; }
+.sidebar{width:310px;min-width:310px;z-index:8;overflow:hidden}
+.side-head{padding:22px 19px 19px;flex-shrink:0}
+.side-scroll{padding:20px 13px 22px;overflow-x:hidden;overflow-y:auto;min-height:0;flex:1;scrollbar-width:thin}
+.tree-scroll{max-height:none;min-height:0;overflow:visible;padding:0}
+.tree-children,.tree-children[style]{padding-left:5px!important;margin-left:11px!important;border-left:1px solid #E7EDF5}
+.org-root,.org-row{min-height:42px;max-width:100%;align-items:center}
+.org-button{padding:9px 6px 9px 8px;min-width:0;flex:1;gap:8px;font-size:12px;line-height:1.4;align-items:center}
+.org-button .org-label{display:block;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;word-break:normal;min-width:0;flex:1}
+.chevron{width:28px;height:35px;flex:none;font-size:16px}
+.org-tree{max-width:100%}.org-header{font-size:13px}
+.brand-icon.small{width:25px;height:25px;min-width:25px;flex-shrink:0}
+.brand-icon.small img{width:20px;height:20px}
+.person{font-size:12px}.side-foot{flex-shrink:0}
+.content{padding-top:28px}.intro{align-items:center;margin-bottom:21px}
+h1{font-size:25px;letter-spacing:-.55px;margin:0;font-weight:700}
+.analytics-head h2,.table-head h2{margin:0;font-size:17px;font-weight:700}
+.strip-title{font-size:15px;font-weight:700}
+.analytics-head{align-items:center;padding:20px 23px}
+.chart-card-head{align-items:center}.chart-card-title{font-size:13px;font-weight:700}
+.chart-card{padding-bottom:20px}
+.summary-line:first-of-type{margin-top:21px}
+.mobile-menu-btn{display:none;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 11px;color:var(--blue);font-size:18px;line-height:1}
+.topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
+.mobile-backdrop{display:none}
+@media(max-width:1300px){.sidebar{width:280px;min-width:280px}}
+@media(max-width:1040px){.sidebar{width:265px;min-width:265px}.content{padding:24px 20px 50px}.intro{gap:15px}}
+@media(max-width:780px){
+ .sidebar{display:flex;position:fixed;left:0;top:0;bottom:0;transform:translateX(-105%);transition:transform .22s ease;width:min(330px,87vw);min-width:0;height:100dvh;box-shadow:0 15px 40px rgba(30,50,80,.13);z-index:101}
+ .mobile-nav-open .sidebar{transform:translateX(0)}
+ .mobile-backdrop:not([hidden]){display:block;position:fixed;inset:0;background:rgba(23,39,59,.35);z-index:100}
+ .mobile-menu-btn{display:inline-block}
+ .content{padding:19px 13px 45px}.topbar{padding:0 14px}.top-tools{gap:8px}
+ .intro{display:flex;flex-wrap:wrap;align-items:flex-start;margin-bottom:17px}
+ .header-actions{justify-content:flex-start;margin-top:0}
+ .overview-strip{grid-template-columns:1fr}
+ .trend-grid{grid-template-columns:1fr}
+ .topcrumb{font-size:11px}
+}
+
+.risk-section{border-top:1px solid #EDF1F5;margin-top:8px;padding-top:19px}
+.risk-section h3{font-size:14px;font-weight:700;margin:0 0 11px;letter-spacing:-.2px}
+.waste-risk svg{display:block;width:100%;height:auto;max-width:100%}
+.waste-risk{margin-top:7px}
+.risk-dot{cursor:pointer;stroke:#fff;stroke-width:1.5}
+.risk-dot:hover{stroke:#2D557F;stroke-width:3}
+/* Waste analytics visual language — quiet, consistent, and accessible */
+.bar-col.plan,.trend-bar.plan{background:#D3E0EE;border:1px solid #B8CADE;border-bottom:0}
+.bar-stack{width:min(30%,29px);display:flex;flex-direction:column;overflow:hidden;border-radius:3px 3px 0 0;min-height:2px}
+.stack-used{background:#648FC3;min-height:0}
+.stack-waste{background:#E3BB83;min-height:0}
+.group-bars:hover .stack-used{background:#477AAE}
+.group-bars:hover .stack-waste{background:#CE9D60}
+.trend-stack{width:min(32%,13px);display:flex;flex-direction:column;overflow:hidden;border-radius:2px 2px 0 0;min-height:1px}
+.insight-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:22px 0 13px}
+.insight-heading h2{font-size:18px;font-weight:700;margin:0;letter-spacing:-.35px}
+.insight-heading>span{color:#7A8AA0;font-size:11.5px}
+.insights-grid{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:17px;margin-bottom:17px}
+.insight-card{padding:20px 22px;min-width:0}
+.insight-head{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.insight-head h3{font-size:15px;font-weight:700;margin:0;letter-spacing:-.2px}
+.insight-link{background:transparent;border:0;padding:6px 0;color:#3D6BA5;font-size:11.5px;font-weight:650;white-space:nowrap}
+.insight-link:hover{text-decoration:underline}
+.mini-legend{display:flex;align-items:center;font-size:11px;color:#75869B;margin:12px 0 16px}
+.mini-legend i{height:10px;width:10px;border-radius:2px;margin-right:6px;display:inline-block}
+.waste-ranking{display:flex;flex-direction:column;gap:0}
+.waste-row{display:grid;grid-template-columns:minmax(128px,190px) minmax(65px,1fr) 85px;align-items:center;gap:13px;width:100%;border:0;border-top:1px solid #F0F3F7;background:transparent;text-align:left;padding:12px 0;color:inherit;cursor:pointer}
+.waste-row:hover{background:#FAFBFD}
+.waste-row:first-child{border-top:0}
+.waste-row-name{min-width:0;display:flex;align-items:center;gap:8px;font-weight:600;color:#516780;font-size:11.5px}
+.waste-row-name .brand-icon{flex:none}
+.waste-row-name>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.waste-track{height:12px;border-radius:2px;background:#F1F4F8;display:flex;overflow:hidden}
+.waste-track>span{height:100%}
+.waste-track-used{background:#648FC3}.waste-track-wasted{background:#E3BB83}
+.waste-row-value{text-align:right;white-space:nowrap;font-size:11.5px;font-weight:750;color:#A6753D;font-variant-numeric:tabular-nums}
+.waste-row-value small{display:block;font-size:10px;color:#8798AC;font-weight:500}
+.waste-trend{width:100%;min-height:280px;display:flex;align-items:center;justify-content:center}
+.waste-trend svg{display:block;max-width:100%;width:100%;height:auto;overflow:visible}
+.waste-trend-label{font-family:'Segoe UI',sans-serif;font-size:11px;fill:#8C9BAC}
+.waste-trend-grid{stroke:#E8EDF3;stroke-width:1}
+.heat-panel{margin-bottom:18px;overflow:hidden}
+.heat-head{padding:21px 23px 17px;border-bottom:1px solid #EEF1F5}
+.heat-action{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.heat-scale{display:flex;align-items:center;gap:4px;white-space:nowrap;color:#8592A4;font-size:10.5px}
+.heat-scale i{display:inline-block;width:14px;height:14px;border-radius:2px}
+.heat-s1{background:#FBF6EF}.heat-s2{background:#F5E8D6}.heat-s3{background:#EBD0AC}.heat-s4{background:#D3A36F}
+.heat-wrapper{overflow-x:auto;padding:12px 23px 22px}
+.heatmap{min-width:740px}
+.heat-row,.heat-months{display:grid;grid-template-columns:minmax(145px,210px) repeat(12,minmax(33px,1fr));gap:5px;align-items:center}
+.heat-months{margin-bottom:8px;color:#8795A8;font-size:10.5px;text-align:center}
+.heat-row{padding:4px 0}
+.heat-company{border:0;background:transparent;display:flex;align-items:center;gap:7px;text-align:left;min-width:0;color:#506680;font-size:11.5px;cursor:pointer;font-weight:600}
+.heat-company>span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.heat-company:hover{text-decoration:underline}
+.heat-cell{min-height:29px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#74522E;font-variant-numeric:tabular-nums}
+.heat-cell.na{color:#BAC4D0;background:#F7F9FC}
+.heat-empty{color:#8798A9;padding:25px 5px;text-align:center;font-size:12px}
+@media(max-width:1240px){.insights-grid{grid-template-columns:1fr}.waste-row{grid-template-columns:minmax(140px,210px) minmax(65px,1fr) 85px}}
+@media(max-width:780px){.insight-card{padding:16px}.insight-heading{margin-top:18px}.heat-head{padding:16px}.heat-wrapper{padding:12px 16px}.heat-action{gap:10px}.waste-row{grid-template-columns:minmax(108px,145px) minmax(45px,1fr) 76px;gap:7px}.waste-row-name{font-size:10px}.insight-head h3{font-size:13.5px}}
+</style>
+</head>
+<body>
+<div class="app">
+<div id="mobileBackdrop" class="mobile-backdrop" hidden></div>
+<aside class="sidebar" id="sidebar" aria-label="Menu điều hướng">
+ <div class="side-head"><div class="brandmark">V</div><div><div class="brandname">VFast</div></div></div>
+ <div class="side-scroll">
+  <div class="side-eyebrow">WORKSPACE</div>
+  <button class="navbtn current" id="overviewNav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Tổng quan chi phí & sử dụng</button>
+  <button class="navbtn" id="wasteNav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l10 18H2L12 3z"/><path d="M12 9v5m0 3v1"/></svg>Xếp hạng lãng phí</button>
+  <div class="divider"></div>
+  <div class="side-eyebrow">PHẠM VI PHÂN TÍCH</div>
+  <button class="org-header" id="orgDropdown"><span>▦ &nbsp; Cơ cấu tổ chức</span><span id="orgArrow">⌄</span></button>
+  <div id="orgPanel" class="org-tree"><input class="tree-search" id="treeSearch" placeholder="Tìm công ty con..." aria-label="Tìm công ty con"><div class="tree-scroll" id="orgTree"></div></div>
+ </div>
+ <div class="side-foot"><div class="avatar">LM</div><div><div class="person">License Manager</div></div></div>
+</aside>
+<main class="main">
+ <div class="topbar"><div class="topbar-left"><button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Mở menu" aria-expanded="false">☰</button><div class="topcrumb"><strong>VFast</strong><span> / </span>Corporate analytics</div></div><div class="top-tools"><span style="font-size:11px"><span class="sync-dot"></span>Đã đồng bộ</span><span class="top-pill">Fiscal year 2026</span><div class="top-avatar">LM</div></div></div>
+ <div class="content">
+  <div class="bread" id="breadcrumb"></div>
+  <div class="intro"><div><h1 id="pageTitle">Phân tích chi phí & hiệu quả license</h1></div><div class="header-actions"><select id="headerScope" class="control" aria-label="Chuyển phạm vi"><option value="root">Tất cả công ty con</option></select><button class="btn primary" id="exportBtn">↓ Xuất CSV</button></div></div>
+  <section class="overview-strip">
+   <div class="panel strip-panel"><div class="strip-title">Cân đối kế hoạch và sử dụng</div><div class="summary-line"><span class="lab">Ngân sách plan</span><div class="bar"><div id="balancePlan" style="width:100%;background:#CAD9EB"></div></div><b class="val" id="balancePlanValue">—</b></div><div class="summary-line" style="margin-top:12px"><span class="lab">Chi phí đã mua</span><div class="bar"><div id="balanceSpend" style="background:#B9A1D8"></div></div><b class="val" id="balanceSpendValue">—</b></div><div class="summary-line" style="margin-top:12px"><span class="lab">Đã dùng thực tế</span><div class="bar"><div id="balanceUsed" style="background:#648FC3"></div></div><b class="val" id="balanceUsedValue">—</b></div><div class="pill-list"><span class="mini-pill" id="balanceVariance">—</span><span class="mini-pill" id="balanceScope">31 công ty con</span></div></div>
+   <div class="panel strip-panel"><div class="strip-title">Tỷ lệ khai thác chi phí</div><div class="donut-row"><div class="donut" id="donut"><div class="donut-hole"><b id="donutPct">—</b><span>được sử dụng</span></div></div><div class="donut-details"><div class="dline"><span><i class="dot" style="background:#648FC3"></i>Đã sử dụng</span><b id="donutUsed">—</b></div><div class="dline"><span><i class="dot" style="background:#E3BB83"></i>Lãng phí</span><b id="donutWaste">—</b></div><div class="dline"><span><i class="dot" style="background:#B9A1D8"></i>Đã mua</span><b id="donutSpend">—</b></div></div></div></div>
+  </section>
+  <section class="panel analytics" id="analyticsPanel">
+   <div class="analytics-head"><div><h2 id="analyticsTitle">Phân tích theo 31 công ty con</h2></div><div class="countbox" id="scopeCount">31 đơn vị</div></div>
+   <div class="view-tabs" role="tablist" aria-label="Chế độ xem biểu đồ"><button role="tab" aria-selected="true" data-mode="ytd" class="viewtab selected">Lũy kế từ đầu năm</button><button role="tab" aria-selected="false" data-mode="month" class="viewtab">So sánh theo tháng</button><button role="tab" aria-selected="false" data-mode="trend" class="viewtab">Xu hướng cả năm</button></div>
+   <div class="filterbar"><span class="filter-label">Năm</span><select class="control" id="yearSelect"><option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option></select><span class="filter-label hidden" id="monthLabel">Tháng</span><select class="control hidden" id="monthSelect" aria-label="Chọn tháng"></select><span class="filter-label">Sắp xếp</span><select class="control" id="sortSelect" style="min-width:169px"><option value="waste">Lãng phí: cao → thấp</option><option value="name">Tên: A → Z</option><option value="name_desc">Tên: Z → A</option><option value="waste_asc">Lãng phí: thấp → cao</option><option value="plan">Ngân sách: cao → thấp</option><option value="used">Đã dùng: cao → thấp</option><option value="efficiency">Hiệu suất: thấp → cao</option></select><span class="stretch"></span><input id="chartSearch" class="control search-field" placeholder="⌕ Tìm tên đơn vị..." aria-label="Tìm đơn vị trên biểu đồ"/><span class="countbox" id="filteredCount">31 / 31</span></div>
+   <div class="chart-zone"><div class="zone-head"><div class="left" id="chartPeriodTitle">Lũy kế 01–11/2026 · So sánh giữa các công ty</div><div class="legend"><span><i style="background:#CCDDED"></i>Ngân sách Plan</span><span><i style="background:#648FC3"></i>Đã sử dụng</span><span><i style="background:#E3BB83"></i>Lãng phí</span><span style="color:#A8B4C1">Đơn vị: tỷ VNĐ</span></div></div><div id="chartGrid" class="chart-grid"></div></div>
+  </section>
+  <div class="insight-heading"><h2>Phân tích lãng phí</h2><span id="insightsPeriod">Lũy kế 01–11/2026</span></div>
+  <section class="insights-grid" id="wasteInsights" aria-label="Biểu đồ phân tích lãng phí">
+   <div class="panel insight-card">
+    <div class="insight-head"><h3>Đơn vị lãng phí nhiều nhất</h3><button class="insight-link" id="rankShowAll" type="button">Xem tất cả</button></div>
+    <div class="mini-legend"><i style="background:#648FC3"></i>Đã sử dụng <i style="background:#E3BB83;margin-left:16px"></i>Lãng phí</div>
+    <div id="wasteRanking" class="waste-ranking"></div>
+   </div>
+   <div class="panel insight-card">
+    <div class="insight-head"><h3 id="wasteTrendTitle">Xu hướng sử dụng & lãng phí · 2026</h3></div>
+    <div class="mini-legend"><i style="background:#648FC3"></i>Đã sử dụng <i style="background:#D39B5C;margin-left:16px"></i>Lãng phí</div>
+    <div id="wasteTrend" class="waste-trend"></div>
+    <div class="risk-section"><h3>Phân bố rủi ro lãng phí</h3><div id="wasteRisk" class="waste-risk"></div></div>
+   </div>
+  </section>
+  <section class="panel heat-panel" aria-label="Bản đồ nhiệt lãng phí">
+   <div class="insight-head heat-head"><h3 id="heatTitle">Tỷ lệ lãng phí theo tháng · 2026</h3><div class="heat-action"><span class="heat-scale">Ít lãng phí <i class="heat-s1"></i><i class="heat-s2"></i><i class="heat-s3"></i><i class="heat-s4"></i> Nhiều lãng phí</span><button class="insight-link" id="heatShowAll" type="button">Xem tất cả</button></div></div>
+   <div class="heat-wrapper"><div id="heatmap" class="heatmap"></div></div>
+  </section>
+  <section class="panel table-panel" id="rankingPanel"><div class="table-head"><div><h2 id="tableTitle">Xếp hạng chi phí theo đơn vị</h2></div><small id="tableCount">31 mục</small></div><div class="table-scroll"><table><thead><tr><th>Đơn vị trực thuộc</th><th>Ngân sách Plan</th><th>Đã mua</th><th>Đã dùng thực tế</th><th>Lãng phí</th><th>Hiệu quả khai thác</th><th>Chênh lệch Plan</th></tr></thead><tbody id="tableBody"></tbody></table></div><div class="table-bottom"><span id="tableFooter">Hiển thị 31 đơn vị</span><span>Bấm vào đơn vị để đi sâu</span></div></section>
+  <div class="bottom-note">VFast · Thiết kế minh họa dữ liệu. 31 đơn vị được dựng để kiểm thử bố cục; một số tên thương hiệu được tham khảo từ nguồn công khai, các mục còn lại là đơn vị giả lập. Giá trị đã sử dụng là chi phí license quy đổi theo mức usage; lãng phí minh họa = chi phí đã mua trừ giá trị đã sử dụng. Ngân sách chưa chi không được coi là lãng phí. Logo trực tuyến có thể được thay bằng bộ nhận diện nội bộ khi triển khai chính thức.</div>
+ </div>
+</main>
+</div>
+<script>
+(()=>{
+ 'use strict';
+ const MONTH_NOW=11, YEAR_NOW=2026;
+ const seedBrands=[
+ ['VinFast','VF','vinfastauto.com'],['VinAI','AI','vinai.io'],['VinBigData','BD','vinbigdata.com'],['VinCSS','CS','vincss.net'],
+ ['VinRobotics','VR','vinrobotics.net'],['VinMotion','VM','vinmotion.net'],['VinDynamics','VD','vindynamics.net'],['V-Green','VG','vgreen.net'],
+ ['VinHMS','VH','vinhms.com'],['VinSmart','VS',null],['VinSmart Future','SF',null],['VinSOC','SO',null],
+ ['Vin3S','3S',null],['VinES Hà Tĩnh','VE',null],['VinEG','EG',null],['VinMetal','MT',null]
+ ];
+ const labels=['Công ty Kỹ thuật 17','Công ty Kỹ thuật 18','Công ty Kỹ thuật 19','Công ty Kỹ thuật 20','Công ty Kỹ thuật 21','Công ty Kỹ thuật 22','Công ty Kỹ thuật 23','Công ty Kỹ thuật 24','Công ty Kỹ thuật 25','Công ty Kỹ thuật 26','Công ty Kỹ thuật 27','Công ty Kỹ thuật 28','Công ty Kỹ thuật 29','Công ty Kỹ thuật 30','Công ty Kỹ thuật 31'];
+ const brandList=[...seedBrands.map(([name,initial,domain])=>({name,initial,domain,verified:true})),...labels.map((name,i)=>({name,initial:'K'+String(i+17),domain:null,verified:false}))];
+ const byId={}, root={id:'root',name:'Tập đoàn Vingroup',type:'group',parent:null,children:[],share:1};byId[root.id]=root;
+ const blockNames=['Khối Công nghệ','Khối Kỹ thuật','Khối Vận hành'];const deptNames=[['Phòng Phát triển phần mềm','Phòng Dữ liệu & AI'],['Phòng R&D','Phòng Hạ tầng kỹ thuật'],['Phòng IT Operations','Phòng Hệ thống doanh nghiệp']];
+ const blockWeights=[.40,.35,.25],deptWeights=[.56,.44],projectWeights=[.53,.47],licenseWeights=[.32,.28,.24,.16];
+ for(let i=0;i<brandList.length;i++){
+  const b=brandList[i],co={id:'c'+i,name:b.name,type:'company',companyIndex:i,share:1,brand:b,parent:root,children:[]};byId[co.id]=co;root.children.push(co);
+  for(let k=0;k<3;k++){
+   let block={id:`c${i}-b${k}`,name:blockNames[k],type:'block',companyIndex:i,share:blockWeights[k],parent:co,children:[]};byId[block.id]=block;co.children.push(block);
+   for(let d=0;d<2;d++){
+    let dep={id:`c${i}-b${k}-d${d}`,name:deptNames[k][d],type:'department',companyIndex:i,share:blockWeights[k]*deptWeights[d],parent:block,children:[]};byId[dep.id]=dep;block.children.push(dep);
+    for(let p=0;p<2;p++){
+     let proj={id:`c${i}-b${k}-d${d}-p${p}`,name:['Dự án '+['Core Platform','Customer App','Data Hub','Infra Cloud','ERP Integration','Automation Suite'][(i+k*2+d+p)%6],'Dự án '+['API Gateway','Device Portal','Analytics Engine','Cloud Security','Business Suite','Internal Services'][(i*3+k+d+p)%6]][p],type:'project',companyIndex:i,share:dep.share*projectWeights[p],parent:dep,children:[]};byId[proj.id]=proj;dep.children.push(proj);['Microsoft 365','GitHub Enterprise','Jira Software','Power BI Pro'].forEach((app,li)=>{const lic={id:proj.id+'-l'+li,name:app,type:'license',companyIndex:i,share:proj.share*licenseWeights[li],parent:proj,children:[]};byId[lic.id]=lic;proj.children.push(lic)});
+    }
+   }
+  }
+ }
+ const state={scope:root,mode:'ytd',year:2026,month:MONTH_NOW,sort:'waste',search:'',treeSearch:'',expanded:new Set(),panelOpen:true};
+ const $=id=>document.getElementById(id);const num=(n,d=1)=>new Intl.NumberFormat('vi-VN',{maximumFractionDigits:d,minimumFractionDigits:d}).format(n);
+ const money=n=>num(n,Math.abs(n)<1?2:1);const pct=(a,b)=>b?100*a/b:0;const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+ function clean(s){return String(s).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]))}
+ function metricsMonth(i,y,m){const r=((i+5)*31+y*7+m*19)%37;const baseline=(.29+((i*11)%24)*.029)+(i<8?.17:0);const seasonal=1+.11*Math.sin(m*.72+i*.49);const plan=baseline*seasonal*(1+(y-2024)*.055);const spend=plan*(.78+((i*7+m*5)%18)/100);const util=clamp(.47+((i*13)%43)/100+.055*Math.sin(m*.76+i*.37)+.025*Math.cos(m*.36+i*.9),.38,.95);return {plan,spend,used:spend*util,waste:spend*(1-util)}}
+ function months(){if(state.mode==='month')return[state.month];return Array.from({length:state.year===YEAR_NOW?MONTH_NOW:12},(_,i)=>i+1)}
+ function metric(n,mons=months(),year=state.year){if(n.type==='group')return n.children.reduce((a,ch)=>sumMetric(a,metric(ch,mons,year)),zero());const a=mons.reduce((a,m)=>sumMetric(a,metricsMonth(n.companyIndex,year,m)),zero());return scaleMetric(a,n.share)}
+ function zero(){return{plan:0,spend:0,used:0,waste:0}}
+ function sumMetric(a,b){return{plan:a.plan+b.plan,spend:a.spend+b.spend,used:a.used+b.used,waste:a.waste+b.waste}}
+ function scaleMetric(a,v){return{plan:a.plan*v,spend:a.spend*v,used:a.used*v,waste:a.waste*v}}
+ function ico(node,size=''){const b=node.type==='company'?node.brand:brandList[node.companyIndex]||brandList[0];const initial=node.type==='company'?b.initial:node.type==='group'?'V':node.type==='block'?'KH':node.type==='department'?'PB':'DA';const cls=`brand-icon ${size} ${node.type==='company'&&!b.verified?'pseudo':''}`;const title=clean(node.name);if(node.type==='company'&&b.domain){const uri='https://www.google.com/s2/favicons?domain='+encodeURIComponent(b.domain)+'&sz=128';return `<span class="${cls}" title="${title}"><span>${clean(initial)}</span><img src="${uri}" alt="" loading="lazy" onload="if(this.naturalWidth>=32&&this.naturalHeight>=32)this.classList.add('loaded');else this.remove()" onerror="this.remove()"></span>`}return `<span class="${cls}" title="${title}">${clean(initial)}</span>`}
+ function lineage(n){const out=[];while(n){out.unshift(n);n=n.parent}return out}
+ function visibleRows(){return state.scope.children||[]}
+ function sortedRows(){const needle=state.search.trim().toLocaleLowerCase('vi');const r=visibleRows().filter(x=>x.name.toLocaleLowerCase('vi').includes(needle));r.sort((a,b)=>{const A=metric(a),B=metric(b);if(state.sort==='name')return a.name.localeCompare(b.name,'vi');if(state.sort==='name_desc')return b.name.localeCompare(a.name,'vi');if(state.sort==='waste_asc')return A.waste-B.waste;if(state.sort==='plan')return B.plan-A.plan;if(state.sort==='used')return B.used-A.used;if(state.sort==='efficiency')return pct(A.used,A.spend)-pct(B.used,B.spend);return B.waste-A.waste});return r}
+ function dateText(){const cap=state.year===YEAR_NOW?MONTH_NOW:12;if(state.mode==='month')return `tháng ${state.month.toString().padStart(2,'0')}/${state.year}`;return `tháng 01–${String(cap).padStart(2,'0')}/${state.year}`}
+ function shortDateText(){const cap=state.year===YEAR_NOW?MONTH_NOW:12;return state.mode==='month'?`${String(state.month).padStart(2,'0')}/${state.year}`:`01–${String(cap).padStart(2,'0')}/${state.year}`}
+ function setScope(n){closeMobileMenu();state.scope=n;state.search='';$('chartSearch').value='';lineage(n).forEach(x=>state.expanded.add(x.id));renderAll();window.scrollTo({top:0,behavior:'smooth'});try{history.replaceState(null,'','#'+encodeURIComponent(n.id))}catch(e){}}
+ function renderTree(){const q=state.treeSearch.trim().toLocaleLowerCase('vi');const all=brandList.map((_,i)=>byId['c'+i]);const filtered=q?all.filter(n=>n.name.toLocaleLowerCase('vi').includes(q)):all;
+  function branch(n,depth){const has=n.children.length>0&&n.type!=='project',expanded=state.expanded.has(n.id),active=state.scope.id===n.id;const treeHead=`<div class="org-row ${active?'active':''}"><button class="org-button" data-scope="${n.id}" title="${clean(n.name)}">${ico(n,'small')}<span class="org-label">${clean(n.name)}</span></button>${has?`<button class="chevron" data-expand="${n.id}" aria-label="${expanded?'Thu gọn':'Mở rộng'} ${clean(n.name)}">${expanded?'⌄':'›'}</button>`:''}</div>`;if(!has||!expanded)return treeHead;return treeHead+`<div class="tree-children">${n.children.map(ch=>branch(ch,depth+1)).join('')}</div>`}
+  $('orgTree').innerHTML=`<div class="org-root ${state.scope.id==='root'?'active':''}"><button class="org-button" data-scope="root"><span class="brand-icon small" style="background:#3D6BA5;color:#fff">V</span><span class="org-label">Tập đoàn Vingroup</span></button></div><div class="tree-children" style="padding-left:8px;margin-left:13px">${filtered.map(n=>branch(n,0)).join('')||'<div class="empty" style="padding:14px 2px">Không tìm thấy công ty</div>'}</div>`;
+ }
+ function renderCrumbs(){const parts=lineage(state.scope);$('breadcrumb').innerHTML=parts.map((p,i)=>i===parts.length-1?`<strong>${clean(p.name)}</strong>`:`<button data-scope="${p.id}">${clean(p.name)}</button><span class="sep">/</span>`).join('');$('pageTitle').textContent=state.scope.type==='group'?'Phân tích chi phí & hiệu quả license':state.scope.name;
+  const select=$('headerScope');select.innerHTML=`<option value="root">Tập đoàn · Tất cả công ty</option>`+root.children.map(n=>`<option value="${n.id}">${clean(n.name)}</option>`).join('')+(state.scope.type!=='group'&&state.scope.type!=='company'?`<option value="${state.scope.id}">${clean(state.scope.name)}</option>`:'');select.value=state.scope.type==='group'?'root':state.scope.type==='company'?state.scope.id:state.scope.id;
+  const typ={group:'công ty con',company:'khối',block:'phòng ban',department:'dự án',project:'license',license:'license'};$('analyticsTitle').textContent=state.scope.type==='project'?'Theo dõi license của dự án':`Phân tích theo ${visibleRows().length} ${typ[state.scope.type]||'đơn vị'}`;$('scopeCount').textContent=visibleRows().length+' '+(typ[state.scope.type]||'đơn vị');$('balanceScope').textContent=visibleRows().length+' '+(typ[state.scope.type]||'đơn vị');$('tableTitle').textContent='Danh sách '+(typ[state.scope.type]||'đơn vị')+' trực thuộc';
+ }
+ function renderSummary(){
+  const m=metric(state.scope),ratio=pct(m.used,m.spend),delta=m.spend-m.plan;
+  const max=Math.max(m.plan,m.spend,m.used,.001);
+  for(const [key,el,el2] of [['plan','balancePlan','balancePlanValue'],['spend','balanceSpend','balanceSpendValue'],['used','balanceUsed','balanceUsedValue']]){
+   $(el).style.width=(m[key]/max*100)+'%';$(el2).textContent=money(m[key])+' tỷ';
+  }
+  $('balanceVariance').textContent=delta>0?`Vượt plan ${money(delta)} tỷ`:`Chênh lệch với plan ${money(delta)} tỷ`;
+  $('donut').style.background=`conic-gradient(#648FC3 0 ${ratio}%,#E3BB83 ${ratio}% 100%)`;
+  $('donutPct').textContent=num(ratio,0)+'%';$('donutUsed').textContent=money(m.used)+' tỷ';
+  $('donutWaste').textContent=money(m.waste)+' tỷ';$('donutSpend').textContent=money(m.spend)+' tỷ';
+ }
+ function getMax(points){const high=Math.max(...points.map(x=>x.plan),...points.map(x=>x.spend),.001);return high<.1?Math.ceil(high*100)/100:high<.5?Math.ceil(high*20)/20:Math.ceil(high*2)/2}
+ function makeBars(rows,offset){const pairs=rows.map(n=>({n,m:metric(n)}));const max=getMax(pairs.map(x=>x.m));const steps=Array.from({length:5},(_,i)=>max*(4-i)/4);const yAxis=`<div class="y-axis">${steps.map(t=>`<span>${num(t,max<1?2:1)}</span>`).join('')}</div>`;
+ const cols=pairs.map(({n,m})=>`<div class="group-bars" title="${clean(n.name)}\nPlan: ${money(m.plan)} tỷ\nĐã mua: ${money(m.spend)} tỷ\nĐã sử dụng: ${money(m.used)} tỷ\nLãng phí: ${money(m.waste)} tỷ" data-scope="${n.id}"><div class="bar-col plan" style="height:${m.plan/max*100}%"></div><div class="bar-stack" style="height:${m.spend/max*100}%"><div class="stack-waste" style="height:${pct(m.waste,m.spend)}%"></div><div class="stack-used" style="height:${pct(m.used,m.spend)}%"></div></div></div>`).join('');const caps=pairs.map(({n})=>`<button class="company-cap" data-scope="${n.id}" title="Mở ${clean(n.name)}"><span class="cap-icon">${ico(n)}</span><span class="cap-name">${clean(n.name)}</span></button>`).join('');
+ const total=pairs.reduce((a,x)=>sumMetric(a,x.m),zero());return `<div class="chart-card"><div class="chart-card-head"><div><div class="chart-card-title">Nhóm ${String(offset+1).padStart(2,'0')}–${String(offset+rows.length).padStart(2,'0')}</div></div><span class="chart-card-sum">Plan <b>${money(total.plan)} tỷ</b> &nbsp; · &nbsp; Đã mua <b>${money(total.spend)} tỷ</b> &nbsp; · &nbsp; Lãng phí <b style="color:#B4895B">${money(total.waste)} tỷ</b></span></div><div class="chart-surface">${yAxis}<div class="chart-main"><div class="plot"><div class="plot-bars">${cols}</div></div><div class="bar-caption">${caps}</div></div></div></div>`}
+ function makeTrend(n){const mons=Array.from({length:state.year===YEAR_NOW?MONTH_NOW:12},(_,i)=>i+1);const values=mons.map(m=>metric(n,[m]));const max=getMax(values);const sums=values.reduce(sumMetric,zero());const bars=values.map((m,i)=>`<div class="trend-pair" title="Tháng ${i+1}: Plan ${money(m.plan)} tỷ; đã dùng ${money(m.used)} tỷ; lãng phí ${money(m.waste)} tỷ"><div class="trend-bar plan" style="height:${m.plan/max*100}%"></div><div class="trend-stack" style="height:${m.spend/max*100}%"><div class="stack-waste" style="height:${pct(m.waste,m.spend)}%"></div><div class="stack-used" style="height:${pct(m.used,m.spend)}%"></div></div></div>`).join('');return `<div class="trend-card"><div class="trend-card-head"><button class="row-link trend-card-title" data-scope="${n.id}">${ico(n)}<span>${clean(n.name)} ↗</span></button><span class="trend-detail">Hiệu quả ${num(pct(sums.used,sums.spend),0)}%</span></div><div class="trend-bars">${bars}</div><div class="trend-labels">${mons.map(m=>`<span>T${m}</span>`).join('')}</div><div class="trend-foot"><span>Plan <b>${money(sums.plan)} tỷ</b></span><span>Đã dùng <b>${money(sums.used)} tỷ</b></span><span>Lãng phí <b class="waste">${money(sums.waste)} tỷ</b></span></div></div>`}
+ function renderCharts(rows){const period=$('chartPeriodTitle');period.textContent=state.mode==='month'?`So sánh tháng ${state.month}/${state.year} · Plan, sử dụng và lãng phí`:state.mode==='trend'?`Xu hướng theo từng tháng · Năm ${state.year} (${state.year===YEAR_NOW?'tháng 1–11':'tháng 1–12'})`:`Lũy kế từ tháng 1 đến tháng ${state.year===YEAR_NOW?MONTH_NOW:12}/${state.year} · Theo từng đơn vị`;
+ $('filteredCount').textContent=rows.length+' / '+visibleRows().length;$('tableCount').textContent=rows.length+' mục';const grid=$('chartGrid');if(!rows.length){grid.className='chart-grid';grid.innerHTML='<div class="empty">Không có đơn vị phù hợp với bộ lọc.</div>';return}
+ if(state.mode==='trend'){grid.className='trend-grid';grid.innerHTML=rows.map(makeTrend).join('')}else{grid.className='chart-grid';const groups=[];for(let i=0;i<rows.length;i+=8)groups.push(makeBars(rows.slice(i,i+8),i));grid.innerHTML=groups.join('')}
+ }
+
+ let showAllWaste=false,showAllHeat=false;
+ function renderWasteRanking(rows){
+   const sorted=[...rows].sort((a,b)=>metric(b).waste-metric(a).waste);
+   const displayed=showAllWaste?sorted:sorted.slice(0,10);
+   const maxSpend=Math.max(.001,...sorted.map(n=>metric(n).spend));
+   $('wasteRanking').innerHTML=displayed.map(n=>{const m=metric(n);return `<button class="waste-row" data-scope="${n.id}" title="${clean(n.name)}: ${money(m.waste)} tỷ lãng phí trên ${money(m.spend)} tỷ đã mua"><span class="waste-row-name">${ico(n,'small')}<span>${clean(n.name)}</span></span><span class="waste-track"><span class="waste-track-used" style="width:${m.used/maxSpend*100}%"></span><span class="waste-track-wasted" style="width:${m.waste/maxSpend*100}%"></span></span><span class="waste-row-value">${money(m.waste)} tỷ<small>${num(pct(m.waste,m.spend),0)}% chưa khai thác</small></span></button>`}).join('')||'<div class="heat-empty">Không có đơn vị phù hợp</div>';
+   $('rankShowAll').classList.toggle('hidden',sorted.length<=10);
+   $('rankShowAll').textContent=showAllWaste?'Thu gọn':'Xem tất cả ('+sorted.length+')';
+ }
+ function renderWasteTrend(){
+   const count=state.year===YEAR_NOW?MONTH_NOW:12;
+   const monthsArr=Array.from({length:count},(_,i)=>i+1);
+   const vals=monthsArr.map(m=>metric(state.scope,[m]));
+   const W=520,H=250,l=46,r=16,t=18,b=35,pW=W-l-r,pH=H-t-b;
+   const yTop=Math.max(.01,...vals.map(v=>v.used),...vals.map(v=>v.waste))*1.13;
+   const XP=i=>l+(i/(Math.max(1,count-1)))*pW;
+   const YP=v=>t+pH-v/yTop*pH;
+   const line=k=>vals.map((v,i)=>(i===0?'M':'L')+XP(i).toFixed(1)+' '+YP(v[k]).toFixed(1)).join(' ');
+   const area=k=>line(k)+` L${XP(count-1).toFixed(1)} ${YP(0)} L${XP(0)} ${YP(0)} Z`;
+   let grid='';for(let j=0;j<=4;j++){const y=t+pH*j/4, val=yTop*(1-j/4);grid+=`<line class="waste-trend-grid" x1="${l}" x2="${W-r}" y1="${y}" y2="${y}"/><text x="${l-10}" y="${y+4}" text-anchor="end" class="waste-trend-label">${num(val,val<1?2:1)}</text>`}
+   let labels=monthsArr.map((m,i)=>`<text class="waste-trend-label" x="${XP(i)}" y="${H-13}" text-anchor="middle">T${m}</text>`).join('');
+   let dots=vals.map((v,i)=>`<circle cx="${XP(i)}" cy="${YP(v.used)}" r="4" fill="#648FC3" stroke="#fff" stroke-width="1.5"><title>Tháng ${i+1}: Đã sử dụng ${money(v.used)} tỷ</title></circle><circle cx="${XP(i)}" cy="${YP(v.waste)}" r="4" fill="#D39B5C" stroke="#fff" stroke-width="1.5"><title>Tháng ${i+1}: Lãng phí ${money(v.waste)} tỷ</title></circle>`).join('');
+   $('wasteTrend').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Đồ thị đường chi phí sử dụng và chi phí lãng phí theo tháng"><defs><linearGradient id="usedFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#648FC3" stop-opacity=".16"/><stop offset="1" stop-color="#648FC3" stop-opacity="0"/></linearGradient></defs>${grid}<path d="${area('used')}" fill="url(#usedFill)"/><path d="${line('used')}" fill="none" stroke="#648FC3" stroke-width="3" stroke-linejoin="round"/><path d="${line('waste')}" fill="none" stroke="#D39B5C" stroke-width="3" stroke-linejoin="round"/>${dots}${labels}<text class="waste-trend-label" x="4" y="11">Tỷ VNĐ</text></svg>`;
+   $('wasteTrendTitle').textContent=`Xu hướng sử dụng & lãng phí · ${state.year}`;
+ }
+ function renderRisk(rows){
+   const src=rows.map(n=>({n,m:metric(n)}));
+   if(!src.length){$('wasteRisk').innerHTML='<div class="heat-empty">Không có đơn vị phù hợp</div>';return}
+   const W=520,H=270,l=49,t=22,r=18,b=48,pW=W-l-r,pH=H-t-b;
+   const maxSpend=Math.max(.01,...src.map(x=>x.m.spend))*1.18;
+   const maxRate=Math.max(45,...src.map(x=>pct(x.m.waste,x.m.spend)))*1.13;
+   const med=a=>{const ordered=[...a].sort((a,b)=>a-b);return ordered[Math.floor(ordered.length/2)]};
+   const middleX=med(src.map(x=>x.m.spend)),middleRate=med(src.map(x=>pct(x.m.waste,x.m.spend)));
+   const X=v=>l+v/maxSpend*pW, Y=v=>t+pH-v/maxRate*pH;
+   let layers=`<rect x="${X(middleX)}" y="${t}" width="${W-r-X(middleX)}" height="${Y(middleRate)-t}" fill="#FBF5EC"/>`;
+   for(let i=0;i<=4;i++){let y=t+i*pH/4;layers+=`<line x1="${l}" y1="${y}" x2="${W-r}" y2="${y}" stroke="#EDF0F5"/><text class="waste-trend-label" x="${l-11}" y="${y+4}" text-anchor="end">${num(maxRate*(1-i/4),0)}%</text>`;let x=l+i*pW/4;layers+=`<text class="waste-trend-label" x="${x}" y="${H-29}" text-anchor="middle">${num(maxSpend*i/4,maxSpend<1?2:1)}</text>`}
+   layers+=`<line x1="${X(middleX)}" x2="${X(middleX)}" y1="${t}" y2="${t+pH}" stroke="#B4C3D4" stroke-dasharray="4 4"/><line x1="${l}" x2="${W-r}" y1="${Y(middleRate)}" y2="${Y(middleRate)}" stroke="#B4C3D4" stroke-dasharray="4 4"/><text x="${W-r-7}" y="${t+15}" text-anchor="end" class="waste-trend-label" fill="#AE8351">Chi phí cao · Tỷ lệ cao</text>`;
+   const circles=src.map(({n,m})=>{let rate=pct(m.waste,m.spend),r=Math.max(4,Math.min(8,4+m.waste/maxSpend*16));const high=m.spend>=middleX&&rate>=middleRate;return `<circle class="risk-dot" data-scope="${n.id}" cx="${X(m.spend).toFixed(2)}" cy="${Y(rate).toFixed(2)}" r="${r.toFixed(1)}" fill="${high?'#D5A46D':'#7B9FC7'}" fill-opacity=".83"><title>${clean(n.name)} · Đã mua ${money(m.spend)} tỷ · Lãng phí ${money(m.waste)} tỷ (${num(rate,1)}%) — Nhấn để xem</title></circle>`}).join('');
+   $('wasteRisk').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Biểu đồ phân tán chi phí license và tỷ lệ lãng phí">${layers}${circles}<text class="waste-trend-label" x="${W/2}" y="${H-7}" text-anchor="middle">Chi phí đã mua (tỷ VNĐ)</text><text class="waste-trend-label" transform="translate(12,${H/2}) rotate(-90)" text-anchor="middle">Tỷ lệ lãng phí (%)</text></svg>`;
+ }
+ function heatColor(rate){const q=clamp((rate-12)/42,0,1);return `rgba(205,150,83,${(.10+.69*q).toFixed(2)})`}
+ function renderHeatmap(rows){
+   const total=state.year===YEAR_NOW?MONTH_NOW:12;
+   const ranked=[...rows].sort((a,b)=>metric(b,Array.from({length:total},(_,i)=>i+1)).waste-metric(a,Array.from({length:total},(_,i)=>i+1)).waste);
+   const shown=showAllHeat?ranked:ranked.slice(0,12);
+   const title=`Tỷ lệ lãng phí theo tháng · ${state.year}`;$('heatTitle').textContent=title;
+   const head=`<div class="heat-months"><span style="text-align:left">Đơn vị</span>${Array.from({length:12},(_,i)=>`<span>T${i+1}</span>`).join('')}</div>`;
+   const cells=shown.map(n=>`<div class="heat-row"><button class="heat-company" data-scope="${n.id}" title="Xem ${clean(n.name)}">${ico(n,'small')}<span>${clean(n.name)}</span></button>${Array.from({length:12},(_,i)=>{if(i>=total)return '<span class="heat-cell na" title="Chưa đến kỳ">–</span>';const m=metric(n,[i+1]);const rate=pct(m.waste,m.spend);return `<span class="heat-cell" style="background:${heatColor(rate)}" title="${clean(n.name)} · T${i+1}/${state.year}: lãng phí ${money(m.waste)} tỷ (${num(rate,1)}%)">${num(rate,0)}%</span>`}).join('')}</div>`).join('');
+   $('heatmap').innerHTML=ranked.length?head+cells:'<div class="heat-empty">Không có đơn vị phù hợp</div>';
+   $('heatShowAll').classList.toggle('hidden',ranked.length<=12);
+   $('heatShowAll').textContent=showAllHeat?'Thu gọn':'Xem tất cả ('+ranked.length+')';
+ }
+ function renderInsights(rows){
+   $('insightsPeriod').textContent=state.mode==='month'?`Tháng ${state.month}/${state.year}`:`Lũy kế 01–${String(state.year===YEAR_NOW?MONTH_NOW:12).padStart(2,'0')}/${state.year}`;
+   renderWasteRanking(rows);renderWasteTrend();renderRisk(rows);renderHeatmap(rows);
+ }
+ function renderTable(rows){const b=$('tableBody');b.innerHTML=rows.map((n,i)=>{const m=metric(n),ratio=pct(m.used,m.spend),delta=m.spend-m.plan;return `<tr><td><div class="rank"><span class="rank-num">${i+1}</span><button class="row-link" data-scope="${n.id}"><span class="entityname">${ico(n)}<span class="entityname-text"><b>${clean(n.name)}</b><span>${({company:'Công ty con',block:'Khối',department:'Phòng ban',project:'Dự án'}[n.type]||n.type)}</span></span></span></button></div></td><td>${money(m.plan)} tỷ</td><td>${money(m.spend)} tỷ</td><td>${money(m.used)} tỷ</td><td class="bad">${money(m.waste)} tỷ</td><td><span class="track"><div style="width:${ratio}%"></div></span>${num(ratio)}%</td><td class="${delta>0?'bad':'good'}">${delta>0?'+':''}${money(delta)} tỷ</td></tr>`}).join('')||'<tr><td colspan="7" style="text-align:center;padding:25px;color:#97A3B3">Không có kết quả phù hợp</td></tr>';$('tableFooter').textContent=`Hiển thị ${rows.length} / ${visibleRows().length} đơn vị`}
+ function renderAll(){renderTree();renderCrumbs();renderSummary();const r=sortedRows();renderCharts(r);renderInsights(r);renderTable(r);$('monthSelect').classList.toggle('hidden',state.mode!=='month');$('monthLabel').classList.toggle('hidden',state.mode!=='month');document.querySelectorAll('[data-mode]').forEach(el=>{const active=el.dataset.mode===state.mode;el.classList.toggle('selected',active);el.setAttribute('aria-selected',String(active))});$('yearSelect').value=String(state.year);initMonth();$('sortSelect').value=state.sort;$('monthSelect').value=String(state.month);}
+ function initMonth(){const select=$('monthSelect');select.innerHTML=Array.from({length:state.year===YEAR_NOW?MONTH_NOW:12},(_,i)=>`<option value="${i+1}">Tháng ${i+1}</option>`).join('');}
+ document.addEventListener('click',e=>{const expand=e.target.closest('[data-expand]');if(expand){const id=expand.dataset.expand;state.expanded.has(id)?state.expanded.delete(id):state.expanded.add(id);renderTree();return}const btn=e.target.closest('[data-scope]');if(btn&&byId[btn.dataset.scope])setScope(byId[btn.dataset.scope]);});
+ document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{state.mode=btn.dataset.mode;renderAll()}));
+ $('rankShowAll').addEventListener('click',()=>{showAllWaste=!showAllWaste;renderWasteRanking(sortedRows())});$('heatShowAll').addEventListener('click',()=>{showAllHeat=!showAllHeat;renderHeatmap(sortedRows())});
+ $('yearSelect').addEventListener('change',e=>{state.year=+e.target.value;state.month=Math.min(state.month,state.year===YEAR_NOW?MONTH_NOW:12);renderAll()});$('monthSelect').addEventListener('change',e=>{state.month=+e.target.value;renderAll()});$('sortSelect').addEventListener('change',e=>{state.sort=e.target.value;renderAll()});$('chartSearch').addEventListener('input',e=>{state.search=e.target.value;const r=sortedRows();renderCharts(r);renderInsights(r);renderTable(r)});$('treeSearch').addEventListener('input',e=>{state.treeSearch=e.target.value;renderTree()});
+ $('headerScope').addEventListener('change',e=>{if(byId[e.target.value])setScope(byId[e.target.value])});$('orgDropdown').addEventListener('click',()=>{state.panelOpen=!state.panelOpen;$('orgPanel').classList.toggle('hidden',!state.panelOpen);$('orgArrow').textContent=state.panelOpen?'⌄':'›'});$('overviewNav').addEventListener('click',()=>setScope(root));$('wasteNav').addEventListener('click',()=>{setScope(root);state.sort='waste';renderAll();$('wasteInsights')?.scrollIntoView({behavior:'smooth'})});
+ $('exportBtn').addEventListener('click',()=>{const rows=sortedRows();const csv=[['Đơn vị','Loại','Kỳ','Plan (tỷ VND)','Chi phí mua (tỷ VND)','Sử dụng thực tế (tỷ VND)','Lãng phí (tỷ VND)','Hiệu quả (%)'],...rows.map(n=>{const m=metric(n);return [n.name,n.type,dateText(),num(m.plan,3),num(m.spend,3),num(m.used,3),num(m.waste,3),num(pct(m.used,m.spend),2)]})].map(row=>row.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});const href=URL.createObjectURL(blob);const a=document.createElement('a');a.href=href;a.download=`vfast_${state.scope.id}_${state.year}_${state.mode}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),1000)});
+
+ function closeMobileMenu(){document.body.classList.remove('mobile-nav-open');$('mobileMenuBtn').setAttribute('aria-expanded','false');$('mobileBackdrop').hidden=true;}
+ $('mobileMenuBtn').addEventListener('click',()=>{const open=!document.body.classList.contains('mobile-nav-open');document.body.classList.toggle('mobile-nav-open',open);$('mobileMenuBtn').setAttribute('aria-expanded',String(open));$('mobileBackdrop').hidden=!open;});
+ $('mobileBackdrop').addEventListener('click',closeMobileMenu);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileMenu();});
+ initMonth();const initial=decodeURIComponent((location.hash||'#root').slice(1));if(byId[initial]){state.scope=byId[initial];lineage(state.scope).forEach(n=>state.expanded.add(n.id))}renderAll();
+})();
+</script>
+</body>
+</html>
