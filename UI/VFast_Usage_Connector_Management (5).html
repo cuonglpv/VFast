@@ -1953,8 +1953,13 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
     <div id="wasteTrend" class="waste-trend"></div>
   </div>
   <div class="panel insight-card">
-    <div class="insight-head"><h3>Waste Risk Distribution</h3></div>
-    <div class="mini-legend"><span><i style="background:#7b9fc7"></i>Business Units</span><span><i style="background:#d5a46d"></i>Above Median Cost &amp; Waste</span></div>
+    <div class="insight-head">
+      <h3>Waste Risk Distribution</h3>
+      <div class="mini-legend">
+        <span><i style="background:#7b9fc7"></i>Business Units</span>
+        <span><i style="background:#d5a46d"></i>Above Median Cost &amp; Waste</span>
+      </div>
+    </div>
     <div id="wasteRisk" class="waste-risk"></div>
   </div>
 </section>
@@ -1963,9 +1968,9 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
     <h3 id="heatTitle">Monthly Waste Rate</h3>
     <div class="heat-action">
       <label class="heat-year-control" for="heatYearSelect"><span>Year</span><select id="heatYearSelect" aria-label="Monthly Waste Rate year"><option value="2026" selected>2026</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option></select></label>
-      <div class="heat-view-switch" id="heatUnitSwitch" role="group" aria-label="Toggle rate or cost amount">
-        <button type="button" class="heat-switch-btn active" data-unit="pct" title="Show percentage waste rate">% Rate</button>
-        <button type="button" class="heat-switch-btn" data-unit="amount" title="Show monetary waste cost">Cost ($/₫)</button>
+      <div class="heat-view-switch" id="heatUnitSwitch" role="group" aria-label="Toggle rate or cost">
+        <button type="button" class="heat-switch-btn active" data-unit="pct" title="Show waste rate">Rate</button>
+        <button type="button" class="heat-switch-btn" data-unit="amount" title="Show waste cost">Cost</button>
       </div>
       <span class="heat-scale">Low <i class="heat-s1"></i><i class="heat-s2"></i><i class="heat-s3"></i><i class="heat-s4"></i> High</span>
       <button class="insight-link" id="heatShowAll" type="button">View all</button>
@@ -2649,7 +2654,7 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
         function metricTooltip(name, m, period = dateText()) {
           const row = (label, key, base, basis, color) => `<div class="tip-row ${key === 'waste' ? 'wasted' : ''}"><span><i style="--tip-color:${color}"></i>${label}</span><div class="tip-value">${money(m[key])}<small>${ratioLabel(m[key], base, basis)}</small></div></div>`;
           return `<h4>${clean(name)}</h4><div class="tip-period">${clean(period)}</div>`
-            + row('Plan Budget', 'plan', m.plan, 'of plan', '#cbddf0')
+            + row('Plan Budget', 'plan', m.plan, 'of plan', '#8fb3dd')
             + row('Purchased', 'spend', m.plan, 'of plan', '#b9a1d8')
             + row('Actual Used', 'used', m.spend, 'of purchased', '#648fc3')
             + row('Wasted', 'waste', m.spend, 'of purchased', '#e3bb83');
@@ -2699,22 +2704,61 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
         let showAllHeat = false;
         function chartUnit() { return state.currency === 'VND' ? 'VND billion' : 'USD million'; }
         function renderWasteTrend(rows) {
-          const count=state.year===YEAR_NOW?MONTH_NOW:12;
-          const vals=Array.from({length:count},(_,i)=>rows.reduce((a,n)=>sumMetric(a,metric(n,[i+1])),zero()));
-          if(!rows.length){$('wasteTrend').innerHTML='<div class="heat-empty">No matching units</div>';return;}
-          const W=520,H=270,l=46,r=16,t=24,b=34,pW=W-l-r,pH=H-t-b;
-          const max=Math.max(.001,...vals.map(v=>Math.max(v.plan||0,v.used,v.waste)))*1.13;
-          const X=i=>l+i/Math.max(1,count-1)*pW,Y=v=>t+pH-v/max*pH;
-          const line=key=>vals.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(v[key]).toFixed(1)).join(' ');
-          const area=line('used')+` L${X(count-1)} ${Y(0)} L${X(0)} ${Y(0)} Z`;
-          const grid=Array.from({length:5},(_,j)=>`<line class="waste-trend-grid" x1="${l}" x2="${W-r}" y1="${t+pH*j/4}" y2="${t+pH*j/4}"/><text x="${l-10}" y="${t+pH*j/4+4}" text-anchor="end" class="waste-trend-label">${num(max*(1-j/4),max<1?2:1)}</text>`).join('');
-          const labels=vals.map((_,i)=>`<text class="waste-trend-label" x="${X(i)}" y="${H-10}" text-anchor="middle">${monthNames[i]}</text>`).join('');
-          const dots=vals.map((m,i)=>['plan','used','waste'].map(key=>{
-            const col = key==='plan'?'#8fb3dd':(key==='used'?'#648fc3':'#d39b5c');
-            return `<circle cx="${X(i)}" cy="${Y(m[key])}" r="4" fill="${col}" stroke="#fff" stroke-width="1.5" tabindex="0" data-chart-tooltip="${clean(metricTooltip(state.scope.name,m,fullMonthNames[i]+' '+state.year))}"><title>${clean(metricDescription(state.scope.name,m,fullMonthNames[i]+' '+state.year))}</title></circle>`;
+          const count = state.year === YEAR_NOW ? MONTH_NOW : 12;
+          const vals = Array.from({ length: count }, (_, i) => rows.reduce((a, n) => sumMetric(a, metric(n, [i + 1])), zero()));
+          if (!rows.length) { $('wasteTrend').innerHTML = '<div class="heat-empty">No matching units</div>'; return; }
+          const W = 520, H = 270, l = 46, r = 16, t = 24, b = 34, pW = W - l - r, pH = H - t - b;
+          const max = Math.max(.001, ...vals.map(v => Math.max(v.plan || 0, v.used, v.waste))) * 1.13;
+          const X = i => l + (i / Math.max(1, count - 1)) * pW, Y = v => t + pH - (v / max) * pH;
+          const line = key => vals.map((v, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v[key]).toFixed(1)).join(' ');
+          const area = line('used') + ` L${X(count - 1)} ${Y(0)} L${X(0)} ${Y(0)} Z`;
+          const grid = Array.from({ length: 5 }, (_, j) => `<line class="waste-trend-grid" x1="${l}" x2="${W - r}" y1="${t + (pH * j) / 4}" y2="${t + (pH * j) / 4}"/><text x="${l - 10}" y="${t + (pH * j) / 4 + 4}" text-anchor="end" class="waste-trend-label">${num(max * (1 - j / 4), max < 1 ? 2 : 1)}</text>`).join('');
+          const labels = vals.map((_, i) => `<text class="waste-trend-label" x="${X(i)}" y="${H - 10}" text-anchor="middle">${monthNames[i]}</text>`).join('');
+
+          // Vertical hover bands per month
+          const step = pW / Math.max(1, count - 1);
+          const hoverBands = vals.map((m, i) => {
+            const x0 = i === 0 ? l : X(i) - step / 2;
+            const x1 = i === count - 1 ? W - r : X(i) + step / 2;
+            const w = x1 - x0;
+            const tip = clean(metricTooltip(state.scope.name, m, fullMonthNames[i] + ' ' + state.year));
+            return `<rect x="${x0.toFixed(1)}" y="${t}" width="${w.toFixed(1)}" height="${pH}" fill="transparent" pointer-events="all" tabindex="0" data-chart-tooltip="${tip}" style="cursor:crosshair"/>`;
+          }).join('');
+
+          // Plan line hover segments for precise hovering anywhere on the plan line
+          const planHoverLines = vals.slice(0, -1).map((_, i) => {
+            const tip = clean(metricTooltip(state.scope.name, vals[i], fullMonthNames[i] + ' ' + state.year));
+            const tipNext = clean(metricTooltip(state.scope.name, vals[i + 1], fullMonthNames[i + 1] + ' ' + state.year));
+            const midX = (X(i) + X(i + 1)) / 2;
+            const midY = (Y(vals[i].plan) + Y(vals[i + 1].plan)) / 2;
+            return `<path d="M${X(i).toFixed(1)} ${Y(vals[i].plan).toFixed(1)} L${midX.toFixed(1)} ${midY.toFixed(1)}" fill="none" stroke="transparent" stroke-width="16" stroke-linecap="round" tabindex="0" data-chart-tooltip="${tip}" style="cursor:pointer"/>`
+                 + `<path d="M${midX.toFixed(1)} ${midY.toFixed(1)} L${X(i + 1).toFixed(1)} ${Y(vals[i + 1].plan).toFixed(1)}" fill="none" stroke="transparent" stroke-width="16" stroke-linecap="round" tabindex="0" data-chart-tooltip="${tipNext}" style="cursor:pointer"/>`;
+          }).join('');
+
+          // Dots with generous transparent hit-targets
+          const dots = vals.map((m, i) => ['plan', 'used', 'waste'].map(key => {
+            const col = key === 'plan' ? '#8fb3dd' : (key === 'used' ? '#648fc3' : '#d39b5c');
+            const tip = clean(metricTooltip(state.scope.name, m, fullMonthNames[i] + ' ' + state.year));
+            return `<g data-chart-tooltip="${tip}" tabindex="0" style="cursor:pointer">
+              <circle cx="${X(i)}" cy="${Y(m[key])}" r="11" fill="transparent"/>
+              <circle cx="${X(i)}" cy="${Y(m[key])}" r="4" fill="${col}" stroke="#fff" stroke-width="1.5"><title>${clean(metricDescription(state.scope.name, m, fullMonthNames[i] + ' ' + state.year))}</title></circle>
+            </g>`;
           }).join('')).join('');
-          $('wasteTrend').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly plan, actual used value and wasted cost"><defs><linearGradient id="usageTrendFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#648fc3" stop-opacity=".16"/><stop offset="1" stop-color="#648fc3" stop-opacity="0"/></linearGradient></defs>${grid}<path d="${area}" fill="url(#usageTrendFill)"/><path d="${line('plan')}" fill="none" stroke="#8fb3dd" stroke-width="2.5" stroke-linejoin="round"/><path d="${line('used')}" fill="none" stroke="#648fc3" stroke-width="3" stroke-linejoin="round"/><path d="${line('waste')}" fill="none" stroke="#d39b5c" stroke-width="3" stroke-linejoin="round"/>${dots}${labels}<text class="waste-trend-label" x="4" y="11">${chartUnit()}</text></svg>`;
-          $('wasteTrendTitle').textContent='Usage & Waste Trend';
+
+          $('wasteTrend').innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly plan, actual used value and wasted cost">
+            <defs><linearGradient id="usageTrendFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#648fc3" stop-opacity=".16"/><stop offset="1" stop-color="#648fc3" stop-opacity="0"/></linearGradient></defs>
+            ${grid}
+            ${hoverBands}
+            <path d="${area}" fill="url(#usageTrendFill)"/>
+            <path d="${line('plan')}" fill="none" stroke="#8fb3dd" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="${line('used')}" fill="none" stroke="#648fc3" stroke-width="3" stroke-linejoin="round"/>
+            <path d="${line('waste')}" fill="none" stroke="#d39b5c" stroke-width="3" stroke-linejoin="round"/>
+            ${planHoverLines}
+            ${dots}
+            ${labels}
+            <text class="waste-trend-label" x="4" y="11">${chartUnit()}</text>
+          </svg>`;
+          $('wasteTrendTitle').textContent = 'Usage & Waste Trend';
         }
         function renderRisk(rows) {
           const src=rows.map(n=>({n,m:metric(n)}));
@@ -2742,7 +2786,7 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
           const ranked=[...rows].sort((a,b)=>metric(b,mons,year).waste-metric(a,mons,year).waste);
           const shown=showAllHeat?ranked:ranked.slice(0,12);
           const isAmount = state.heatUnit === 'amount';
-          $('heatTitle').textContent = isAmount ? `Monthly Waste Cost · ${year}` : `Monthly Waste Rate · ${year}`;
+          $('heatTitle').textContent = isAmount ? 'Monthly Waste Cost' : 'Monthly Waste Rate';
           const head=`<div class="heat-months"><span style="text-align:left">Business Unit</span>${monthNames.map(n=>`<span>${n}</span>`).join('')}</div>`;
           const maxWaste = Math.max(.001, ...shown.flatMap(n => mons.map(m => metric(n, [m], year).waste)));
           const cells=shown.map(n=>`<div class="heat-row"><button class="heat-company" data-scope="${n.id}" title="Open ${clean(n.name)}">${ico(n,'small')}<span>${clean(n.name)}</span></button>${monthNames.map((_,i)=>{
@@ -2757,7 +2801,7 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
           $('heatmap').innerHTML=ranked.length?head+cells:'<div class="heat-empty">No matching units</div>';
           $('heatShowAll').classList.toggle('hidden',ranked.length<=12);
           $('heatShowAll').textContent=showAllHeat?'Show less':`View all (${ranked.length})`;
-          document.querySelectorAll('#heatUnitSwitch .heat-switch-btn').forEach(btn => {
+          document.querySelectorAll('.heat-switch-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.unit === state.heatUnit);
           });
         }
@@ -2909,14 +2953,12 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
           return `
             <div class="sub-heatmap-card">
               <div class="sub-heatmap-head">
-                <div class="sub-heatmap-title">
-                  <span class="sub-heat-tag">License Heatmap Matrix</span>
-                  <h4>${clean(n.name)} · Monthly License Waste (${isAmount ? 'Cost Amount' : '% Rate'})</h4>
-                  <span class="sub-heat-year">Year ${year}</span>
+                <div class="heat-view-switch sub-heat-view-switch" role="group" aria-label="Toggle rate or cost">
+                  <button type="button" class="heat-switch-btn ${!isAmount ? 'active' : ''}" data-unit="pct" title="Show waste rate">Rate</button>
+                  <button type="button" class="heat-switch-btn ${isAmount ? 'active' : ''}" data-unit="amount" title="Show waste cost">Cost</button>
                 </div>
                 <div class="sub-heatmap-meta">
                   <span class="heat-scale">Low <i class="heat-s1"></i><i class="heat-s2"></i><i class="heat-s3"></i><i class="heat-s4"></i> High</span>
-                  <button type="button" class="sub-drilldown-link" data-scope="${n.id}" title="Drill into ${clean(n.name)} details">Drill down ↗</button>
                 </div>
               </div>
               <div class="sub-heat-body">
@@ -3114,6 +3156,17 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
             .join("");
         }
         document.addEventListener("click", (e) => {
+          const switchBtn = e.target.closest(".heat-switch-btn");
+          if (switchBtn) {
+            state.heatUnit = switchBtn.dataset.unit;
+            document.querySelectorAll(".heat-switch-btn").forEach((b) => {
+              b.classList.toggle("active", b.dataset.unit === state.heatUnit);
+            });
+            renderHeatmap(sortedRows());
+            renderTable(sortedRows());
+            return;
+          }
+
           if (e.target.closest("#connectorPane, #licensePane")) return;
           const subToggle = e.target.closest("[data-sub-toggle]");
           if (subToggle) {
