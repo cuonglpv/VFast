@@ -1,3 +1,5 @@
+import { LoadingState } from '@/components/feedback/LoadingState';
+import { ErrorState } from '@/components/feedback/ErrorState';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { LicenseRecord } from '@/types/license';
 import { licenseRepository } from '@/data/repositories';
@@ -26,8 +28,8 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
     const next = await licenseRepository.importMany(recordsToImport);
     setRecords(next);
   }
-  if (error) return <div role="alert">Unable to load licenses. Please reload the page.</div>;
-  if (records === null) return <div role="status">Loading licenses...</div>;
+  if (error) return <ErrorState message="Unable to load licenses. Please reload the page." />;
+  if (records === null) return <LoadingState message="Loading licenses..." />;
   return <LicenseContext.Provider value={{ records, updateRecord, importRecords }}>{children}</LicenseContext.Provider>;
 }
 
