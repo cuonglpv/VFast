@@ -454,6 +454,7 @@
 
       /* Card panels - borderless, distinguished by surface colors and soft elevation */
       .panel {
+        background: #ffffff;
         border: none;
         border-radius: 14px;
         box-shadow: var(--shadow);
@@ -1476,9 +1477,10 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
 .insight-heading h2{font-size:18px;font-weight:700;margin:0;letter-spacing:-.35px}
 .insight-heading>span{color:#7a8aa0;font-size:11.5px}
 .insights-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px;margin-bottom:18px}
-.insight-card{padding:20px 22px;min-width:0;border-radius:6px}
+.insight-card{background:#ffffff;padding:20px 22px;min-width:0;border-radius:14px;box-shadow:var(--shadow)}
 .insight-head{display:flex;align-items:center;justify-content:space-between;gap:15px}
 .insight-head h3{font-size:15px;font-weight:700;margin:0;letter-spacing:-.2px}
+.insight-head .mini-legend{margin:0}
 .insight-link{background:transparent;border:0;padding:6px 0;color:#3d6ba5;font-size:11.5px;font-weight:650;white-space:nowrap}
 .insight-link:hover{text-decoration:underline}
 .mini-legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:11px;color:#75869b;margin:13px 0 16px;min-height:16px}
@@ -1490,9 +1492,13 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
 .waste-trend-grid{stroke:#e8edf3;stroke-width:1}
 .risk-dot{cursor:pointer;stroke:#fff;stroke-width:1.5}
 .risk-dot:hover,.risk-dot:focus{stroke:#2d557f;stroke-width:3;outline:none}
-.heat-panel{margin-bottom:18px;overflow:hidden;border-radius:6px}
+.heat-panel{background:#ffffff;margin-bottom:18px;overflow:hidden;border-radius:14px;box-shadow:var(--shadow)}
 .heat-head{padding:20px 23px 17px}
-.heat-action{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.heat-action{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.heat-view-switch{display:inline-flex;align-items:center;background:#edf2f7;padding:3px;border-radius:7px;gap:2px}
+.heat-switch-btn{border:0;background:transparent;color:#6a7c93;font-size:11px;font-weight:650;padding:4px 10px;border-radius:5px;transition:all .15s ease;cursor:pointer;line-height:1.3}
+.heat-switch-btn:hover{color:#244b7f}
+.heat-switch-btn.active{background:#ffffff;color:#244b7f;box-shadow:0 1px 4px rgba(18,38,63,.12);font-weight:700}
 .heat-scale{display:flex;align-items:center;gap:4px;white-space:nowrap;color:#8592a4;font-size:10.5px}
 .heat-scale i{display:inline-block;width:14px;height:14px;border-radius:2px}
 .heat-s1{background:#fbf6ef}.heat-s2{background:#f5e8d6}.heat-s3{background:#ebd0ac}.heat-s4{background:#d3a36f}
@@ -1504,10 +1510,35 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
 .heat-company{border:0;background:transparent;display:flex;align-items:center;gap:7px;text-align:left;min-width:0;color:#506680;font-size:11.5px;cursor:pointer;font-weight:600}
 .heat-company>span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .heat-company:hover{text-decoration:underline}
-.heat-cell{min-height:29px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#74522e;font-variant-numeric:tabular-nums}
+.heat-cell{min-height:29px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#74522e;font-variant-numeric:tabular-nums;white-space:nowrap;padding:0 2px}
 .heat-cell.na{color:#bac4d0;background:#f7f9fc}
 .heat-cell.selected-month{box-shadow:inset 0 0 0 1px #b88e59}
 .heat-empty{color:#8798a9;padding:25px 5px;text-align:center;font-size:12px}
+
+/* Subordinate Subsidiaries License Heatmap Dropdown */
+.sub-toggle-btn{display:inline-flex;align-items:center;gap:8px;background:transparent;border:none;cursor:pointer;padding:0;text-align:left;color:inherit;font:inherit}
+.sub-chevron-wrap{width:20px;height:20px;border-radius:4px;background:#f0f4f9;display:inline-flex;align-items:center;justify-content:center;color:#556c87;flex:none;transition:all .2s ease}
+.sub-toggle-btn:hover .sub-chevron-wrap{background:#e2ebf6;color:#1e4573}
+.sub-chevron{transition:transform .2s ease}
+.sub-chevron.chevron-down{transform:rotate(90deg)}
+.entity-row.row-expanded td{background:#f8fafc!important}
+.sub-dropdown-tr td{padding:0!important;border:none!important;background:#f8fafc}
+.sub-heatmap-card{margin:6px 16px 16px 36px;background:#ffffff;border:1px solid #e5ecf3;border-radius:10px;padding:15px 18px 16px;box-shadow:0 3px 12px rgba(22,44,73,.04)}
+.sub-heatmap-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #f0f4f8}
+.sub-heatmap-title{display:flex;align-items:center;gap:9px}
+.sub-heat-tag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;background:#e9f1fa;color:#2b5d95;padding:2px 7px;border-radius:4px}
+.sub-heatmap-title h4{margin:0;font-size:13px;font-weight:700;color:#263c55}
+.sub-heat-year{font-size:11px;color:#8393a7;font-weight:600}
+.sub-heatmap-meta{display:flex;align-items:center;gap:16px}
+.sub-drilldown-link{background:#f1f5fa;border:1px solid #dbe4ef;color:#2e5f96;font-size:11px;font-weight:650;padding:4px 9px;border-radius:6px;cursor:pointer;transition:all .15s ease;display:inline-flex;align-items:center;gap:4px}
+.sub-drilldown-link:hover{background:#e4eef9;border-color:#bcd0e6}
+.sub-heat-body{overflow-x:auto}
+.sub-heat-months{margin-bottom:6px;color:#8795a8;font-size:10px}
+.sub-heat-row{padding:3px 0}
+.sub-lic-name{display:flex;align-items:center;gap:8px;min-width:0;color:#3b5069;font-size:11px;font-weight:650}
+.sub-lic-name span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub-lic-icon{width:16px;height:16px;object-fit:contain;flex:none;border-radius:3px}
+.sub-lic-badge{display:inline-grid;place-items:center;width:16px;height:16px;background:#e6eef6;color:#355d8d;font-size:8.5px;font-weight:700;border-radius:3px;flex:none}
 .chart-tooltip{position:fixed;z-index:60;pointer-events:none;width:330px;max-width:calc(100vw - 24px);background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:14px 15px;box-shadow:0 8px 30px #1a335321;color:#344d6c;font-variant-numeric:tabular-nums}
 .chart-tooltip h4{font-size:13px;line-height:1.4;margin:0 0 2px;font-weight:700;color:#253f5d}
 .tip-period{font-size:11px;color:#8492a6;margin-bottom:11px}
@@ -1908,8 +1939,14 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
           <div class="insight-heading"><h2>Waste Analytics</h2><span id="insightsPeriod"></span></div>
 <section class="insights-grid" id="wasteInsights" aria-label="Waste analytics">
   <div class="panel insight-card">
-    <div class="insight-head"><h3 id="wasteTrendTitle">Usage &amp; Waste Trend</h3></div>
-    <div class="mini-legend"><span><i style="background:#648fc3"></i>Actual Used</span><span><i style="background:#d39b5c"></i>Wasted</span></div>
+    <div class="insight-head">
+      <h3 id="wasteTrendTitle">Usage &amp; Waste Trend</h3>
+      <div class="mini-legend">
+        <span><i style="background:#8fb3dd"></i>Plan Budget</span>
+        <span><i style="background:#648fc3"></i>Actual Used</span>
+        <span><i style="background:#d39b5c"></i>Wasted</span>
+      </div>
+    </div>
     <div id="wasteTrend" class="waste-trend"></div>
   </div>
   <div class="panel insight-card">
@@ -1919,7 +1956,18 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
   </div>
 </section>
 <section class="panel heat-panel" aria-label="Monthly waste rate heatmap">
-  <div class="insight-head heat-head"><h3 id="heatTitle">Monthly Waste Rate</h3><div class="heat-action"><label class="heat-year-control" for="heatYearSelect"><span>Year</span><select id="heatYearSelect" aria-label="Monthly Waste Rate year"><option value="2026" selected>2026</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option></select></label><span class="heat-scale">Low <i class="heat-s1"></i><i class="heat-s2"></i><i class="heat-s3"></i><i class="heat-s4"></i> High</span><button class="insight-link" id="heatShowAll" type="button">View all</button></div></div>
+  <div class="insight-head heat-head">
+    <h3 id="heatTitle">Monthly Waste Rate</h3>
+    <div class="heat-action">
+      <label class="heat-year-control" for="heatYearSelect"><span>Year</span><select id="heatYearSelect" aria-label="Monthly Waste Rate year"><option value="2026" selected>2026</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option></select></label>
+      <div class="heat-view-switch" id="heatUnitSwitch" role="group" aria-label="Toggle rate or cost amount">
+        <button type="button" class="heat-switch-btn active" data-unit="pct" title="Show percentage waste rate">% Rate</button>
+        <button type="button" class="heat-switch-btn" data-unit="amount" title="Show monetary waste cost">Cost ($/₫)</button>
+      </div>
+      <span class="heat-scale">Low <i class="heat-s1"></i><i class="heat-s2"></i><i class="heat-s3"></i><i class="heat-s4"></i> High</span>
+      <button class="insight-link" id="heatShowAll" type="button">View all</button>
+    </div>
+  </div>
   <div class="heat-wrapper"><div id="heatmap" class="heatmap"></div></div>
 </section>
 <section class="panel table-panel" id="rankingPanel">
@@ -2253,6 +2301,8 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
           sort: "waste",
           search: "",
           expanded: new Set(),
+          expandedSubs: new Set(),
+          heatUnit: "pct",
           panelOpen: true,
           activeTab: "licenses",
           page: 1,
@@ -2647,15 +2697,18 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
           const vals=Array.from({length:count},(_,i)=>rows.reduce((a,n)=>sumMetric(a,metric(n,[i+1])),zero()));
           if(!rows.length){$('wasteTrend').innerHTML='<div class="heat-empty">No matching units</div>';return;}
           const W=520,H=270,l=46,r=16,t=24,b=34,pW=W-l-r,pH=H-t-b;
-          const max=Math.max(.001,...vals.map(v=>Math.max(v.used,v.waste)))*1.13;
+          const max=Math.max(.001,...vals.map(v=>Math.max(v.plan||0,v.used,v.waste)))*1.13;
           const X=i=>l+i/Math.max(1,count-1)*pW,Y=v=>t+pH-v/max*pH;
           const line=key=>vals.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(v[key]).toFixed(1)).join(' ');
           const area=line('used')+` L${X(count-1)} ${Y(0)} L${X(0)} ${Y(0)} Z`;
           const grid=Array.from({length:5},(_,j)=>`<line class="waste-trend-grid" x1="${l}" x2="${W-r}" y1="${t+pH*j/4}" y2="${t+pH*j/4}"/><text x="${l-10}" y="${t+pH*j/4+4}" text-anchor="end" class="waste-trend-label">${num(max*(1-j/4),max<1?2:1)}</text>`).join('');
           const labels=vals.map((_,i)=>`<text class="waste-trend-label" x="${X(i)}" y="${H-10}" text-anchor="middle">${monthNames[i]}</text>`).join('');
-          const dots=vals.map((m,i)=>['used','waste'].map(key=>`<circle cx="${X(i)}" cy="${Y(m[key])}" r="4" fill="${key==='used'?'#648fc3':'#d39b5c'}" stroke="#fff" stroke-width="1.5" tabindex="0" data-chart-tooltip="${clean(metricTooltip(state.scope.name,m,fullMonthNames[i]+' '+state.year))}"><title>${clean(metricDescription(state.scope.name,m,fullMonthNames[i]+' '+state.year))}</title></circle>`).join('')).join('');
-          $('wasteTrend').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly actual used value and wasted cost"><defs><linearGradient id="usageTrendFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#648fc3" stop-opacity=".16"/><stop offset="1" stop-color="#648fc3" stop-opacity="0"/></linearGradient></defs>${grid}<path d="${area}" fill="url(#usageTrendFill)"/><path d="${line('used')}" fill="none" stroke="#648fc3" stroke-width="3" stroke-linejoin="round"/><path d="${line('waste')}" fill="none" stroke="#d39b5c" stroke-width="3" stroke-linejoin="round"/>${dots}${labels}<text class="waste-trend-label" x="4" y="11">${chartUnit()}</text></svg>`;
-          $('wasteTrendTitle').textContent=`Usage & Waste Trend · ${state.year}`;
+          const dots=vals.map((m,i)=>['plan','used','waste'].map(key=>{
+            const col = key==='plan'?'#8fb3dd':(key==='used'?'#648fc3':'#d39b5c');
+            return `<circle cx="${X(i)}" cy="${Y(m[key])}" r="4" fill="${col}" stroke="#fff" stroke-width="1.5" tabindex="0" data-chart-tooltip="${clean(metricTooltip(state.scope.name,m,fullMonthNames[i]+' '+state.year))}"><title>${clean(metricDescription(state.scope.name,m,fullMonthNames[i]+' '+state.year))}</title></circle>`;
+          }).join('')).join('');
+          $('wasteTrend').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly plan, actual used value and wasted cost"><defs><linearGradient id="usageTrendFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#648fc3" stop-opacity=".16"/><stop offset="1" stop-color="#648fc3" stop-opacity="0"/></linearGradient></defs>${grid}<path d="${area}" fill="url(#usageTrendFill)"/><path d="${line('plan')}" fill="none" stroke="#8fb3dd" stroke-width="2.5" stroke-linejoin="round"/><path d="${line('used')}" fill="none" stroke="#648fc3" stroke-width="3" stroke-linejoin="round"/><path d="${line('waste')}" fill="none" stroke="#d39b5c" stroke-width="3" stroke-linejoin="round"/>${dots}${labels}<text class="waste-trend-label" x="4" y="11">${chartUnit()}</text></svg>`;
+          $('wasteTrendTitle').textContent='Usage & Waste Trend';
         }
         function renderRisk(rows) {
           const src=rows.map(n=>({n,m:metric(n)}));
@@ -2676,51 +2729,200 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
           $('wasteRisk').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Purchased cost versus waste rate; dashed lines show medians">${layers}${dots}<text class="waste-trend-label" x="${W/2}" y="${H-7}" text-anchor="middle">Purchased Cost (${chartUnit()})</text><text class="waste-trend-label" transform="translate(12,${H/2}) rotate(-90)" text-anchor="middle">Waste Rate (%)</text></svg>`;
         }
         function heatColor(rate) { return `rgba(205,150,83,${(.1+.69*clamp((rate-12)/42,0,1)).toFixed(2)})`; }
+        function heatColorAmount(val, max) { const r = max > 0 ? (val / max) : 0; return `rgba(205,150,83,${(.08 + .72 * clamp(r, 0, 1)).toFixed(2)})`; }
         function renderHeatmap(rows) {
           const year=state.heatYear;
           const count=year===YEAR_NOW?MONTH_NOW:12,mons=Array.from({length:count},(_,i)=>i+1);
           const ranked=[...rows].sort((a,b)=>metric(b,mons,year).waste-metric(a,mons,year).waste);
           const shown=showAllHeat?ranked:ranked.slice(0,12);
-          $('heatTitle').textContent=`Monthly Waste Rate · ${year}`;
+          const isAmount = state.heatUnit === 'amount';
+          $('heatTitle').textContent = isAmount ? `Monthly Waste Cost · ${year}` : `Monthly Waste Rate · ${year}`;
           const head=`<div class="heat-months"><span style="text-align:left">Business Unit</span>${monthNames.map(n=>`<span>${n}</span>`).join('')}</div>`;
+          const maxWaste = Math.max(.001, ...shown.flatMap(n => mons.map(m => metric(n, [m], year).waste)));
           const cells=shown.map(n=>`<div class="heat-row"><button class="heat-company" data-scope="${n.id}" title="Open ${clean(n.name)}">${ico(n,'small')}<span>${clean(n.name)}</span></button>${monthNames.map((_,i)=>{
             if(i>=count)return '<span class="heat-cell na" title="Future period">–</span>';
             const m=metric(n,[i+1],year),rate=pct(m.waste,m.spend);
-            return `<span class="heat-cell" tabindex="0" style="background:${heatColor(rate)}" data-chart-tooltip="${clean(metricTooltip(n.name,m,fullMonthNames[i]+' '+year))}" aria-label="${clean(n.name)} ${monthNames[i]}: ${num(rate,1)}% wasted">${num(rate,0)}%</span>`;
+            const val = isAmount ? money(m.waste) : `${num(rate,0)}%`;
+            const bg = isAmount ? heatColorAmount(m.waste, maxWaste) : heatColor(rate);
+            const aria = isAmount ? `${clean(n.name)} ${monthNames[i]}: ${money(m.waste)} wasted` : `${clean(n.name)} ${monthNames[i]}: ${num(rate,1)}% wasted`;
+            return `<span class="heat-cell" tabindex="0" style="background:${bg}" data-chart-tooltip="${clean(metricTooltip(n.name,m,fullMonthNames[i]+' '+year))}" aria-label="${aria}">${val}</span>`;
           }).join('')}</div>`).join('');
           $('heatYearSelect').value=String(year);
           $('heatmap').innerHTML=ranked.length?head+cells:'<div class="heat-empty">No matching units</div>';
           $('heatShowAll').classList.toggle('hidden',ranked.length<=12);
           $('heatShowAll').textContent=showAllHeat?'Show less':`View all (${ranked.length})`;
+          document.querySelectorAll('#heatUnitSwitch .heat-switch-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.unit === state.heatUnit);
+          });
         }
-        function renderInsights(rows) {
-          $('insightsPeriod').textContent=dateText();
-          renderWasteTrend(rows);renderRisk(rows);renderHeatmap(rows);
+        function getSubsidiaryLicenses(n) {
+          const catalog = {
+            VinFast: [
+              { name: "SAP S/4HANA Enterprise", brand: "sap", share: 0.34, baseRate: 0.16 },
+              { name: "Microsoft 365 E5", brand: "microsoft", share: 0.22, baseRate: 0.14 },
+              { name: "Salesforce Sales Cloud", brand: "salesforce", share: 0.16, baseRate: 0.28 },
+              { name: "GitHub Enterprise", brand: "github", share: 0.12, baseRate: 0.18 },
+              { name: "Tableau Creator", brand: "tableau", share: 0.09, baseRate: 0.34 },
+              { name: "Figma Organization", brand: "figma", share: 0.07, baseRate: 0.22 },
+            ],
+            VinAI: [
+              { name: "GitHub Enterprise", brand: "github", share: 0.28, baseRate: 0.14 },
+              { name: "Microsoft 365 E5", brand: "microsoft", share: 0.24, baseRate: 0.18 },
+              { name: "Datadog Enterprise", brand: "datadog", share: 0.18, baseRate: 0.26 },
+              { name: "Jira Software", brand: "jirasoftware", share: 0.16, baseRate: 0.15 },
+              { name: "Slack Pro", brand: "slack", share: 0.14, baseRate: 0.20 },
+            ],
+            VinBigData: [
+              { name: "Tableau Server", brand: "tableau", share: 0.26, baseRate: 0.32 },
+              { name: "Datadog Enterprise", brand: "datadog", share: 0.24, baseRate: 0.24 },
+              { name: "Microsoft 365 E5", brand: "microsoft", share: 0.22, baseRate: 0.15 },
+              { name: "GitHub Enterprise", brand: "github", share: 0.16, baseRate: 0.17 },
+              { name: "Confluence Standard", brand: "confluence", share: 0.12, baseRate: 0.21 },
+            ],
+            VinCSS: [
+              { name: "JetBrains All Products", brand: "jetbrains", share: 0.30, baseRate: 0.12 },
+              { name: "Microsoft 365 E5", brand: "microsoft", share: 0.24, baseRate: 0.15 },
+              { name: "GitHub Enterprise", brand: "github", share: 0.22, baseRate: 0.16 },
+              { name: "Jira Software", brand: "jirasoftware", share: 0.14, baseRate: 0.19 },
+              { name: "Docker Business", brand: "docker", share: 0.10, baseRate: 0.25 },
+            ],
+            VinRobotics: [
+              { name: "Autodesk Fusion 360", brand: "autodesk", share: 0.32, baseRate: 0.24 },
+              { name: "GitHub Enterprise", brand: "github", share: 0.25, baseRate: 0.15 },
+              { name: "Jira Software", brand: "jirasoftware", share: 0.18, baseRate: 0.16 },
+              { name: "Microsoft 365 E5", brand: "microsoft", share: 0.15, baseRate: 0.18 },
+              { name: "Docker Business", brand: "docker", share: 0.10, baseRate: 0.28 },
+            ],
+            Vinhomes: [
+              { name: "AutoCAD Architecture", brand: "autodesk", share: 0.34, baseRate: 0.22 },
+              { name: "Adobe Creative Cloud", brand: "adobe", share: 0.24, baseRate: 0.30 },
+              { name: "SAP ERP", brand: "sap", share: 0.20, baseRate: 0.18 },
+              { name: "Microsoft 365 E5", brand: "microsoft", share: 0.14, baseRate: 0.15 },
+              { name: "Zoom Workplace", brand: "zoom", share: 0.08, baseRate: 0.25 },
+            ],
+            Vinpearl: [
+              { name: "Zendesk Professional", brand: "zendesk", share: 0.28, baseRate: 0.22 },
+              { name: "HubSpot Enterprise", brand: "hubspot", share: 0.26, baseRate: 0.31 },
+              { name: "Microsoft 365 E5", brand: "microsoft", share: 0.22, baseRate: 0.16 },
+              { name: "Zoom Workplace", brand: "zoom", share: 0.14, baseRate: 0.24 },
+              { name: "Miro Business", brand: "miro", share: 0.10, baseRate: 0.35 },
+            ],
+            Vinmec: [
+              { name: "Zoom Workplace Business", brand: "zoom", share: 0.28, baseRate: 0.19 },
+              { name: "MongoDB Enterprise", brand: "mongodb", share: 0.25, baseRate: 0.24 },
+              { name: "Microsoft 365 E5", brand: "microsoft", share: 0.24, baseRate: 0.14 },
+              { name: "Jira Software", brand: "jirasoftware", share: 0.13, baseRate: 0.18 },
+              { name: "Slack Pro", brand: "slack", share: 0.10, baseRate: 0.22 },
+            ],
+            "Vincom Retail": [
+              { name: "Dropbox Business", brand: "dropbox", share: 0.28, baseRate: 0.33 },
+              { name: "Zapier Professional", brand: "zapier", share: 0.24, baseRate: 0.27 },
+              { name: "Salesforce CRM", brand: "salesforce", share: 0.22, baseRate: 0.21 },
+              { name: "Microsoft 365 E5", brand: "microsoft", share: 0.16, baseRate: 0.15 },
+              { name: "Tableau Creator", brand: "tableau", share: 0.10, baseRate: 0.29 },
+            ],
+            Vinschool: [
+              { name: "Google Workspace Plus", brand: "google", share: 0.34, baseRate: 0.16 },
+              { name: "Grammarly Business", brand: "grammarly", share: 0.24, baseRate: 0.28 },
+              { name: "Microsoft 365 A5", brand: "microsoft", share: 0.20, baseRate: 0.14 },
+              { name: "Zoom Education", brand: "zoom", share: 0.14, baseRate: 0.22 },
+              { name: "Miro Business", brand: "miro", share: 0.08, baseRate: 0.36 },
+            ],
+            VinUniversity: [
+              { name: "Notion Enterprise", brand: "notion", share: 0.30, baseRate: 0.22 },
+              { name: "Miro Education", brand: "miro", share: 0.24, baseRate: 0.35 },
+              { name: "Microsoft 365 A5", brand: "microsoft", share: 0.22, baseRate: 0.15 },
+              { name: "GitHub Campus", brand: "github", share: 0.14, baseRate: 0.18 },
+              { name: "Zoom Workplace", brand: "zoom", share: 0.10, baseRate: 0.20 },
+            ],
+            "VinSmart Future": [
+              { name: "GitHub Enterprise", brand: "github", share: 0.26, baseRate: 0.17 },
+              { name: "Jira Premium", brand: "jirasoftware", share: 0.22, baseRate: 0.15 },
+              { name: "Datadog Enterprise", brand: "datadog", share: 0.18, baseRate: 0.29 },
+              { name: "All Products Pack", brand: "jetbrains", share: 0.16, baseRate: 0.14 },
+              { name: "Slack Pro", brand: "slack", share: 0.10, baseRate: 0.20 },
+              { name: "Confluence Standard", brand: "confluence", share: 0.08, baseRate: 0.23 },
+            ]
+          };
+          if (catalog[n.name]) return catalog[n.name];
+          return [
+            { name: "Microsoft 365 E5", brand: "microsoft", share: 0.32, baseRate: 0.17 },
+            { name: "GitHub Enterprise", brand: "github", share: 0.24, baseRate: 0.22 },
+            { name: "Jira Software", brand: "jirasoftware", share: 0.18, baseRate: 0.15 },
+            { name: "Power BI Pro", brand: "microsoft", share: 0.14, baseRate: 0.31 },
+            { name: "Zoom Workplace", brand: "zoom", share: 0.12, baseRate: 0.26 },
+          ];
         }
-        const tooltip=$('chartTooltip');
-        let tooltipTarget=null;
-        function hideChartTooltip(){tooltip.hidden=true;tooltipTarget=null;}
-        function positionChartTooltip(x,y){
-          const box=tooltip.getBoundingClientRect(),margin=12;
-          tooltip.style.left=Math.max(margin,Math.min(x+16,window.innerWidth-box.width-margin))+'px';
-          tooltip.style.top=Math.max(margin,Math.min(y+14,window.innerHeight-box.height-margin))+'px';
+        function getLicenseMetric(sub, lic, licIdx, m, year) {
+          const subM = metric(sub, [m], year);
+          const plan = subM.plan * lic.share;
+          const spend = subM.spend * lic.share;
+          const seed = (sub.companyIndex * 13 + licIdx * 17 + m * 7) % 19;
+          const varFactor = (seed - 9) * 0.015;
+          const rawRate = clamp(lic.baseRate + varFactor + 0.05 * Math.sin(m * 0.6 + licIdx * 1.1), 0.05, 0.85);
+          const waste = spend * rawRate;
+          const used = Math.max(0, spend - waste);
+          const rate = spend > 0 ? (waste / spend) * 100 : 0;
+          return { plan, spend, used, waste, rate };
         }
-        function showChartTooltip(target,x,y){
-          if(tooltipTarget!==target){tooltip.innerHTML=target.dataset.chartTooltip;tooltipTarget=target;}
-          tooltip.hidden=false;positionChartTooltip(x,y);
+        function renderSubsidiaryHeatmap(n) {
+          const year = state.heatYear || state.year;
+          const count = year === YEAR_NOW ? MONTH_NOW : 12;
+          const lics = getSubsidiaryLicenses(n);
+          const isAmount = state.heatUnit === 'amount';
+
+          let maxLicWaste = 0.001;
+          if (isAmount) {
+            lics.forEach((lic, idx) => {
+              for (let m = 1; m <= count; m++) {
+                const met = getLicenseMetric(n, lic, idx, m, year);
+                if (met.waste > maxLicWaste) maxLicWaste = met.waste;
+              }
+            });
+          }
+
+          const rowsHtml = lics.map((lic, idx) => {
+            const brandIcon = LL_BRANDS[lic.brand]
+              ? `<img src="${LL_BRANDS[lic.brand]}" alt="" class="sub-lic-icon">`
+              : `<span class="sub-lic-badge">${lic.name.slice(0, 2).toUpperCase()}</span>`;
+
+            const cellsHtml = monthNames.map((_, i) => {
+              if (i >= count) return '<span class="heat-cell na" title="Future period">–</span>';
+              const m = i + 1;
+              const met = getLicenseMetric(n, lic, idx, m, year);
+              const cellBg = isAmount ? heatColorAmount(met.waste, maxLicWaste) : heatColor(met.rate);
+              const cellVal = isAmount ? money(met.waste) : `${num(met.rate, 0)}%`;
+              const tip = clean(metricTooltip(`${lic.name} (${n.name})`, met, `${fullMonthNames[i]} ${year}`));
+              const aria = `${clean(lic.name)} ${monthNames[i]}: ${isAmount ? money(met.waste) : num(met.rate, 1) + '%'} wasted`;
+              return `<span class="heat-cell" tabindex="0" style="background:${cellBg}" data-chart-tooltip="${tip}" aria-label="${aria}">${cellVal}</span>`;
+            }).join('');
+
+            return `<div class="heat-row sub-heat-row"><div class="sub-lic-name" title="${clean(lic.name)}">${brandIcon}<span>${clean(lic.name)}</span></div>${cellsHtml}</div>`;
+          }).join('');
+
+          return `
+            <div class="sub-heatmap-card">
+              <div class="sub-heatmap-head">
+                <div class="sub-heatmap-title">
+                  <span class="sub-heat-tag">License Heatmap Matrix</span>
+                  <h4>${clean(n.name)} · Monthly License Waste (${isAmount ? 'Cost Amount' : '% Rate'})</h4>
+                  <span class="sub-heat-year">Year ${year}</span>
+                </div>
+                <div class="sub-heatmap-meta">
+                  <span class="heat-scale">Low <i class="heat-s1"></i><i class="heat-s2"></i><i class="heat-s3"></i><i class="heat-s4"></i> High</span>
+                  <button type="button" class="sub-drilldown-link" data-scope="${n.id}" title="Drill into ${clean(n.name)} details">Drill down ↗</button>
+                </div>
+              </div>
+              <div class="sub-heat-body">
+                <div class="heat-months sub-heat-months">
+                  <span style="text-align:left;font-weight:700">License / Tool</span>
+                  ${monthNames.map(m => `<span>${m}</span>`).join('')}
+                </div>
+                ${rowsHtml}
+              </div>
+            </div>
+          `;
         }
-        const usageRoot=$('usagePane');
-        usageRoot.addEventListener('pointerover',e=>{const target=e.target.closest('[data-chart-tooltip]');if(target)showChartTooltip(target,e.clientX,e.clientY);});
-        usageRoot.addEventListener('pointermove',e=>{if(tooltipTarget&&!tooltip.hidden)positionChartTooltip(e.clientX,e.clientY);});
-        usageRoot.addEventListener('pointerout',e=>{if(tooltipTarget&&!tooltipTarget.contains(e.relatedTarget))hideChartTooltip();});
-        usageRoot.addEventListener('focusin',e=>{const target=e.target.closest('[data-chart-tooltip]');if(target){const r=target.getBoundingClientRect();showChartTooltip(target,r.x+r.width/2,r.y+r.height/2);}});
-        usageRoot.addEventListener('focusout',hideChartTooltip);
-        usageRoot.addEventListener('click',hideChartTooltip);
-        usageRoot.addEventListener('keydown',e=>{if(e.key==='Escape')hideChartTooltip();if((e.key==='Enter'||e.key===' ')&&e.target.matches('circle[data-scope]')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));}});
-        window.addEventListener('scroll',hideChartTooltip,true);
-        window.addEventListener('resize',hideChartTooltip);
-        $('heatShowAll').addEventListener('click',()=>{showAllHeat=!showAllHeat;renderHeatmap(sortedRows());});
-        $('heatYearSelect').addEventListener('change',e=>{state.heatYear=Number(e.target.value);hideChartTooltip();renderHeatmap(sortedRows());});
         function renderTable(rows) {
           const b = $("tableBody");
           const typeMap = {
@@ -2748,7 +2950,20 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
                 const m = metric(n),
                   ratio = pct(m.used, m.spend),
                   delta = m.spend - m.plan;
-                return `<tr><td><div class="rank"><span class="rank-num">${i + 1}</span><button class="row-link" data-scope="${n.id}"><span class="entityname">${ico(n)}<span class="entityname-text"><b>${clean(n.name)}</b><span>${typeMap[n.type] || n.type}</span></span></span></button></div></td><td>${money(m.plan)}</td><td>${money(m.spend)}</td><td>${money(m.used)}</td><td class="bad">${money(m.waste)}</td><td><span class="track"><div style="width:${ratio}%"></div></span>${num(ratio)}%</td><td class="${delta > 0 ? "bad" : "good"}">${delta > 0 ? "+" : "-"}${money(Math.abs(delta))}</td></tr>`;
+                const isCompany = n.type === 'company';
+                const isExpanded = state.expandedSubs.has(n.id);
+
+                const entityBtn = isCompany
+                  ? `<button type="button" class="row-link sub-toggle-btn" data-sub-toggle="${n.id}" aria-expanded="${isExpanded}" title="Click to ${isExpanded ? 'collapse' : 'expand'} license heatmap matrix"><span class="sub-chevron-wrap"><svg class="sub-chevron ${isExpanded ? 'chevron-down' : ''}" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span><span class="entityname">${ico(n)}<span class="entityname-text"><b>${clean(n.name)}</b><span>${typeMap[n.type] || n.type} · ${isExpanded ? 'Hide license heatmap' : 'Show license heatmap'}</span></span></span></button>`
+                  : `<button class="row-link" data-scope="${n.id}"><span class="entityname">${ico(n)}<span class="entityname-text"><b>${clean(n.name)}</b><span>${typeMap[n.type] || n.type}</span></span></span></button>`;
+
+                let trHtml = `<tr class="entity-row ${isExpanded ? 'row-expanded' : ''}" data-sub-id="${n.id}"><td><div class="rank"><span class="rank-num">${i + 1}</span>${entityBtn}</div></td><td>${money(m.plan)}</td><td>${money(m.spend)}</td><td>${money(m.used)}</td><td class="bad">${money(m.waste)}</td><td><span class="track"><div style="width:${ratio}%"></div></span>${num(ratio)}%</td><td class="${delta > 0 ? "bad" : "good"}">${delta > 0 ? "+" : "-"}${money(Math.abs(delta))}</td></tr>`;
+
+                if (isCompany && isExpanded) {
+                  trHtml += `<tr class="sub-dropdown-tr" data-sub-detail="${n.id}"><td colspan="7" class="sub-dropdown-td">${renderSubsidiaryHeatmap(n)}</td></tr>`;
+                }
+
+                return trHtml;
               })
               .join("");
           }
@@ -2807,6 +3022,17 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
         }
         document.addEventListener("click", (e) => {
           if (e.target.closest("#connectorPane, #licensePane")) return;
+          const subToggle = e.target.closest("[data-sub-toggle]");
+          if (subToggle) {
+            const subId = subToggle.dataset.subToggle;
+            if (state.expandedSubs.has(subId)) {
+              state.expandedSubs.delete(subId);
+            } else {
+              state.expandedSubs.add(subId);
+            }
+            renderTable(sortedRows());
+            return;
+          }
           const expand = e.target.closest("[data-expand]");
           if (expand) {
             const id = expand.dataset.expand;
@@ -2824,6 +3050,16 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
             setScope(byId[id]);
             if (fromTree) $("orgTree").querySelector(`[data-scope="${id}"]`)?.focus({preventScroll:true});
           }
+        });
+        document.querySelectorAll("#heatUnitSwitch .heat-switch-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            state.heatUnit = btn.dataset.unit;
+            document.querySelectorAll("#heatUnitSwitch .heat-switch-btn").forEach((b) => {
+              b.classList.toggle("active", b.dataset.unit === state.heatUnit);
+            });
+            renderHeatmap(sortedRows());
+            renderTable(sortedRows());
+          });
         });
         document.querySelectorAll("[data-mode]").forEach((btn) =>
           btn.addEventListener("click", () => {
