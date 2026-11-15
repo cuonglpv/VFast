@@ -1551,7 +1551,83 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
 .tip-value{text-align:right;font-weight:650}.tip-value small{display:block;font-size:10.5px;font-weight:500;color:#8696aa;margin-top:2px}
 .tip-row.wasted .tip-value{color:#ae783f}
 #connectorPane .action-menu{display:inline-flex;align-items:center;justify-content:center;width:31px;height:31px;padding:7px;border-radius:4px}
-#connectorPane .tree-table th:last-child,#connectorPane .tree-table td:last-child{text-align:center;padding-left:6px;padding-right:6px}
+
+/* Connector Management Table - Precise Column Alignment */
+#connectorPane .table-wrap {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+#connectorPane .tree-table {
+  width: 100%;
+  min-width: 1120px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  box-sizing: border-box;
+}
+#connectorPane .tree-table th,
+#connectorPane .tree-table td {
+  padding: 12px 14px !important;
+  text-align: left !important;
+  vertical-align: middle !important;
+  box-sizing: border-box;
+}
+#connectorPane .tree-table th:first-child,
+#connectorPane .tree-table td:first-child {
+  padding-left: 20px !important;
+}
+#connectorPane .tree-table th:last-child,
+#connectorPane .tree-table td:last-child {
+  text-align: center !important;
+  padding-left: 8px !important;
+  padding-right: 16px !important;
+}
+#connectorPane .tree-table th {
+  background: #f6f8fa;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #708298;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+#connectorPane .tree-table td .name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+#connectorPane .tree-table td .coverage {
+  display: inline-block;
+  font-size: 11.5px;
+  color: #526982;
+  white-space: nowrap;
+}
+#connectorPane .tree-table td .contact {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+#connectorPane .tree-table td .date {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  color: #4f637d;
+  font-size: 12px;
+  line-height: 1.3;
+}
+#connectorPane .tree-table td .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+#connectorPane .tree-table td .action-menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
 /* The body scrolls while the form header and action buttons stay visible. */
 #connectorPane .overlay{padding:20px}
 #connectorPane .modal{width:min(620px,100%);max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px);display:flex;flex-direction:column;overflow:hidden;border-radius:6px}
@@ -2239,17 +2315,31 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
 }
 
 /* Missing Cell Styling (Compact, subtle, not huge) */
+/* Missing Cell Styling - High-visibility prominent amber/yellow format */
 #budgetPane .bp-cell-box.is-missing {
-  background: #fffdf5;
-  border: 1px dashed #fcd34d;
+  background: #fef08a !important;
+  border: 1.5px solid #eab308 !important;
+  box-shadow: 0 1px 3px rgba(234, 179, 8, 0.25), inset 0 0 0 1px rgba(234, 179, 8, 0.2) !important;
 }
 #budgetPane .bp-row-dept .bp-cell-box.is-missing:hover {
-  background: #fefce8;
-  box-shadow: 0 0 0 1px #f59e0b;
+  background: #fde047 !important;
+  border-color: #d97706 !important;
+  box-shadow: 0 0 0 2px #d97706, 0 3px 6px rgba(217, 119, 6, 0.3) !important;
 }
-#budgetPane .bp-dash {
-  color: #94a3b8;
-  font-weight: normal;
+#budgetPane .bp-cell-box.is-missing .bp-dash {
+  color: #92400e !important;
+  font-weight: 750 !important;
+  font-size: 13px !important;
+}
+#budgetPane .bp-cell-box.is-missing .bp-cell-hover-btn {
+  border-color: #eab308 !important;
+  color: #92400e !important;
+  background: #ffffff !important;
+}
+#budgetPane .bp-cell-box.is-missing .bp-cell-hover-btn:hover {
+  background: #eab308 !important;
+  color: #ffffff !important;
+  border-color: #d97706 !important;
 }
 #budgetPane .bp-cell-hover-btn {
   position: absolute;
@@ -3158,7 +3248,15 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
         <span class="active-filter" id="filterTag"></span>
       </div>
       <div class="table-wrap"><table class="tree-table">
-        <colgroup><col style="width:35%"><col style="width:13%"><col style="width:21%"><col style="width:11%"><col style="width:11%"><col style="width:8%"><col style="width:64px"></colgroup>
+        <colgroup>
+          <col style="width:30%">
+          <col style="width:15%">
+          <col style="width:18%">
+          <col style="width:10%">
+          <col style="width:10%">
+          <col style="width:10%">
+          <col style="width:7%">
+        </colgroup>
         <thead><tr><th>Company / Provider / License</th><th>Coverage</th><th>API Contact</th><th>Created</th><th>Last Sync</th><th>Status</th><th aria-label="Actions">Action</th></tr></thead>
         <tbody id="rows"></tbody>
       </table></div>
