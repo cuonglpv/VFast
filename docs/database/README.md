@@ -19,7 +19,7 @@ ELMS keeps, in one PostgreSQL database, what it reads from its sources — licen
 | Quantities | `numeric(20,4)`: one column serves seats, sessions, tokens, and cores |
 | State | No status column beside the field that decides it: the group is the unit without `parent_id`; a connector is paused while `paused_at` is set; a budget line is in force while `superseded_at` is NULL; a month is closed once `closed_at` is set; a detection result is not evaluated / clear / flagged when `flagged_qty` is NULL / 0 / more than 0. End dates are inclusive |
 | Deletion | Master data is never deleted, only ended or marked inactive (BR-15); no cascading deletes |
-| Provenance | Every collected row has `source` and the `sync_run_id` or `import_batch_id` that wrote it last, enforced by CHECK. Licenses, holders, and usage come from connectors only; `import` and `manual` remain for budget lines and expenses |
+| Provenance | Every collected row has `source` and the `sync_run_id` or `import_batch_id` that wrote it last, enforced by CHECK. Licenses, holders, and usage come from connectors only (`chk_*_connector_only`); `import` and `manual` remain for budget lines and expenses |
 | Connector messages | Stored at the level they describe: a failed run in `sync_runs.error_message`; one license, kind, and day in `collection_coverage`; one record in `raw_records.normalize_error`. No secrets in messages |
 | History | Providers give no history, so ELMS freezes results: daily snapshots, and monthly cost allocations when a month closes |
 | Rules | Single-row rules are CHECK constraints; partial uniqueness is in `schema.sql`; cross-table rules are "App rule" lines in the DBML notes, enforced by the service in the same transaction |
@@ -34,8 +34,8 @@ Source: [`diagrams/erd_overview.mmd`](diagrams/erd_overview.mmd) (Mermaid, ELK l
 
 ![Organization and access](diagrams/erd_organization.png)
 
-- **Five-level tree (D24, BR-21).** `org_units.level` is `group`, `pnl`, `block`, `department`, or `project`; the parent of a unit is one level up, and only the group has no parent. Units and their `code` come from ILVG; the budget file names units by this code. Admin corrects a unit ILVG placed wrongly through `data_overrides` (UC20).
-- **People (D2).** `employees` is the ILVG directory; `org_unit_id` NULL is "Unknown unit". `unit_since` is the day of the last transfer, so usage and cost count toward the old unit before it and the new unit after it (BR-27). `project_ids` lists the projects of a person who works on several; a seat they hold counts toward each in equal parts (BR-06, D39). `user_accounts` has one row per employee and exactly one role (BR-17).
+- **Five-level tree (D24, BR-21).** `org_units.level` is `group`, `pnl`, `block`, `department`, or `project`; the parent of a unit is one level up, and only the group has no parent. Units and their `code` come from ILVG; the budget file names units by this code. Admin corrects a unit ILVG placed wrongly through `data_overrides` (UC20). When ILVG no longer reports a unit, the sync marks it inactive even if people, budget lines, or licenses remain, and Admin sees it in a list to move them; Admin alone cannot deactivate such a unit (D48).
+- **People (D2).** `employees` is the ILVG directory; `org_unit_id` NULL is "Unknown unit". `unit_since` is the day of the last transfer, so usage and cost count toward the old unit before it and the new unit after it (BR-27); cost follows the unit of each day's snapshot, so a transfer ILVG reports late counts from the day it arrives (D44). `project_ids` lists the projects of a person who works on several; a seat they hold counts toward each in equal parts and nothing toward their own unit (BR-06, D39). `user_accounts` has one row per employee and exactly one role (BR-17).
 - **Scope (D25, BR-16).** `user_org_units` holds the units of a Manager — any level, the group included — and the companies of a Staff member — P&Ls, or the group for group-level Staff. Admin and Employee have no rows: Admin reads the group overview and the dashboards, down to each license; an Employee reads only their own licenses.
 - **Logins (BR-18, D22).** One-time set-password link, 15-minute lockout after five failures, server-side sessions that end at once when an account is disabled.
 - **Settings.** Not in the database: reporting currency (VND), inactivity threshold and new-seat grace (30 days each, BR-03), default sync interval (6 hours, BR-32), month-close day (10), raw data retention (180 days), set-password link validity (72 hours), budget preview validity (60 minutes).
@@ -54,7 +54,7 @@ Source: [`diagrams/erd_overview.mmd`](diagrams/erd_overview.mmd) (Mermaid, ELK l
 ![Collection pipeline](diagrams/erd_collection.png)
 
 - **Connectors (D26, D34, D37, D40).** A usage connector reads one provider for one company (`org_unit_id`, `vendor_id`; one active per pair), through the HTTPS API the P&L provides for its own data, with an API key or bearer token kept outside the database, a contact, and a `sync_interval_hours` that Staff type freely (default 6). Deleting a connector sets `is_active` false on it and its licenses; the data already collected stays. ILVG and BCA are connectors of their own `kind`.
-- **License status (BR-32).** Computed: *Paused* while `paused_at` is set; *Pending* with no successful run since `reconfigured_at`; *Failed* when the latest run failed; *Delayed* when the last success is older than the interval; *Active* otherwise. Changing company, provider, authentication, or API URL moves `reconfigured_at`, so every license is Pending again.
+- **License status (BR-32, D49).** Computed per license from its own `collection_coverage` rows written after `reconfigured_at`: *Paused* while `paused_at` is set; *Pending* with no coverage row yet, which includes a license added to a running connector; *Failed* when the latest run failed as a whole or the license's latest coverage row is failed; *Delayed* when the latest run that brought its data is older than the interval; *Active* otherwise. Changing company, provider, authentication, or API URL moves `reconfigured_at`, so every license is Pending again.
 - **Runs (A3, A4, BR-36).** One `sync_runs` row per run. While a connector is paused, every scheduled slot is still written, with status `paused`, so the pause shows in the run table of UC26. A failed or paused run writes nothing and the day stays Unknown. A rerun of the same day replaces its figures and never duplicates them.
 - **Completeness (D8).** `collection_coverage` says, per license, kind, and day, whether the data is complete. A record that fails the license data contract is rejected with its reason (BR-19) in `raw_records.normalize_error`; a license the source reports but the connector does not declare is `undeclared_license`.
 - **Imports (UC33, UC07).** `import_batches` of kind `budget` or `expense`, preview then confirm; one invalid row rejects the file. See *Budget versions* below for idempotency.
@@ -74,18 +74,20 @@ Source: [`diagrams/erd_overview.mmd`](diagrams/erd_overview.mmd) (Mermaid, ELK l
   | `No activity` | Never used, and held for 30 days or more |
 
 - **Usage frequency (BR-35).** Days used = the `active_days` usage records of the holder over the period, shown against working days (Monday to Friday without public holidays) as a bar, for example 6 / 22, without bands; *Not tracked* when the source gives only the last activity date (`plan_data_sources.has_daily_activity`).
-- **Snapshots.** `plan_daily_snapshots` keeps Purchased quantity and the list monthly cost per license and day; `plan_unit_daily_snapshots` keeps the seats per status and unit per day as shares (a person on two projects counts half in each), with the shared/service part counted apart. Both are frozen.
+- **Snapshots.** `plan_daily_snapshots` keeps Purchased quantity and the list monthly cost per license and day; `plan_unit_daily_snapshots` keeps the seats per status and unit per day as shares (a person on two projects counts half in each), with the shared/service part counted apart. Both are frozen. The unit snapshots of every day of a month are the seat basis of its cost split (D44); the seat counts shown for a month are those of its last day (BR-03).
 - **BCA (D36, BR-23).** `employee_app_usage` keeps which application each employee used, on how many days and for how many minutes, in its own table. Assumed until the BCA API is known: per day, the domain account carrying the ILVG employee code. Only the Managers of the employee's units read it (UC32).
 
 ## Budget, cost, and expenses
 
 ![Budget, cost, and expenses](diagrams/erd_budget_cost.png)
 
-- **Budget versions (D29, BR-08).** Each confirmed import creates a `budget_plans` version for its target unit and months. Its `budget_plan_lines` belong to the deepest unit they name, per license and month; the lines of the target and every unit under it for those months are marked `superseded_at`, never deleted. A unit's Plan = its own lines + the Plan of the units under it, so no line is counted twice. The Manager of a P&L can replace the plan of the P&L and each block; the Manager of a block only that block. A shared license is planned by the group per P&L that uses it, or deeper, so each P&L's Plan includes its share; P&L Managers can then change or add the lines of their units.
-- **Idempotent import (D30, BR-36).** The same file (`files.checksum`) for the same target and months gives `unchanged` and no version. `preview_key` makes the confirm happen once whatever the clicks or retries. `based_on_budget_plan_id` refuses a confirm when another Manager imported since the preview.
+- **Budget versions (D29, D42, BR-08).** Each confirmed import creates a `budget_plans` version for its target unit and months. Its `budget_plan_lines` belong to the deepest unit they name, per license and month. An import changes only the licenses in its file: in the target and every unit under it, for those months, a license already planned is overwritten (its lines the file no longer has are removed), a new one is added, and every other license keeps its lines. Replaced lines are marked `superseded_at`, never deleted. A unit's Plan = its own lines + the Plan of the units under it, so no line is counted twice. The Manager of a P&L can change the plan of the P&L and each block; the Manager of a block only that block. A shared license is planned by the group per P&L that uses it, or deeper, so each P&L's Plan includes its share; P&L Managers can then change or add the lines of their units.
+- **Own and shared license with the same name (D45).** A P&L can hold its own *Microsoft 365 E3* and a share of the group's shared one. The budget file has a *Shared* column (`budget_plan_lines.is_shared`): a shared line maps to the license the group owns, any other line to the license the P&L of its unit owns; a name that matches no license is *Not mapped*, one that matches two is rejected in the preview.
+- **Idempotent and safe import (D30, D43, BR-36).** A file that changes nothing — the same file again, for example — gives `unchanged` and no version. `preview_key` makes the confirm happen once whatever the clicks or retries. `based_on_budget_plan_id` is the latest version of any unit at preview; the confirm is refused when a later version wrote or replaced a line the file would change, whether it was imported at the same unit, above, or below. Confirms run one at a time.
 - **Plan judged where it is set (BR-37).** Cost of a license that has no line at a unit but has one at a unit above — for example a license a P&L plans for all its blocks with one P&L line — shows as *Planned at <unit>* below and is left out of the lower units' variance.
-- **Purchased = accrued cost of the invoices (D33).** An expense names the term it pays for (`service_from`, `service_to`); its `accrual_schedule` spreads the amount over the months, rounded to the thousand VND, with the difference in the last month (BR-25). An amount in another currency is converted with the rate of its invoice date (BR-05). Months are closed per company in `accounting_periods` (UC42); an open month is *Provisional* (BR-31).
-- **Used, Wasted, Not evaluated (D32, BR-24).** `cost_allocations` splits the accrued cost of each license and month by the seats on the last day of the month: the units of the holders, `unallocated` (seats nobody holds, under the owner), and `unknown_unit` (holders that cannot be placed). Each row carries `used_amount`, `wasted_amount`, and `not_evaluated_amount`, which add up to `amount`. A unit is red when Wasted is above 20 % of Purchased (BR-22). The unit rows of a shared license are its charge-back to the companies.
+- **Purchased = accrued cost of the invoices (D33).** An expense names the term it pays for (`service_from`, `service_to`); its `accrual_schedule` spreads the amount over the months, rounded to the thousand VND, with the difference in the last month (BR-25). An amount in another currency is converted with the rate of its invoice date (BR-05). Months are closed per company in `accounting_periods` (UC42); an open month is *Provisional* (BR-31). The fiscal year is the calendar year (D47).
+- **Owner change (D46, UC47).** When a license is marked shared, or unmarked, closed months keep the owner they were computed with and open months follow the new owner; an expense keeps the company that paid it. A P&L month that carries the cost of a shared license stays *Provisional* until the group's month is closed too.
+- **Used, Wasted, Not evaluated (D32, D44, BR-24).** `cost_allocations` splits the accrued cost of each license and month day by day (seat-days): each day carries the cost divided by the days of the month, spread over the larger of purchased and assigned seats, by the seats of that day — the units of the holders, `unallocated` (seats nobody holds, under the owner), and `unknown_unit` (holders that cannot be placed). Over-allocated: 100 seats bought, 110 assigned → the cost spreads over the 110 and nothing is unallocated. A day without complete seat data takes the seats of the nearest complete day of the month (`filled_days`); the cost of a day that cannot be split (Purchased quantity Unknown, or no complete day in the month) is Not evaluated under the owner. A transfer on 15 March gives the old unit 14 days and the new unit 17. Each row carries `used_amount`, `wasted_amount`, and `not_evaluated_amount`, which add up to `amount`. A unit is red when Wasted is above 20 % of Purchased (BR-22). The unit rows of a shared license are its charge-back to the companies.
 - **Exchange rates (D12).** Every rate converts to VND; the rate of a day is the latest `effective_from` on or before it.
 
 ## Optimization
@@ -170,11 +172,11 @@ A plain-language tour of the 40 tables. Every field is explained in [Tables and 
 
 | Rule | Where it is enforced in the database |
 |---|---|
-| BR-01 Read-only toward sources | No write-back table; licenses, holders, usage only from `sync_runs` (provenance CHECKs, `chk_plan_data_sources_connector_only`) |
+| BR-01 Read-only toward sources | No write-back table; licenses, holders, usage only from `sync_runs` (provenance CHECKs, `chk_*_connector_only`, `chk_plan_data_sources_connector_only`) |
 | BR-03 Seat status | `license_assignments.last_active_at`, `assigned_on`; `plan_data_sources.granularity`, `monitoring_since`; counts in `plan_unit_daily_snapshots` |
 | BR-04 Unknown is not 0 | Nullable figures; `collection_coverage`; snapshot counts without defaults; `cost_allocations.not_evaluated_amount`; `detection_results.flagged_qty` NULL |
-| BR-06 Cost allocation | `cost_allocations` (bucket, owner unit for `unallocated` and `unknown_unit`); `employees.project_ids`; seat shares in `plan_unit_daily_snapshots` |
-| BR-08 Budget | `budget_plans` versions, `budget_plan_lines.org_unit_id`, `superseded_at`, `uq_budget_plan_lines_current` |
+| BR-06 Cost allocation | `cost_allocations` (bucket, owner unit for `unallocated` and `unknown_unit`, seat-days, `filled_days`); `employees.project_ids`; seat shares in `plan_unit_daily_snapshots` |
+| BR-08 Budget | `budget_plans` versions, `budget_plan_lines.org_unit_id`, `is_shared`, `superseded_at`, `uq_budget_plan_lines_current` |
 | BR-15 Audit | `audit_logs` (single-column `id` on every table) |
 | BR-16 Data scope | `user_org_units`, `license_plans.owner_org_unit_id`, unit on results |
 | BR-17 Roles | `user_accounts.role_id` NOT NULL; `role_permissions` |
@@ -184,17 +186,17 @@ A plain-language tour of the 40 tables. Every field is explained in [Tables and 
 | BR-23 Employee usage | `employee_app_usage` |
 | BR-24 Waste | `cost_allocations.used_amount`, `wasted_amount`, `not_evaluated_amount`, `chk_cost_allocations_split` |
 | BR-25 Accrual | `expenses.service_from`, `service_to`, `accrual_schedule`; `accounting_periods.closed_at` |
-| BR-26 Shared license | `license_plans.owner_org_unit_id` = group; `duplicate_of_id` |
+| BR-26 Shared license | `license_plans.owner_org_unit_id` = group; `duplicate_of_id`; `budget_plan_lines.is_shared` |
 | BR-28 Account type | `subjects.account_type`; `plan_unit_daily_snapshots.shared_service_qty` |
-| BR-32 Connector status | `connectors.sync_interval_hours`, `reconfigured_at`, `paused_at`; `run_status` `paused` |
+| BR-32 Connector status | `connectors.sync_interval_hours`, `reconfigured_at`, `paused_at`; `run_status` `paused`; per license from `collection_coverage` |
 | BR-22 Waste flag | Computed from `cost_allocations`: Wasted above 20 % of Purchased |
 | BR-35 Frequency | `usage_metric` `active_days`; `plan_data_sources.has_daily_activity` |
-| BR-36 Idempotency | `files.checksum`, `import_batches.preview_key`, `based_on_budget_plan_id`, `import_status` `unchanged`; `uq_entitlement_lines_plan_external`, `uq_expenses_plan_external`, `uq_usage_records_period` |
+| BR-36 Idempotency | `import_batches.preview_key`, `based_on_budget_plan_id`, `import_status` `unchanged`; `uq_entitlement_lines_plan_external`, `uq_expenses_plan_external`, `uq_usage_records_period` |
 | BR-38 Catalog | `license_plans.product_id`, `software_products.category_id` |
 
 ## Decisions
 
-D1–D23 came from the first design (November 2026). The business model revision keeps D1, D2, D5, D7–D10, D12–D14, D20, and D22, supersedes the others, and adds D24–D41. All D24–D41 need team confirmation.
+D1–D23 came from the first design (November 2026). The business model revision keeps D1, D2, D5, D7–D10, D12–D14, D20, and D22, supersedes the others, and adds D24–D41. The schema review of 15 November 2026 adds D42–D49. All D24–D49 need team confirmation.
 
 | # | Question | Decision |
 |---|---|---|
@@ -204,7 +206,7 @@ D1–D23 came from the first design (November 2026). The business model revision
 | D27 | Who owns a shared license? | The group; held seats charged back to the holders' companies; a license reported twice is counted once (`duplicate_of_id`) |
 | D28 | How do license names get a category? | `license_plans.product_id` → `software_products.category_id`; NULL = Not mapped |
 | D29 | How are budget changes kept? | A version per confirmed import; lines superseded, never deleted; a line belongs to its deepest unit |
-| D30 | How is a budget import made idempotent? | File checksum, preview key, version seen at preview, `unchanged` status |
+| D30 | How is a budget import made idempotent? | Preview key, latest version seen at preview (D43), `unchanged` status when the file changes nothing |
 | D31 | Seat status and frequency | 30 days, 30-day grace for new seats; days used from `active_days`, no bands |
 | D32 | How is waste stored? | Used, Wasted, Not evaluated on each `cost_allocations` row; `unallocated` and `unknown_unit` under the owner |
 | D33 | Where does Purchased come from? | Accrued cost of the invoices, rounded to the thousand VND, converted at the invoice-date rate |
@@ -213,9 +215,17 @@ D1–D23 came from the first design (November 2026). The business model revision
 | D36 | Where is BCA data kept? | Its own table, `employee_app_usage` (the 40th table) |
 | D37 | How are ILVG and BCA monitored? | As connectors of their own `kind` |
 | D38 | What happens to tables of retired use cases? | `contracts`, `entitlement_allocations`, `product_links`, `recommendations` kept, not written |
-| D39 | A person on several projects | `employees.project_ids`; a seat counts toward each project in equal parts; seat counts are shares |
+| D39 | A person on several projects | `employees.project_ids`; a seat counts toward each project in equal parts and nothing toward their own unit; seat counts are shares |
 | D40 | Deleting a connector | `is_active` false on the connector and its licenses; data kept; one active connector per company and provider |
 | D41 | Shared mailboxes and service accounts | Judged as whole accounts: Active or Inactive like any seat, cost Used or Wasted |
+| D42 | What does a budget import replace? | Only the licenses in its file, in the target and every unit under it, for its months: a license already planned is overwritten, a new one added; other licenses keep their lines |
+| D43 | Two Managers import at the same time | Preview keeps the latest version of any unit; confirm refused when a later version touched a line of its scope (same unit, above, or below); confirms run one at a time |
+| D44 | How is a month's cost split over seats? | Seat-days: each day by its own seats, over the larger of purchased and assigned; a day without complete data borrows the nearest complete day (`filled_days`); a day that cannot be split is Not evaluated |
+| D45 | Own and shared license with the same name | *Shared* column in the budget file, `budget_plan_lines.is_shared` |
+| D46 | A license becomes shared, or stops being shared | Closed months keep their owner, open months follow the new one; expenses keep the company that paid; a P&L month with shared cost is Provisional until the group closes |
+| D47 | Fiscal year | The calendar year; `accounting_periods.fiscal_year` removed |
+| D48 | ILVG stops reporting a unit that still has people or licenses | Marked inactive by the sync and listed to Admin |
+| D49 | Connector status of a license | Computed per license from its own `collection_coverage` |
 
 Superseded: D3 and D19 (quotas), D4 (one yearly budget per unit), D6 (service month), D11 (one tenant per vendor), D15 and D16 (recommendations, contract notice periods), D17 (prices typed by Staff), D18 (manual holders and usage), D21 (HR CSV import), D23 (reseller contracts). Their history is in the git log of this file.
 

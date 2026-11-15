@@ -33,7 +33,7 @@ The shape of the group in five fixed levels: **group > P&L > block > department 
 | `level` | choice: `group`, `pnl`, `block`, `department`, `project` | Yes | The level of the unit. There is exactly one group |
 | `code` | text | Yes | The unit code from ILVG, unique. The budget file and the connectors name units by this code |
 | `name` | text | Yes | Unit name. Two units under the same parent cannot share a name |
-| `is_active` | yes/no | Yes | "No" for a unit that no longer exists |
+| `is_active` | yes/no | Yes | "No" for a unit that no longer exists. When ILVG stops reporting a unit, the sync sets "No" even if people, budget lines, or licenses remain, and Admin sees the unit in a list to move them. Admin cannot set "No" on such a unit by hand |
 | `sync_run_id` | link → `sync_runs` | | The ILVG run that last updated the unit |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
@@ -48,8 +48,8 @@ Everyone who works in the group, whether or not they log in to ELMS, loaded from
 | `full_name` | text | Yes | Name shown on screens |
 | `email` | text | Yes | Current company email, in lowercase; also the login email |
 | `org_unit_id` | link → `org_units` | | Current unit, at any level. Empty = "Unknown unit" |
-| `unit_since` | date | | Day the person joined that unit. After a transfer, usage and cost count toward the old unit before this day and the new unit from it |
-| `project_ids` | list of links → `org_units` | | The projects the person works on, when more than one. A seat they hold counts toward each project in equal parts: two projects, half each. Empty = only `org_unit_id` |
+| `unit_since` | date | | Day the person joined that unit. After a transfer, usage and cost count toward the old unit before this day and the new unit from it, day by day. A transfer ILVG reports late counts from the day ELMS receives it |
+| `project_ids` | list of links → `org_units` | | The projects the person works on, when more than one. A seat they hold counts toward each project in equal parts: two projects, half each, and nothing toward `org_unit_id`. Empty = only `org_unit_id` |
 | `left_on` | date | | Last working day. Empty = still with the company. After this day the account is disabled and any seat they still hold is flagged |
 | `source` | choice | Yes | `api` (ILVG) or `manual` (created with an account by Admin before ILVG knows the person) |
 | `sync_run_id` | link → `sync_runs` | | ILVG run that last updated the person |
@@ -268,7 +268,7 @@ A configured, read-only connection. A **usage connector** reads one provider for
 | `created_by` | link → `user_accounts` | | Staff who created it |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
-The status of each license of a connector is worked out, not stored: *Paused* while the connector is paused; *Pending* with no successful run since `reconfigured_at`; *Failed* when the latest run failed; *Delayed* when the last success is older than the interval; *Active* otherwise. *Sync issues* = Delayed + Failed.
+The status of each license of a connector is worked out, not stored, from what the runs since `reconfigured_at` brought for that license (`collection_coverage`): *Paused* while the connector is paused; *Pending* while no data has come for it yet, which includes a license added to a running connector; *Failed* when the latest run failed as a whole or failed for this license; *Delayed* when its latest data is older than the interval; *Active* otherwise. *Sync issues* = Delayed + Failed.
 
 ### `plan_data_sources`: what each license's connector delivers
 
@@ -280,8 +280,7 @@ For each license: which kinds of data its connector delivers — purchases, hold
 | `license_plan_id` | link → `license_plans` | Yes | The license |
 | `data_type` | choice | Yes | Which data: `entitlement` (terms), `assignment` (holders), `usage`, `expense` (bills) |
 | `source_type` | choice | Yes | `api` or `log` |
-| `connector_id` | link → `connectors` | Yes | The connector of the license |
-| `external_ref` | text | | The license's code at the provider, such as Microsoft's skuId |
+| `external_ref` | text | | The license's code in this kind of data, when it differs from `license_plans.external_ref`, such as the product name a usage report uses. Empty = the same. The connector is the license's own (`license_plans.connector_id`) |
 | `granularity` | choice: `per_subject`, `aggregate` | | For usage only: known per person, or only as a total. With totals only, seats show as "Not monitored" |
 | `has_daily_activity` | yes/no | | For usage per person: "Yes" when the source gives activity day by day, so days used can be counted; "No" when it gives only the last activity date, so days used is "Not tracked" |
 | `monitoring_since` | date | Yes | First day this source sent data. A seat is called inactive only after 30 days of watching |
@@ -345,30 +344,30 @@ Invoices, budget plan Excel files, and CSV expense files. The file itself is kep
 | `original_name` | text | Yes | File name as uploaded |
 | `content_type` | text | Yes | File type, such as PDF, image, Excel, CSV |
 | `size_bytes` | number | Yes | Size. At most 10 MB |
-| `checksum` | text | Yes | Fingerprint of the content. Uploading the same budget file again for the same target and months is recognised by it, and changes nothing |
+| `checksum` | text | Yes | Fingerprint of the content, so the import history can show the same file uploaded again. Whether a budget file changes anything is decided by its preview |
 | `contract_id` | link → `contracts` | | Retired; always empty |
 | `uploaded_by` | link → `user_accounts` | | Who uploaded it |
 | `uploaded_at` | date-time | Yes | When |
 
 ### `import_batches`: file imports
 
-Each import of a budget plan (UC33) or of expenses (UC07): who, when, which file, and how many rows. Nothing is written until the preview is checked and confirmed; one bad row rejects the whole file. A budget import has a target unit and months: the file replaces the plan of that unit and of every unit under it for those months.
+Each import of a budget plan (UC33) or of expenses (UC07): who, when, which file, and how many rows. Nothing is written until the preview is checked and confirmed; one bad row rejects the whole file. A budget import has a target unit and months, and changes only the licenses in its file: in that unit and every unit under it, for those months, a license already planned is overwritten (its lines the file no longer has are removed) and a new one is added. Every other license keeps its plan. Example: the group imports a file with only GitHub rows for P&L A and P&L B; their Microsoft 365 and Jira plans do not change.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
 | `import_type` | choice: `budget`, `expense` | Yes | What the file contains |
 | `file_id` | link → `files` | Yes | The uploaded file |
-| `target_org_unit_id` | link → `org_units` | | Budget: the unit whose plan, and that of every unit under it, the file replaces |
+| `target_org_unit_id` | link → `org_units` | | Budget: the unit where, with every unit under it, the file changes the licenses it names |
 | `period_from`, `period_to` | date | | Budget: first and last month the file covers |
 | `preview_key` | text | Yes | A unique key per preview. Pressing *Confirm* twice, or again after a time-out, applies the import once |
-| `based_on_budget_plan_id` | link → `budget_plans` | | Budget: the plan version in force when the preview was made. If another Manager imported since, the confirm is refused: "The plan changed since your preview" |
+| `based_on_budget_plan_id` | link → `budget_plans` | | Budget: the latest plan version of any unit when the preview was made. If another import changed a line this file would change since then — at the same unit, above, or below — the confirm is refused: "The plan changed since your preview" |
 | `budget_plan_id` | link → `budget_plans` | | Budget: the version this import created |
-| `status` | choice | Yes | `previewed` (checked, nothing written), `confirmed` (written), `rejected` (has errors), `unchanged` (the same file as the plan in force: nothing to do) |
+| `status` | choice | Yes | `previewed` (checked, nothing written), `confirmed` (written), `rejected` (has errors), `unchanged` (the file changes nothing, for example the same file again: nothing to do) |
 | `rows_total` | number | Yes | Rows in the file |
 | `rows_added` | number | Yes | New rows |
-| `rows_updated` | number | Yes | Rows that replace an existing line |
-| `rows_removed` | number | Yes | Budget: lines of the target the file no longer has |
+| `rows_updated` | number | Yes | Rows that replace an existing line with another quantity, amount, or currency |
+| `rows_removed` | number | Yes | Budget: lines of the file's licenses, in the target and under it, that the file no longer has |
 | `rows_rejected` | number | Yes | Rows with errors |
 | `error_report` | JSON | | Which rows were wrong and why |
 | `imported_by` | link → `user_accounts` | Yes | Who uploaded it |
@@ -448,7 +447,7 @@ Every day ELMS writes down how many of each license were purchased and its list 
 
 ### `plan_unit_daily_snapshots`: daily photo per unit
 
-The same daily photo, per unit: how many seats are held, and in which status. Seats are counted as shares: a person on two projects counts half a seat in each, so the units always add up. It keeps the unit of that day, so a person moving to another team does not change last month's figures. The photo of the last day of a month is the seat basis of that month's cost split.
+The same daily photo, per unit: how many seats are held, and in which status. Seats are counted as shares: a person on two projects counts half a seat in each, so the units always add up. It keeps the unit of that day, so a person moving to another team does not change last month's figures. The photos of every day of a month are the seat basis of that month's cost split, day by day; the seat counts shown for a month are those of its last day.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -491,14 +490,14 @@ A person whose machine does not report to BCA has no row: "Not tracked", never "
 
 ### `budget_plans`: budget versions
 
-Each confirmed budget import creates a new version for its target unit and months, for example "P&L A, 2027, January–December, version 3". A Manager imports for their own unit or any unit under it: the Manager of a P&L can replace the plan of the P&L and of each block; the Manager of a block only that block and what is under it. Versions are never edited; earlier ones are kept for comparison.
+Each confirmed budget import creates a new version for its target unit and months, for example "P&L A, 2027, January–December, version 3". A version holds only the lines its import added or replaced. A Manager imports for their own unit or any unit under it: the Manager of a P&L can change the plan of the P&L and of each block; the Manager of a block only that block and what is under it. Versions are never edited; earlier ones are kept for comparison.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
 | `org_unit_id` | link → `org_units` | Yes | The target unit of the import |
-| `fiscal_year` | number | Yes | The year |
-| `period_from`, `period_to` | date | Yes | First and last month the import replaced |
+| `fiscal_year` | number | Yes | The year, which is the calendar year |
+| `period_from`, `period_to` | date | Yes | First and last month the import covered |
 | `version_no` | number | Yes | 1, 2, 3 … per target unit |
 | `note` | text | | Free notes |
 | `created_by` | link → `user_accounts` | Yes | Manager who confirmed the import |
@@ -506,7 +505,7 @@ Each confirmed budget import creates a new version for its target unit and month
 
 ### `budget_plan_lines`: the plan, line by line
 
-One line per unit, license, and month: "Block A1, Microsoft 365 E3, March 2027: 40 seats, 45 million VND". These are the **Plan** figures compared with Purchased and Used. A line belongs to the deepest unit it names, so a unit's Plan is its own lines plus those of the units under it, and no line is counted twice. A newer import does not delete old lines: it marks them as replaced. P&L Managers can change or add the lines of a shared license for their own units.
+One line per unit, license, and month: "Block A1, Microsoft 365 E3, March 2027: 40 seats, 45 million VND". These are the **Plan** figures compared with Purchased and Used. A line belongs to the deepest unit it names, so a unit's Plan is its own lines plus those of the units under it, and no line is counted twice. A newer import does not delete old lines: it marks them as replaced. P&L Managers can change or add the lines of a shared license for their own units. A P&L can have its own "Microsoft 365 E3" and also a share of the group's shared "Microsoft 365 E3": the *Shared* column of the file tells which one a line plans.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -514,7 +513,8 @@ One line per unit, license, and month: "Block A1, Microsoft 365 E3, March 2027: 
 | `budget_plan_id` | link → `budget_plans` | Yes | The version that wrote the line |
 | `org_unit_id` | link → `org_units` | Yes | The unit planned: group, P&L, block, department, or project. A shared license is planned by the group per P&L, or deeper; a group line plans the seats the group keeps free |
 | `license_name` | text | Yes | The license as written in the file |
-| `license_plan_id` | link → `license_plans` | | The license the name matches. Empty = "Not mapped" |
+| `is_shared` | yes/no | Yes | The *Shared* column of the file. "Yes" = the line plans the share of a shared license the group owns; "No" = a license the P&L of the unit owns. Lines of the group unit are always "Yes" |
+| `license_plan_id` | link → `license_plans` | | The license the name and *Shared* match: the group's license for "Yes", the license of the unit's P&L for "No". Empty = "Not mapped". A name that matches two licenses is rejected in the preview |
 | `month` | date | Yes | First day of the month planned |
 | `planned_quantity` | quantity | Yes | How many |
 | `planned_amount` | money | Yes | How much |
@@ -525,17 +525,24 @@ One line per unit, license, and month: "Block A1, Microsoft 365 E3, March 2027: 
 
 ### `cost_allocations`: who carries the cost, and how much of it is used
 
-Each month ELMS takes the accrued cost of each license (**Purchased**) and spreads it over its seats on the last day of the month: each unit carries the seats its people hold; seats nobody holds go to **Unallocated** under the owner (the P&L, or the group for a shared license); holders that cannot be placed go to **Unknown unit**. Each share is split into **Used**, **Wasted**, and **Not evaluated**. Example: 100 seats for 100 million, 60 Active, 25 Inactive, 15 Not monitored → Used 60, Wasted 25, Not evaluated 15; waste rate 25 %, so the unit is red (above 20 %). When the month closes the figures are frozen.
+Each month ELMS takes the accrued cost of each license (**Purchased**) and spreads it over its seats **day by day**: each day carries the month's cost divided by its days, shared by the seats of that day. Each unit carries the seats its people hold; seats nobody holds go to **Unallocated** under the owner (the P&L, or the group for a shared license); holders that cannot be placed go to **Unknown unit**. Each share is split into **Used**, **Wasted**, and **Not evaluated**. Example: 100 seats for 100 million, 60 Active, 25 Inactive, 15 Not monitored all month → Used 60, Wasted 25, Not evaluated 15; waste rate 25 %, so the unit is red (above 20 %).
+
+- **Transfer:** An moves from IT to Sales on 15 March → IT carries his seat for 14 days, Sales for 17.
+- **More seats given than bought:** 100 bought, 110 given → the cost spreads over the 110 seats and nothing is Unallocated.
+- **A day without complete data** takes the seats of the nearest complete day of the same month, counted in `filled_days`. The cost of a day that cannot be split — Purchased quantity unknown, or no complete day in the whole month — is **Not evaluated** under the owner.
+
+When the month closes the figures are frozen.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `accounting_period_id` | link → `accounting_periods` | Yes | The month (of the owner company) |
+| `accounting_period_id` | link → `accounting_periods` | Yes | The month, of the company that owned the license when the month was computed. A closed month keeps it if the license later becomes shared or stops being shared |
 | `license_plan_id` | link → `license_plans` | Yes | The license |
-| `bucket` | choice | Yes | Who gets this share: `unit` (the unit of the holders), `unallocated` (seats nobody holds), `unknown_unit` (holders that cannot be placed) |
+| `bucket` | choice | Yes | Who gets this share: `unit` (the unit of the holders), `unallocated` (seats nobody holds, and cost that could not be split), `unknown_unit` (holders that cannot be placed) |
 | `org_unit_id` | link → `org_units` | Yes | The unit of the holders; for `unallocated` and `unknown_unit`, the owner of the license |
 | `method` | choice | Yes | How it was split: `per_seat` (by seats held), `per_usage` (by consumption), `direct` (the bill names the unit), `none` (could not be split) |
-| `basis_qty` | quantity | | What the share is based on: seats held on the last day of the month, or consumption. Explains "why Sales pays 30" |
+| `basis_qty` | quantity | | What the share is based on: average seats held over the month (seat-days ÷ days of the month), or consumption. Explains "why Sales pays 30" |
+| `filled_days` | number | | Split by seats: days of the month whose seats were taken from the nearest complete day because their data was incomplete. 0 = every day had its own data. Empty for the other methods |
 | `amount` | money | | The share of Purchased, in VND. Empty = unknown |
 | `used_amount` | money | | Part of the share for seats in use (Active) or consumption |
 | `wasted_amount` | money | | Part for Inactive and No activity seats; all of an Unallocated share |
@@ -556,7 +563,7 @@ What the bills say, on their dates, and the cost that the monthly accrual spread
 | `amount` | money | Yes | Amount. Negative only for a correction |
 | `currency` | text | Yes | Currency |
 | `license_plan_id` | link → `license_plans` | Yes | The license billed |
-| `org_unit_id` | link → `org_units` | Yes | The company that pays: the owner of the license |
+| `org_unit_id` | link → `org_units` | Yes | The company that pays: the owner of the license when the expense is entered. It stays the same if the license later becomes shared or stops being shared |
 | `description` | text | | Description |
 | `invoice_file_id` | link → `files` | | Scan of the invoice |
 | `accrual_schedule` | JSON | | The amount spread month by month over the term, such as `{"2026-01": 10000000, …}`. Months already closed never change |
@@ -568,13 +575,12 @@ What the bills say, on their dates, and the cost that the monthly accrual spread
 
 ### `accounting_periods`: months of each company
 
-The months of each company (and of the group, for shared licenses) and whether each one is closed. Staff close a month after checking its accrual (UC42); otherwise it closes by itself on the 10th of the next month. Until then its figures are marked *Provisional*. A closed month can no longer be edited; a mistake is fixed with a correcting entry in an open month.
+The months of each company (and of the group, for shared licenses) and whether each one is closed. Staff close a month after checking its accrual (UC42); otherwise it closes by itself on the 10th of the next month. Until then its figures are marked *Provisional*. A P&L month that carries the cost of a shared license stays *Provisional* until the group's month is closed too. A closed month can no longer be edited; a mistake is fixed with a correcting entry in an open month. The fiscal year is the calendar year.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
 | `org_unit_id` | link → `org_units` | Yes | The company: a P&L, or the group |
-| `fiscal_year` | number | Yes | Budget year the month belongs to |
 | `period_year` | number | Yes | Calendar year |
 | `period_month` | number | Yes | Month, 1 to 12 |
 | `closed_at` | date-time | | When it was closed. Empty = still open (Provisional) |

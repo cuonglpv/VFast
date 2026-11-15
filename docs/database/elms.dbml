@@ -67,11 +67,11 @@
 //   D29. Budget versions (BR-08): each confirmed import is a budget_plans
 //        version for a target unit and months; its lines belong to the deepest
 //        unit they name, per license and month; the lines it replaces get
-//        superseded_at. A shared license is planned by the group, one line per
-//        P&L (BR-26).
-//   D30. Idempotent budget import (BR-36): file checksum, one preview_key per
-//        preview, the version seen at preview (based_on_budget_plan_id), and the
-//        unchanged status.
+//        superseded_at (which lines: D42). A shared license is planned by the
+//        group, one line per P&L (BR-26).
+//   D30. Idempotent budget import (BR-36): one preview_key per preview, the
+//        latest version seen at preview (based_on_budget_plan_id, D43), and the
+//        unchanged status when the file changes nothing.
 //   D31. Seat status over 30 days with a 30-day grace for new seats (BR-03);
 //        usage frequency = days used against working days, from active_days
 //        usage records, without bands (BR-35).
@@ -93,13 +93,48 @@
 //        monitored like the usage connectors (UC26).
 //   D38. Tables of retired use cases are kept, not written: contracts,
 //        entitlement_allocations, product_links, recommendations.
-//   D39. A holder on several projects counts toward each in equal parts
-//        (BR-06): employees.project_ids, and seat counts of
-//        plan_unit_daily_snapshots are shares (numeric).
+//   D39. A holder on several projects counts toward each in equal parts and
+//        not toward their own unit (BR-06): employees.project_ids, and seat
+//        counts of plan_unit_daily_snapshots are shares (numeric).
 //   D40. Deleting a connector (UC60) sets is_active false and keeps its data;
 //        one active usage connector per company and provider.
 //   D41. A shared or service account is judged as a whole account (BR-28):
 //        its seat has a status like any other and its cost is Used or Wasted.
+//
+// Decisions of the schema review (2026-11-15), pending team confirmation:
+//   D42. A budget import changes only the licenses in its file (BR-08): for
+//        the target, every unit under it, and the months, each license of the
+//        file replaces its own lines (a line of that license the file no
+//        longer has is removed); licenses not in the file keep their lines. A
+//        license of the file is its name plus the Shared column (D45).
+//   D43. Concurrent budget imports (BR-36): based_on_budget_plan_id is the
+//        latest version of any unit at preview; the confirm is refused when a
+//        line of its scope was written or superseded by a later version, so an
+//        import at the same unit, above, or below is caught. Confirms run one
+//        at a time, so version ids follow commit order.
+//   D44. The cost of a month is split by seat-days (BR-03, BR-06, BR-27):
+//        each day carries cost / days in the month, split by the seats of that
+//        day over max(purchased, assigned) seats, so an over-allocated license
+//        spreads over its assigned seats and leaves nothing unallocated. A day
+//        without complete seat data takes the seats of the nearest complete day
+//        of the month (cost_allocations.filled_days). The cost of a day that
+//        cannot be split — no complete day in the month, or Purchased quantity
+//        Unknown — is Not evaluated under the owner.
+//   D45. A P&L can hold its own license and a share of a shared license with
+//        the same name: the budget file has a Shared column
+//        (budget_plan_lines.is_shared) that tells which one a line plans.
+//   D46. Owner change (UC47): closed months keep the owner they were computed
+//        with; open months follow the new owner. An expense keeps the company
+//        that paid it. A P&L month that carries the cost of a shared license
+//        stays Provisional until the group's month is closed too (BR-31).
+//   D47. The fiscal year is the calendar year: accounting_periods has no
+//        fiscal_year.
+//   D48. When ILVG no longer reports a unit, the sync marks it inactive even if
+//        employees, current budget lines, or licenses remain, and the unit is
+//        listed to Admin (UC20). Admin alone still cannot deactivate it.
+//   D49. Connector status is computed per license (BR-32) from its own
+//        collection_coverage, so a license added to a running connector is
+//        Pending and a license that failed in a partial run is Failed.
 //
 // Conventions:
 //   - Target DBMS: PostgreSQL 15+. Surrogate keys are bigint identity columns;
@@ -136,8 +171,9 @@
 //     manual = low.
 //   - sync_run_id and import_batch_id on a row name the run or import that wrote
 //     it last; source is the source of that write. Licenses, holders, and usage
-//     come from connectors only (source api or log); import and manual remain
-//     for budget lines and expenses.
+//     come from connectors only (source api or log, enforced by the
+//     chk_*_connector_only checks); import and manual remain for budget lines
+//     and expenses.
 //   - Connector messages live at the level they describe:
 //       whole run failed           sync_runs.error_message
 //       one plan, kind, and day    collection_coverage.error_code, error_message
@@ -210,8 +246,8 @@ Enum license_type {
 
 Enum account_type {
   personal [note: 'One person']
-  shared [note: 'Group mailbox or shared account: judged at account level, cost Not evaluated (BR-28)']
-  service [note: 'Service or system account: same as shared (BR-28)']
+  shared [note: 'Group mailbox or shared account: judged as a whole account, Active or Inactive like any seat, cost Used or Wasted (BR-28, D41)']
+  service [note: 'Service or system account: same as shared (BR-28, D41)']
 }
 Enum vendor_kind {
   publisher [note: 'Makes the software; products belong to a publisher']
@@ -288,18 +324,18 @@ Enum import_status {
   previewed [note: 'Parsed and validated; nothing written yet']
   confirmed [note: 'Rows written']
   rejected [note: 'At least one invalid row; whole file refused']
-  unchanged [note: 'Same file as the version in force for the same target and months: nothing written, no new version (BR-36)']
+  unchanged [note: 'The file changes nothing (no row to add, change, or remove), for example the same file again: nothing written, no new version (BR-36)']
 }
 Enum cost_bucket {
   unit [note: 'Cost of the seats held by the people of a unit (BR-06)']
-  unallocated [note: 'Cost of purchased seats nobody holds, carried by the owner unit (P&L, or the group for a shared license)']
+  unallocated [note: 'Cost of purchased seats nobody holds (Wasted) and cost that could not be split (Not evaluated), carried by the owner unit (P&L, or the group for a shared license)']
   unknown_unit [note: 'Cost of seats whose holder cannot be placed in a unit, carried by the owner unit (BR-21)']
 }
 Enum allocation_method {
-  per_seat [note: 'Accrued cost split evenly over purchased seats, by the seats held on the last day of the month (BR-03, BR-06)']
+  per_seat [note: 'Accrued cost split day by day over max(purchased, assigned) seats, by the seats of each day (seat-days, BR-06, D44)']
   per_usage [note: 'usage_based license: split by the consumption of subjects with a known unit']
   direct [note: 'Expense that names a unit goes to that unit']
-  none [note: 'No basis to split: the whole cost is unallocated']
+  none [note: 'No seat data in the whole month: the cost stays with the owner (unallocated) as Not evaluated (BR-04, D44)']
 }
 Enum detection_check {
   unused [note: 'Unassigned seats (UC10)']
@@ -355,8 +391,11 @@ Table org_units {
     Partial unique: one group row (unique on level where level = 'group').
     App rule: the parent of a unit is one level up (pnl -> group, block -> pnl,
     department -> block, project -> department), which also rules out cycles;
-    a unit with active employees, a current budget line, or licenses it owns
-    cannot be marked inactive. Every figure of a unit is the sum of the units
+    Admin cannot mark inactive a unit with active employees, a current budget
+    line, or licenses it owns; when ILVG no longer reports such a unit, the
+    sync marks it inactive anyway and the unit is listed to Admin (computed:
+    inactive units that still have any of these), who moves what is left
+    (D48, UC20). Every figure of a unit is the sum of the units
     under it (BR-21); Unallocated and Unknown unit are buckets of
     cost_allocations under the owner unit, not rows here.
   '''
@@ -368,7 +407,7 @@ Table employees {
   email varchar(320) [not null, unique, note: 'Current company email, stored lowercase; login email of the account']
   org_unit_id bigint [ref: > org_units.id, note: 'Unit of the employee at any level, from ILVG. NULL = Unknown unit (BR-21)']
   unit_since date [note: 'Day the employee joined org_unit_id; a transfer splits usage and cost on this day (BR-27)']
-  project_ids bigint[] [note: 'Projects the employee works on, from ILVG, when more than one; a seat counts toward each in equal parts (BR-06, D39). NULL = org_unit_id only']
+  project_ids bigint[] [note: 'Projects the employee works on, from ILVG, when more than one; a seat counts toward each in equal parts and not toward org_unit_id (BR-06, D39). NULL = org_unit_id only']
   left_on date [note: 'Last working day; NULL = still with the company (D20). Seats still held after it are flagged by the leaver check']
   source data_source [not null, default: 'api', note: 'api = ILVG sync; manual = created with an account by Admin before ILVG knows the person']
   sync_run_id bigint [ref: > sync_runs.id]
@@ -394,9 +433,12 @@ Table employees {
     Cost allocation, data scope, and "Unknown unit" read org_unit_id here,
     never from the account. Only the current unit is kept (D9); past months
     keep their unit through the frozen snapshots and cost_allocations, and
-    unit_since tells the day of a transfer (BR-27). An employee on several
-    projects has them in project_ids: a seat they hold counts toward each
-    project in equal parts, half a seat each for two (BR-06, D39).
+    unit_since tells the day of a transfer (BR-27). Cost follows the unit of
+    each day's snapshot (D44), so a transfer counts from the day ELMS receives
+    it: when ILVG reports a transfer late, the days before stay with the old
+    unit. An employee on several projects has them in project_ids: a seat
+    they hold counts toward each project in equal parts, half a seat each for
+    two, and nothing toward org_unit_id (BR-06, D39).
     The other emails of a person over time are the user subjects matched to
     this employee (subjects.employee_id), so one person holds licenses under
     several emails (UC23, UC61).
@@ -670,8 +712,11 @@ Table license_plans {
     on connector_id, lower(external_name)), and one per connector and
     external_ref where external_ref is not null.
     App rule: owner_org_unit_id is the P&L of the connector or the group; a
-    row with duplicate_of_id is left out of every figure; changing product_id or
-    owner_org_unit_id is written to audit_logs (BR-15).
+    row with duplicate_of_id is left out of every figure; the vendor of
+    product_id is the vendor of the connector; changing product_id or
+    owner_org_unit_id is written to audit_logs (BR-15). Changing
+    owner_org_unit_id recomputes the open months under the new owner; closed
+    months keep the owner they were computed with (D46).
   '''
 }
 Table contracts {
@@ -760,6 +805,7 @@ Table entitlement_lines {
     `valid_to is null or valid_to >= valid_from` [name: 'chk_entitlement_lines_validity']
     `unit_price is null or unit_price >= 0` [name: 'chk_entitlement_lines_unit_price']
     `price_per_qty > 0` [name: 'chk_entitlement_lines_price_per_qty']
+    `source in ('api', 'log')` [name: 'chk_entitlement_lines_connector_only']
     `(source in ('api', 'log')) = (sync_run_id is not null)` [name: 'chk_entitlement_lines_sync_provenance']
     `(source = 'import') = (import_batch_id is not null)` [name: 'chk_entitlement_lines_import_provenance']
   }
@@ -869,13 +915,18 @@ Table connectors {
     licenses are the license_plans rows with its connector_id. ILVG and BCA are
     connectors of their own kind, so every source is monitored the same way
     (UC26).
-    Status of each license of a connector (BR-32), computed, not stored:
+    Status of each license of a connector (BR-32, D49), computed, not stored,
+    from the runs after reconfigured_at and the collection_coverage rows of
+    the license they wrote:
       Paused   paused_at is set
-      Pending  no successful run since reconfigured_at
-      Failed   the latest run after reconfigured_at failed
-      Delayed  the latest successful run is older than sync_interval_hours
+      Pending  no coverage row of the license from a run after
+               reconfigured_at (also a license added to a running connector)
+      Failed   the latest finished run failed as a whole, or the latest
+               coverage row of the license is failed
+      Delayed  the latest run that wrote a complete or partial coverage row
+               of the license is older than sync_interval_hours
       Active   otherwise
-    Sync issues = Delayed + Failed.
+    Paused slots are left out of "latest run". Sync issues = Delayed + Failed.
     Partial unique: one active usage connector per company and provider
     (unique on org_unit_id, vendor_id where kind = 'usage' and is_active), so a
     deleted connector can be created again; one ILVG and one BCA connector
@@ -894,8 +945,7 @@ Table plan_data_sources {
   license_plan_id bigint [not null, ref: > license_plans.id]
   data_type data_kind [not null]
   source_type data_source [not null, default: 'api', note: 'Stamped as source on every row collected for this plan and kind of data']
-  connector_id bigint [not null, ref: > connectors.id, note: 'The connector of the plan (license_plans.connector_id)']
-  external_ref varchar(200) [note: 'Key of the plan at the provider, e.g. Microsoft Graph skuId']
+  external_ref varchar(200) [note: 'Key of the plan in this kind of data when it differs from license_plans.external_ref, e.g. the product name a usage report uses; NULL = the same']
   granularity usage_granularity [note: 'Required for usage: per subject or aggregate only']
   has_daily_activity boolean [note: 'Usage per subject: true when the source gives activity per day (active_days), false when it gives only the last activity date, so frequency is Not tracked (BR-35)']
   monitoring_since date [not null, default: `current_date`, note: 'First day this source delivered data; Inactive needs 30 days of monitoring (BR-03)']
@@ -904,7 +954,6 @@ Table plan_data_sources {
 
   indexes {
     (license_plan_id, data_type) [unique, name: 'uq_plan_data_sources_plan_type']
-    connector_id
   }
 
   checks {
@@ -921,7 +970,8 @@ Table plan_data_sources {
       waste (BR-04, BR-24).
     - has_daily_activity false: seat status is computed from the last activity
       date, frequency is Not tracked (BR-35).
-    App rule: connector_id equals license_plans.connector_id of the plan.
+    The connector is the one of the plan (license_plans.connector_id); it is
+    not copied here, so the two cannot disagree.
   '''
 }
 Table sync_runs {
@@ -1046,7 +1096,7 @@ Table files {
   original_name varchar(255) [not null]
   content_type varchar(100) [not null]
   size_bytes bigint [not null]
-  checksum char(64) [not null, note: 'SHA-256 of the content']
+  checksum char(64) [not null, note: 'SHA-256 of the content; tells the same file uploaded again in the import history']
   contract_id bigint [ref: > contracts.id, note: 'Retired (D38); always NULL']
   uploaded_by bigint [ref: > user_accounts.id]
   uploaded_at timestamptz [not null, default: `now()`]
@@ -1061,8 +1111,8 @@ Table files {
 
   Note: '''
     Uploaded files: expense invoices (PDF or image, at most 10 MB, BR-10),
-    budget plan Excel files (UC33), and CSV expense files. checksum is the
-    idempotency key of a budget import (BR-36). The service
+    budget plan Excel files (UC33), and CSV expense files. A budget file that
+    changes nothing is told by its preview, not by checksum (BR-36). The service
     checks the content type from the bytes, not from the name; files are
     served only through the API with the permission of the row they belong to.
   '''
@@ -1072,17 +1122,17 @@ Table import_batches {
   id bigint [pk, increment]
   import_type import_kind [not null]
   file_id bigint [not null, ref: > files.id]
-  target_org_unit_id bigint [ref: > org_units.id, note: 'Budget: the unit whose plan, and that of every unit under it, the file replaces (BR-08)']
+  target_org_unit_id bigint [ref: > org_units.id, note: 'Budget: the unit where, with every unit under it, the file changes the licenses it names (BR-08, D42)']
   period_from date [note: 'Budget: first day of the first month the file covers']
   period_to date [note: 'Budget: first day of the last month the file covers']
   preview_key uuid [not null, unique, note: 'Idempotency key of the confirm: a second confirm of the same key returns the first result (BR-36)']
-  based_on_budget_plan_id bigint [ref: > budget_plans.id, note: 'Budget: the version in force for the target when the preview was made; confirm is refused if another version came since (BR-36)']
+  based_on_budget_plan_id bigint [ref: > budget_plans.id, note: 'Budget: the latest version of any unit when the preview was made (NULL = none yet); confirm is refused if a later version wrote or superseded a line of the import scope (BR-36, D43)']
   budget_plan_id bigint [unique, ref: - budget_plans.id, note: 'Budget: the version the confirm created']
   status import_status [not null, default: 'previewed']
   rows_total int [not null, default: 0]
   rows_added int [not null, default: 0]
-  rows_updated int [not null, default: 0]
-  rows_removed int [not null, default: 0, note: 'Budget: current lines of the target the file no longer has (UC33)']
+  rows_updated int [not null, default: 0, note: 'Rows whose line in force has another quantity, amount, or currency']
+  rows_removed int [not null, default: 0, note: 'Budget: lines in force of the file licenses, in the target and under it, that the file no longer has (UC33, D42)']
   rows_rejected int [not null, default: 0]
   error_report jsonb [note: 'Rejected rows with their reasons']
   imported_by bigint [not null, ref: > user_accounts.id]
@@ -1105,18 +1155,28 @@ Table import_batches {
   Note: '''
     One import: preview, then confirm (UC33 budget, UC07 expenses). This is
     the import history "who, when, file, target, months, rows".
-    Budget import (BR-08, BR-36, D29, D30):
+    Budget import (BR-08, BR-36, D29, D30, D42, D43):
+    - scope of the import = the target and every unit under it, x the months,
+      x the licenses of the file (name and Shared column, D45). Licenses not
+      in the file and units outside the target are never touched.
     - preview: parse the file, check every row (unit codes in the hierarchy
-      and inside the target subtree, one row per unit, license, and month),
-      count rows to add, replace, remove, and reject; store based_on = the
-      version in force for the target.
-    - same file (files.checksum) for the same target and months as the version
-      in force -> status unchanged, "No changes", no version.
-    - confirm: in one transaction, lock the target, refuse when the version in
-      force is no longer based_on ("The plan changed since your preview"),
-      create the budget_plans version, supersede the current lines of the
-      target subtree for the months, insert the new lines, set
-      budget_plan_id.
+      and inside the target subtree, one row per unit, license, Shared, and
+      month), compare with the lines in force of the scope, and count rows to
+      add (no line in force), replace (another quantity, amount, or
+      currency), remove (a line in force of the scope the file no longer
+      has), and reject; store based_on = the latest budget_plans id of any
+      unit (NULL when there is none).
+    - nothing to add, replace, or remove -> status unchanged, "No changes",
+      no version (the same file again ends here).
+    - confirm: in one transaction, take the budget import lock (confirms run
+      one at a time, so version ids follow commit order); refuse when a line
+      of the scope has budget_plan_id or superseded_by_plan_id greater than
+      based_on, or any value when based_on is NULL ("The plan changed since
+      your preview"), so an import at the same unit, above, or below that
+      touched the same licenses and months is caught; create the
+      budget_plans version; supersede the lines it
+      replaces or removes; insert the added and replaced lines; set
+      budget_plan_id. Lines that do not change stay as they are.
       A second confirm with the same preview_key returns this result again.
     - a preview older than budget_preview_valid_minutes must be made again.
     App rule: the target is one of the importer's units or under one
@@ -1150,6 +1210,7 @@ Table subjects {
   }
 
   checks {
+    `source in ('api', 'log')` [name: 'chk_subjects_connector_only']
     `employee_id is null or org_unit_id is null` [name: 'chk_subjects_one_unit_source']
     `subject_type = 'user' or employee_id is null` [name: 'chk_subjects_employee_only_user']
     `account_type = 'personal' or employee_id is null` [name: 'chk_subjects_shared_no_employee']
@@ -1196,6 +1257,7 @@ Table license_assignments {
 
   checks {
     `ended_on is null or assigned_on is null or ended_on >= assigned_on` [name: 'chk_license_assignments_dates']
+    `source in ('api', 'log')` [name: 'chk_license_assignments_connector_only']
     `(source in ('api', 'log')) = (sync_run_id is not null)` [name: 'chk_license_assignments_sync_provenance']
     `(source = 'import') = (import_batch_id is not null)` [name: 'chk_license_assignments_import_provenance']
   }
@@ -1205,6 +1267,8 @@ Table license_assignments {
     assigns or revokes (BR-01). An ended assignment keeps its row.
     Partial unique: one open assignment per plan and subject
     (unique on license_plan_id, subject_id where ended_on is null).
+    App rule: the subject belongs to the connector of the plan
+    (subjects.connector_id = license_plans.connector_id).
     Seat status (BR-03, D31) is computed, not stored, for an open assignment,
     on the data date D. S = the usage source of the plan, T =
     inactivity_threshold_days (30), G = new_seat_grace_days (30), held =
@@ -1249,6 +1313,7 @@ Table usage_records {
   checks {
     `period_end >= period_start` [name: 'chk_usage_records_period']
     `quantity >= 0` [name: 'chk_usage_records_quantity']
+    `source in ('api', 'log')` [name: 'chk_usage_records_connector_only']
     `metric <> 'active_subjects' or subject_id is null` [name: 'chk_usage_records_active_subjects_aggregate']
     `metric <> 'active_days' or (subject_id is not null and quantity <= period_end - period_start + 1)` [name: 'chk_usage_records_active_days']
     `metric not in ('active_subjects', 'active_days', 'peak_concurrent') or quantity = trunc(quantity)` [name: 'chk_usage_records_whole_counts']
@@ -1267,7 +1332,8 @@ Table usage_records {
     App rule: one period length per plan and metric (the period of
     the source, usually a day or a month) and no overlapping periods, so sums
     over periods never count a day twice. The metric matches the archetype of
-    the plan (see the enum notes).
+    the plan (see the enum notes). The subject, when set, belongs to the
+    connector of the plan.
     Metered overuse (D13) = sum of consumption over the validity of a line
     with a quota, compared with that quota.
     A missing period is Unknown, never 0 (BR-04).
@@ -1343,10 +1409,11 @@ Table plan_unit_daily_snapshots {
     shared_service_qty is the part held by shared and service accounts, judged
     as whole accounts and listed apart (BR-28). The unit is the one of that
     day, so history keeps it after an employee moves (D9, BR-27).
-    The row of the last day of a month is the seat basis of the month (BR-03):
-    cost_allocations splits the accrued cost with it into Used (active),
-    Wasted (inactive + no activity, plus the unassigned seats of the owner),
-    and Not evaluated (not monitored) (BR-24).
+    The rows of every day of a month are the seat basis of the month (D44):
+    cost_allocations splits each day's share of the accrued cost with them
+    into Used (active), Wasted (inactive + no activity, plus the unassigned
+    seats of the owner), and Not evaluated (not monitored) (BR-24). The seat
+    counts shown for a month are those of its last day (BR-03).
     The unique index needs NULLS NOT DISTINCT because org_unit_id may be NULL.
     Rows are written only for a day whose assignment coverage is complete
     (D8); counts have no default, so a missing day is no row, never a row of
@@ -1404,7 +1471,7 @@ Table employee_app_usage {
 
 Table budget_plans {
   id bigint [pk, increment]
-  org_unit_id bigint [not null, ref: > org_units.id, note: 'Target unit of the import that created the version: the file replaced its plan and that of every unit under it']
+  org_unit_id bigint [not null, ref: > org_units.id, note: 'Target unit of the import that created the version: the file changed the licenses it names in this unit and every unit under it (D42)']
   fiscal_year int [not null]
   period_from date [not null, note: 'First day of the first month replaced']
   period_to date [not null, note: 'First day of the last month replaced']
@@ -1433,8 +1500,8 @@ Table budget_plans {
     a block only the block and what is under it.
     A version is never edited or deleted; earlier versions are kept for UC05
     "compare with the previous version". The plan in force is the current
-    lines (budget_plan_lines.superseded_at NULL), whatever version wrote them.
-    The version in force for a target = its latest version_no.
+    lines (budget_plan_lines.superseded_at NULL), whatever version wrote them:
+    a version writes only the lines its import added or replaced (D42).
   '''
 }
 Table budget_plan_lines {
@@ -1442,7 +1509,8 @@ Table budget_plan_lines {
   budget_plan_id bigint [not null, ref: > budget_plans.id]
   org_unit_id bigint [not null, ref: > org_units.id, note: 'Deepest unit the line names (group, P&L, block, department, project), inside the target subtree. A shared license is planned per P&L; a group line plans its free seats (BR-26)']
   license_name varchar(200) [not null, note: 'License as written in the file']
-  license_plan_id bigint [ref: > license_plans.id, note: 'License the name matches; NULL = Not mapped (UC33)']
+  is_shared boolean [not null, default: false, note: 'Shared column of the file: true = the line plans the share of a shared license (owner the group); false = a license the P&L of the unit owns (D45)']
+  license_plan_id bigint [ref: > license_plans.id, note: 'License the name and Shared column match (see the note); NULL = Not mapped (UC33)']
   month date [not null, note: 'First day of the month planned']
   planned_quantity numeric(20,4) [not null]
   planned_amount numeric(18,2) [not null]
@@ -1452,7 +1520,7 @@ Table budget_plan_lines {
   created_at timestamptz [not null, default: `now()`]
 
   indexes {
-    (budget_plan_id, org_unit_id, license_name, month) [unique, name: 'uq_budget_plan_lines_version_row']
+    (budget_plan_id, org_unit_id, license_name, is_shared, month) [unique, name: 'uq_budget_plan_lines_version_row']
     (org_unit_id, month)
     license_plan_id
   }
@@ -1472,26 +1540,39 @@ Table budget_plan_lines {
     A plan is judged where it is set (BR-37): a license planned at a unit above
     the one being viewed is shown there as "Planned at <unit>" and left out of
     its variance.
-    Partial unique: one line in force per unit, license, and month (unique on
-    org_unit_id, lower(license_name), month where superseded_at is null).
+    Partial unique: one line in force per unit, license, Shared, and month
+    (unique on org_unit_id, lower(license_name), is_shared, month where
+    superseded_at is null). The migration makes the version-row index
+    case-insensitive too (lower(license_name)), so a file with "M365 E3" and
+    "m365 e3" for the same unit and month is rejected in the preview.
     Shared licenses (BR-26): the Manager of the group plans one line per P&L
-    that uses the license, or deeper, so each P&L's Plan includes its share and
-    is compared with its charge-back; a group line plans the seats the group
-    keeps free. P&L Managers can then change or add the lines of their units.
-    App rule: confirming an import supersedes, in the same transaction, the
-    current lines of the target unit and every unit under it for the months of
-    the import, then inserts the lines of the file (BR-36). A line is never
-    linked to a duplicate license (license_plans.duplicate_of_id).
+    that uses the license, or deeper, with Shared = yes, so each P&L's Plan
+    includes its share and is compared with its charge-back; a group line
+    plans the seats the group keeps free. P&L Managers can then change or add
+    the lines of their units. A P&L can hold its own license and a share of a
+    shared license with the same name; the Shared column tells them apart
+    (D45).
+    Mapping to license_plan_id, among active licenses that are not
+    duplicates, by lower(external_name): is_shared false -> the license
+    owned by the P&L of org_unit_id; is_shared true -> the license owned by
+    the group. No match -> Not mapped; more than one -> the row is rejected in
+    the preview.
+    App rule: confirming an import supersedes, in the same transaction, only
+    the lines in force of its scope that it replaces or removes, then inserts
+    the added and replaced lines (D42, BR-36). A line of the group unit is a
+    shared line. A line is never linked to a duplicate license
+    (license_plans.duplicate_of_id).
   '''
 }
 Table cost_allocations {
   id bigint [pk, increment]
-  accounting_period_id bigint [not null, ref: > accounting_periods.id, note: 'Month of the owner unit of the license']
+  accounting_period_id bigint [not null, ref: > accounting_periods.id, note: 'Month of the owner unit of the license when the month was computed; a closed month keeps it after an owner change (D46)']
   license_plan_id bigint [not null, ref: > license_plans.id]
   bucket cost_bucket [not null]
   org_unit_id bigint [not null, ref: > org_units.id, note: 'unit: the unit of the holders; unallocated and unknown_unit: the owner unit of the license']
   method allocation_method [not null]
-  basis_qty numeric(20,4) [note: 'Seats of the bucket on the last day of the month (per_seat) or its consumption (per_usage); NULL for direct and none']
+  basis_qty numeric(20,4) [note: 'Average seats of the bucket over the month = seat-days / days in the month (per_seat), or its consumption (per_usage); NULL for direct and none']
+  filled_days int [note: 'per_seat: days of the month without complete seat data that took the seats of the nearest complete day of the month (D44); 0 = every day had its own data; NULL for the other methods']
   amount numeric(18,2) [note: 'Share of the accrued cost of the month (Purchased, D33), in the reporting currency; NULL = Unknown']
   used_amount numeric(18,2) [note: 'Part of amount for Active seats or consumption (BR-24)']
   wasted_amount numeric(18,2) [note: 'Part for Inactive and No activity seats; all of an unallocated row (BR-24)']
@@ -1506,6 +1587,8 @@ Table cost_allocations {
 
   checks {
     `basis_qty is null or basis_qty >= 0` [name: 'chk_cost_allocations_basis']
+    `((method = 'per_seat') = (filled_days is not null)) and (filled_days is null or filled_days between 0 and 31)` [name: 'chk_cost_allocations_filled_days']
+    `amount is not null or (used_amount is null and wasted_amount is null and not_evaluated_amount is null)` [name: 'chk_cost_allocations_unknown']
     `amount is null or used_amount is null or wasted_amount is null or not_evaluated_amount is null or amount = used_amount + wasted_amount + not_evaluated_amount` [name: 'chk_cost_allocations_split']
     `bucket <> 'unallocated' or used_amount is null or used_amount = 0` [name: 'chk_cost_allocations_unallocated_unused']
   }
@@ -1517,15 +1600,22 @@ Table cost_allocations {
     Cost of the month = the accrual of the expenses of the license for that
     month (expenses.accrual_schedule, D33).
     Split, by method:
-      per_seat   cost / purchased seats x seats of the bucket on the last day
-                 of the month (plan_unit_daily_snapshots): each unit its held
-                 seats, unknown_unit the unplaced holders, unallocated the
-                 unassigned seats under the owner (the group for a shared
-                 license, BR-26)
+      per_seat   day by day (seat-days, D44): each day carries cost / days in
+                 the month, split over max(Purchased quantity, assigned
+                 seats) of that day: each unit its held seats of that day
+                 (plan_unit_daily_snapshots), unknown_unit the unplaced
+                 holders, unallocated the unassigned seats under the owner
+                 (the group for a shared license, BR-26) - none when more
+                 seats are assigned than purchased (BR-34). A day without
+                 complete seat data takes the rows of the nearest complete
+                 day of the same month (the earlier one on a tie), counted in
+                 filled_days. The cost of a day whose Purchased quantity is
+                 Unknown goes to the unallocated row as Not evaluated (BR-04).
       per_usage  by the consumption of subjects with a known unit; the rest is
                  unknown_unit
       direct     an expense that names a unit goes to that unit
-      none       the whole cost is unallocated
+      none       no complete seat data in the whole month: one unallocated
+                 row, all Not evaluated
     The rows of a license and month add up to its cost (UC06 result), and the
     units add up the hierarchy (BR-21). Charge-back of a shared license is the
     unit rows of the companies that hold its seats (BR-26).
@@ -1542,7 +1632,7 @@ Table expenses {
   amount numeric(18,2) [not null, note: 'Negative only for a correcting entry']
   currency char(3) [not null]
   license_plan_id bigint [not null, ref: > license_plans.id]
-  org_unit_id bigint [not null, ref: > org_units.id, note: 'Company that pays the invoice: the owner unit of the license (BR-10)']
+  org_unit_id bigint [not null, ref: > org_units.id, note: 'Company that pays the invoice: the owner unit of the license when the expense is entered; it does not follow a later owner change (BR-10, D46)']
   description text
   invoice_file_id bigint [ref: > files.id]
   accrual_schedule jsonb [note: 'Monthly spread of the amount over the term, e.g. {"2026-01": 10000000, ...}; months of closed periods are frozen (BR-25, UC42)']
@@ -1591,15 +1681,13 @@ Table expenses {
 Table accounting_periods {
   id bigint [pk, increment]
   org_unit_id bigint [not null, ref: > org_units.id, note: 'Company whose month it is: a P&L, or the group for shared licenses']
-  fiscal_year int [not null]
-  period_year int [not null]
+  period_year int [not null, note: 'Calendar year, which is also the fiscal year (D47)']
   period_month int [not null]
   closed_at timestamptz [note: 'NULL = open, figures Provisional (BR-31); set = closed']
   closed_by bigint [ref: > user_accounts.id, note: 'NULL when closed by the system job']
 
   indexes {
     (org_unit_id, period_year, period_month) [unique, name: 'uq_accounting_periods_unit_month']
-    fiscal_year
   }
 
   checks {
@@ -1614,6 +1702,8 @@ Table accounting_periods {
     accrual (UC42); otherwise a system job closes month M on month_close_day
     of M+1 (D14). A closed month is never reopened; later changes are
     correcting entries.
+    A P&L month shows Provisional while it is open, and also while the group
+    month of a shared license charged to the P&L is still open (D46, BR-31).
     App rule: org_unit_id is a P&L or the group.
   '''
 }
@@ -1664,6 +1754,7 @@ Table detection_runs {
 
   checks {
     `(status = 'running') = (finished_at is null)` [name: 'chk_detection_runs_finished']
+    `status <> 'paused'` [name: 'chk_detection_runs_status']
   }
 
   Note: 'One daily detection run (BR-12). A re-run for the same data date adds a new run; screens read the latest successful run.'

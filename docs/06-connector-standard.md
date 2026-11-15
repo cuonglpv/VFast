@@ -267,7 +267,7 @@ BR-19 (every connector delivers ECS; the validator checks every run) and BR-20 (
 | `plan_data_sources.external_ref` reused for the provider plan linked in UC03 and UC25 | No new table needed |
 | `usage_metric` unchanged | ECS uses the schema's metric names (§4.2) |
 
-No new table: the schema stays at its 40 tables. These changes go into the database design as a new decision (after D41) once this proposal is approved.
+No new table: the schema stays at its 40 tables. These changes go into the database design as a new decision (after D49) once this proposal is approved.
 
 ### 5.5 Impact on the code structure
 
