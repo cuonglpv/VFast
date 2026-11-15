@@ -1,59 +1,33 @@
-import React, { useState } from "react";
-import { BudgetRenewalsDrawerSection } from "@/sections/budget";
-import { dashboardRepository } from "@/data/repositories";
-import { useRepositoryData } from "@/data/useRepositoryData";
-import { formatCurrency } from "@/utils";
-import { StatusBadge } from "@/components/StatusBadge";
-import {
-  AnnualSpendingTrajectory,
-  CategoryBudgetAllocation,
-} from "@/components/BudgetCharts";
-import Tooltip from "@mui/material/Tooltip/Tooltip";
+import { BudgetRenewalsDrawerSection } from './components/BudgetRenewalsDrawerSection';
+import { CategoryBudgetAllocation, AnnualSpendingTrajectory } from './components/BudgetCharts';
+import { useBudgetAnalytics } from './hooks/useBudgetAnalytics';
+import { formatCurrency } from '@/utils';
+import { StatusBadge } from '@/components/StatusBadge';
+import { InfoTooltip } from '@/components/InfoTooltip';
+import { PageHeader } from '@/components/layout/PageHeader';
+import { KpiCard } from '@/components/cards/KpiCard';
+import { DataTable, type TableColumn } from '@/components/table/DataTable';
+import { Button } from '@/components/ui/Button';
+import { LoadingState } from '@/components/feedback/LoadingState';
+import { ErrorState } from '@/components/feedback/ErrorState';
+import type { BudgetDashboardData } from '@/types/budget';
 
-function BudgetInfo({ label }: { label: string }) {
-  return (
-    <Tooltip title={label} arrow placement="top">
-      <span
-        className="budget-kpi-info cursor-help inline-flex items-center text-slate-400 hover:text-slate-600 transition-colors"
-        role="img"
-        aria-label={label}
-        tabIndex={0}
-      >
-        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="w-[15px] h-[15px]">
-          <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.2" />
-          <path
-            d="M8 7v4"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-          />
-          <circle cx="8" cy="4.7" r=".75" fill="currentColor" />
-        </svg>
-      </span>
-    </Tooltip>
-  );
-}
-
-export const BudgetAnalyticsPage: React.FC = () => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [currency, setCurrency] = useState<"USD" | "VND">("USD");
-  const { data: dashboard, error } = useRepositoryData(
-    dashboardRepository.getBudget,
-  );
-
-  if (error) return <p role="alert">Unable to load budget analytics.</p>;
-  if (!dashboard) return <p role="status">Loading budget analytics...</p>;
-
+export function BudgetAnalyticsPage() {
+  const { dashboard, error, drawerOpen, setDrawerOpen, currency, setCurrency } = useBudgetAnalytics();
+  if (error) return <ErrorState message="Unable to load budget analytics." />;
+  if (!dashboard) return <LoadingState message="Loading budget analytics..." />;
+  const columns: TableColumn<BudgetDashboardData['ledger'][number]>[] = [
+    { key: 'department', header: 'Department', className: 'table-name', headerClassName: '', cell: row => row.department },
+    { key: 'allocated', header: 'Allocated Budget (USD)', className: 'table-number', cell: row => formatCurrency(row.allocated) },
+    { key: 'actual', header: 'Actual Spend (USD)', className: 'table-number', cell: row => formatCurrency(row.actual) },
+    { key: 'variance', header: 'Variance (USD)', className: 'table-number', cell: row => <>{row.allocated >= row.actual ? '+' : '?'}{formatCurrency(Math.abs(row.allocated - row.actual))}</> },
+    { key: 'percentage', header: 'Variance (%)', className: 'table-number', cell: row => <>{row.allocated >= row.actual ? '+' : '?'}{row.allocated ? Math.abs((row.allocated - row.actual) / row.allocated * 100).toFixed(1) : '0.0'}%</> },
+    { key: 'status', header: 'Status', className: 'table-status', cell: row => <StatusBadge domain="budget" status={row.status} /> },
+  ];
   return (
     <div className="budget-analytics-page space-y-6">
-      <header className="budget-page-header">
-        <div className="budget-heading-copy">
-          <h1 className="page-title inline-flex items-center gap-2">
-            <span>Budget Management</span>
-            <BudgetInfo label="Predictive expenditure tracking, monthly budget planning, and renewal commitments." />
-          </h1>
-        </div>
-        <div className="budget-header-actions">
+      <PageHeader title="Budget Management" tooltip="Predictive expenditure tracking, monthly budget planning, and renewal commitments." className="budget-page-header" contentClassName="budget-heading-copy" titleClassName="page-title inline-flex items-center gap-2" actions={
+<div className="budget-header-actions">
           <div className="budget-year-control">
             <select aria-label="Fiscal year">
               {dashboard.fiscalYears.map((year) => (
@@ -75,22 +49,22 @@ export const BudgetAnalyticsPage: React.FC = () => {
             role="group"
             aria-label="Display currency"
           >
-            <button
+            <Button variant="plain"
               type="button"
               aria-pressed={currency === "USD"}
               onClick={() => setCurrency("USD")}
             >
               USD ($)
-            </button>
-            <button
+            </Button>
+            <Button variant="plain"
               type="button"
               aria-pressed={currency === "VND"}
               onClick={() => setCurrency("VND")}
             >
               VND (₫)
-            </button>
+            </Button>
           </div>
-          <button type="button" className="budget-primary-action">
+          <Button variant="plain" type="button" className="budget-primary-action">
             <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
               <path
                 d="M10 4v12M4 10h12"
@@ -100,98 +74,18 @@ export const BudgetAnalyticsPage: React.FC = () => {
               />
             </svg>
             Set Monthly Budget
-          </button>
+          </Button>
         </div>
-      </header>
+      } />
 
       <section className="budget-kpi-grid" aria-label="Budget overview">
-        <article className="budget-kpi-card">
-          <div className="budget-kpi-heading">
-            <h2>Remaining Budget</h2>
-            <BudgetInfo label="Available uncommitted budget for current cycle" />
-          </div>
-          <strong className="budget-kpi-value">
-            {formatCurrency(dashboard.remainingBudget)}
-          </strong>
-          <div className="budget-kpi-footer">
-            <div className="budget-kpi-state">
-              <span className="metric-note positive">
-                {dashboard.remainingPercentage}% Left
-              </span>
-            </div>
-          </div>
-        </article>
-
-        <article className="budget-kpi-card">
-          <div className="budget-kpi-heading">
-            <h2>Next Month Renewals</h2>
-            <BudgetInfo label="Upcoming fixed license renewal obligations" />
-          </div>
-          <strong className="budget-kpi-value">
-            {dashboard.renewalCommitmentPercentage}%
-          </strong>
-          <div className="budget-kpi-footer">
-            <div className="budget-kpi-state">
-              <span className="metric-note warning">
-                {dashboard.renewals.length} Expiring
-              </span>
-              <button
-                type="button"
-                className="budget-renewals-link"
-                onClick={() => setDrawerOpen(true)}
-              >
-                View Renewals ({dashboard.renewals.length})
-                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path
-                    d="M3 8h10m-4-4 4 4-4 4"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            </div>
-            <p className="budget-kpi-description"></p>
-          </div>
-        </article>
-
-        <article className="budget-kpi-card">
-          <div className="budget-kpi-heading">
-            <h2>Budget Consumed</h2>
-            <BudgetInfo label="MTD burn rate compared to budget ceiling" />
-          </div>
-          <Tooltip
-            title={`MTD Spend: ${formatCurrency(dashboard.actualSpendMtd)} / ${formatCurrency(dashboard.allocatedBudget)}`}
-            placement="top-start"
-            arrow
-          >
-            <strong className="budget-kpi-value">
-              {dashboard.burnRatePercentage}%
-            </strong>
-          </Tooltip>
-
-          <div className="budget-kpi-footer">
-            <div className="budget-kpi-state">
-              <StatusBadge domain="budget" status="45K Surplus" />
-            </div>
-          </div>
-        </article>
-
-        <article className="budget-kpi-card">
-          <div className="budget-kpi-heading">
-            <h2>Recoverable Waste</h2>
-            <BudgetInfo label="Identified spend from idle accounts inactive >60 days" />
-          </div>
-          <strong className="budget-kpi-value">
-            {formatCurrency(dashboard.recoverableWaste)}
-          </strong>
-          <div className="budget-kpi-footer">
-            <div className="budget-kpi-state">
-              <StatusBadge domain="budget" status="312 Idle Seats" />
-            </div>
-          </div>
-        </article>
+        <KpiCard variant="budget" title="Remaining Budget" tooltipText="Available uncommitted budget for current cycle" value={formatCurrency(dashboard.remainingBudget)} status={<span className="metric-note positive">{dashboard.remainingPercentage}% Left</span>} />
+        <KpiCard variant="budget" title="Next Month Renewals" tooltipText="Upcoming fixed license renewal obligations" value={`${dashboard.renewalCommitmentPercentage}%`} status={<>
+          <span className="metric-note warning">{dashboard.renewals.length} Expiring</span>
+          <Button variant="plain" className="budget-renewals-link" onClick={() => setDrawerOpen(true)}>View Renewals ({dashboard.renewals.length})<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10m-4-4 4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></Button>
+        </>} footer={<p className="budget-kpi-description" />} />
+        <KpiCard variant="budget" title="Budget Consumed" tooltipText="MTD burn rate compared to budget ceiling" value={`${dashboard.burnRatePercentage}%`} valueTooltip={`MTD Spend: ${formatCurrency(dashboard.actualSpendMtd)} / ${formatCurrency(dashboard.allocatedBudget)}`} status={<StatusBadge domain="budget" status="45K Surplus" />} />
+        <KpiCard variant="budget" title="Recoverable Waste" tooltipText="Identified spend from idle accounts inactive >60 days" value={formatCurrency(dashboard.recoverableWaste)} status={<StatusBadge domain="budget" status="312 Idle Seats" />} />
       </section>
 
       <div className="budget-chart-grid">
@@ -212,74 +106,19 @@ export const BudgetAnalyticsPage: React.FC = () => {
           <div>
             <h2 className="section-title inline-flex items-center gap-2">
               <span>Departmental Budget Ledger</span>
-              <BudgetInfo label="Breakdown of approved allocations, spend burn rate, and variance reconciliation." />
+              <InfoTooltip title="Breakdown of approved allocations, spend burn rate, and variance reconciliation." />
             </h2>
           </div>
-          <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs">
+          <Button variant="plain" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs">
             <span className="material-symbols-outlined text-base text-slate-500">
               file_download
             </span>
             <span>Export CSV</span>
-          </button>
+          </Button>
         </div>
 
         <div className="overflow-x-auto">
-          <table
-            className="data-table budget-ledger-table"
-            aria-label="Departmental budget ledger"
-          >
-            <thead>
-              <tr>
-                <th scope="col">Department</th>
-                <th scope="col" className="table-number">
-                  Allocated Budget (USD)
-                </th>
-                <th scope="col" className="table-number">
-                  Actual Spend (USD)
-                </th>
-                <th scope="col" className="table-number">
-                  Variance (USD)
-                </th>
-                <th scope="col" className="table-number">
-                  Variance (%)
-                </th>
-                <th scope="col" className="table-status">
-                  Status
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {dashboard.ledger.map((row) => {
-                const variance = row.allocated - row.actual;
-                const variancePercentage = row.allocated
-                  ? Math.abs((variance / row.allocated) * 100).toFixed(1)
-                  : "0.0";
-                const sign = variance >= 0 ? "+" : "?";
-                return (
-                  <tr key={row.department}>
-                    <td className="table-name">{row.department}</td>
-                    <td className="table-number">
-                      {formatCurrency(row.allocated)}
-                    </td>
-                    <td className="table-number">
-                      {formatCurrency(row.actual)}
-                    </td>
-                    <td className="table-number">
-                      {sign}
-                      {formatCurrency(Math.abs(variance))}
-                    </td>
-                    <td className="table-number">
-                      {sign}
-                      {variancePercentage}%
-                    </td>
-                    <td className="table-status">
-                      <StatusBadge domain="budget" status={row.status} />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <DataTable rows={dashboard.ledger} columns={columns} getRowKey={row => row.department} label="Departmental budget ledger" className="data-table budget-ledger-table" />
         </div>
       </div>
 

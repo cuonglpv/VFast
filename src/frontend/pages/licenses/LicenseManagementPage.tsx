@@ -1,93 +1,17 @@
-import { useState, type MouseEvent } from "react";
-import { LicenseListSection } from "@/sections/licenses";
-import { useLicenses } from "@/data/licenses";
-import { InfoTooltip } from "@/components/InfoTooltip";
+import { LicenseListSection } from './components/LicenseListSection';
+import { PageHeader } from '@/components/layout/PageHeader';
+import { KpiCard } from '@/components/cards/KpiCard';
+import { useLicenseOverview } from './hooks/useLicenseOverview';
 
-const categoryColors: Record<string, string> = {
-  design: "#6c5cff",
-  "design & creative": "#6c5cff",
-  security: "#f44719",
-  utilities: "#475569",
-  devops: "#156bb8",
-  "dev & devops": "#156bb8",
-  productivity: "#0095d9",
-  communication: "#00a1aa",
-};
-const fallbackColors = [
-  "#6c5cff",
-  "#f44719",
-  "#475569",
-  "#156bb8",
-  "#0095d9",
-  "#00a1aa",
-];
 export default function LicenseManagementPage() {
-  const { records } = useLicenses();
-  const [activeCategory, setActiveCategory] = useState<number | null>(null);
-  const categoryCounts = [
-    ...new Set(records.map((record) => record.category)),
-  ].map((label, index) => ({
-    label,
-    count: records.filter((record) => record.category === label).length,
-    color:
-      categoryColors[label.toLowerCase()] ??
-      fallbackColors[index % fallbackColors.length],
-  }));
-  let sliceStart = 0;
-  const categoryGradient = `conic-gradient(${categoryCounts
-    .map((category) => {
-      const sliceEnd = sliceStart + (category.count / records.length) * 100;
-      const slice = `${category.color} ${sliceStart}% ${sliceEnd}%`;
-      sliceStart = sliceEnd;
-      return slice;
-    })
-    .join(", ")})`;
-  const highlightedCategory =
-    activeCategory === null ? undefined : categoryCounts[activeCategory];
-  function highlightSlice(event: MouseEvent<HTMLDivElement>) {
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const x = event.clientX - bounds.left - bounds.width / 2;
-    const y = event.clientY - bounds.top - bounds.height / 2;
-    const distance = Math.hypot(x, y);
-    if (distance > bounds.width / 2 || distance < bounds.width * 0.32) {
-      setActiveCategory(null);
-      return;
-    }
-    const angle = (Math.atan2(x, -y) + Math.PI * 2) % (Math.PI * 2);
-    let cumulative = 0;
-    const index = categoryCounts.findIndex((category) => {
-      cumulative +=
-        (category.count / Math.max(1, records.length)) * Math.PI * 2;
-      return angle < cumulative;
-    });
-    setActiveCategory(index >= 0 ? index : null);
-  }
+  const { records, categoryCounts, categoryGradient, highlightedCategory, highlightSlice, setActiveCategory } = useLicenseOverview();
   return (
     <div className="license-management">
-      <div className="page-heading">
-        <h1 className="inline-flex items-center gap-2">
-          <span>License Management</span>
-          <InfoTooltip title="View the total number of licenses, compliance status, category breakdown, and top 5 app usage." />
-        </h1>
-      </div>
+      <PageHeader title="License Management" tooltip="View the total number of licenses, compliance status, category breakdown, and top 5 app usage." />
       <section className="management-overview" aria-label="License overview">
         <div className="summary-stack">
-          <article className="portal-card summary-card">
-            <h2>Total Licenses</h2>
-            <strong>{records.length}</strong>
-            <span style={{ marginTop: "1.5rem" }}>+5 MoM</span>
-          </article>
-          <article className="portal-card summary-card">
-            <h2>Unsanitized</h2>
-            <strong>
-              {
-                records.filter(
-                  (record) => record.complianceStatus !== "Compliant",
-                ).length
-              }
-            </strong>
-            <span style={{ marginTop: "1.5rem" }}>+1 MoM</span>
-          </article>
+          <KpiCard variant="summary" title="Total Licenses" value={records.length} footer={<span style={{ marginTop: '1.5rem' }}>+5 MoM</span>} />
+          <KpiCard variant="summary" title="Unsanitized" value={records.filter(record => record.complianceStatus !== 'Compliant').length} footer={<span style={{ marginTop: '1.5rem' }}>+1 MoM</span>} />
         </div>
         <article className="portal-card category-card">
           <h2>Category Breakdown</h2>
