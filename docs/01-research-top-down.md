@@ -214,4 +214,4 @@ The epics are the seven branches of the agreed mind map; each leaf is one use ca
 
 The open questions are tracked in one place: [Open decisions](02-use-cases.md#open-decisions) of the use cases.
 
-**Related:** [Use cases](02-use-cases.md) · [INVEST requirements](03-invest-requirements.md) · [Data fields research](07-data-fields-research.md)
+**Related:** [Use cases](02-use-cases.md) · [INVEST requirements](03-invest-requirements.md) · [Data fields research](09-data-fields-research.md)

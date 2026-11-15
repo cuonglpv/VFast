@@ -596,7 +596,7 @@ The plan is imported from Excel (BR-08); the Usage screen compares it with what 
 
 ### Connection Management
 
-ELMS reads four kinds of source and writes to none of them (BR-01): usage connectors per company and provider, BCA, ILVG, and the budget Excel file (UC33). Fields each source can return: [Data fields research](07-data-fields-research.md).
+ELMS reads four kinds of source and writes to none of them (BR-01): usage connectors per company and provider, BCA, ILVG, and the budget Excel file (UC33). Fields each source can return: [Data fields research](09-data-fields-research.md).
 
 #### UC38 View Usage Connectors
 
@@ -713,4 +713,4 @@ These do not change the use case list; they are settled when each use case is de
 | 22 | ~~Grace period for a newly assigned seat~~ — **settled:** counted as `Active` until 30 days after assignment (BR-03) | BR-03, UC11, UC61 |
 | 23 | Whether the SAP export carries department codes — **assumed yes** (BR-08); to be checked with a real export | UC33, BR-08 |
 
-**Related:** [Research](01-research-top-down.md) · [INVEST requirements](03-invest-requirements.md) · [Data fields research](07-data-fields-research.md)
+**Related:** [Research](01-research-top-down.md) · [INVEST requirements](03-invest-requirements.md) · [Data fields research](09-data-fields-research.md)

@@ -11,7 +11,7 @@ VFast/
 ├─ docs/
 │  ├─ 01-research-top-down.md … 04-information-architecture-manager.md
 │  ├─ 05-folder-structure.md        ← this file
-│  ├─ 06-connector-standard.md, 07-data-fields-research.md, 08-feature-list.md
+│  ├─ 06-connector-standard.md, 07-c4-architecture.md, 08-feature-list.md, 09-data-fields-research.md
 │  ├─ database/
 │  │  ├─ elms.dbml                  Database design (source of truth), schema.sql, tables.md
 │  │  └─ diagrams/                  ERDs (draw.io, png, svg)

@@ -245,7 +245,7 @@ VFast/
 ├─ README.md
 ├─ docs/
 │  ├─ 01 … 04               Research, use cases, INVEST, information architecture
-│  ├─ 07, 08                Data fields research, feature list
+│  ├─ 07, 08, 09            C4 architecture, feature list, data fields research
 │  ├─ 05-folder-structure.md
 │  ├─ 06-connector-standard.md
 │  ├─ 07-c4-architecture.md
@@ -316,8 +316,8 @@ Full trees, module table, API conventions, jobs, caching, security, and deployme
 - [Folder structure and architecture](docs/05-folder-structure.md) — solution architecture, frontend structure, backend modules and .NET folder layout, API conventions, jobs, caching, security
 - [Connector standard](docs/06-connector-standard.md) — research on FOCUS, SCIM, ISO/IEC 19770 and provider APIs; the ELMS Connector Standard (ECS) v1 proposal, Connector Management use cases, rollout plan
 - [C4 Architecture](docs/07-c4-architecture.md) — system context, containers, components, daily pipeline, deployment, cross-cutting concerns
-- [Data fields research](docs/07-data-fields-research.md) — fields each source can return: usage connectors, BCA, ILVG, budget file
 - [Feature list](docs/08-feature-list.md) — features of every use case, by mind-map branch
+- [Data fields research](docs/09-data-fields-research.md) — fields each source can return: usage connectors, BCA, ILVG, budget file
 - [Database design](docs/database/README.md) — conventions, entity overview, ERD per group, every table explained, rule-to-schema traceability, proposed decisions D24–D41; every field in [Tables and fields](docs/database/tables.md)
 
 ## Frontend development
