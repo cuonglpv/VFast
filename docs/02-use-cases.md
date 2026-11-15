@@ -122,16 +122,16 @@ The agreed use cases, by mind-map branch. *Demo:* D1 latest Usage & Connector de
 | ID | Use case | What the user can do | Actors | Demo |
 |---|---|---|---|---|
 | | **License Management** | | | |
-| UC01 | Manage Software Catalog | Keep the list of software with its category, and map each license name the connectors report to a software | Staff | — |
 | UC57 | View License List | See every license of the group with its monthly cost, company, allocated / purchased and days to expiry; search, filter by company and expiry, sort, page | Manager | D1 |
 | UC58 | View License Validity Timeline | See each license term on a six-month timeline, move it month by month or back to today, spot licenses about to expire | Manager | D1 |
 | UC59 | View License Details | Open a license: cost, start and expiry, unallocated or over-allocated seats | Manager | D1 |
 | UC61 | View License Users and Activity | See who holds a license, who is active or inactive, when each last used it and how often; filter, search, export | Manager | R |
-| UC02 | View Providers and Licenses | See the providers the group buys from and, per provider, its licenses and the companies using them | Manager | — |
-| UC04 | View Contracts | See license terms — start, expiry, auto-renew, cost — and those renewing within 30 or 60 days | Manager | — |
+| UC01 | Manage Software Catalog | Keep the list of software with its category, and map each license name the connectors report to a software | Staff | — |
 | UC27 | View License Inventory by P&L | Pick a P&L and see every license it reports, grouped by provider | Manager, Staff | — |
 | UC28 | View Licenses by Organization | Pick any unit and see its licenses, or pick a license and see which units use it | Manager | — |
 | UC47 | Manage Shared Licenses | Mark licenses used by two or more companies as shared, owned by the group; see how their cost is charged back to each company | Staff; Manager reads | — |
+| UC02 | View Providers and Licenses | See the providers the group buys from and, per provider, its licenses and the companies using them | Manager | — |
+| UC04 | View Contracts | See license terms — start, expiry, auto-renew, cost — and those renewing within 30 or 60 days | Manager | — |
 | | **Usage** | | | |
 | UC37 | Navigate Organization Scope | Choose the company or unit to analyse from the tree or the company picker; go down and back up the hierarchy | Manager | D1, D2 |
 | UC08 | View Plan vs Utilization Balance | See Plan, Purchased and Used of the scope, whether it is over budget, and how much of what was bought is used | Manager | D1, D2 |
@@ -193,41 +193,6 @@ Money is in scope (BR-05).
 
 ELMS shows the licenses each P&L reports; nobody enters or grants a license in ELMS (BR-01).
 
-#### UC01 Manage Software Catalog
-
-- **Actor:** Staff (group level) keep the catalog; Staff (own companies) map the license names of their companies; Managers see software and category on every screen
-- **Demo:** none in D1; the React app shows category and subcategory per license
-- **Main flow:**
-  - **Catalog:** one row per software (Software, Provider, Category, Subcategory, Licenses mapped, Companies) → search, filter by provider and category.
-  - Create or edit a software: name, provider, category, subcategory. Categories and subcategories are a list kept here, e.g. *Productivity › Office & Collaboration*, *DevOps › Source Control*.
-  - **Mapping:** the license names the connectors report (License name, Provider, Companies, Mapped to) → filter *Not mapped* → choose the software for a name; ELMS suggests the software of the same provider whose name matches best → the mapping applies to that license name from every company of that provider.
-  - **Applications from BCA:** the application names BCA reports (Application, Employees using it, Mapped to) are mapped to a software the same way, so Track Employee Usage (UC32) can tell an application in use without a license and the license holders who never open the application.
-- **Example:** Company A reports *Microsoft 365 E3*, Company B *M365 E3*, Company C *Microsoft 365 E5*: all three map to *Microsoft 365* (*Productivity › Office & Collaboration*); the License Dashboard then counts them under one software and one category.
-- **Alternative:** a new license name from a connector → "Not mapped" and grouped under *Uncategorized* until mapped (BR-38); a mapping changed → recorded with who, old and new value (BR-15), and every screen follows it, history included; a software with mapped licenses → cannot be deleted, only merged into another; a category in use → cannot be deleted; a Staff member of one company → maps only the license names their companies report
-- **Result:** every license and every BCA application carries software, category, and subcategory, used by the License Dashboard (UC15), the analysis by license (UC44), employee usage (UC32), and the filters; the catalog never changes a source (BR-01)
-
-#### UC27 View License Inventory by P&L
-
-- **Actor:** Manager (own units), Staff (own companies — to check what the connectors deliver)
-- **Main flow:** choose a P&L → table of every license it reports, grouped by provider (License, Provider, License type, Purchased, Assigned, Used, Purchased cost, Status, Expiry date, Data date) → search, filter by license type, provider, status → open a license: its fields from the connector, holders, and the units it belongs to
-- **Alternative:** the P&L has no connector or no successful run → "No data yet", never an empty inventory (BR-04); a license not yet linked to the catalog → shown with the name the P&L gave and marked "Not mapped"; a figure the P&L does not report → `Unknown`
-- **Result:** read-only; one list of what a P&L uses, without visiting the P&L
-
-#### UC28 View Licenses by Organization
-
-- **Actor:** Manager (own units)
-- **Main flow:** choose a unit at any level (P&L, block, department, project) → licenses used by that unit (License, Provider, License type, Purchased, Assigned, Used, Cost) → open a license to see its split over the units below → switch to the opposite view: choose a license → which P&Ls, blocks, departments, and projects use it
-- **Alternative:** a license or holder that cannot be placed in a unit → counted under "Unknown unit" of the nearest known level, so totals still add up (BR-21); a Manager choosing a unit outside their scope → `403`
-- **Result:** read-only; every license is visible per company, block, department, and project
-
-#### UC47 Manage Shared Licenses
-
-- **Actor:** Staff (group level) marks and edits; Manager (own units) reads the share of their units
-- **Main flow:** table of shared licenses — licenses used by two or more companies (License, Provider, Purchased, Allocated, Monthly cost, Companies using it, Term, Source connector) → licenses whose holders belong to two or more companies are proposed as *Possibly shared* → Staff confirm: the owner unit becomes the group (BR-26) → open a shared license: the charge-back per company — seats held, share of cost, Used, Wasted — and *Unallocated*, the unassigned seats left with the group → a Manager sees the share of their units
-- **Example:** GitHub Enterprise, 1,000 seats, 100 million VND a month (100,000 a seat). Company A holds 500 seats, B 300; 200 seats are not assigned. A is charged 50 million a month, B 30 million; the 20 million of the 200 free seats sit in *Unallocated* under the group and are the group's waste. If 50 of A's seats are `Inactive`, 5 million of A's share is A's waste.
-- **Alternative:** a license whose holders all belong to one company → not proposed; Staff unmark a shared license → it goes back to the P&L of its connector; marking or unmarking changes the open months only, closed months keep their owner; the same license reported by two connectors → "Also reported by <company>", Staff pick the source, counted once; a holder that cannot be placed → *Unknown unit* (BR-21); a holder who moves to another company → charged to the old company up to the transfer date and to the new one after it (BR-27)
-- **Result:** each company's figures include its share of every shared license; the group plans each shared license with one line per P&L that uses it, so each P&L's Plan includes its share (BR-26); the free seats are the group's cost and waste; nothing changes at the provider (BR-01)
-
 #### UC57 View License List
 
 - **Actor:** Manager (own units)
@@ -284,6 +249,41 @@ ELMS shows the licenses each P&L reports; nobody enters or grants a license in E
   - allocated above purchased → the holders beyond the purchased quantity are marked (BR-34);
   - a Manager → only holders in their units; the others counted as "Outside your scope: n" (BR-16);
 - **Result:** read-only; the counts equal Allocated in UC57; the inactive holders feed UC11
+
+#### UC01 Manage Software Catalog
+
+- **Actor:** Staff (group level) keep the catalog; Staff (own companies) map the license names of their companies; Managers see software and category on every screen
+- **Demo:** none in D1; the React app shows category and subcategory per license
+- **Main flow:**
+  - **Catalog:** one row per software (Software, Provider, Category, Subcategory, Licenses mapped, Companies) → search, filter by provider and category.
+  - Create or edit a software: name, provider, category, subcategory. Categories and subcategories are a list kept here, e.g. *Productivity › Office & Collaboration*, *DevOps › Source Control*.
+  - **Mapping:** the license names the connectors report (License name, Provider, Companies, Mapped to) → filter *Not mapped* → choose the software for a name; ELMS suggests the software of the same provider whose name matches best → the mapping applies to that license name from every company of that provider.
+  - **Applications from BCA:** the application names BCA reports (Application, Employees using it, Mapped to) are mapped to a software the same way, so Track Employee Usage (UC32) can tell an application in use without a license and the license holders who never open the application.
+- **Example:** Company A reports *Microsoft 365 E3*, Company B *M365 E3*, Company C *Microsoft 365 E5*: all three map to *Microsoft 365* (*Productivity › Office & Collaboration*); the License Dashboard then counts them under one software and one category.
+- **Alternative:** a new license name from a connector → "Not mapped" and grouped under *Uncategorized* until mapped (BR-38); a mapping changed → recorded with who, old and new value (BR-15), and every screen follows it, history included; a software with mapped licenses → cannot be deleted, only merged into another; a category in use → cannot be deleted; a Staff member of one company → maps only the license names their companies report
+- **Result:** every license and every BCA application carries software, category, and subcategory, used by the License Dashboard (UC15), the analysis by license (UC44), employee usage (UC32), and the filters; the catalog never changes a source (BR-01)
+
+#### UC27 View License Inventory by P&L
+
+- **Actor:** Manager (own units), Staff (own companies — to check what the connectors deliver)
+- **Main flow:** choose a P&L → table of every license it reports, grouped by provider (License, Provider, License type, Purchased, Assigned, Used, Purchased cost, Status, Expiry date, Data date) → search, filter by license type, provider, status → open a license: its fields from the connector, holders, and the units it belongs to
+- **Alternative:** the P&L has no connector or no successful run → "No data yet", never an empty inventory (BR-04); a license not yet linked to the catalog → shown with the name the P&L gave and marked "Not mapped"; a figure the P&L does not report → `Unknown`
+- **Result:** read-only; one list of what a P&L uses, without visiting the P&L
+
+#### UC28 View Licenses by Organization
+
+- **Actor:** Manager (own units)
+- **Main flow:** choose a unit at any level (P&L, block, department, project) → licenses used by that unit (License, Provider, License type, Purchased, Assigned, Used, Cost) → open a license to see its split over the units below → switch to the opposite view: choose a license → which P&Ls, blocks, departments, and projects use it
+- **Alternative:** a license or holder that cannot be placed in a unit → counted under "Unknown unit" of the nearest known level, so totals still add up (BR-21); a Manager choosing a unit outside their scope → `403`
+- **Result:** read-only; every license is visible per company, block, department, and project
+
+#### UC47 Manage Shared Licenses
+
+- **Actor:** Staff (group level) marks and edits; Manager (own units) reads the share of their units
+- **Main flow:** table of shared licenses — licenses used by two or more companies (License, Provider, Purchased, Allocated, Monthly cost, Companies using it, Term, Source connector) → licenses whose holders belong to two or more companies are proposed as *Possibly shared* → Staff confirm: the owner unit becomes the group (BR-26) → open a shared license: the charge-back per company — seats held, share of cost, Used, Wasted — and *Unallocated*, the unassigned seats left with the group → a Manager sees the share of their units
+- **Example:** GitHub Enterprise, 1,000 seats, 100 million VND a month (100,000 a seat). Company A holds 500 seats, B 300; 200 seats are not assigned. A is charged 50 million a month, B 30 million; the 20 million of the 200 free seats sit in *Unallocated* under the group and are the group's waste. If 50 of A's seats are `Inactive`, 5 million of A's share is A's waste.
+- **Alternative:** a license whose holders all belong to one company → not proposed; Staff unmark a shared license → it goes back to the P&L of its connector; marking or unmarking changes the open months only, closed months keep their owner; the same license reported by two connectors → "Also reported by <company>", Staff pick the source, counted once; a holder that cannot be placed → *Unknown unit* (BR-21); a holder who moves to another company → charged to the old company up to the transfer date and to the new one after it (BR-27)
+- **Result:** each company's figures include its share of every shared license; the group plans each shared license with one line per P&L that uses it, so each P&L's Plan includes its share (BR-26); the free seats are the group's cost and waste; nothing changes at the provider (BR-01)
 
 #### UC02 View Providers and Licenses
 

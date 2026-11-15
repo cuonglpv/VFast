@@ -1041,7 +1041,7 @@ Table collection_coverage {
     (decision D8). A connector run writes one row per plan and kind it
     collects; a later run of the same day replaces the row.
     No row, partial, or failed = Unknown for that day: detection reports
-    not_evaluated (UC10-UC12, UC17) and daily snapshots are not written.
+    not_evaluated (UC10, UC11, UC35) and daily snapshots are not written.
     A successful run that finds 0 holders writes complete, so a true 0 is
     told apart from a missing day. Data the provider returns but ELMS cannot
     use is not complete: a usage report with anonymized user names, or

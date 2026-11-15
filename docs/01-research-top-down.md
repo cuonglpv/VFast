@@ -148,7 +148,7 @@ Pipeline principles:
 
 ## 6. Functional decomposition (Epic → Feature)
 
-The epics are the seven branches of the agreed mind map; each leaf is one use case.
+The epics are the seven branches of the agreed mind map; each leaf is one use case. Bold leaves are Must- and Should-have use cases, plain leaves Could-have ([INVEST requirements](03-invest-requirements.md)). The two self-service use cases every role has, View My Licenses (UC23) and Login / Logout (UC24), are not on the map.
 
 ![ELMS mind map](mindmap.png)
 
@@ -158,16 +158,17 @@ The epics are the seven branches of the agreed mind map; each leaf is one use ca
 | | Catalog & inventory | Software Catalog (UC01), Inventory by P&L (UC27), Licenses by Organization (UC28), Shared Licenses (UC47), Providers and Licenses (UC02), Contracts (UC04) |
 | E2 Usage | Scope & overview | Organization Scope (UC37), Plan vs Utilization Balance (UC08) |
 | | Subordinate analytics | Unit Comparison (UC48), Annual Trend (UC49), Units Table (UC50), CSV Export (UC51) |
-| | Employee usage | Track Employee Usage (UC32) |
+| | | Employee Usage (UC32) |
 | E3 Budget Management | Planning & cost allocation | Budget Import (UC33), Monthly Plan (UC05), Cost Allocation (UC06), Cost Accrual (UC42) |
 | | Spending & monitoring | Expenses (UC07), Exchange Rates (UC62), Plan Variance (UC34), Forecast (UC09) |
 | E4 Optimization | Detection | Unused (UC10), Inactive (UC11), P&L Waste Flag (UC35) |
 | | Waste analysis | Waste Ranking (UC43), Trend (UC52), Risk Distribution (UC53), Monthly Heatmap (UC54) |
-| E5 Analytics | | Group Overview (UC36), License & Provider Analysis (UC44), Metric Definitions (UC45), License, Financial, and Optimization Dashboards (UC15, UC16, UC18) |
+| E5 Analytics | | Group Overview (UC36), License & Provider Analysis (UC44), Metric Definitions (UC45) |
+| | Dashboards | License Dashboard (UC15), Financial Dashboard (UC16), Optimization Dashboard (UC18) |
 | E6 User & Organization | | Users (UC19), Organization Hierarchy (UC20), Roles (UC21), Permissions (UC22) |
 | E7 Connection Management | Usage connectors | List (UC38), Create (UC55), Edit and delete (UC60), Details (UC56) |
-| | Sync monitoring | Monitor Data Synchronization (UC26) |
-| — Self-service | | View My Licenses (UC23), Login / Logout (UC24) |
+| | | Sync Monitoring (UC26) |
+| — Self-service (not on the map) | | View My Licenses (UC23), Login / Logout (UC24) |
 
 ## 7. Scope
 

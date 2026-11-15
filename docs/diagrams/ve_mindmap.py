@@ -3,7 +3,8 @@
 Chạy trong thư mục docs/diagrams:  python ve_mindmap.py
 Ra: docs/mindmap.png (render SVG bằng Chrome headless, tỉ lệ 2x).
 Bố cục theo kiểu XMind Map: nửa đầu các nhánh bên phải (trên xuống), phần còn lại bên trái (dưới lên),
-nên đọc theo chiều kim đồng hồ đúng thứ tự trong file. Topic có nhãn 'key' được tô đậm.
+nên đọc theo chiều kim đồng hồ đúng thứ tự trong file. Topic in đậm trong XMind (fo:font-weight bold) cũng in đậm
+trong ảnh: lá in đậm là use case Must/Should-have, lá chữ thường là Could-have (docs/03-invest-requirements.md).
 Cần Windows (font Segoe UI) và Chrome.
 """
 import html
@@ -52,7 +53,7 @@ class Node:
     def __init__(self, topic, level):
         self.title = topic.get('title', '')
         self.level = min(level, 3)
-        self.bold = level <= 1 or 'key' in topic.get('labels', [])
+        self.bold = level <= 1 or topic.get('style', {}).get('properties', {}).get('fo:font-weight') == 'bold'
         self.children = [Node(t, level + 1) for t in topic.get('children', {}).get('attached', [])]
         size = SIZE[self.level]
         if self.level == 0:
