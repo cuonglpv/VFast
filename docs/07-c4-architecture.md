@@ -1,5 +1,7 @@
 # 07 — C4 Architecture
 
+> Aligned with the P&L API business model and the 49 use cases of the third revision (15 November 2026).
+
 The C4 model describes a system at four zoom levels. Each level answers one question for one audience:
 
 | Level | Diagram | Question it answers | Audience |
@@ -9,32 +11,37 @@ The C4 model describes a system at four zoom levels. Each level answers one ques
 | 3 | Component | How is one container built inside? | Developers |
 | 4 | Code | How is a component implemented? | Developers (see the repository, not this file) |
 
-Two supplementary views follow the four levels: a **dynamic view** (the daily pipeline) and a **deployment view**.
+Two supplementary views follow the four levels: a **dynamic view** (the sync and daily pipeline) and a **deployment view**.
 
-Diagrams use Mermaid flowcharts so they render in GitLab Markdown. Notation: a person is a rounded shape, an external system is grey, the system boundary is a dashed frame, and every arrow is labelled with what flows and over which protocol.
+Diagrams use Mermaid flowcharts so they render in GitHub and GitLab Markdown. Notation: a person is a rounded shape, an external system is grey, the system boundary is a dashed frame, and every arrow is labelled with what flows and over which protocol.
 
 ## 1. Level 1 — System Context
 
-ELMS is one system. It reads license, assignment, usage, and cost data from software providers, combines it with data entered by the license team, and shows managers where money is wasted. It never changes anything on a provider (BR-01).
+ELMS is one system. It reads, for every P&L of the group, the licenses, terms, holders, and usage that the P&L's own API returns; it takes employees and units from ILVG, application usage from BCA, the budget plan from an Excel export of SAP, and the cost from the invoices Staff record; and it shows each Manager, in money, what is planned, purchased, used, and wasted. It never changes anything at a source (BR-01).
 
 ```mermaid
 flowchart TB
     employee(["Employee<br/>Sees own licenses<br/>and whether they are used"])
-    staff(["Staff<br/>Sets up connectors, maintains catalog,<br/>entitlements, contracts, expenses"])
-    manager(["Manager<br/>Plans budget, reviews waste,<br/>decides on recommendations"])
-    admin(["Admin<br/>Users, P&Ls, departments,<br/>roles, permissions"])
+    staff(["Staff<br/>Sets up connectors, keeps the catalog,<br/>expenses, accrual, exchange rates"])
+    manager(["Manager<br/>Any unit, the group included:<br/>licenses, usage, waste, budget plan"])
+    admin(["Admin<br/>Users, organization, roles,<br/>permissions; group overview"])
 
-    elms["ELMS<br/>Enterprise License Management System<br/>[Software system]<br/>Centralizes licenses, measures usage and cost,<br/>compares budget with reality, recommends savings"]
+    elms["ELMS<br/>Enterprise License Management System<br/>[Software system]<br/>Centralizes the licenses of every P&L, measures usage<br/>and waste in money, compares budget with reality"]
 
-    providers["Software providers<br/>[External systems]<br/>Microsoft 365 / Entra ID, Google, Adobe, JetBrains,<br/>OpenAI, Anthropic, AWS, VPN and license servers"]
-    files["ECS and CSV files<br/>[Input]<br/>ECS files for file connectors,<br/>CSV templates for manual import"]
+    pnl["P&L license APIs<br/>[External systems]<br/>one per company and provider:<br/>licenses, terms, holders, activity, usage"]
+    ilvg["ILVG<br/>[External system]<br/>employees, units, projects, transfers"]
+    bca["BCA<br/>[External system]<br/>application usage on company machines"]
+    files["Budget and invoice files<br/>[Input]<br/>SAP budget export (Excel), expense CSV"]
 
     employee -- "Views own licenses<br/>[HTTPS]" --> elms
-    staff -- "Sets up connectors, enters<br/>and imports license data<br/>[HTTPS]" --> elms
-    manager -- "Plans budget, decides<br/>[HTTPS]" --> elms
+    staff -- "Connectors, catalog, expenses<br/>[HTTPS]" --> elms
+    manager -- "Analyses, imports the budget<br/>[HTTPS]" --> elms
     admin -- "Manages access<br/>[HTTPS]" --> elms
-    elms -- "Reads licenses, assignments, usage, cost<br/>[read-only connectors, ECS]" --> providers
-    staff -. "Uploads<br/>[ECS or CSV file]" .-> files
+    elms -- "Reads at each connector's interval<br/>[read-only, license data contract]" --> pnl
+    elms -- "Reads daily [read-only]" --> ilvg
+    elms -- "Reads daily [read-only]" --> bca
+    manager -. "Uploads budget<br/>[Excel]" .-> files
+    staff -. "Uploads expenses<br/>[CSV]" .-> files
     files -. "Preview, then confirm" .-> elms
 
     classDef person fill:#0F67B1,stroke:#0B4F8A,color:#fff
@@ -42,54 +49,52 @@ flowchart TB
     classDef external fill:#94A3B8,stroke:#475569,color:#0F172A
     class employee,staff,manager,admin person
     class elms system
-    class providers,files external
+    class pnl,ilvg,bca,files external
 ```
 
 ### People
 
 | Person | Role in ELMS | Data scope |
 |---|---|---|
-| Employee | `EMPLOYEE` — every employee | Own licenses only, without price or cost |
-| Staff | `STAFF` — license management team | Every license and expense; sets up and monitors connectors; no budget, no dashboards |
-| Manager | `MANAGER` — manager of a P&L or department | Only the units assigned to them |
-| Admin | `ADMIN` — system operator | Access settings only; sees connector status, counts, and error codes, but no license, budget, or cost data (BR-16) |
+| Employee | `EMPLOYEE` — every employee | Own licenses only, across all their emails, without price or cost |
+| Staff | `STAFF` — license management team | The companies assigned to them (the group for group-level Staff): connectors, sync, catalog, shared licenses, expenses, accrual, exchange rates; no usage or waste analysis |
+| Manager | `MANAGER` — manager of a unit at any level, the group included | The units assigned to them and everything under them |
+| Admin | `ADMIN` — system operator | Users, organization, roles, permissions; the group overview and the dashboards, read-only, down to each license (BR-16) |
 
 Each account has exactly one role (BR-17). The full capability matrix is in [Use cases](02-use-cases.md).
 
 ### External systems
 
-| System | What ELMS takes | Delivery | Automation (from [research §4.4](01-research-top-down.md)) |
-|---|---|---|---|
-| Microsoft 365 / Entra ID | Plans and quantities, assigned licenses, activity, last sign-in | Adapter over Microsoft Graph, read-only | High (first connector) |
-| Usage and cost APIs of OpenAI, Anthropic | Token / credit consumption, cost | Adapter over the provider API, read-only | High |
-| AWS, Azure, Google Cloud | Cost (FOCUS export) | Adapter or file | High |
-| License servers, VPN | Peak concurrent sessions (denials are not collected in v1) | Adapter reading logs, or an agent inside the company | Medium |
-| MDM / endpoint agents | Devices | File or adapter | Low |
-| Inventory scripts, contracts | Cores, deployed units, contract terms | ECS file, or manual entry | Very low |
-| In-house applications, resellers, local vendors | Their own license data | Native ECS endpoint, where ELMS can require it | Depends on the provider |
+| System | What ELMS takes | Delivery |
+|---|---|---|
+| P&L license API (one per company and provider) | Licenses, terms and purchased quantity, holders, last activity, active days, consumption | An API each P&L provides for its own data, in the license data contract (ECS, BR-19); read by one generic connector |
+| ILVG | Employees, their unit in five levels, their projects, transfers | API, synced daily like a connector |
+| BCA | Application usage per employee and day (fields assumed until its API is known) | API, synced daily like a connector |
+| SAP | Budget plan per unit, license, and month | Excel export in the ELMS template, imported by Managers (UC33) |
+| Invoices | The cost that becomes Purchased | Entered or imported by Staff (UC07) |
 
-Every connector hands ELMS data in the ELMS Connector Standard (ECS, see the [Connector standard proposal](06-connector-standard.md), BR-19), delivered one of three ways: **native** (the provider exposes an ECS endpoint), **adapter** (ELMS writes a connector that maps the provider's own API to ECS), or **file** (an ECS file uploaded in UC26). One validator checks all three. A license line without a connector is filled by Staff through manual entry or CSV import (UC03), so a provider is never left out.
+Behind its API, each P&L reads its providers (Microsoft 365, Atlassian, Adobe, GitHub, AI services …); ELMS never calls a provider directly. A P&L whose API is not ready yet has simulated data, labelled as mock on every screen (BR-14). Data fields of each source: [Data fields research](09-data-fields-research.md).
 
 ### Out of scope at this level
 
-ELMS does not assign or revoke licenses on a provider, does not buy or cancel contracts, and does not send e-mail or chat notifications ([research §7](01-research-top-down.md)).
+ELMS does not assign, revoke, buy, or cancel anything at a provider, does not let anyone enter licenses, holders, or usage by hand, and does not send e-mail or chat notifications ([research §7](01-research-top-down.md)).
 
 ## 2. Level 2 — Container
 
-A container is something that runs or stores data. ELMS is one monolith deployed as **two processes** that share **one PostgreSQL database**. The API serves users; every slow operation (provider calls, large imports, detection) is queued in PostgreSQL and run by the worker, so no Redis or message broker is required.
+A container is something that runs or stores data. ELMS is one monolith deployed as **two processes** that share **one PostgreSQL database**. The API serves users; every slow operation (connector syncs, imports, seat status, cost split, detection) is queued in PostgreSQL and run by the worker, so no Redis or message broker is required.
 
 ```mermaid
 flowchart TB
     users(["Employee / Staff / Manager / Admin"])
-    providers["Software providers<br/>[External systems]<br/>Microsoft Graph and other APIs, read-only"]
+    sources["P&L license APIs, ILVG, BCA<br/>[External systems]<br/>read-only"]
 
     subgraph elms["ELMS [System boundary]"]
         direction TB
         proxy["Reverse proxy<br/>[Nginx or Caddy]<br/>Serves the SPA, forwards /api/* (same domain, no CORS)"]
-        web["Web Frontend<br/>[React 19, Vite, TypeScript, MUI v6]<br/>Screens by role, dashboards,<br/>connector management, imports"]
+        web["Web Frontend<br/>[React 19, Vite, TypeScript, MUI v6]<br/>License List, Usage, budget,<br/>Connector Management, administration"]
         api["Elms.Api<br/>[ASP.NET Core 10]<br/>Authentication, RBAC, data scope,<br/>commands and queries"]
-        worker["Elms.Worker<br/>[.NET Worker Service + Hangfire server]<br/>Provider sync, ECS validation,<br/>file and CSV import confirm,<br/>detection, view refresh"]
-        db[("PostgreSQL 16<br/>[Database]<br/>Business data, Hangfire job queue,<br/>server-side sessions. 39 tables, 7 groups")]
+        worker["Elms.Worker<br/>[.NET Worker Service + Hangfire server]<br/>Connector runs at each interval,<br/>contract validation, imports,<br/>seat status, cost split, detection"]
+        db[("PostgreSQL 16<br/>[Database]<br/>Business data, Hangfire job queue,<br/>server-side sessions. 40 tables, 7 groups")]
     end
 
     users -- "HTTPS" --> proxy
@@ -98,7 +103,7 @@ flowchart TB
     api -- "SQL (EF Core writes,<br/>Dapper reads over views)" --> db
     api -- "enqueue jobs" --> db
     worker -- "SQL, dequeue jobs" --> db
-    worker -- "read-only connector calls<br/>[HTTPS, Polly retry]" --> providers
+    worker -- "read-only calls<br/>[HTTPS, Polly retry]" --> sources
 
     classDef person fill:#0F67B1,stroke:#0B4F8A,color:#fff
     classDef container fill:#2F7FC1,stroke:#0F67B1,color:#fff
@@ -107,16 +112,16 @@ flowchart TB
     class users person
     class proxy,web,api,worker container
     class db store
-    class providers external
+    class sources external
 ```
 
 ### Containers
 
 | Container | Technology | Responsibility |
 |---|---|---|
-| Web Frontend | React 19, Vite, TypeScript, MUI v6, Tailwind CSS v4, ApexCharts, React Router v7 | Role-based screens, dashboards, connector set-up and sync monitoring (UC03, UC25, UC26), CSV and ECS file upload with preview |
-| Elms.Api | ASP.NET Core 10 (.NET 10 LTS), controllers, command/query handlers | Serves users only: three checks per request (authentication, RBAC, data scope), validation, audit |
-| Elms.Worker | .NET Worker Service, Hangfire server | Runs every slow job and validates ECS payloads; the only process that calls providers and decrypts connector credentials |
+| Web Frontend | React 19, Vite, TypeScript, MUI v6, Tailwind CSS v4, ApexCharts, React Router v7 | The screens of [Information architecture](04-information-architecture-manager.md): License List, Usage and waste analysis, budget, Connector Management and sync monitoring, administration |
+| Elms.Api | ASP.NET Core 10 (.NET 10 LTS), controllers, command/query handlers | Serves users only: three checks per request (authentication, RBAC, data scope), validation, audit, idempotent import confirm |
+| Elms.Worker | .NET Worker Service, Hangfire server | Runs every slow job; the only process that calls the P&L APIs, ILVG, and BCA, and decrypts connector credentials |
 | PostgreSQL 16 | PostgreSQL, Hangfire.PostgreSql | One database for business data, the job queue, and sessions; one schema per module (see [`elms.dbml`](database/elms.dbml)) |
 | Reverse proxy | Nginx or Caddy | Serves the SPA and forwards `/api/*` to `Elms.Api` on the same domain |
 
@@ -128,9 +133,9 @@ flowchart TB
 | Web Frontend → Elms.Api | REST / JSON, `HttpOnly` `Secure` `SameSite=Lax` cookie, CSRF token | Every business request; OpenAPI contract with a generated TypeScript client |
 | Elms.Api → PostgreSQL | SQL over Npgsql | Writes through EF Core; dashboard reads through Dapper over views; enqueue of jobs |
 | Elms.Worker → PostgreSQL | SQL over Npgsql | Reads and writes data; dequeues jobs |
-| Elms.Worker → Providers | HTTPS (native ECS endpoints, provider APIs and SDKs through adapters, `IHttpClientFactory` + Polly) | Read-only calls; credentials are read-only scope and encrypted with Data Protection |
+| Elms.Worker → P&L APIs, ILVG, BCA | HTTPS (`IHttpClientFactory` + Polly) | Read-only calls; credentials are write-only after saving and encrypted with Data Protection (BR-20) |
 
-The API never calls a provider, and the worker never serves a user request.
+The API never calls a source, and the worker never serves a user request.
 
 ### Decisions behind this level
 
@@ -138,10 +143,10 @@ The API never calls a provider, and the worker never serves a user request.
 |---|---|---|
 | One monolith, two processes | Microservices | Several teams edit one codebase, or ingestion needs its own scaling |
 | PostgreSQL only (data, queue, session) | Add Redis or a message broker | The job queue becomes a bottleneck |
-| Daily scheduled sync | Realtime events | Providers offer usage webhooks and users need same-day numbers |
+| Scheduled sync at each connector's interval (6 hours by default) | Realtime events | P&L APIs push changes and users need same-hour numbers |
 | Cookie session | JWT | A mobile app or third-party API is needed |
 
-Non-functional assumptions: about 5,000 accounts, 100–300 daily users, about 200 license lines, about 150,000 assignments; dashboards p95 under 1 s; provider data up to 1 day old; 99.5 % availability in business hours. Source: [05 §2](05-folder-structure.md).
+Non-functional assumptions: about 30 P&Ls, 5,000 accounts, 100–300 daily users, 500 licenses, and 150,000 assignments; dashboards p95 under 1 s; license data as old as each connector's interval; 99.5 % availability in business hours. Source: [05 §2](05-folder-structure.md).
 
 ## 3. Level 3 — Component
 
@@ -153,36 +158,36 @@ Both processes are built from the same Clean Architecture layers and run the sam
 flowchart TB
     spa["Web Frontend"]
     db[("PostgreSQL 16")]
-    providers["Software providers"]
+    sources["P&L APIs, ILVG, BCA"]
 
     subgraph hosts["Hosts"]
         direction LR
         ctrl["Controllers<br/>[Elms.Api]<br/>/api/v1/module/resource"]
-        jobs["Jobs<br/>[Elms.Worker, Hangfire]<br/>DailyPipelineJob, ImportConfirmJob,<br/>RecomputeLineJob, RenewalFlagJob"]
+        jobs["Jobs<br/>[Elms.Worker, Hangfire]<br/>SyncSchedulerJob, ConnectorRunJob,<br/>IlvgSyncJob, BcaSyncJob, DailyPipelineJob,<br/>ImportConfirmJob, MonthCloseJob"]
     end
 
     subgraph app["Elms.Application"]
         direction TB
         pipe["Pipeline behaviours<br/>logging, validation, authorization"]
         handlers["Command and query handlers<br/>one folder per use case"]
-        analytics["Dashboard queries<br/>read views with Dapper"]
-        ingest["Ingestion pipeline steps<br/>fetch, validate, store raw, normalize"]
-        ecsval["ECS validator<br/>JSON Schema and rules (BR-19)"]
-        ifaces["Interfaces<br/>IAppDbContext, IProviderConnector"]
+        analytics["Dashboard and Usage queries<br/>read views with Dapper"]
+        ingest["Sync run steps<br/>fetch, validate, store raw, normalize, coverage"]
+        ecsval["Contract validator<br/>JSON Schema and rules (BR-19)"]
+        ifaces["Interfaces<br/>IAppDbContext, ILicenseSource,<br/>IIlvgSource, IBcaSource"]
     end
 
     subgraph domain["Elms.Domain"]
         direction TB
-        entities["Entities and enums<br/>Archetype, SeatStatus, RecommendationStatus"]
-        rules["Business rules<br/>SeatStatusRule, CostNormalizer, CostAllocator"]
+        entities["Entities and enums<br/>OrgLevel, Archetype, LicenseType,<br/>SeatStatus, ConnectorStatus"]
+        rules["Business rules<br/>SeatStatusRule, AccrualCalculator,<br/>CostAllocator, WasteFlagRule"]
     end
 
     subgraph infra["Elms.Infrastructure"]
         direction TB
         efctx["AppDbContext<br/>EF Core 10 + Npgsql, audit and scope interceptor"]
-        ecshttp["EcsHttpConnector<br/>native ECS endpoints"]
-        ecsfile["EcsFileReader<br/>ECS files uploaded in UC26"]
-        adapters["Adapters<br/>Microsoft Graph, Google, OpenAI,<br/>Anthropic, FOCUS exports"]
+        ecshttp["EcsClient<br/>every P&L license API"]
+        hr["IlvgClient, BcaClient"]
+        sim["SimulatedSource<br/>mock data for a P&L without an API (BR-14)"]
     end
 
     kernel["SharedKernel.*<br/>Domain, Application, Infrastructure, Api<br/>BaseEntity, Money, AccessScope, BaseDbContext, GlobalExceptionHandler"]
@@ -201,37 +206,39 @@ flowchart TB
     ingest --> ecsval
     ifaces -. "implemented by" .-> efctx
     ifaces -. "implemented by" .-> ecshttp
-    ifaces -. "implemented by" .-> ecsfile
-    ifaces -. "implemented by" .-> adapters
+    ifaces -. "implemented by" .-> hr
+    ifaces -. "implemented by" .-> sim
     efctx -- "SQL" --> db
-    ecshttp -- "read-only HTTPS" --> providers
-    adapters -- "read-only" --> providers
+    ecshttp -- "read-only HTTPS" --> sources
+    hr -- "read-only HTTPS" --> sources
     entities -. "built on" .-> kernel
     rules -. "built on" .-> kernel
 ```
 
-Dependency direction: `Api / Worker → Infrastructure → Application → Domain → SharedKernel`. Domain depends on nothing; Application depends on interfaces only; only Infrastructure references EF Core, Npgsql, and the Graph SDK.
+Dependency direction: `Api / Worker → Infrastructure → Application → Domain → SharedKernel`. Domain depends on nothing; Application depends on interfaces only; only Infrastructure references EF Core, Npgsql, and the HTTP clients.
 
-Request flow: controller → `Mediator.Send` → behaviours (log, validate, authorize) → handler → `IAppDbContext` (filtered by `AccessScope`) → interceptor writes the audit log. Worker flow: Hangfire job → handler or pipeline step → `IProviderConnector` / `IAppDbContext`.
+Request flow: controller → `Mediator.Send` → behaviours (log, validate, authorize) → handler → `IAppDbContext` (filtered by `AccessScope`) → interceptor writes the audit log. Worker flow: Hangfire job → handler or pipeline step → `ILicenseSource` / `IAppDbContext`.
 
 ### 3.2 Business modules
 
-Eight business modules follow the six mind-map branches, plus a shared `audit` module. A module owns its tables (one Postgres schema each) and other modules read them only through a service or a public view.
+Eight business modules follow the mind-map branches, plus a shared `audit` module. A module owns its tables (one Postgres schema each) and other modules read them only through a service or a public view.
 
 ```mermaid
 flowchart LR
     identity["identity<br/>UC19, UC21, UC22, UC24<br/>accounts, roles, permissions, sessions"]
-    organization["organization<br/>UC20<br/>P&L → department tree,<br/>employees, manager scope"]
-    catalog["catalog<br/>UC01–UC04<br/>vendors, products, plans,<br/>entitlements, contracts"]
-    ingestion["ingestion<br/>UC03 (connector, import, manual), UC25, UC26<br/>connectors, sync runs,<br/>raw records, import batches"]
-    usage["usage<br/>UC10–UC12, UC23<br/>assignments, usage records,<br/>daily snapshots, seat status"]
-    finance["finance<br/>UC05–UC09<br/>expenses, FX rates, budgets,<br/>cost allocation, forecast"]
-    optimization["optimization<br/>UC10–UC14<br/>detection results,<br/>recommendations"]
-    analytics["analytics<br/>UC15–UC18, UC23<br/>read models only"]
+    organization["organization<br/>UC20, ILVG sync<br/>five-level tree, employees, projects,<br/>Manager and Staff scope, holder identity"]
+    catalog["catalog<br/>UC01, UC02, UC04, UC27, UC28,<br/>UC47, UC57–UC59, UC61<br/>software catalog, licenses, terms,<br/>owner unit, shared licenses"]
+    ingestion["ingestion<br/>UC38, UC55, UC56, UC60, UC26<br/>connectors, sync runs, coverage,<br/>raw records, budget and expense imports"]
+    usage["usage<br/>UC37, UC08, UC48–UC51, UC32, UC23<br/>assignments, usage records, snapshots,<br/>seat status, BCA usage"]
+    finance["finance<br/>UC33, UC05, UC06, UC42, UC07,<br/>UC62, UC34, UC09<br/>budget versions, expenses, accrual,<br/>rates, cost split"]
+    optimization["optimization<br/>UC10, UC11, UC35, UC43, UC52–UC54<br/>detection, waste flag, waste analysis"]
+    analytics["analytics<br/>UC36, UC44, UC45, UC15, UC16, UC18<br/>read models only"]
     audit["audit (shared)<br/>BR-15<br/>append-only audit log"]
 
-    ingestion -- "normalize into" --> usage
     ingestion -- "normalize into" --> catalog
+    ingestion -- "normalize into" --> usage
+    ingestion -- "budget, expenses into" --> finance
+    finance -. "reads seat counts" .-> usage
     optimization -. "reads only" .-> usage
     optimization -. "reads only" .-> finance
     optimization -. "reads only" .-> catalog
@@ -246,21 +253,22 @@ Dependency rules, enforced by NetArchTest (from [05 §4.1](05-folder-structure.m
 
 - `analytics` may read every module; no module depends on `analytics`.
 - `optimization` reads `usage`, `finance`, and `catalog` and never writes to them.
-- `ingestion` writes raw data, then calls `usage` and `catalog` to normalize; no business module calls a provider directly.
+- `finance` reads seat counts from `usage` to split the cost; `usage` never reads money.
+- `ingestion` writes raw data, then calls `catalog`, `usage`, and `finance` to normalize; no business module calls a source directly.
 - Only `identity` and `organization` decide access; other modules receive an `AccessScope`.
 - Every module writes through the audit interceptor, which is why `audit` has no drawn arrows.
 
-Connectors are plugins behind one interface, `IProviderConnector`: `fetchEntitlements`, `fetchAssignments`, `fetchActivity`, `fetchUsage(period)`, `fetchCost(period)`. What they return is the ELMS Connector Standard (ECS): six datasets (`entitlements`, `subjects`, `assignments`, `activity`, `usage`, `costs`) inside an envelope that carries `completeness`, `granularity`, and `total_count`. A dataset a provider cannot supply is `NotSupported` (HTTP 501, `ecs:not-supported`), never an empty list, so "no source" stays distinct from "source reports zero" (BR-04). Details: [Connector standard](06-connector-standard.md).
+Every P&L answers in the license data contract (ECS), so one client reads every usage connector through `ILicenseSource`: `fetchLicenses`, `fetchTerms`, `fetchHolders`, `fetchActivity`, `fetchUsage(period)`. Each dataset arrives in an envelope that carries `completeness`, `granularity`, and `total_count`. A dataset a P&L cannot supply is `NotSupported` (HTTP 501, `ecs:not-supported`), never an empty list, so "no source" stays distinct from "source reports zero" (BR-04). Details: [Connector standard](06-connector-standard.md).
 
 ### 3.3 Web Frontend
 
 ```mermaid
 flowchart TB
     router["routes<br/>paths.ts, router.tsx"]
-    pages["pages<br/>licenses, budget, analytics, users"]
-    sections["sections<br/>licenses (list, detail drawer),<br/>budget (KPI, renewals drawer)"]
-    components["components<br/>KpiCard, charts, StatusBadge, tooltips"]
-    layouts["layouts<br/>Header, Sidebar, MainLayout"]
+    pages["pages<br/>licenses, usage, budget, connectors,<br/>analytics, administration"]
+    sections["sections<br/>license list and details, organization tree,<br/>balance, units table, waste panels, connector form"]
+    components["components<br/>cards, charts, tables, dialogs, filters"]
+    layouts["layouts<br/>Header (company picker), Sidebar, MainLayout"]
     data["data<br/>repositories calling the Elms.Api REST endpoints"]
     shared["types, utils, theme"]
 
@@ -274,11 +282,11 @@ flowchart TB
     sections --> shared
 ```
 
-Call flow: `routes → pages → sections → components → types / utils`. Screens: `/manager/licenses`, `/manager/licenses/:licenseId`, `/manager/analytics`, `/manager/analytics/budget`, `/admin/users`. Screen details are in [Information architecture](04-information-architecture-manager.md).
+Call flow: `routes → pages → sections → components → types / utils`. The target screens and their API calls are in [Information architecture](04-information-architecture-manager.md). The code in `src/frontend` today still follows the previous model (category budgets, no Usage or Connector screens).
 
 ### 3.4 PostgreSQL
 
-Not drawn as components: the container is described by its seven table groups (organization and access, license catalog, collection pipeline, holders and usage, budget and expenses, optimization, audit). See [Database design](database/README.md) for the ERDs.
+Not drawn as components: the container is described by its seven table groups (organization and access, software catalog and licenses, collection pipeline, holders and usage, budget and expenses, optimization, audit). See [Database design](database/README.md) for the ERDs.
 
 ## 4. Level 4 — Code
 
@@ -290,45 +298,49 @@ C4 level 4 is left to the source, because a code-level diagram drawn by hand goe
 | Backend solution layout | [05 §4.2](05-folder-structure.md); the solution lives in `src/backend/` |
 | Entities and fields | [`database/tables.md`](database/tables.md), [`database/elms.dbml`](database/elms.dbml) |
 | Reference DDL | [`database/schema.sql`](database/schema.sql) |
-| Pure business rules | `Elms.Domain/Rules` (BR-03 seat status, BR-05 cost normalization, BR-06 allocation, BR-09 reconciliation) |
+| Pure business rules | `Elms.Domain/Rules` (BR-03 seat status, BR-06 allocation, BR-09 and BR-24 Purchased / Used / Wasted, BR-22 waste flag, BR-25 accrual) |
 
 ## 5. Dynamic view — the daily pipeline
 
-`DailyPipelineJob` runs at 02:00 every day in `Elms.Worker`. It is the main way provider data enters ELMS and the reason dashboards show one consistent version of the numbers (G7).
+Data enters ELMS in two rhythms. `SyncSchedulerJob` checks every minute which connectors are due and starts a `ConnectorRunJob` for each, at that connector's interval; ILVG and BCA run daily. Once the day's syncs are done, `DailyPipelineJob` turns the data into the figures every screen reads, so dashboards show one consistent version of the numbers (G7).
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant H as Hangfire (Worker)
-    participant C as Connector
-    participant V as ECS validator
-    participant P as Provider (read-only)
+    participant S as SyncSchedulerJob (Worker)
+    participant C as ConnectorRunJob
+    participant V as Contract validator
+    participant P as P&L API (read-only)
     participant D as PostgreSQL
+    participant J as DailyPipelineJob
     participant A as Elms.Api
     participant M as Manager
 
-    H->>D: Dequeue DailyPipelineJob (distributed lock)
-    loop each data source
-        H->>C: fetchEntitlements / fetchAssignments / fetchActivity / fetchUsage / fetchCost
-        C->>P: read-only call (Polly retry)
+    S->>D: Find connectors whose interval has elapsed
+    alt connector paused
+        S->>D: sync_runs = paused (nothing read, period stays Unknown)
+    else connector due
+        S->>C: start run (distributed lock per connector)
+        C->>P: fetchLicenses / fetchTerms / fetchHolders / fetchActivity / fetchUsage
         alt success
             P-->>C: records
-            C->>V: validate against ECS (schema, total_count, duplicates)
-            V->>D: store raw_records, then normalize (upsert by source key + data date)
+            C->>V: validate (schema, total_count, duplicates)
+            V->>D: store raw_records, normalize (upsert by source key + data date)
             V->>D: collection_coverage = complete or partial
         else retries exhausted, or validation fails the run
             C->>D: sync_runs = failed, nothing written, figures stay Unknown (never 0)
         end
     end
-    H->>D: compute seat status (BR-03), effective cost (BR-05), allocation (BR-06)
-    H->>D: run detection (unused, inactive, overuse, leaver)
-    H->>D: REFRESH MATERIALIZED VIEW CONCURRENTLY, bump dataVersion
-    M->>A: open dashboard
+    J->>D: seat status over 30 days with grace (BR-03), days used (BR-35)
+    J->>D: daily snapshots; cost split of open months into Used, Wasted, Not evaluated (BR-06, BR-24)
+    J->>D: detection (unused, inactive, overuse, leaver), waste flag above 20 % (BR-22)
+    J->>D: REFRESH MATERIALIZED VIEW CONCURRENTLY, bump dataVersion
+    M->>A: open License List or Usage
     A->>D: read views (Dapper), scoped to the Manager's units
     A-->>M: figures with dataDate and data source (BR-14)
 ```
 
-Other jobs: `ImportConfirmJob` writes a confirmed CSV or ECS file in one transaction; `RecomputeLineJob` recomputes one entitlement line after an edit; `RenewalFlagJob` flags "Renewal soon" and "Notice period passed" (UC04). Records that fail a check are rejected one by one, with the reason kept in `raw_records.normalize_error`; a record count that does not match `total_count` fails the whole run. All jobs are idempotent, never overlap, and run as `SystemUser`, so the audit actor is `system`.
+Other jobs: `IlvgSyncJob` and `BcaSyncJob` (daily); `ImportConfirmJob` writes a confirmed budget version or expense file in one transaction, once per preview key (BR-36); `MonthCloseJob` closes, on day 10, the previous month of every company Staff have not closed (UC42). Records that fail a check are rejected one by one, with the reason kept in `raw_records.normalize_error`; a record count that does not match `total_count` fails the whole run. All jobs are idempotent, never overlap, and run as `SystemUser`, so the audit actor is `system`.
 
 ## 6. Deployment view
 
@@ -349,15 +361,15 @@ flowchart TB
         migrate["migration step<br/>[EF migration bundle]<br/>runs before apps start"]
     end
 
-    ci["GitLab CI/CD<br/>[CI: build, test, architecture tests]"]
-    prov["Providers<br/>[staging: Microsoft 365 developer tenant]"]
+    ci["CI/CD<br/>[build, test, architecture tests]"]
+    src["P&L APIs, ILVG, BCA<br/>[dev: simulated P&L API;<br/>staging: a P&L test API]"]
 
     browser -- "HTTPS" --> proxy
     proxy --> webfiles
     proxy -- "/api/*" --> apiN
     apiN --> pg
     workerN --> pg
-    workerN -- "read-only" --> prov
+    workerN -- "read-only" --> src
     ci -- "build and deploy" --> host
     migrate --> pg
 ```
@@ -366,19 +378,20 @@ flowchart TB
 |---|---|
 | Instances | One Api and one Worker; Hangfire's distributed lock prevents duplicate jobs |
 | Migrations | A separate pipeline step before the apps start, never at application startup |
-| Environments | dev (Docker Compose: postgres, api, worker, web), staging (Microsoft 365 developer tenant), prod |
-| Operations | `/health`, structured logs with `request_id` (Serilog / OpenTelemetry), Hangfire dashboard for Admin only, alert when a source fails two days in a row |
+| Environments | dev (Docker Compose: postgres, api, worker, web, a simulated P&L API), staging (a P&L test API), prod |
+| Operations | `/health`, structured logs with `request_id` (Serilog / OpenTelemetry), Hangfire dashboard for Admin only, alert when a connector stays `Failed` or `Delayed` for a day |
 | Backup targets | RPO ≤ 24 h, RTO ≤ 4 h (assumption, [05 §2](05-folder-structure.md)) |
 
 ## 7. Cross-cutting concerns
 
 | Concern | Where it applies | Rule |
 |---|---|---|
-| Authentication | Api | Server-side cookie session via ASP.NET Core Identity; the account must be `ACTIVE`; lockout after 5 failures for 15 minutes (BR-18); disabling a user or changing a role deletes their sessions at once |
+| Authentication | Api | Server-side cookie session via ASP.NET Core Identity; the account must be active; lockout after 5 failures for 15 minutes (BR-18); disabling a user or changing a role deletes their sessions at once |
 | Authorization | Api | Three independent checks per request: authentication (401), RBAC policy (403), data scope via `AccessScope` global query filter (404 outside scope). Hiding a button is not protection (BR-16) |
-| Data scope | Api, Worker | Managers see only their P&Ls or departments; Employees get a dedicated DTO without price or cost; Admin sees connector status only, not record contents or connector settings (BR-16) |
+| Data scope | Api, Worker | Managers see their units and everything under them, the group for a Manager of the group; Staff see their companies; Admin reads the group overview and dashboards; Employees get a dedicated DTO without price or cost (BR-16) |
+| Idempotency | Api, Worker | Syncs upsert by source key and data date; a budget confirm is keyed by its preview key; the same budget file again is `unchanged` (BR-36) |
 | Audit | Api, Worker | An interceptor writes who, old value, new value, time, and reason to an append-only log (BR-15) |
-| Missing data | Everywhere | `null` / `Unknown`, never 0 (BR-04); every figure carries source and confidence (BR-14) |
+| Missing data | Everywhere | `null` / `Unknown`, never 0 (BR-04); every figure carries its source (BR-14); complete months only (BR-31) |
 | Caching | Api | `HybridCache`, L1 in-memory; Redis only when the API scales to several instances. Keys include the user's scope; dashboard keys include `dataVersion` |
 | Secrets | Worker | Connector credentials: read-only scope (BR-01), write-only after saving and never shown or exported (BR-20), encrypted with Data Protection, decrypted only by the worker |
 | Errors | Api | One global `IExceptionHandler` returns `ProblemDetails` (RFC 9457) |

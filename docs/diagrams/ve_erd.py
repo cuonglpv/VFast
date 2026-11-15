@@ -23,13 +23,14 @@ ELK = 'https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0/dist/mermaid-layout
 HIDDEN = {'created_at', 'updated_at'}
 # Cột chỉ ghi ai thao tác: luôn ghi '→ user_accounts' trên cột, không vẽ đường.
 ACTOR = {'created_by', 'granted_by', 'assigned_by', 'uploaded_by', 'imported_by', 'entered_by', 'declared_by',
-         'activated_by', 'closed_by', 'decided_by', 'overridden_by', 'updated_by', 'owner_id', 'actor_id'}
+         'activated_by', 'closed_by', 'decided_by', 'overridden_by', 'updated_by', 'owner_id', 'actor_id',
+         'paused_by'}
 GAP = 70  # khoảng trống giữa hai cột bảng
 
 LAYOUT = {
     'erd_organization': [
         ['org_units', 'permissions'],
-        ['employees', 'manager_org_units', 'role_permissions', 'roles'],
+        ['employees', 'user_org_units', 'role_permissions', 'roles'],
         ['user_accounts', 'user_sessions'],
     ],
     'erd_license_catalog': [
@@ -46,7 +47,7 @@ LAYOUT = {
     'erd_holders_usage': [
         ['subjects', 'plan_daily_snapshots'],
         ['license_assignments', 'usage_records'],
-        ['plan_unit_daily_snapshots'],
+        ['plan_unit_daily_snapshots', 'employee_app_usage'],
     ],
     'erd_budget_cost': [
         ['budget_plans', 'accounting_periods', 'exchange_rates'],
