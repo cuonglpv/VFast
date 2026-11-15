@@ -27,7 +27,6 @@ erDiagram
     connectors ||--o{ license_plans : reports
     connectors ||--o{ sync_runs : runs
     license_plans ||--o{ plan_data_sources : "collected from"
-    connectors ||--o{ plan_data_sources : feeds
     license_plans ||--o{ collection_coverage : "completeness of"
     sync_runs ||--o{ raw_records : stores
     files ||--o{ import_batches : "imported from"

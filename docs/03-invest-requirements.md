@@ -104,7 +104,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US50 | PASS | PASS | PASS | PASS | PASS | PASS | License heatmap with Rate / Cost switch; rows add up (BR-21). |
 | US51 | PASS | PASS | PASS | PASS | PASS | PASS | File equals the screen. |
 | US32 | PASS | PASS | PASS | PASS | PASS | PASS | BCA fields assumed (open decisions 3, 6). Could-have. |
-| US33 | PASS | PASS | PASS | PASS | PASS | PASS | Largest story (8): subtree replacement BR-08, idempotency BR-36. Splits into: template and preview, confirm with versions, idempotency and concurrency. |
+| US33 | PASS | PASS | PASS | PASS | PASS | PASS | Largest story (8): per-license replacement in the target subtree BR-08, idempotency BR-36. Splits into: template and preview, confirm with versions, idempotency and concurrency. |
 | US05 | PASS | PASS | PASS | PASS | PASS | PASS | Read-only; versions from US33. |
 | US06 | PASS | PASS | PASS | PASS | PASS | PASS | Split BR-06 with projects and Unallocated; sums equal the total. |
 | US42 | PASS | PASS | PASS | PASS | PASS | PASS | Rounding to the thousand VND BR-25; closed months frozen. |
@@ -202,6 +202,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 3. Given the same license reported by two connectors, then it is listed "Also reported by <company>"; after Staff pick one source, it is counted once.
 4. Given Staff unmark a shared license, then its owner goes back to the P&L of its connector.
 5. Given a Manager of P&L A, then they see A's share only.
+6. Given GitHub of P&L A marked shared in June with January–May closed, then January–May stay with A and June onward goes to the group; A's invoices still name A as the company that paid.
 
 #### AC-US02 View Providers and Licenses
 
@@ -271,12 +272,13 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 #### AC-US33 Import Budget Plan from Excel
 
-1. Given the Manager of P&L A targets A for 2027, when the file is uploaded, then the preview lists, per unit, rows to add, replace, remove, and reject; confirming creates version 1 and replaces the 2027 lines of A and every unit under it.
+1. Given the Manager of P&L A targets A for 2027, when the file is uploaded, then the preview lists, per unit, rows to add, replace, remove, and reject; confirming creates version 1 and, for each license in the file, replaces its 2027 lines in A and every unit under it; licenses not in the file keep their lines.
 2. Given the same file uploaded again for the same target and months, then the result is "No changes" and no version is created.
 3. Given *Confirm* pressed twice, or again after a time-out, then exactly one version exists.
-4. Given the Manager of block A1 previewed a file and the Manager of P&L A confirmed an import for A since, when A1's confirm is sent, then it is refused: "The plan changed since your preview".
+4. Given the Manager of block A1 previewed a file with M365 E3 and the Manager of P&L A confirmed since an import that changed M365 E3 lines of A1, when A1's confirm is sent, then it is refused: "The plan changed since your preview"; the same holds the other way round, when A1 imported while A's file was in preview. Given A's import touched only Jira, then A1's confirm goes through.
 5. Given a row for a unit outside the target, or a project code not in the hierarchy, then the row is rejected with its reason and the file is not imported until it is fixed or the row is left out.
-6. Given the Manager of the group plans GitHub with rows P&L A 50 million and P&L B 40 million, then each P&L's Plan includes its row; the Manager of P&L A can later change A's row.
+6. Given the Manager of the group plans GitHub with rows P&L A 50 million and P&L B 40 million marked *Shared*, then each P&L's Plan includes its row and the other licenses of A and B keep their plan; the Manager of P&L A can later change A's row.
+7. Given P&L B has its own "Microsoft 365 E3" and a share of the group's shared "Microsoft 365 E3", then a row with *Shared* = yes maps to the group's license and a row without it to B's own; both can be planned for the same unit and month.
 
 #### AC-US05 View Monthly Budget Plan
 
@@ -289,12 +291,15 @@ Format: **Given** context, **When** action, **Then** observable result.
 1. Given a license of 100 seats costing 10 million a month, block A1 holding 60, block A2 30, and 10 seats free, then A1 carries 6 million, A2 3 million, and *Unallocated* of the P&L 1 million.
 2. Given An on projects P1 and P2 holding one seat of 100,000 VND, then P1 and P2 carry 50,000 each.
 3. Given any month, then the units, *Unallocated*, and *Unknown unit* add up to the license cost.
+4. Given a license of 100 seats costing 31 million in March, and An moving from IT to Sales on 15 March, then IT carries An's seat for 14 days (140,000 VND) and Sales for 17 days (170,000 VND).
+5. Given 100 seats bought and 110 assigned, then the cost spreads over the 110 seats and *Unallocated* is 0.
+6. Given the sync of 31 March failed and 30 March is complete, then 31 March uses the seats of 30 March and the month shows 1 filled day; given a month with no complete day, then its whole cost is `Not evaluated` under the owner.
 
 #### AC-US42 Accrue License Cost
 
 1. Given an invoice of 100,000,000 VND for 12 months, then the accrual is 8,333,000 for 11 months and 8,337,000 for the last.
 2. Given a term starting on 16 January, then January is accrued by its days.
-3. Given Staff close October for company A, then A's October figures lose the *Provisional* mark and are never recalculated; a later change goes to the next open month.
+3. Given Staff close October for company A, then A's October figures lose the *Provisional* mark and are never recalculated; a later change goes to the next open month. Given A is charged for a shared license and the group's October is still open, then A's October stays *Provisional* until the group closes it.
 4. Given a Manager reads the accrual of their units, when they try to close the month, then it returns `403`.
 
 #### AC-US07 Manage Expenses
@@ -420,7 +425,8 @@ Format: **Given** context, **When** action, **Then** observable result.
 1. Given the ILVG sync, then the tree shows group > P&L > block > department > project with codes; a Manager assigned to the group sees the whole group.
 2. Given a block placed under another block, then it is refused; given Admin corrects a unit ILVG placed wrongly with a reason, then the ILVG value is kept beside it and the next sync does not overwrite it.
 3. Given a code in the budget file or a connector that matches no unit, then it is listed as "Unmatched".
-4. Given a unit with members or a current plan, when it is marked inactive, then it is refused.
+4. Given a unit with members or a current plan, when Admin marks it inactive, then it is refused.
+5. Given ILVG no longer reports a unit that still has members, then the sync marks it inactive and it is listed for Admin to move them.
 
 #### AC-US21 Manage Roles
 
@@ -456,6 +462,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 1. Given the interval changed from 6 to 12, then every license keeps its status; given the API URL changed, then every license goes back to `Pending` and the last sync is cleared.
 2. Given provider and authentication unchanged, then the credential may stay blank; given the authentication changed, then a new credential is required.
 3. Given *Delete* confirmed, then the connector stops syncing, it and its licenses become inactive, past figures stay, and a new connector for A and Microsoft can be created.
+4. Given "Visio" added to a connector that already syncs, then Visio is `Pending` until a run brings its data, while the other licenses keep their status.
 
 #### AC-US56 View Connector Details
 
@@ -469,6 +476,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 3. Given a connector paused at 09:00 with a 6-hour interval, then the runs of 12:00 and 18:00 are recorded as `Paused`, its licenses show `Paused`, and it is not a sync issue; resuming starts a run at once.
 4. Given a failed run, then nothing is written and the figures of that day stay `Unknown`.
 5. Given a 6-hour interval and a last success 9 hours ago, then the licenses show `Delayed`.
+6. Given a `Partial` run in which "M365 E3" failed with `permission_denied` and "Visio" was complete, then M365 E3 shows `Failed` and Visio `Active`.
 
 ### Self-service
 
