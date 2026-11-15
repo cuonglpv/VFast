@@ -18,13 +18,13 @@ Status: **Kept** — unchanged; **Changed** — changed by this revision; **New*
 | F04 | Validity timeline: six-month window, ‹ Today ›, today line, colour by expiry bucket, final 7 days striped, hover card | UC58 | Manager | D1 | New |
 | F05 | License details dialog: cost, start, expiry, expiry status, unallocated or over-allocated quantity | UC59 | Manager | D1 | New |
 | F06 | License users: Active / Inactive / Not monitored counts, holder table with last used, days used against working days as a bar; search, sort, paging, CSV | UC61 | Manager | R | New |
+| F76 | Software catalog: software, provider, category and subcategory; create, edit, merge | UC01 | Staff | M | New |
+| F77 | License and BCA application name mapping to the catalog: *Not mapped* filter, suggestions by provider and name, one mapping for every company; unmapped names under *Uncategorized* | UC01 | Staff | M | New |
 | F07 | License inventory per P&L, grouped by provider, with cost | UC27 | Manager, Staff | UC, D1 | Changed |
 | F08 | Licenses per organization unit and units per license | UC28 | Manager | UC | Kept |
 | F09 | Shared licenses (used by two or more companies): owned by the group, planned by the group per P&L, cost charged back to each company by the seats its people hold, unassigned seats in *Unallocated* of the group; *Possibly shared* proposals | UC47 | Staff, Manager | M | New |
 | F10 | Providers and their licenses per company, view only, from connectors | UC02 | Manager | UC, M | Changed |
 | F11 | Contracts (license terms), view only: start, expiry, auto-renew, cost, renewal filter | UC04 | Manager | UC | Changed |
-| F76 | Software catalog: software, provider, category and subcategory; create, edit, merge | UC01 | Staff | M | New |
-| F77 | License and BCA application name mapping to the catalog: *Not mapped* filter, suggestions by provider and name, one mapping for every company; unmapped names under *Uncategorized* | UC01 | Staff | M | New |
 
 ### Usage
 
@@ -62,9 +62,9 @@ Status: **Kept** — unchanged; **Changed** — changed by this revision; **New*
 | F36 | Cost accrual by month with rounding and month close | UC42 | Manager, Staff | M | New |
 | F37 | Accrual export for finance | UC42 | Manager, Staff | M | New |
 | F38 | Expenses with invoice and CSV import | UC07 | Staff | UC | Kept |
+| F80 | Exchange rates: rate per currency from a date, rate of the invoice date applied, corrections only for open months | UC62 | Staff | M | New |
 | F39 | Monthly plan variance | UC34 | Manager | UC | Kept |
 | F40 | Spending forecast | UC09 | Manager | UC | Kept |
-| F80 | Exchange rates: rate per currency from a date, rate of the invoice date applied, corrections only for open months | UC62 | Staff | M | New |
 
 ### Optimization
 
@@ -117,9 +117,9 @@ Status: **Kept** — unchanged; **Changed** — changed by this revision; **New*
 | F69 | Test before save | UC55 | Staff | UC | Kept |
 | F70 | Edit connector from the provider row: form filled in, credential optional unless provider or authentication changes | UC60 | Staff | D1 | New |
 | F71 | Reconfiguring a connector (company, provider, authentication, API URL) sets its licenses back to `Pending`; kept licenses keep ID and status otherwise | UC60 | Staff | D1 | New |
+| F79 | Delete a connector: confirmation naming its licenses, sync stops, licenses inactive, collected data kept for past months | UC60 | Staff | M | New |
 | F72 | Connector details drawer | UC56 | Staff | D1 v1 | New |
 | F73 | Sync monitoring, rerun, change the interval; pause and resume, with `Paused` licenses and every skipped run recorded as a `Paused` sync run | UC26 | Staff | UC | Changed |
-| F79 | Delete a connector: confirmation naming its licenses, sync stops, licenses inactive, collected data kept for past months | UC60 | Staff | M | New |
 
 ### Self-service
 

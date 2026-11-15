@@ -10,7 +10,7 @@ Requirements are derived top-down: business problem → stakeholders → goals �
 
 ![ELMS mind map](docs/mindmap.png)
 
-The map has seven branches: **License Management** (license list & validity; catalog & inventory), **Usage** (scope & overview, subordinate analytics, employee usage), **Budget Management** (planning & cost allocation, spending & monitoring), **Optimization** (detection, waste analysis), **Analytics** (group overview, license & provider analysis, metric definitions, dashboards), **User & Organization**, and **Connection Management** (usage connectors, sync monitoring). Each leaf is one use case; UC23 View My Licenses and UC24 Login / Logout are self-service use cases every role has. Use case numbers are kept stable, so they are not in branch order.
+The map has seven branches: **License Management** (license list & validity; catalog & inventory), **Usage** (scope & overview, subordinate analytics, employee usage), **Budget Management** (planning & cost allocation, spending & monitoring), **Optimization** (detection, waste analysis), **Analytics** (group overview, license & provider analysis, metric definitions, dashboards), **User & Organization**, and **Connection Management** (usage connectors, sync monitoring). Each leaf is one use case: bold leaves are Must- and Should-have, plain leaves Could-have. UC23 View My Licenses and UC24 Login / Logout are self-service use cases every role has and are not on the map. Use case numbers are kept stable, so they are not in branch order.
 
 Editable source: [`docs/mindmap/vfast.xmind`](docs/mindmap/vfast.xmind) (open with XMind); `docs/mindmap.png` is exported from it.
 
@@ -54,16 +54,16 @@ There are four roles: the **Manager** uses the product, **Staff** keep it fed, t
 | ID | Use case | What the user can do | Actor |
 |---|---|---|---|
 | | **License Management** | | |
-| UC01 | Manage Software Catalog | Keep the list of software with its category, and map each license name the connectors report to a software | Staff |
 | UC57 | View License List | See every license of the group with its monthly cost, company, allocated / purchased and days to expiry; search, filter by company and expiry, sort, page | Manager |
 | UC58 | View License Validity Timeline | See each license term on a six-month timeline, move it month by month or back to today, spot licenses about to expire | Manager |
 | UC59 | View License Details | Open a license: cost, start and expiry, unallocated or over-allocated seats | Manager |
 | UC61 | View License Users and Activity | See who holds a license, who is active or inactive, when each last used it and how often; filter, search, export | Manager |
-| UC02 | View Providers and Licenses | See the providers the group buys from and, per provider, its licenses and the companies using them | Manager |
-| UC04 | View Contracts | See license terms — start, expiry, auto-renew, cost — and those renewing within 30 or 60 days | Manager |
+| UC01 | Manage Software Catalog | Keep the list of software with its category, and map each license name the connectors report to a software | Staff |
 | UC27 | View License Inventory by P&L | Pick a P&L and see every license it reports, grouped by provider | Manager, Staff |
 | UC28 | View Licenses by Organization | Pick any unit and see its licenses, or pick a license and see which units use it | Manager |
 | UC47 | Manage Shared Licenses | Mark licenses used by two or more companies as shared, owned by the group; see how their cost is charged back to each company | Staff; Manager reads |
+| UC02 | View Providers and Licenses | See the providers the group buys from and, per provider, its licenses and the companies using them | Manager |
+| UC04 | View Contracts | See license terms — start, expiry, auto-renew, cost — and those renewing within 30 or 60 days | Manager |
 | | **Usage** | | |
 | UC37 | Navigate Organization Scope | Choose the company or unit to analyse from the tree or the company picker; go down and back up the hierarchy | Manager |
 | UC08 | View Plan vs Utilization Balance | See Plan, Purchased and Used of the scope, whether it is over budget, and how much of what was bought is used | Manager |
@@ -162,7 +162,7 @@ The backlog contains **49 user stories (163 story points)**, one per use case (U
 | **Negotiable** | Layout follows the UI demos but may change while outcome, permissions, and business rules stay fixed. |
 | **Valuable** | Each story names the benefit for one role: Employee, Staff, Manager, or Admin. |
 | **Estimable** | Inputs, outputs, roles, data scope, and failure outcomes are explicit; every story is estimated in points. |
-| **Small** | One mind-map leaf per story; only US33 (budget import with versions and idempotency) reaches 8 points. |
+| **Small** | One mind-map leaf per story (the self-service stories US23 and US24 are not on the map); only US33 (budget import with versions and idempotency) reaches 8 points. |
 | **Testable** | Every story has observable criteria, including rules that tie figures across screens. |
 
 ```text

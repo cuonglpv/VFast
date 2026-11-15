@@ -12,7 +12,7 @@ Each story is small enough to implement and test independently. Authentication, 
 | Negotiable | Layout follows the UI demos but may change; the outcome, permissions, and business rules stay fixed. |
 | Valuable | Every story names the benefit for one role: Employee, Staff, Manager, or Admin. |
 | Estimable | Inputs, outputs, roles, data scope, and failure outcomes are explicit; each story has a story-point estimate. |
-| Small | One mind-map leaf per story; the largest, US33 (budget import with versions and idempotency), is 8 points, every other story is 5 or less. |
+| Small | One mind-map leaf per story (the self-service stories US23 and US24 are not on the map); the largest, US33 (budget import with versions and idempotency), is 8 points, every other story is 5 or less. |
 | Testable | Every story has observable Given/When/Then criteria with concrete figures, including rules that tie figures across screens. |
 
 ## Product backlog
