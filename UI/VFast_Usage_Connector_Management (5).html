@@ -1611,7 +1611,8 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
 #licensePane .ll-heading-sort .ll-icon{width:12px;height:12px;opacity:.65}
 #licensePane .ll-table td{height:76px;padding:10px 17px;border-bottom:1px solid var(--ll-line);vertical-align:middle;background:#fff}
 #licensePane .ll-table tbody tr:last-child td{border-bottom:none}
-#licensePane .ll-table tbody tr:hover td{background:#f9fbfe}
+#licensePane .ll-table tbody tr{cursor:pointer;transition:background-color .12s ease}
+#licensePane .ll-table tbody tr:hover td{background:#f3f7fd}
 #licensePane .ll-table td:first-child{position:sticky;left:0;z-index:2;padding-left:22px}
 #licensePane .ll-license-cell{display:flex;align-items:center;gap:12px;min-width:0}
 #licensePane .ll-logo{width:24px;height:24px;object-fit:contain;flex:none}
@@ -1683,23 +1684,96 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
 #licensePane .ll-tooltip strong{font-size:12px;display:block;margin-bottom:7px;font-weight:600}
 #licensePane .ll-tooltip div{display:flex;justify-content:space-between;gap:12px;color:#c4d0df}
 #licensePane .ll-tooltip div b{color:#fff;font-weight:500;white-space:nowrap}
-#licensePane .ll-detail-backdrop{position:fixed;inset:0;z-index:100;background:#24374d33;display:flex;justify-content:flex-end}
-#licensePane .ll-detail{height:100dvh;width:430px;max-width:100%;background:white;box-shadow:-8px 0 40px #18334d15;display:flex;flex-direction:column;outline:none}
-#licensePane .ll-detail-head{display:flex;align-items:center;justify-content:space-between;padding:24px;border-bottom:1px solid var(--ll-line);gap:12px}
-#licensePane .ll-detail-head h2{margin:0;font-size:18px;font-weight:650}
-#licensePane .ll-detail-head .ll-icon-button{border:0}
-#licensePane .ll-detail-body{overflow-y:auto;flex:1;padding:27px 24px;min-height:0}
-#licensePane .ll-detail-product{display:flex;align-items:center;gap:13px;margin-bottom:26px}
-#licensePane .ll-detail-product img{height:35px;width:35px;object-fit:contain}
-#licensePane .ll-detail-product h3{margin:0;font-size:17px;line-height:1.5;font-weight:650}
-#licensePane .ll-detail-product p{margin:4px 0 0;font-size:12px;color:#8a9aae}
-#licensePane .ll-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:23px 18px;margin:0 0 29px}
-#licensePane .ll-detail-grid dt{font-size:11px;color:#92a0b2;margin:0 0 6px}
-#licensePane .ll-detail-grid dd{font-size:13px;font-weight:550;margin:0;color:#4f6684}
-#licensePane .ll-detail-allocation{padding:18px;background:#f6f9fd;border-radius:4px}
-#licensePane .ll-detail-allocation h4{font-size:12px;margin:0 0 16px;font-weight:600}
-#licensePane .ll-detail-note{font-size:11px;color:#8a9aae;line-height:1.7;margin:17px 0 0}
-#licensePane .ll-detail-foot{padding:18px 24px;display:flex;justify-content:flex-end;border-top:1px solid var(--ll-line)}
+#licensePane .ll-detail-backdrop{position:fixed;inset:0;z-index:1100;background:rgba(15,23,42,0.48);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;box-sizing:border-box}
+#licensePane .lud-modal{width:100%;max-width:1320px;height:90vh;max-height:880px;background:#f8fafc;border-radius:14px;box-shadow:0 25px 60px -15px rgba(15,23,42,0.35),0 0 0 1px rgba(226,232,240,0.9);display:flex;flex-direction:column;overflow:hidden;position:relative;outline:none}
+#licensePane .lud-header{flex:none;height:66px;background:#ffffff;border-bottom:1px solid #e8edf3;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+#licensePane .lud-header-left{display:flex;align-items:center;gap:13px;min-width:0}
+#licensePane .lud-back-btn{width:36px;height:36px;border:1px solid #dce3ec;border-radius:8px;background:#fff;display:inline-flex;align-items:center;justify-content:center;color:#475569;cursor:pointer;flex-shrink:0;transition:all .15s ease}
+#licensePane .lud-back-btn:hover{background:#f1f5f9;color:#1e293b;border-color:#cbd5e1}
+#licensePane .lud-brand-logo{width:28px;height:28px;object-fit:contain;flex-shrink:0}
+#licensePane .lud-title{margin:0;font-size:20px;font-weight:700;color:#1e293b;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#licensePane .lud-managed-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;background:#f8fafc;border:1px solid #e2e8f0;font-size:12px;color:#475569;font-weight:500;flex-shrink:0}
+#licensePane .lud-managed-icon{width:15px;height:15px;object-fit:contain}
+#licensePane .lud-header-right{display:flex;align-items:center;gap:8px}
+#licensePane .lud-icon-btn{width:36px;height:36px;border:1px solid #dce3ec;border-radius:8px;background:#fff;display:inline-flex;align-items:center;justify-content:center;color:#64748b;cursor:pointer;transition:all .15s ease;flex-shrink:0}
+#licensePane .lud-icon-btn:hover{background:#f1f5f9;color:#1e293b}
+#licensePane .lud-body{flex:1;overflow-y:auto;display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:24px;padding:22px 24px 30px;background:#f8fafc}
+#licensePane .lud-main-col{min-width:0;display:flex;flex-direction:column}
+#licensePane .lud-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+#licensePane .lud-search-wrap{position:relative;flex:0 1 320px}
+#licensePane .lud-search-input{width:100%;height:38px;border:1px solid #dce3ec;border-radius:8px;padding:0 34px 0 12px;background:#fff;font-size:13px;color:#1e293b;outline:none;transition:border-color .15s,box-shadow .15s}
+#licensePane .lud-search-input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.15)}
+#licensePane .lud-search-icon{position:absolute;right:11px;top:11px;color:#94a3b8;pointer-events:none}
+#licensePane .lud-toolbar-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+#licensePane .lud-filter-btn{height:38px;border:1px solid #dce3ec;border-radius:8px;background:#fff;padding:0 14px;display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:#475569;cursor:pointer;transition:all .15s}
+#licensePane .lud-filter-btn:hover{background:#f8fafc;border-color:#cbd5e1}
+#licensePane .lud-filter-btn.active{background:#eff6ff;border-color:#3b82f6;color:#1d4ed8}
+#licensePane .lud-export-btn{width:38px;height:38px;border:1px solid #dce3ec;border-radius:8px;background:#fff;display:inline-flex;align-items:center;justify-content:center;color:#64748b;cursor:pointer;transition:all .15s}
+#licensePane .lud-export-btn:hover{background:#f8fafc;color:#1e293b;border-color:#cbd5e1}
+#licensePane .lud-section-title-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+#licensePane .lud-section-title{font-size:14px;font-weight:700;color:#1e293b}
+#licensePane .lud-badge-pill{background:#e0edfe;color:#2563eb;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px}
+#licensePane .lud-table-container{background:#fff;border:1px solid #e8edf3;border-radius:10px;overflow-x:auto;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
+#licensePane .lud-table{width:100%;min-width:600px;table-layout:fixed;border-collapse:collapse;font-size:13px}
+#licensePane .lud-table th,#licensePane .lud-table td{padding:12px 14px;text-align:left;vertical-align:middle;box-sizing:border-box}
+#licensePane .lud-table th:first-child,#licensePane .lud-table td:first-child{padding-left:18px}
+#licensePane .lud-table th:last-child,#licensePane .lud-table td:last-child{padding-right:18px}
+#licensePane .lud-table th{font-size:12px;font-weight:600;color:#64748b;border-bottom:1px solid #e8edf3;background:#fff;line-height:1.4;white-space:nowrap}
+#licensePane .lud-th-sort{display:inline-flex;align-items:center;gap:6px;border:0;background:none;font:inherit;color:inherit;font-weight:600;cursor:pointer;padding:0;margin:0}
+#licensePane .lud-table td{border-bottom:1px solid #f1f5f9;background:#fff;white-space:nowrap}
+#licensePane .lud-table tr:last-child td{border-bottom:none}
+#licensePane .lud-table tbody tr:hover td{background:#f8fafc}
+#licensePane .lud-user-cell{display:flex;align-items:center;gap:12px;min-width:0;overflow:hidden}
+#licensePane .lud-avatar{width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#e2e8f0;color:#475569}
+#licensePane .lud-avatar svg{width:18px;height:18px;display:block;fill:currentColor}
+#licensePane .lud-user-info{min-width:0;flex:1;overflow:hidden;display:flex;flex-direction:column}
+#licensePane .lud-user-name{font-size:13.5px;font-weight:600;color:#2563eb;display:inline-flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;min-width:0;text-decoration:none}
+#licensePane .lud-user-name:hover{text-decoration:underline}
+#licensePane .lud-user-name-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#licensePane .lud-ext-icon{flex-shrink:0}
+#licensePane .lud-user-email{font-size:12px;color:#64748b;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#licensePane .lud-archived-badge{display:inline-flex;align-items:center;gap:4px;margin-top:3px;padding:1px 6px;border-radius:4px;background:#fef3c7;border:1px solid #fde68a;color:#92400e;font-size:10px;font-weight:600;width:fit-content}
+#licensePane .lud-role-text{font-size:13px;font-weight:600;color:#334155;display:inline-block}
+#licensePane .lud-usage-badge{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;color:#1e293b}
+#licensePane .lud-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+#licensePane .lud-dot.in-use{background:#10b981}
+#licensePane .lud-dot.inactive{background:#f43f5e}
+#licensePane .lud-dot.spare{background:#94a3b8}
+#licensePane .lud-activity-cell{font-size:13px;color:#334155;display:inline-flex;align-items:center;gap:6px}
+#licensePane .lud-empty{text-align:center;padding:45px 20px;color:#8a9aae;font-size:13px;background:#fff;border:1px solid #e8edf3;border-radius:10px}
+#licensePane .lud-side-col{display:flex;flex-direction:column;gap:18px;width:350px;min-width:320px}
+#licensePane .lud-card{background:#ffffff;border:1px solid #e8edf3;border-radius:12px;padding:22px;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
+#licensePane .lud-card-title{margin:0 0 4px;font-size:15px;font-weight:700;color:#1e293b}
+#licensePane .lud-card-subtitle{margin:0 0 14px;font-size:12px;color:#64748b}
+#licensePane .lud-savings-value{font-size:30px;font-weight:750;color:#0f172a;letter-spacing:-.5px;margin-bottom:22px}
+#licensePane .lud-breakdown-header{margin-top:10px}
+#licensePane .lud-breakdown-title{margin:0 0 3px;font-size:14px;font-weight:700;color:#1e293b}
+#licensePane .lud-stat-boxes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+#licensePane .lud-stat-box{border:1px solid #e2e8f0;border-radius:8px;padding:11px 14px;background:#fff;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .15s ease}
+#licensePane .lud-stat-box:hover{border-color:#cbd5e1;background:#f8fafc}
+#licensePane .lud-stat-box.active{border-color:#3b82f6;background:#eff6ff;box-shadow:0 0 0 2px rgba(59,130,246,0.2)}
+#licensePane .lud-stat-box-main{display:flex;flex-direction:column}
+#licensePane .lud-stat-dot-num{display:flex;align-items:center;gap:6px}
+#licensePane .lud-stat-num{font-size:15px;font-weight:700;color:#1e293b}
+#licensePane .lud-stat-lbl{font-size:12px;color:#64748b;margin-top:2px}
+#licensePane .lud-stat-icon{color:#94a3b8}
+#licensePane .lud-stacked-bar{height:30px;border-radius:6px;overflow:hidden;display:flex;width:100%;font-size:12px;font-weight:700;line-height:30px;text-align:center}
+#licensePane .lud-bar-segment{display:flex;align-items:center;justify-content:center;transition:width .3s ease;min-width:26px}
+#licensePane .lud-bar-segment.in-use{background:#5eead4;color:#064e3b}
+#licensePane .lud-bar-segment.inactive{background:#f87171;color:#fff}
+#licensePane .lud-bar-segment.spare{background:#cbd5e1;color:#334155}
+#licensePane .lud-details-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+#licensePane .lud-more-btn{width:32px;height:32px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;color:#64748b;cursor:pointer;transition:all .15s}
+#licensePane .lud-more-btn:hover{background:#f1f5f9;color:#1e293b}
+#licensePane .lud-section-group{margin-top:10px}
+#licensePane .lud-section-group.lud-border-top{margin-top:18px;padding-top:16px;border-top:1px solid #f1f5f9}
+#licensePane .lud-group-title{margin:0 0 12px;font-size:13px;font-weight:700;color:#334155}
+#licensePane .lud-kv-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+#licensePane .lud-kv-item{display:flex;flex-direction:column}
+#licensePane .lud-kv-label{font-size:12px;color:#64748b;margin-bottom:4px}
+#licensePane .lud-kv-val{font-size:13px;font-weight:600;color:#1e293b}
+@media(max-width:1024px){#licensePane .lud-body{grid-template-columns:1fr;padding:16px}#licensePane .lud-modal{height:auto;max-height:calc(100dvh - 30px)}}
+@media(max-width:640px){#licensePane .lud-header{padding:0 14px;height:58px}#licensePane .lud-title{font-size:16px}#licensePane .lud-toolbar{flex-wrap:wrap}#licensePane .lud-search-wrap{max-width:none;width:100%}#licensePane .lud-kv-grid{grid-template-columns:1fr}}
 @media(max-width:1300px){#licensePane .ll-content{padding:26px 20px}#licensePane .ll-toolbar{padding:17px 17px;gap:8px}#licensePane .ll-search{min-width:210px;flex-basis:210px}#licensePane .ll-sort{gap:6px}#licensePane .ll-sort .ll-select{min-width:135px}#licensePane .ll-col-license{width:267px}#licensePane .ll-col-allocation{width:160px}#licensePane .ll-col-expiry{width:118px}#licensePane .ll-table{min-width:1000px}#licensePane .ll-toolbar>.ll-select{max-width:158px}#licensePane .ll-sort label{display:none}}
 @media(max-width:720px){#licensePane .ll-content{padding:21px 12px}#licensePane .ll-page-head{align-items:flex-start;gap:12px;margin-bottom:18px}#licensePane h1{font-size:23px}#licensePane .ll-asof{font-size:10px;gap:5px;flex-wrap:wrap;justify-content:flex-end;max-width:147px}#licensePane .ll-demo{width:100%;text-align:right;font-size:9px;margin:0}#licensePane .ll-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px}#licensePane .ll-search{grid-column:1/-1;max-width:none;min-width:0}#licensePane .ll-toolbar>.ll-select{width:100%;max-width:none;font-size:11px;min-width:0;padding-left:8px;padding-right:12px}#licensePane .ll-sort{grid-column:1/-1;margin:0;justify-content:flex-end}#licensePane .ll-sort label{display:block}#licensePane .ll-sort .ll-select{flex:1}#licensePane .ll-bottom{padding:13px 14px}#licensePane .ll-result{gap:8px}#licensePane .ll-result>label{margin-left:4px}#licensePane .ll-legend{gap:13px;font-size:9px}#licensePane .ll-stripe-legend{margin-left:0}.sidebar{display:flex!important;width:auto!important;min-width:0!important;height:auto!important;position:relative!important;box-shadow:none!important}.app{flex-direction:column}.sidebar .side-head,.sidebar .side-foot{display:none}.sidebar .side-scroll{padding:9px 12px;overflow:visible}.workspace-nav{display:flex;gap:4px;flex-wrap:wrap}.workspace-nav>.navbtn,.workspace-nav>.usage-nav-row{width:auto!important;flex:1;min-width:100px}.workspace-nav .navbtn{padding:10px 9px;font-size:11px;margin:0;white-space:nowrap;justify-content:center}.workspace-nav .navbtn-left{gap:6px;flex:initial}.workspace-nav .navbtn-left svg,.workspace-nav .navbtn-left img{width:15px!important;height:15px!important}.workspace-nav .usage-toggle{display:none}.workspace-nav .org-panel{flex-basis:100%;order:10;max-height:45vh}.workspace-nav .org-tree{max-height:35vh}.workspace-nav .tree-scroll{max-height:35vh}}
 @media(prefers-reduced-motion:reduce){#licensePane *{scroll-behavior:auto!important;transition:none!important}}
@@ -1800,7 +1874,186 @@ body{font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-font-smoothing:antia
     <div class="ll-legend"><span><i class="ll-swatch ll-urgent"></i>Expires in ≤ 30 days</span><span><i class="ll-swatch ll-warning"></i>31–60 days</span><span><i class="ll-swatch ll-normal"></i>More than 60 days</span><span><i class="ll-swatch ll-expired"></i>Expired</span><span class="ll-stripe-legend"><i class="ll-swatch ll-striped"></i>Final 7 days</span></div>
   </div>
   <div class="ll-detail-backdrop" id="llDetailBackdrop" hidden>
-    <section class="ll-detail" role="dialog" aria-modal="true" aria-labelledby="llDetailTitle" tabindex="-1"><div class="ll-detail-head"><h2 id="llDetailTitle">License details</h2><button id="llCloseDetail" class="ll-icon-button" type="button" aria-label="Close license details"><span data-ll-icon="x"></span></button></div><div id="llDetailBody" class="ll-detail-body"></div><div class="ll-detail-foot"><button id="llDetailDone" class="ll-secondary" type="button">Close</button></div></section>
+    <div class="lud-modal" role="dialog" aria-modal="true" aria-labelledby="ludTitle" tabindex="-1">
+      <div class="lud-header">
+        <div class="lud-header-left">
+          <button id="llCloseDetail" class="lud-back-btn" type="button" aria-label="Back to License List" title="Back">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          </button>
+          <img id="ludBrandLogo" class="lud-brand-logo" src="" alt="">
+          <h2 id="ludTitle" class="lud-title">Microsoft - 365 E3</h2>
+          <div class="lud-managed-pill">
+            <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            <span>Managed by</span>
+            <img id="ludManagedIcon" class="lud-managed-icon" src="" alt="">
+          </div>
+        </div>
+        <div class="lud-header-right">
+          <button id="ludCloseX" class="lud-icon-btn" type="button" aria-label="Close license user dialog" title="Close">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="lud-body">
+        <div class="lud-main-col">
+          <div class="lud-toolbar">
+            <div class="lud-search-wrap">
+              <input type="search" id="ludSearchInput" class="lud-search-input" placeholder="Search..." aria-label="Search assignees">
+              <svg class="lud-search-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <div class="lud-toolbar-actions">
+              <button type="button" class="lud-filter-btn" id="ludFilterBtn" title="Toggle active status filter">
+                <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" fill="none" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                <span>Filter</span>
+              </button>
+              <button type="button" class="lud-export-btn" id="ludExportBtn" aria-label="Export list to CSV" title="Export CSV">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="lud-section-title-row">
+            <span class="lud-section-title" id="ludSectionTitle">Total Assignees</span>
+            <span id="ludTotalAssigneesBadge" class="lud-badge-pill">404</span>
+          </div>
+
+          <div class="lud-table-container">
+            <table class="lud-table">
+              <colgroup>
+                <col style="width: 50%;">
+                <col style="width: 12%;">
+                <col style="width: 16%;">
+                <col style="width: 22%;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th scope="col">
+                    <button type="button" class="lud-th-sort" id="ludSortAssignee" title="Click to sort by name">
+                      Assignees
+                      <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2"><path d="m7 15 5 5 5-5"></path><path d="m7 9 5-5 5 5"></path></svg>
+                    </button>
+                  </th>
+                  <th scope="col">Role</th>
+                  <th scope="col">Usage</th>
+                  <th scope="col">Last Activity</th>
+                </tr>
+              </thead>
+              <tbody id="ludAssigneesTbody"></tbody>
+            </table>
+          </div>
+          <div id="ludEmptyUsers" class="lud-empty" hidden>
+            <p>No assignees match the search or filter criteria.</p>
+          </div>
+        </div>
+
+        <div class="lud-side-col">
+          <div class="lud-card">
+            <h3 class="lud-card-title">Potential Yearly Savings</h3>
+            <p class="lud-card-subtitle">Based on inactive and spare licenses</p>
+            <div class="lud-savings-value" id="ludSavingsValue">$53,136</div>
+
+            <div class="lud-breakdown-header">
+              <h4 class="lud-breakdown-title">License usage breakdown</h4>
+              <p class="lud-card-subtitle">Based on user activity from the past 90 days</p>
+            </div>
+
+            <div class="lud-stat-boxes">
+              <div class="lud-stat-box" id="ludBoxInUse" title="Click to filter by In Use" role="button" tabindex="0">
+                <div class="lud-stat-box-main">
+                  <div class="lud-stat-dot-num">
+                    <span class="lud-dot in-use"></span>
+                    <span class="lud-stat-num" id="ludCountInUse">370</span>
+                  </div>
+                  <div class="lud-stat-lbl">In Use</div>
+                </div>
+                <svg class="lud-stat-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              </div>
+
+              <div class="lud-stat-box" id="ludBoxInactive" title="Click to filter by Inactive" role="button" tabindex="0">
+                <div class="lud-stat-box-main">
+                  <div class="lud-stat-dot-num">
+                    <span class="lud-dot inactive"></span>
+                    <span class="lud-stat-num" id="ludCountInactive">34</span>
+                  </div>
+                  <div class="lud-stat-lbl">Inactive</div>
+                </div>
+                <svg class="lud-stat-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              </div>
+
+              <div class="lud-stat-box" id="ludBoxSpare" style="cursor: default;" title="Spare capacity">
+                <div class="lud-stat-box-main">
+                  <div class="lud-stat-dot-num">
+                    <span class="lud-dot spare"></span>
+                    <span class="lud-stat-num" id="ludCountSpare">89</span>
+                  </div>
+                  <div class="lud-stat-lbl">Spare</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="lud-stacked-bar" id="ludStackedBar">
+              <div class="lud-bar-segment in-use" id="ludBarInUse" style="width: 75.05%;" title="In Use">370</div>
+              <div class="lud-bar-segment inactive" id="ludBarInactive" style="width: 6.9%;" title="Inactive">34</div>
+              <div class="lud-bar-segment spare" id="ludBarSpare" style="width: 18.05%;" title="Spare">89</div>
+            </div>
+          </div>
+
+          <div class="lud-card">
+            <div class="lud-details-header">
+              <h3 class="lud-card-title">Details</h3>
+              <button type="button" class="lud-more-btn" aria-label="More options" title="More options">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+              </button>
+            </div>
+
+            <div class="lud-section-group">
+              <h4 class="lud-group-title">Plan</h4>
+              <div class="lud-kv-grid">
+                <div class="lud-kv-item">
+                  <span class="lud-kv-label">Plan Type</span>
+                  <span class="lud-kv-val" id="ludPlanType">Fixed Term</span>
+                </div>
+                <div class="lud-kv-item">
+                  <span class="lud-kv-label">Start Date</span>
+                  <span class="lud-kv-val" id="ludStartDate">18 Jul 2025</span>
+                </div>
+                <div class="lud-kv-item">
+                  <span class="lud-kv-label">End Date</span>
+                  <span class="lud-kv-val" id="ludEndDate">17 Jul 2027</span>
+                </div>
+                <div class="lud-kv-item">
+                  <span class="lud-kv-label">Renewal Reminder</span>
+                  <span class="lud-kv-val" id="ludRenewalReminder">17 Apr 2027</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="lud-section-group lud-border-top">
+              <h4 class="lud-group-title">Billing &amp; Seats</h4>
+              <div class="lud-kv-grid">
+                <div class="lud-kv-item">
+                  <span class="lud-kv-label">Billing Frequency</span>
+                  <span class="lud-kv-val" id="ludBillingFreq">Annual</span>
+                </div>
+                <div class="lud-kv-item">
+                  <span class="lud-kv-label">Cost per Seat</span>
+                  <span class="lud-kv-val" id="ludSeatCost">$8.25 / mo</span>
+                </div>
+                <div class="lud-kv-item">
+                  <span class="lud-kv-label">Total Purchased Seats</span>
+                  <span class="lud-kv-val" id="ludPurchasedSeats">500</span>
+                </div>
+                <div class="lud-kv-item">
+                  <span class="lud-kv-label">Allocated Seats</span>
+                  <span class="lud-kv-val" id="ludAllocatedSeats">404</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <div id="llTooltip" class="ll-tooltip" role="tooltip" hidden></div>
 </section>
@@ -3702,7 +3955,7 @@ const LL_BRANDS = window.LL_BRANDS;
     const list = filtered(), pages = Math.max(1, Math.ceil(list.length/state.size));
     state.page = Math.min(state.page,pages);
     const start = (state.page-1)*state.size, rows = list.slice(start,start+state.size);
-    $('llRows').innerHTML = rows.map(l => `<tr data-license-id="${l.id}"><td><div class="ll-license-cell"><img class="ll-logo" src="${LL_BRANDS[l.brand]}" alt=""><div class="ll-license-info"><button type="button" class="ll-license-name" data-ll-detail="${l.id}" title="${esc(l.name)}">${esc(l.name)}</button><div class="ll-license-meta"><span class="ll-monthly-cost">${usd.format(l.cost)} / mo</span><span aria-hidden="true">·</span><span class="ll-company-name" title="${esc(l.company)}">${esc(l.company)}</span></div></div></div></td><td>${allocationHtml(l)}</td><td><span class="ll-expiry-badge ${urgency(l)}">${daysText(l)}</span><div class="ll-date">${shortDate(l.end)}</div></td><td class="ll-timeline-cell">${timelineHtml(l)}</td></tr>`).join('');
+    $('llRows').innerHTML = rows.map(l => `<tr data-license-id="${l.id}" data-ll-detail="${l.id}" tabindex="0" role="button" aria-label="View license details for ${esc(l.name)}"><td><div class="ll-license-cell"><img class="ll-logo" src="${LL_BRANDS[l.brand]}" alt=""><div class="ll-license-info"><button type="button" class="ll-license-name" data-ll-detail="${l.id}" title="${esc(l.name)}">${esc(l.name)}</button><div class="ll-license-meta"><span class="ll-monthly-cost">${usd.format(l.cost)} / mo</span><span aria-hidden="true">·</span><span class="ll-company-name" title="${esc(l.company)}">${esc(l.company)}</span></div></div></div></td><td>${allocationHtml(l)}</td><td><span class="ll-expiry-badge ${urgency(l)}">${daysText(l)}</span><div class="ll-date">${shortDate(l.end)}</div></td><td class="ll-timeline-cell">${timelineHtml(l)}</td></tr>`).join('');
     const tp = position(today);
     $('llAxis').innerHTML = months().map(m=>`<span class="ll-month-label" style="left:${position(m.time)}%">${m.label}</span>`).join('')+(tp>=0&&tp<=100?`<span class="ll-axis-today" style="left:${tp}%"><span>Today</span></span>`:'');
     $('llEmpty').hidden = Boolean(list.length);
@@ -3741,30 +3994,288 @@ const LL_BRANDS = window.LL_BRANDS;
   $('llNextWindow').addEventListener('click',()=>{state.windowOffset++;render();});
   $('llToday').addEventListener('click',()=>{state.windowOffset=0;render();});
   let lastFocus = null, previousBodyOverflow = '';
-  function showDetails(id) {
-    const l = find(id); if(!l)return;
-    hideTooltip();lastFocus=document.activeElement;
-    const capacity = l.purchased-l.allocated;
-    $('llDetailBody').innerHTML = `<div class="ll-detail-product"><img src="${LL_BRANDS[l.brand]}" alt=""><div><h3>${esc(l.name)}</h3><p>${esc(l.provider)}</p></div></div><dl class="ll-detail-grid"><div><dt>Company</dt><dd>${esc(l.company)}</dd></div><div><dt>Monthly cost</dt><dd>${usd.format(l.cost)}</dd></div><div><dt>Start date</dt><dd>${shortDate(l.start)}</dd></div><div><dt>Expiry date</dt><dd>${shortDate(l.end)}</dd></div><div><dt>Expiry status</dt><dd><span class="ll-expiry-badge ${urgency(l)}">${daysText(l)}</span></dd></div><div><dt>${capacity>=0?'Unallocated quantity':'Over-allocated quantity'}</dt><dd>${fmt.format(Math.abs(capacity))}</dd></div></dl><div class="ll-detail-allocation"><h4>Allocated / Purchased</h4>${allocationHtml(l)}</div><p class="ll-detail-note">Allocated quantity represents assigned licenses. Actual usage is tracked separately in Usage.</p>`;
-    previousBodyOverflow=document.body.style.overflow;document.body.style.overflow='hidden';
-    $('llDetailBackdrop').hidden=false;$('llCloseDetail').focus();
+  const MS_LOGO_SVG = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23"><path fill="%23f25022" d="M1 1h10v10H1z"/><path fill="%2300a4ef" d="M1 12h10v10H1z"/><path fill="%237fba00" d="M12 1h10v10H12z"/><path fill="%23ffb900" d="M12 12h10v10H12z"/></svg>';
+
+  const M365_USERS = [
+    { name: 'Ramesh Landay', email: 'rameshlanday@company.com', role: 'Admin', usage: 'In Use', lastActivity: '23 Apr 2026', archived: false, avatarBg: '#dbeafe', avatarColor: '#1d4ed8' },
+    { name: 'Clare Bentley', email: 'clarebentley@company.com', role: 'User', usage: 'In Use', lastActivity: '23 Apr 2026', archived: false, avatarBg: '#ede9fe', avatarColor: '#6d28d9' },
+    { name: 'Jane Sanchez', email: 'janesanchez@company.com', role: 'User', usage: 'In Use', lastActivity: '22 Apr 2026', archived: false, avatarBg: '#fce7f3', avatarColor: '#be185d' },
+    { name: 'Steven Axeman', email: 'stevenaxeman@company.com', role: 'User', usage: 'Inactive', lastActivity: '17 Dec 2025', archived: false, avatarBg: '#dcfce7', avatarColor: '#15803d' },
+    { name: 'Isabella Chen', email: 'isabellachen@company.com', role: 'User', usage: 'In Use', lastActivity: '02 Apr 2026', archived: false, avatarBg: '#cffafe', avatarColor: '#0e7490' },
+    { name: 'Peter Parker', email: 'peterparker@company.com', role: 'User', usage: 'Inactive', lastActivity: '23 Aug 2025', archived: true, avatarBg: '#fef3c7', avatarColor: '#b45309' },
+    { name: 'Steven Wakefield', email: 'stevenwakefield@company.com', role: 'User', usage: 'In Use', lastActivity: '12 Feb 2026', archived: false, avatarBg: '#e0e7ff', avatarColor: '#4338ca' },
+    { name: 'Marcus Vance', email: 'marcusvance@company.com', role: 'User', usage: 'In Use', lastActivity: '19 Apr 2026', archived: false, avatarBg: '#ccfbf1', avatarColor: '#0f766e' },
+    { name: 'Diana Prince', email: 'dianaprince@company.com', role: 'Admin', usage: 'In Use', lastActivity: '21 Apr 2026', archived: false, avatarBg: '#ffe4e6', avatarColor: '#be123c' },
+    { name: 'Arthur Pendelton', email: 'arthurpendelton@company.com', role: 'User', usage: 'Inactive', lastActivity: '04 Jan 2026', archived: false, avatarBg: '#ecfccb', avatarColor: '#4d7c0f' }
+  ];
+
+  function getLicenseUserData(l) {
+    if (l.id === 1 || l.name.includes('365')) {
+      return {
+        title: 'Microsoft - 365 E3',
+        provider: 'Microsoft',
+        brandLogo: MS_LOGO_SVG,
+        managedIcon: MS_LOGO_SVG,
+        totalAssignees: 404,
+        inUse: 370,
+        inactive: 34,
+        spare: 89,
+        savings: '$53,136',
+        planType: 'Fixed Term',
+        startDate: '18 Jul 2025',
+        endDate: '17 Jul 2027',
+        renewalReminder: '17 Apr 2027',
+        billingFreq: 'Annual',
+        seatCost: '$8.25 / mo',
+        purchased: 500,
+        allocated: 404,
+        users: M365_USERS
+      };
+    }
+    const domain = l.company ? l.company.toLowerCase().replace(/[^a-z0-9]/g, '') + '.com' : 'company.com';
+    const inactiveCount = Math.max(1, Math.round(l.allocated * 0.084));
+    const inUseCount = Math.max(0, l.allocated - inactiveCount);
+    const spareCount = Math.max(0, l.purchased - l.allocated);
+    const seatCostNum = l.purchased ? (l.cost / l.purchased) : 10;
+    const yearlySavingsNum = Math.round((inactiveCount + spareCount) * seatCostNum * 12);
+    const brandImg = LL_BRANDS[l.brand] || MS_LOGO_SVG;
+    
+    const firstNames = ['David', 'Sarah', 'Alex', 'Elena', 'Michael', 'Emily', 'Kevin', 'Jessica', 'Daniel', 'Olivia'];
+    const lastNames = ['Vu', 'Tran', 'Nguyen', 'Smith', 'Lee', 'Anderson', 'Martin', 'Taylor', 'White', 'Harris'];
+    const avatarPalettes = [
+      { bg: '#dbeafe', color: '#1d4ed8' },
+      { bg: '#ede9fe', color: '#6d28d9' },
+      { bg: '#fce7f3', color: '#be185d' },
+      { bg: '#dcfce7', color: '#15803d' },
+      { bg: '#cffafe', color: '#0e7490' },
+      { bg: '#fef3c7', color: '#b45309' },
+      { bg: '#e0e7ff', color: '#4338ca' },
+      { bg: '#ccfbf1', color: '#0f766e' },
+      { bg: '#ffe4e6', color: '#be123c' },
+      { bg: '#ecfccb', color: '#4d7c0f' }
+    ];
+    const users = firstNames.map((fn, idx) => {
+      const ln = lastNames[idx];
+      const isInactive = idx === 3 || idx === 8;
+      const pal = avatarPalettes[idx % avatarPalettes.length];
+      return {
+        name: `${fn} ${ln}`,
+        email: `${fn.toLowerCase()}.${ln.toLowerCase()}@${domain}`,
+        role: idx === 0 || idx === 6 ? 'Admin' : 'User',
+        usage: isInactive ? 'Inactive' : 'In Use',
+        lastActivity: isInactive ? '15 Nov 2025' : `${20 - idx} Apr 2026`,
+        archived: idx === 3,
+        avatarBg: pal.bg,
+        avatarColor: pal.color
+      };
+    });
+
+    return {
+      title: `${l.provider} - ${l.name}`,
+      provider: l.provider,
+      brandLogo: brandImg,
+      managedIcon: brandImg,
+      totalAssignees: l.allocated,
+      inUse: inUseCount,
+      inactive: inactiveCount,
+      spare: spareCount,
+      savings: usd.format(yearlySavingsNum),
+      planType: 'Fixed Term',
+      startDate: shortDate(l.start),
+      endDate: shortDate(l.end),
+      renewalReminder: shortDate(l.end - 90 * DAY),
+      billingFreq: 'Annual',
+      seatCost: `${usd.format(seatCostNum)} / mo`,
+      purchased: l.purchased,
+      allocated: l.allocated,
+      users
+    };
   }
-  function closeDetails(){if($('llDetailBackdrop').hidden)return;$('llDetailBackdrop').hidden=true;document.body.style.overflow=previousBodyOverflow;lastFocus?.focus();}
-  $('llCloseDetail').addEventListener('click',closeDetails);$('llDetailDone').addEventListener('click',closeDetails);
-  $('llDetailBackdrop').addEventListener('click',e=>{if(e.target===$('llDetailBackdrop'))closeDetails();});
-  $('llDetailBackdrop').addEventListener('keydown',e=>{
-    if(e.key==='Escape'){e.preventDefault();closeDetails();}
-    if(e.key==='Tab') {
-      const items=[...$('llDetailBackdrop').querySelectorAll('button:not(:disabled),[href],input,select,[tabindex="0"]')];
-      const first=items[0],last=items[items.length-1];
-      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
-      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+
+  let currentDialogData = null;
+  let dialogFilter = 'all';
+  let dialogSearch = '';
+  let dialogSortAsc = true;
+
+  function renderDialogTable() {
+    if (!currentDialogData) return;
+    let list = currentDialogData.users.filter(u => {
+      if (dialogFilter !== 'all' && u.usage !== dialogFilter) return false;
+      if (dialogSearch) {
+        const q = dialogSearch.toLowerCase();
+        if (!u.name.toLowerCase().includes(q) && !u.email.toLowerCase().includes(q) && !u.role.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+    list.sort((a, b) => dialogSortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
+    $('ludTotalAssigneesBadge').textContent = (dialogFilter === 'all' && !dialogSearch) ? currentDialogData.totalAssignees : list.length;
+    $('ludEmptyUsers').hidden = list.length > 0;
+    $('ludAssigneesTbody').innerHTML = list.map(u => `
+      <tr>
+        <td>
+          <div class="lud-user-cell">
+            <div class="lud-avatar" style="background:${u.avatarBg || '#e0e7ff'};color:${u.avatarColor || '#4338ca'};" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </div>
+            <div class="lud-user-info">
+              <a class="lud-user-name" href="#user-${esc(u.name)}" onclick="return false;" title="${esc(u.name)}">
+                <span class="lud-user-name-text">${esc(u.name)}</span>
+                <svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" fill="none" stroke-width="2.2" class="lud-ext-icon"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </a>
+              <div class="lud-user-email" title="${esc(u.email)}">${esc(u.email)}</div>
+              ${u.archived ? `<div class="lud-archived-badge"><svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" fill="none" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>Archived</div>` : ''}
+            </div>
+          </div>
+        </td>
+        <td><span class="lud-role-text">${esc(u.role)}</span></td>
+        <td>
+          <span class="lud-usage-badge">
+            <span class="lud-dot ${u.usage === 'In Use' ? 'in-use' : 'inactive'}"></span>
+            ${esc(u.usage)}
+          </span>
+        </td>
+        <td>
+          <span class="lud-activity-cell">
+            ${esc(u.lastActivity)}
+            <svg viewBox="0 0 24 24" width="12" height="12" stroke="#94a3b8" fill="none" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </span>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function toggleUsageFilter(val) {
+    if (dialogFilter === val) {
+      dialogFilter = 'all';
+      $('ludBoxInUse').classList.remove('active');
+      $('ludBoxInactive').classList.remove('active');
+      $('ludFilterBtn').classList.remove('active');
+    } else {
+      dialogFilter = val;
+      $('ludBoxInUse').classList.toggle('active', val === 'In Use');
+      $('ludBoxInactive').classList.toggle('active', val === 'Inactive');
+      $('ludFilterBtn').classList.add('active');
+    }
+    renderDialogTable();
+  }
+
+  function exportAssigneesCsv() {
+    if (!currentDialogData) return;
+    const rows = [
+      ['Name', 'Email', 'Role', 'Usage', 'Last Activity', 'Archived'],
+      ...currentDialogData.users.map(u => [u.name, u.email, u.role, u.usage, u.lastActivity, u.archived ? 'Yes' : 'No'])
+    ];
+    const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `${currentDialogData.title.replace(/[^a-zA-Z0-9_-]/g, '_')}_assignees.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function showDetails(id) {
+    const l = find(id); if(!l) return;
+    hideTooltip(); lastFocus = document.activeElement;
+    currentDialogData = getLicenseUserData(l);
+    dialogFilter = 'all';
+    dialogSearch = '';
+    dialogSortAsc = true;
+
+    $('ludBrandLogo').src = currentDialogData.brandLogo;
+    $('ludManagedIcon').src = currentDialogData.managedIcon;
+    $('ludTitle').textContent = currentDialogData.title;
+    $('ludSearchInput').value = '';
+
+    $('ludSavingsValue').textContent = currentDialogData.savings;
+    $('ludCountInUse').textContent = fmt.format(currentDialogData.inUse);
+    $('ludCountInactive').textContent = fmt.format(currentDialogData.inactive);
+    $('ludCountSpare').textContent = fmt.format(currentDialogData.spare);
+
+    const totalSeats = (currentDialogData.inUse + currentDialogData.inactive + currentDialogData.spare) || 1;
+    const pInUse = (currentDialogData.inUse / totalSeats * 100);
+    const pInactive = (currentDialogData.inactive / totalSeats * 100);
+    const pSpare = (currentDialogData.spare / totalSeats * 100);
+
+    $('ludBarInUse').style.width = `${pInUse}%`;
+    $('ludBarInUse').textContent = currentDialogData.inUse;
+    $('ludBarInactive').style.width = `${pInactive}%`;
+    $('ludBarInactive').textContent = currentDialogData.inactive;
+    $('ludBarSpare').style.width = `${pSpare}%`;
+    $('ludBarSpare').textContent = currentDialogData.spare;
+
+    $('ludPlanType').textContent = currentDialogData.planType;
+    $('ludStartDate').textContent = currentDialogData.startDate;
+    $('ludEndDate').textContent = currentDialogData.endDate;
+    $('ludRenewalReminder').textContent = currentDialogData.renewalReminder;
+
+    $('ludBillingFreq').textContent = currentDialogData.billingFreq;
+    $('ludSeatCost').textContent = currentDialogData.seatCost;
+    $('ludPurchasedSeats').textContent = fmt.format(currentDialogData.purchased);
+    $('ludAllocatedSeats').textContent = fmt.format(currentDialogData.allocated);
+
+    $('ludBoxInUse').classList.remove('active');
+    $('ludBoxInactive').classList.remove('active');
+    $('ludFilterBtn').classList.remove('active');
+
+    renderDialogTable();
+
+    previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    $('llDetailBackdrop').hidden = false;
+    $('llCloseDetail').focus();
+  }
+
+  function closeDetails() {
+    if($('llDetailBackdrop').hidden) return;
+    $('llDetailBackdrop').hidden = true;
+    document.body.style.overflow = previousBodyOverflow;
+    lastFocus?.focus();
+  }
+
+  $('llCloseDetail').addEventListener('click', closeDetails);
+  $('ludCloseX').addEventListener('click', closeDetails);
+  $('ludSearchInput').addEventListener('input', e => { dialogSearch = e.target.value.trim(); renderDialogTable(); });
+  $('ludFilterBtn').addEventListener('click', () => {
+    if (dialogFilter === 'all') toggleUsageFilter('In Use');
+    else if (dialogFilter === 'In Use') toggleUsageFilter('Inactive');
+    else toggleUsageFilter('all');
+  });
+  $('ludBoxInUse').addEventListener('click', () => toggleUsageFilter('In Use'));
+  $('ludBoxInactive').addEventListener('click', () => toggleUsageFilter('Inactive'));
+  $('ludBoxInUse').addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleUsageFilter('In Use'); } });
+  $('ludBoxInactive').addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleUsageFilter('Inactive'); } });
+  $('ludSortAssignee').addEventListener('click', () => { dialogSortAsc = !dialogSortAsc; renderDialogTable(); });
+  $('ludExportBtn').addEventListener('click', exportAssigneesCsv);
+
+  $('llDetailBackdrop').addEventListener('click', e => {
+    if(e.target === $('llDetailBackdrop')) closeDetails();
+  });
+  $('llDetailBackdrop').addEventListener('keydown', e => {
+    if(e.key === 'Escape'){ e.preventDefault(); closeDetails(); }
+    if(e.key === 'Tab') {
+      const items = [...$('llDetailBackdrop').querySelectorAll('button:not(:disabled),[href],input,select,[tabindex="0"]')];
+      const first = items[0], last = items[items.length - 1];
+      if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
     }
   });
-  pane.addEventListener('click',e=>{
-    const sort=e.target.closest('[data-ll-sort]');if(sort){setSort(sort.dataset.llSort);return;}
-    const page=e.target.closest('[data-ll-page]');if(page&&!page.disabled){state.page=+page.dataset.llPage;render();return;}
-    const detail=e.target.closest('[data-ll-detail]');if(detail)showDetails(detail.dataset.llDetail);
+  pane.addEventListener('click', e => {
+    const sort = e.target.closest('[data-ll-sort]'); if(sort){ setSort(sort.dataset.llSort); return; }
+    const page = e.target.closest('[data-ll-page]'); if(page && !page.disabled){ state.page = +page.dataset.llPage; render(); return; }
+    const tr = e.target.closest('#llRows tr');
+    if (tr && tr.dataset.licenseId) { showDetails(tr.dataset.licenseId); return; }
+    const detail = e.target.closest('[data-ll-detail]'); if(detail) showDetails(detail.dataset.llDetail);
+  });
+  pane.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      const tr = e.target.closest('#llRows tr[data-license-id]');
+      if (tr && (e.target === tr || tr.contains(e.target))) {
+        e.preventDefault();
+        showDetails(tr.dataset.licenseId);
+      }
+    }
   });
   let tooltipTarget=null;
   function hideTooltip(){if(tooltipTarget)tooltipTarget.removeAttribute('aria-describedby');tooltipTarget=null;$('llTooltip').hidden=true;}
