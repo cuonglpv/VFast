@@ -3,6 +3,8 @@
 > Design status: PROPOSAL (to be reviewed by the team)
 >
 > Implementation status: NOT STARTED
+>
+> **Written before the P&L API business model.** Since then each P&L provides the API behind its connectors, one usage connector per company and provider, and Connector Management is UC38, UC55, UC60, UC56, and UC26 of [Use cases](02-use-cases.md); the UC03 and UC25 named below are retired. ECS remains the proposed shape of the license data contract (BR-19) those APIs answer in.
 
 System: **Enterprise License Management System (ELMS)**, built by team VFast.
 
@@ -260,12 +262,12 @@ BR-19 (every connector delivers ECS; the validator checks every run) and BR-20 (
 |---|---|
 | `connectors.delivery` (`native`, `adapter`, `file`), `connectors.ecs_version` | What the connector is and which ECS version it speaks |
 | `connectors.capabilities` (JSON from `/capabilities`) | Datasets, granularity, history depth, delay, read at the connection test |
-| `connectors.is_active` kept | Pause and resume (UC26); no status lifecycle without a conformance step |
+| `connectors.paused_at` (already in the schema) | Pause and resume (UC26); no status lifecycle without a conformance step |
 | `sync_runs.trigger` gains `upload` | ECS file runs from UC26 |
 | `plan_data_sources.external_ref` reused for the provider plan linked in UC03 and UC25 | No new table needed |
 | `usage_metric` unchanged | ECS uses the schema's metric names (§4.2) |
 
-No new table: the schema stays at 39 tables. These changes go into the database design as decision D24 once this proposal is approved.
+No new table: the schema stays at its 40 tables. These changes go into the database design as a new decision (after D41) once this proposal is approved.
 
 ### 5.5 Impact on the code structure
 

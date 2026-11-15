@@ -13,26 +13,25 @@ erDiagram
     roles ||--o{ role_permissions : grants
     permissions ||--o{ role_permissions : "granted by"
     user_accounts ||--o{ user_sessions : opens
-    user_accounts ||--o{ manager_org_units : manages
-    org_units ||--o{ manager_org_units : "managed by"
+    user_accounts ||--o{ user_org_units : "scoped to"
+    org_units ||--o{ user_org_units : "seen by"
     vendors ||--o{ software_products : sells
     vendors ||--o{ contracts : signs
     software_categories ||--o{ software_products : classifies
-    software_products ||--o{ license_plans : "offered as"
+    software_products |o--o{ license_plans : "maps"
     software_products ||--o{ product_links : links
     org_units ||--o{ license_plans : owns
     license_plans ||--o{ entitlement_lines : "purchased as"
-    contracts |o--o{ entitlement_lines : covers
-    entitlement_lines ||--o{ entitlement_allocations : "split into"
-    org_units ||--o{ entitlement_allocations : receives
-    vendors ||--o{ connectors : "read by"
+    vendors |o--o{ connectors : "read by"
+    org_units |o--o{ connectors : "company of"
+    connectors ||--o{ license_plans : reports
     connectors ||--o{ sync_runs : runs
     license_plans ||--o{ plan_data_sources : "collected from"
-    connectors |o--o{ plan_data_sources : feeds
+    connectors ||--o{ plan_data_sources : feeds
     license_plans ||--o{ collection_coverage : "completeness of"
     sync_runs ||--o{ raw_records : stores
     files ||--o{ import_batches : "imported from"
-    vendors ||--o{ subjects : "identity at"
+    connectors ||--o{ subjects : "identity at"
     employees |o--o{ subjects : "matched to"
     license_plans ||--o{ license_assignments : "held as"
     subjects ||--o{ license_assignments : holds
@@ -40,15 +39,18 @@ erDiagram
     subjects |o--o{ usage_records : uses
     license_plans ||--o{ plan_daily_snapshots : "daily figures"
     license_plans ||--o{ plan_unit_daily_snapshots : "daily seats"
-    org_units ||--o{ budget_plans : budgets
+    employees |o--o{ employee_app_usage : "uses apps"
+    software_products |o--o{ employee_app_usage : "app of"
+    org_units ||--o{ budget_plans : "target of"
+    import_batches |o--o| budget_plans : creates
     budget_plans ||--o{ budget_plan_lines : plans
-    license_plans ||--o{ budget_plan_lines : "planned in"
+    license_plans |o--o{ budget_plan_lines : "planned in"
+    org_units ||--o{ budget_plan_lines : "plan of"
     accounting_periods ||--o{ cost_allocations : "month of"
     license_plans ||--o{ cost_allocations : "cost of"
-    org_units |o--o{ cost_allocations : carries
+    org_units ||--o{ cost_allocations : carries
     license_plans ||--o{ expenses : "billed for"
-    org_units |o--o{ expenses : pays
+    org_units ||--o{ expenses : pays
+    org_units ||--o{ accounting_periods : closes
     detection_runs ||--o{ detection_results : produces
     license_plans ||--o{ detection_results : "checked in"
-    detection_results |o--o{ recommendations : "turned into"
-    license_plans ||--o{ recommendations : concerns

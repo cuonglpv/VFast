@@ -1,6 +1,6 @@
 # Top-down Problem Analysis & Research
 
-> Design status: TARGET
+> Design status: TARGET (P&L API business model, third revision of 15 November 2026)
 >
 > Implementation status: NOT STARTED (requirements phase)
 
@@ -15,43 +15,46 @@ Business problem → Stakeholders → Goals & metrics → License models and dat
 
 ## 1. Problem context
 
-A company buys software from many providers: Microsoft, Google, Adobe, JetBrains, Oracle, OpenAI, Anthropic, AWS, VPN services, and specialized engineering tools. Each provider sells under a different license model, counts usage in a different unit, and keeps the data in its own admin portal.
+A group of companies (P&Ls) buys software from many providers: Microsoft, Atlassian, Adobe, GitHub, SAP, AI services, and specialized engineering tools. Each P&L buys its own licenses, some contracts are signed once for the whole group, each provider counts in its own unit (seats, sessions, tokens, cores), and the data sits in each provider's admin portal.
 
 | Problem | Consequence |
 |---|---|
-| No central system for license information and cost | Nobody can answer "what do we own and what does it cost" without visiting every provider portal |
-| Hard to tell who holds a license and whether they use it | Seats stay assigned to people who never open the application or have left the company |
-| No automatic measurement of usage, consumption, and cost efficiency | Waste is found late, by hand, or not at all |
-| Budget plans are not compared with what was bought, assigned, and used | The team cannot tell whether a gap comes from buying too much, not assigning, or not using |
-| No data to find surplus or inefficient licenses | Renewal and budget decisions repeat last year's numbers |
+| No central view of the licenses of every P&L | Nobody can answer "what does the group own and what does it cost" without asking every company |
+| Hard to tell who holds a license and whether they use it | Seats stay with people who never open the application, moved to another P&L, or left |
+| Budget plans are not compared with what was bought and what is used | A gap between plan and reality is found late, and nobody knows whether it comes from over-buying or from not using |
+| Waste is not expressed in money per unit | Managers cannot rank their units or licenses by the money lost |
+| Group contracts are paid once but used by several companies | Their cost is not charged back, and their free seats belong to nobody |
 
-**Problem statement:** a company needs one place that collects license, assignment, usage, and cost data from every provider, measures each license in the unit that fits its model, compares the budget plan with reality, and shows managers which licenses are wasted and what to do about it — without ever changing anything on the provider side.
+**Problem statement:** a group needs one place that reads, for every P&L and provider, what each license costs, who holds it, and how much it is used; sets it against the budget plan of every unit from the group down to a project; and shows each Manager, in money, what is planned, purchased, used, and wasted — without ever changing anything at a provider.
 
 ## 2. Stakeholders
 
 | Stakeholder | Role in system | Main interest |
 |---|---|---|
-| Manager of a P&L (subsidiary) or a department | `MANAGER` | Dashboards and analytics for their unit, budget planning and monitoring, optimization results and recommendations |
-| License management team member | `STAFF` | Keeping license data correct: software catalog, vendors, entitlements, contracts, and expenses |
-| System administrator | `ADMIN` | Operating the system: users, roles, permissions, and the P&L / department tree; no access to license, budget, or cost data |
-| Every employee of the company | `EMPLOYEE` | Knowing which licenses they hold and whether the system sees them as used |
-| License providers | External systems | Source of license, assignment, usage, and cost data through their APIs, logs, or exports |
+| Manager of a unit — the group, a P&L, a block, a department, or a project | `MANAGER` | Licenses and who uses them, usage and waste in money, the budget plan of their units |
+| License management team member | `STAFF` | Feeding the system: usage connectors, sync monitoring, software catalog, shared licenses, expenses and accrual, exchange rates |
+| System administrator | `ADMIN` | Users, roles, permissions, the organization tree, and which Manager owns which unit; reads the group overview and the dashboards |
+| Every employee of the group | `EMPLOYEE` | Knowing which licenses they hold and whether they are recorded as used |
+| Each P&L | API provider | Provides an API that returns its licenses, holders, and usage in the license data contract (BR-19) |
+| ILVG (internal HR application) | Source system | Employees, their unit, their projects, and transfers |
+| BCA (usage tracking on company machines) | Source system | How often each employee uses each application |
+| SAP (finance) | Source system | The yearly budget plan by month, exported to the ELMS Excel template |
 
 ## 3. Goals and success metrics
 
 | Goal | Metric |
 |---|---|
-| G1 — Centralize licenses | Every license from every provider is listed with publisher, model, quantity, cost, and expiry in one table |
-| G2 — Know who uses what | Every assigned seat has exactly one status: `Active`, `Inactive`, `No activity`, or `Not monitored` |
-| G3 — Measure automatically | License, assignment, and usage data refresh daily without manual work for providers with an API |
-| G4 — Express waste as money | Underutilized accounts and their annual cost are shown on one screen |
-| G5 — Plan and reconcile the budget | Each unit has a yearly plan; Planned, Purchased, Assigned, Used, and Actual cost are compared per license |
-| G6 — Turn waste into savings | Every unused, inactive, or overused license becomes a recommendation with evidence and an estimated saving, accepted or rejected by a Manager |
-| G7 — Trustworthy figures | Numbers match across screens; missing data is shown as `Unknown`, never as zero |
+| G1 Centralize licenses | Every license of every company listed with provider, cost, allocated / purchased, and expiry in one list |
+| G2 Know who uses what | Every assigned seat has exactly one status over the last 30 days — `Active`, `Inactive`, `No activity`, or `Not monitored` — and every holder a count of days used |
+| G3 Measure automatically | License, assignment, and usage data arrive through usage connectors at their sync interval; nobody types them in |
+| G4 Express waste as money | Underutilized accounts and their annual cost on one screen |
+| G5 Plan and reconcile the budget | Plan, Purchased, and Used compared per unit, license, and month |
+| G6 Make waste visible | Waste shown per unit, license, and month, the units wasting most first, and a unit in red above 20 % of Purchased |
+| G7 Trustworthy figures | Numbers match across screens; missing data is `Unknown`, never zero |
 
 ## 4. Research: license models and data sources
 
-### 4.1 Six license models
+### 4.1 License models
 
 | Model | Unit of measure |
 |---|---|
@@ -60,54 +63,49 @@ A company buys software from many providers: Microsoft, Google, Adobe, JetBrains
 | Device-based | Number of devices |
 | CPU / Core / Server / Instance | Infrastructure resources |
 | Consumption | Tokens, requests, credits, GB |
-| Enterprise / Hybrid | Business metrics or contract terms |
+| Enterprise / Hybrid | Several lines under one contract, each one of the models above |
 
-### 4.2 Three independent axes
+### 4.2 How a license is described
 
-Writing analysis logic per provider does not scale. A license is described instead by three independent axes:
+A license is described by independent axes, so the analysis does not depend on the provider:
 
 | Axis | Question | Values |
 |---|---|---|
-| Measurement archetype | What is measured and how is efficiency judged? | Allocation, Concurrent, Metered, Capacity |
-| Commercial term | How is it paid, and for how long? | Pay-as-you-go, monthly, yearly, multi-year, prepaid credit, perpetual with maintenance |
-| Collection method | Where does the data come from? | API, log, file import, manual entry |
+| Measurement archetype | What is counted? | Allocation (seats, devices), Concurrent, Metered, Capacity |
+| License type (BR-02) | How is it billed? | `monthly`, `yearly`, `usage_based`, as the P&L reports it |
+| Source | Where does the data come from? | The usage connector of the P&L; BCA for application usage |
 
-"Monthly subscription" is a commercial term, not a measurement archetype: a seat can be paid monthly or yearly, and tokens can be paid per use or as prepaid credit.
-
-| Example license | Archetype | Commercial term | Collection |
-|---|---|---|---|
-| Microsoft 365 E3 | Allocation (seat) | Yearly | API |
-| OpenAI API | Metered (token) | Pay-as-you-go | API |
-| Prepaid AI credit pack | Metered (credit) | Prepaid, with expiry | API |
-| Floating engineering software | Concurrent (slot) | Yearly | License server log |
-| Oracle Database | Capacity (core) | Perpetual with maintenance | Inventory script, manual entry |
-| Enterprise agreement | Several lines, one archetype each | Multi-year, with commitment | Mixed |
-
-### 4.3 Four archetypes and how efficiency is judged
-
-| Archetype | Examples | Entitlement | Usage signal | Main KPI | Waste signal |
-|---|---|---|---|---|---|
-| Allocation | Seat, named user, device | Quantity | Who is assigned, last activity | Assignment rate, active rate | Unassigned; inactive for N days; holder has left |
-| Concurrent | Slot, floating, VPN session | Maximum sessions | Sessions over time, denials | Peak / purchased | Peak far below purchased for several periods |
-| Metered | Token, request, credit, GB | Quota, commitment, or unlimited | Consumption over time and per subject | Burn rate, unit price, commitment used | Unused commitment or credit; spikes; credit about to expire |
-| Capacity | Core, CPU, server, instance | Licensed units | Deployed units | Licensed / deployed | Over-bought; over-deployed (compliance risk) |
-
-Enterprise / Hybrid is not a fifth archetype: it is a contract of several lines, each line one of the four archetypes, plus shared terms such as minimum commitment, true-up, and discounts.
-
-### 4.4 Data collection feasibility
-
-Sources are used in this order of preference: **API → log → file import → manual entry**. A provider without an API still enters the system through import or manual entry instead of being left out.
-
-| Archetype | Automation | Expected sources |
+| Example license | Archetype | License type |
 |---|---|---|
-| Allocation (seat) | High | Microsoft Graph, Google Admin SDK, SSO sign-in logs |
-| Metered | High | Usage and cost APIs of OpenAI, Anthropic, AWS |
-| Concurrent | Medium | License server logs, VPN logs |
-| Allocation (device) | Low | MDM or endpoint agent |
-| Capacity | Very low | Inventory scripts, manual entry |
-| Enterprise contract | Terms by hand, usage per line | Contract |
+| Microsoft 365 E3 | Allocation (seat) | Yearly |
+| Jira Software | Allocation (seat) | Monthly |
+| OpenAI API | Metered (token) | Usage-based |
+| Floating engineering software | Concurrent (slot) | Yearly |
 
-For Microsoft 365, the Graph v1.0 endpoints below cover the first phase. They must be checked against Microsoft's official documentation before a connector is built. Every connector, including this one, outputs the ELMS Connector Standard; providers and standards reviewed for it are in [Connector standard](06-connector-standard.md#3-research).
+### 4.3 One money model for every license
+
+The analysis is in money, so every license, whatever it counts, is judged with the same three figures (BR-09, BR-24):
+
+| Figure | Seat-based license | Usage-based license |
+|---|---|---|
+| **Purchased** | The accrued cost of the month, spread from the invoices (UC42) | Same |
+| **Used** | Purchased × `Active` seats ÷ purchased seats | The cost of what was consumed |
+| **Wasted** | The cost of `Unassigned`, `Inactive`, and `No activity` seats | The cost bought but not consumed |
+| **Not evaluated** | The cost of `Not monitored` seats and Unknown data | The cost with no consumption data |
+
+Purchased = Used + Wasted + Not evaluated; the waste rate is Wasted ÷ Purchased. A seat is `Active` when used in the last 30 days, with a 30-day grace period for a new seat (BR-03).
+
+### 4.4 Data sources and feasibility
+
+| Source | What it gives | How |
+|---|---|---|
+| Usage connector of each P&L | Licenses, terms, purchased quantity, holders, last activity, daily activity, consumption | An API the P&L provides for its own data, one connector per company and provider, in the license data contract (BR-19, [Connector standard](06-connector-standard.md)) |
+| ILVG | Employees, units in five levels, projects (with allocation), transfers | API, synced like a connector |
+| BCA | Application usage per employee and day | API, synced like a connector (fields assumed until the API is known) |
+| SAP | Budget plan per unit, license, and month | Exported to the ELMS Excel template and imported by Managers (UC33) |
+| Invoices | The cost that becomes Purchased | Entered or imported by Staff (UC07) |
+
+Behind a P&L API, the P&L reads its providers. For Microsoft 365, for example, the Graph v1.0 endpoints below give what the contract needs; they must be checked against Microsoft's documentation before the P&L builds its API:
 
 | Data | Endpoint |
 |---|---|
@@ -116,103 +114,104 @@ For Microsoft 365, the Graph v1.0 endpoints below cover the first phase. They mu
 | Activity per user | `GET /reports/getOffice365ActiveUserDetail(period='D30')` |
 | Last sign-in | `GET /users?$select=signInActivity` |
 
-Graph does not provide prices, cost, P&L, or monthly history: prices and cost come from Staff (import or manual entry), assignments and usage of licenses without a connector also come from Staff (UC03), units from HR data, and history from a daily snapshot kept by ELMS.
+Provider APIs give no organization data, no budget, and no history: units come from ILVG, the plan from SAP, the cost from invoices, and history from the daily snapshots ELMS keeps.
 
-**Risks to check early:** admin permissions needed to call each API; report delay and history limits; usage reports that anonymize user names by default; `signInActivity` requiring a paid Entra ID plan; API rate limits.
+**Risks to check early:** each P&L's readiness to build its API; admin permissions at each provider; report delay and history limits; usage reports that anonymize user names; API rate limits.
 
-### 4.5 Cost normalization
+### 4.5 Cost
 
-- Every cost becomes an **effective monthly cost**: yearly plans divided by 12, perpetual licenses count only maintenance, pay-as-you-go uses the actual spend of the month.
-- For committed licenses, the used part and the unused commitment are separated; the unused commitment is waste.
-- Amounts in different currencies are added only with a declared exchange rate.
+- **Purchased is the accrued cost of the invoices** (UC07, UC42): an invoice is spread over the months of the term it pays for, rounded to the thousand VND, the difference in the last month (BR-25).
+- **One currency per screen:** amounts keep their original currency and are converted with the rate of the invoice date (BR-05, UC62).
+- **Charge-back:** the cost of a license is split over its seats and carried by the units of the holders; unassigned seats stay with the owner (BR-06). A license used by two or more companies is owned by the group and charged back to them (BR-26).
 
 ## 5. Process (to-be)
 
 ```text
-1. Connect provider when the license is added (once) → 2. Collect data (daily) → 3. Normalize → 4. Analyze usage and budget
-  → 5. Detect inefficiency → 6. Saving opportunities and recommendations → 7. Dashboards → Manager decides
+1. Staff connect each company's provider (UC55) → 2. Collect at each connector's interval; ILVG and BCA daily
+  → 3. Validate against the license data contract → 4. Daily seat status and cost split
+  → 5. Usage, budget, and waste analysis per unit → 6. Managers act at the source
 ```
 
 Pipeline principles:
 
 | # | Principle | Reason |
 |---|---|---|
-| A1 | Run on a daily schedule, not on events | Most providers have no usage webhooks, and reports lag 1–2 days |
-| A2 | Store raw data before normalizing | Normalization rules can change and be recomputed without calling the API again |
-| A3 | Idempotent, incremental sync | Re-running creates no duplicates; a failed run is caught up next time |
-| A4 | Missing data is never usage = 0 | A failed sync must not create a false waste warning; the status is `Unknown` |
+| A1 | Run on a schedule, at each connector's interval | Most providers have no usage webhooks, and reports lag 1–2 days |
+| A2 | Store raw data before normalizing | Rules can change and be recomputed without calling the API again |
+| A3 | Idempotent, incremental sync and import | Re-running creates no duplicates; a failed run is caught up next time (BR-36) |
+| A4 | Missing data is never usage = 0 | A failed sync must not create a false waste figure; the status is `Unknown` (BR-04) |
 | A5 | Backfill history on the first connection | Trends are available from day one |
-| A6 | One KPI set per archetype | No single "utilization" forced onto seats, sessions, and tokens |
-| A7 | Every recommendation shows evidence and an estimated amount | Users can verify it; the system never acts on its own |
-| A8 | Encrypted credentials, read-only scopes | Lower risk, easier for the company to grant access |
-| A9 | Every figure carries its source and confidence | Per-user API data, aggregated data, and imported data are never presented the same way |
+| A6 | One money model for every archetype | Seats, sessions, and tokens are all judged as Purchased, Used, Wasted, Not evaluated |
+| A7 | Every result shows its evidence, its cost, and its data date | Users can verify it; ELMS never acts on its own (BR-12) |
+| A8 | Encrypted, write-only credentials, read-only scopes | Lower risk; the P&L grants access easily (BR-20) |
+| A9 | Every figure carries its source | Real, assumed, and mock data are never presented the same way (BR-14) |
 
 ## 6. Functional decomposition (Epic → Feature)
 
-The epics are the six branches of the agreed mind map; each leaf is one use case.
+The epics are the seven branches of the agreed mind map; each leaf is one use case.
 
 ![ELMS mind map](mindmap.png)
 
-| Epic | Group | Features (use cases) |
+| Epic | Group | Use cases |
 |---|---|---|
-| E1 License Management | Catalog & Entitlement | Software Catalog (UC01), Vendor Management (UC02), License Entitlement (UC03), Contract Management (UC04) |
-| E2 Budget Management | Planning & Cost Allocation | Budget Planning (UC05), Cost Allocation (UC06) |
-| | Spending & Monitoring | Expense Management (UC07), Budget Monitoring (UC08), Financial Forecast (UC09) |
-| E3 Optimization | Detection | Unused License Detection (UC10), Inactive Usage Detection (UC11), License Overuse Detection (UC12) |
-| | Savings & Recommendation | Cost Optimization (UC13), Recommendation Management (UC14) |
-| E4 Analytics | Dashboards | License (UC15), Financial (UC16), Compliance (UC17), Optimization (UC18) |
-| E5 User & Organization | Administration | User (UC19), P&L and Department (UC20), Role (UC21), Permission Management (UC22) |
-| E6 Connector Management | Sync & Data Quality | Data Source Mapping (UC25), Sync Monitoring (UC26); connectors are set up in License Entitlement (UC03) |
-| — Self-service and access | | View My Licenses (UC23), Login / Logout (UC24) |
+| E1 License Management | License list & validity | License List (UC57), Validity Timeline (UC58), License Details (UC59), License Users and Activity (UC61) |
+| | Catalog & inventory | Software Catalog (UC01), Inventory by P&L (UC27), Licenses by Organization (UC28), Shared Licenses (UC47), Providers and Licenses (UC02), Contracts (UC04) |
+| E2 Usage | Scope & overview | Organization Scope (UC37), Plan vs Utilization Balance (UC08) |
+| | Subordinate analytics | Unit Comparison (UC48), Annual Trend (UC49), Units Table (UC50), CSV Export (UC51) |
+| | Employee usage | Track Employee Usage (UC32) |
+| E3 Budget Management | Planning & cost allocation | Budget Import (UC33), Monthly Plan (UC05), Cost Allocation (UC06), Cost Accrual (UC42) |
+| | Spending & monitoring | Expenses (UC07), Exchange Rates (UC62), Plan Variance (UC34), Forecast (UC09) |
+| E4 Optimization | Detection | Unused (UC10), Inactive (UC11), P&L Waste Flag (UC35) |
+| | Waste analysis | Waste Ranking (UC43), Trend (UC52), Risk Distribution (UC53), Monthly Heatmap (UC54) |
+| E5 Analytics | | Group Overview (UC36), License & Provider Analysis (UC44), Metric Definitions (UC45), License, Financial, and Optimization Dashboards (UC15, UC16, UC18) |
+| E6 User & Organization | | Users (UC19), Organization Hierarchy (UC20), Roles (UC21), Permissions (UC22) |
+| E7 Connection Management | Usage connectors | List (UC38), Create (UC55), Edit and delete (UC60), Details (UC56) |
+| | Sync monitoring | Monitor Data Synchronization (UC26) |
+| — Self-service | | View My Licenses (UC23), Login / Logout (UC24) |
 
 ## 7. Scope
 
 ### In scope
 
-- License catalog and information for every provider and every license model.
-- Budget plans per P&L, department, and fiscal year; tracking of planned, purchased, assigned, and used quantities.
-- Automatic usage collection through connectors; file import and manual entry where no connector exists.
-- One connector standard (ELMS Connector Standard, ECS) for every connector, set up when Staff add a license, with data mapping, a validator on every run, and sync monitoring ([Connector standard](06-connector-standard.md)).
-- Software catalog, vendors, entitlements, contracts, and expenses maintained by the license team.
-- Utilization, consumption, and cost-efficiency analysis; unused, inactive, and overuse detection; saving opportunities and recommendations; budget forecast; license, financial, compliance, and optimization dashboards.
-- Users, departments, roles, and permissions.
-- Four roles: Admin, Manager, Staff, Employee.
+- The licenses of every P&L and provider, read through one usage connector per company and provider, with their terms, holders, and usage.
+- A fixed organization of five levels from ILVG — group, P&L, block, department, project — and Managers at any level, the group included.
+- Plan, Purchased, Used, Wasted, and Not evaluated in money, per unit, license, and month; waste ranking, trend, risk distribution, and heatmap.
+- Budget plans imported from Excel by every Manager for their units, with versions and idempotent imports.
+- Expenses, monthly accrual, exchange rates, cost allocation, and charge-back of shared licenses.
+- Software catalog: license and application names mapped to software and category.
+- Employee application usage from BCA.
+- Users, roles, permissions; four roles: Admin, Manager, Staff, Employee.
 
 ### Out of scope
 
-- Assigning or revoking licenses on a provider.
-- Buying, renewing, or cancelling contracts.
-- Changing subscriptions or permissions on a provider automatically.
-- Carrying out a recommendation automatically; anomaly detection with machine learning.
-- Notifications outside the application (email, chat).
-- Push delivery (providers sending data to ELMS) and SFTP drop folders for ECS files (later phase).
+- Assigning, revoking, buying, renewing, or cancelling anything at a provider.
+- Entering licenses, holders, or usage by hand in ELMS: they come from the P&L APIs.
+- Recommendations and tracking of actions on licenses (UC13, UC14 retired); compliance dashboard (UC17 retired).
+- Detecting a license shortage beyond allocated above purchased (UC12 parked).
+- Notifications outside the application (email, chat); SSO and self-registration.
 
 ## 8. Constraints and assumptions
 
-- Every provider connection is read-only.
-- Employee identity is matched by company email (for Microsoft 365, `userPrincipalName`).
-- The group has several P&Ls (subsidiaries), each with departments. Admin maintains the P&L / department tree in ELMS; it can be filled from HR data.
-- The 60-day inactivity threshold is fixed in this phase.
+- Every connection is read-only; credentials are write-only.
+- Each P&L provides the API behind its connectors, in the license data contract.
+- A holder is a person: identities are matched to the ILVG employee by employee code, otherwise by email (BR-27).
+- The organization has exactly five levels; units come from ILVG (BR-21).
+- Seat status uses a 30-day window with a 30-day grace period (BR-03).
+- Assumed until checked: the SAP export carries department codes; BCA reports per day the domain account carrying the ILVG employee code.
 
 ## 9. Key risks
 
 | Risk | Mitigation |
 |---|---|
-| A provider has no usage API | Import or manual entry with a confidence label (A9) |
-| Usage reports anonymize users | Check tenant settings early; show aggregated data without per-user tables |
-| A sync fails and usage looks like zero | A4: the status becomes `Unknown`, and no warning is created |
-| Figures disagree between screens | Shared statuses and reconciliation rules (BR-03, BR-06, BR-09 in [Use cases](02-use-cases.md)) |
-| Per-user usage is sensitive personal data | Every API requires login; data scope is enforced on the backend |
+| A P&L cannot deliver its API on time | Mock data labelled as mock (BR-14); the connector stays `Pending` |
+| Usage reports anonymize users | Seats become `Not monitored`, their cost Not evaluated, never waste |
+| A sync fails and usage looks like zero | The figures stay `Unknown`; the connector shows `Failed` or `Delayed` (BR-32) |
+| Figures disagree between screens | One set of rules (BR-03, BR-06, BR-09, BR-24) and one definition per metric (UC45) |
+| Per-user usage is sensitive personal data | Every API requires login; data scope is enforced on the backend (BR-16) |
+| BCA or SAP fields differ from the assumptions | Open decisions 3, 6, and 23 of the use cases are checked before the import is built |
 
 ## 10. Open questions
 
-- Does the team have a Microsoft 365 tenant with admin rights to call Graph?
-- Which licenses get a connector in the first phase, and which of them have no usage API?
-- Which IdP is the source of truth for employee identity?
-- How do P&L and departments relate, and where does HR data come from?
-- For a license bought for the whole company, how is Purchased counted per unit?
-- Who allocates the total budget to each P&L or department before a Manager plans the details? Does a plan need approval?
-- A person who operates the system may also be an employee or a senior leader. Should one account have several roles (for example Admin and Manager), or should that person use two accounts?
-- Should the 60-day threshold be configurable?
+The open questions are tracked in one place: [Open decisions](02-use-cases.md#open-decisions) of the use cases.
 
-**Related:** [Use cases](02-use-cases.md) · [INVEST requirements](03-invest-requirements.md)
+**Related:** [Use cases](02-use-cases.md) · [INVEST requirements](03-invest-requirements.md) · [Data fields research](07-data-fields-research.md)
