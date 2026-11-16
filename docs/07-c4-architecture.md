@@ -1,6 +1,6 @@
 # 07 — C4 Architecture
 
-> Aligned with the P&L API business model and the 26 use cases (November 2026).
+> Aligned with the P&L API business model and the 12 use cases (November 2026).
 
 The C4 model describes a system at four zoom levels. Each level answers one question for one audience:
 
@@ -59,21 +59,21 @@ flowchart TB
 | Employee | `EMPLOYEE` — every employee | Own licenses only, across all their emails, without price or cost |
 | Staff | `STAFF` — license management team | The companies assigned to them (the group for group-level Staff): connectors, sync, catalog, shared licenses, purchases, accrual, exchange rates; no usage or waste analysis |
 | Manager | `MANAGER` — manager of a unit at any level, the group included | The units assigned to them and everything under them |
-| Admin | `ADMIN` — system operator | User roles and data scope, organization, permissions; no license, usage, budget, or cost data (BR-15); accounts come from ILVG (BR-16) |
+| Admin | `ADMIN` — system operator | User roles and data scope, organization, permissions; no license, usage, budget, or cost data (BR-14); accounts come from ILVG (BR-15) |
 
-Each account has exactly one role (BR-16). The full capability matrix is in [Use cases](02-use-cases.md).
+Each account has exactly one role (BR-15). The full capability matrix is in [Use cases](02-use-cases.md).
 
 ### External systems
 
 | System | What ELMS takes | Delivery |
 |---|---|---|
-| P&L license API (one per company and provider) | Licenses, holders, last activity, active days, consumption | An API each P&L provides for its own data, in the license data contract (ECS, BR-18); read by one generic connector |
+| P&L license API (one per company and provider) | Licenses, holders, last activity, active days, consumption | An API each P&L provides for its own data, in the license data contract (ECS, BR-17); read by one generic connector |
 | ILVG | Employees, their unit in five levels, their projects, transfers | API, synced daily like a connector |
 | BCA | Application usage per employee and day (fields assumed until its API is known) | API, synced daily like a connector |
-| SAP | Budget plan per unit, license, and month | Excel export in the ELMS template, imported by Managers (UC10) |
-| SAP purchases | PO lines: purchased quantity and term; invoices: the cost that becomes Purchased | Excel export in the ELMS template, imported by Staff each month; a purchase made outside SAP entered by hand (UC12) |
+| SAP | Budget plan per unit, license, and month | Excel export in the ELMS template, imported by Managers (UC04) |
+| SAP purchases | PO lines: purchased quantity and term; invoices: the cost that becomes Purchased | Excel export in the ELMS template, imported by Staff each month; a purchase made outside SAP entered by hand (UC04) |
 
-Behind its API, each P&L reads its providers (Microsoft 365, Atlassian, Adobe, GitHub, AI services …); ELMS never calls a provider directly. A P&L whose API is not ready yet has simulated data, labelled as mock on every screen (BR-13). Data fields of each source: [Data fields research](09-data-fields-research.md).
+Behind its API, each P&L reads its providers (Microsoft 365, Atlassian, Adobe, GitHub, AI services …); ELMS never calls a provider directly. A P&L whose API is not ready yet has simulated data, labelled as mock on every screen (BR-12). Data fields of each source: [Data fields research](09-data-fields-research.md).
 
 ### Out of scope at this level
 
@@ -133,7 +133,7 @@ flowchart TB
 | Web Frontend → Elms.Api | REST / JSON, `HttpOnly` `Secure` `SameSite=Lax` cookie, CSRF token | Every business request; OpenAPI contract with a generated TypeScript client |
 | Elms.Api → PostgreSQL | SQL over Npgsql | Writes through EF Core; dashboard reads through Dapper over views; enqueue of jobs |
 | Elms.Worker → PostgreSQL | SQL over Npgsql | Reads and writes data; dequeues jobs |
-| Elms.Worker → P&L APIs, ILVG, BCA | HTTPS (`IHttpClientFactory` + Polly) | Read-only calls; credentials are write-only after saving and encrypted with Data Protection (BR-19) |
+| Elms.Worker → P&L APIs, ILVG, BCA | HTTPS (`IHttpClientFactory` + Polly) | Read-only calls; credentials are write-only after saving and encrypted with Data Protection (BR-18) |
 
 The API never calls a source, and the worker never serves a user request.
 
@@ -172,7 +172,7 @@ flowchart TB
         handlers["Command and query handlers<br/>one folder per use case"]
         analytics["Dashboard and Usage queries<br/>read views with Dapper"]
         ingest["Sync run steps<br/>fetch, validate, store raw, normalize, coverage"]
-        ecsval["Contract validator<br/>JSON Schema and rules (BR-18)"]
+        ecsval["Contract validator<br/>JSON Schema and rules (BR-17)"]
         ifaces["Interfaces<br/>IAppDbContext, ILicenseSource,<br/>IIlvgSource, IBcaSource"]
     end
 
@@ -187,7 +187,7 @@ flowchart TB
         efctx["AppDbContext<br/>EF Core 10 + Npgsql, audit and scope interceptor"]
         ecshttp["EcsClient<br/>every P&L license API"]
         hr["IlvgClient, BcaClient"]
-        sim["SimulatedSource<br/>mock data for a P&L without an API (BR-13)"]
+        sim["SimulatedSource<br/>mock data for a P&L without an API (BR-12)"]
     end
 
     kernel["SharedKernel.*<br/>Domain, Application, Infrastructure, Api<br/>BaseEntity, Money, AccessScope, BaseDbContext, GlobalExceptionHandler"]
@@ -225,15 +225,15 @@ Eight business modules follow the mind-map branches, plus a shared `audit` modul
 
 ```mermaid
 flowchart LR
-    identity["identity<br/>UC21, UC26<br/>accounts, roles, permissions, sessions"]
-    organization["organization<br/>UC22, ILVG sync<br/>five-level tree, employees, projects,<br/>Manager and Staff scope, holder identity"]
-    catalog["catalog<br/>UC01–UC04<br/>software catalog, licenses, terms,<br/>owner unit, shared licenses"]
-    ingestion["ingestion<br/>UC23, UC24<br/>connectors, sync runs, coverage,<br/>raw records, budget and purchase imports"]
-    usage["usage<br/>UC05, UC09, UC25<br/>assignments, usage records, snapshots,<br/>seat status, BCA usage"]
-    finance["finance<br/>UC10, UC14, UC18<br/>budget versions, purchases, accrual,<br/>rates, cost split"]
-    optimization["optimization<br/>UC15–UC17<br/>detection, waste flag, waste analysis"]
-    analytics["analytics<br/>UC18–UC20<br/>read models only"]
-    audit["audit (shared)<br/>BR-14<br/>append-only audit log"]
+    identity["identity<br/>UC08, UC12<br/>accounts, roles, permissions, sessions"]
+    organization["organization<br/>UC09, ILVG sync<br/>five-level tree, employees, projects,<br/>Manager and Staff scope, holder identity"]
+    catalog["catalog<br/>UC01, UC02<br/>software catalog, licenses, terms,<br/>owner unit, shared licenses"]
+    ingestion["ingestion<br/>UC10<br/>connectors, sync runs, coverage,<br/>raw records, budget and purchase imports"]
+    usage["usage<br/>UC03, UC11<br/>assignments, usage records, snapshots,<br/>seat status, BCA usage"]
+    finance["finance<br/>UC04, UC07<br/>budget versions, purchases, accrual,<br/>rates, cost split"]
+    optimization["optimization<br/>UC05, UC06<br/>detection, waste flag, waste analysis"]
+    analytics["analytics<br/>UC07<br/>read models only"]
+    audit["audit (shared)<br/>BR-13<br/>append-only audit log"]
 
     ingestion -- "normalize into" --> catalog
     ingestion -- "normalize into" --> usage
@@ -298,7 +298,7 @@ C4 level 4 is left to the source, because a code-level diagram drawn by hand goe
 | Backend solution layout | [05 §4.2](05-folder-structure.md); the solution lives in `src/backend/` |
 | Entities and fields | [`database/tables.md`](database/tables.md), [`database/elms.dbml`](database/elms.dbml) |
 | Reference DDL | [`database/schema.sql`](database/schema.sql) |
-| Pure business rules | `Elms.Domain/Rules` (BR-03 seat status, BR-06 allocation, BR-09 and BR-23 Purchased / Used / Wasted, BR-21 waste flag, BR-24 accrual) |
+| Pure business rules | `Elms.Domain/Rules` (BR-03 seat status, BR-06 allocation, BR-09 and BR-22 Purchased / Used / Wasted, BR-20 waste flag, BR-23 accrual) |
 
 ## 5. Dynamic view — the daily pipeline
 
@@ -331,16 +331,16 @@ sequenceDiagram
             C->>D: sync_runs = failed, nothing written, figures stay Unknown (never 0)
         end
     end
-    J->>D: seat status over 30 days with grace (BR-03), days used (BR-33)
-    J->>D: daily snapshots; cost split of open months into Used, Wasted, Not evaluated (BR-06, BR-23)
-    J->>D: detection (unused, inactive, overuse, leaver), waste flag above 20 % (BR-21)
+    J->>D: seat status over 30 days with grace (BR-03), days used (BR-32)
+    J->>D: daily snapshots; cost split of open months into Used, Wasted, Not evaluated (BR-06, BR-22)
+    J->>D: detection (unused, inactive, overuse, leaver), waste flag above 20 % (BR-20)
     J->>D: REFRESH MATERIALIZED VIEW CONCURRENTLY, bump dataVersion
     M->>A: open License List or Usage
     A->>D: read views (Dapper), scoped to the Manager's units
-    A-->>M: figures with dataDate and data source (BR-13)
+    A-->>M: figures with dataDate and data source (BR-12)
 ```
 
-Other jobs: `IlvgSyncJob` (daily; also creates the account of a new employee and disables a leaver's, BR-16) and `BcaSyncJob` (daily); `ImportConfirmJob` writes a confirmed budget version or purchase file in one transaction, once per preview key (BR-34); `MonthCloseJob` closes, on day 10, the previous month of every company Staff have not closed (UC11). Records that fail a check are rejected one by one, with the reason kept in `raw_records.normalize_error`; a record count that does not match `total_count` fails the whole run. All jobs are idempotent, never overlap, and run as `SystemUser`, so the audit actor is `system`.
+Other jobs: `IlvgSyncJob` (daily; also creates the account of a new employee and disables a leaver's, BR-15) and `BcaSyncJob` (daily); `ImportConfirmJob` writes a confirmed budget version or purchase file in one transaction, once per preview key (BR-33); `MonthCloseJob` closes, on day 10, the previous month of every company Staff have not closed (UC04). Records that fail a check are rejected one by one, with the reason kept in `raw_records.normalize_error`; a record count that does not match `total_count` fails the whole run. All jobs are idempotent, never overlap, and run as `SystemUser`, so the audit actor is `system`.
 
 ## 6. Deployment view
 
@@ -386,14 +386,14 @@ flowchart TB
 
 | Concern | Where it applies | Rule |
 |---|---|---|
-| Authentication | Api | Server-side cookie session via ASP.NET Core Identity; the account must be active; lockout after 5 failures for 15 minutes (BR-17); disabling a user or changing a role deletes their sessions at once |
-| Authorization | Api | Three independent checks per request: authentication (401), RBAC policy (403), data scope via `AccessScope` global query filter (404 outside scope). Hiding a button is not protection (BR-15) |
-| Data scope | Api, Worker | Managers see their units and everything under them, the group for a Manager of the group; Staff see their companies; Admin reads users, roles, permissions, and the hierarchy only; Employees get a dedicated DTO without price or cost (BR-15) |
-| Idempotency | Api, Worker | Syncs upsert by source key and data date; a budget confirm is keyed by its preview key; the same budget file again is `unchanged` (BR-34) |
-| Audit | Api, Worker | An interceptor writes who, old value, new value, time, and reason to an append-only log (BR-14) |
-| Missing data | Everywhere | `null` / `Unknown`, never 0 (BR-04); every figure carries its source (BR-13); complete months only (BR-29) |
+| Authentication | Api | Server-side cookie session via ASP.NET Core Identity; the account must be active; lockout after 5 failures for 15 minutes (BR-16); disabling a user or changing a role deletes their sessions at once |
+| Authorization | Api | Three independent checks per request: authentication (401), RBAC policy (403), data scope via `AccessScope` global query filter (404 outside scope). Hiding a button is not protection (BR-14) |
+| Data scope | Api, Worker | Managers see their units and everything under them, the group for a Manager of the group; Staff see their companies; Admin reads users, roles, permissions, and the hierarchy only; Employees get a dedicated DTO without price or cost (BR-14) |
+| Idempotency | Api, Worker | Syncs upsert by source key and data date; a budget confirm is keyed by its preview key; the same budget file again is `unchanged` (BR-33) |
+| Audit | Api, Worker | An interceptor writes who, old value, new value, time, and reason to an append-only log (BR-13) |
+| Missing data | Everywhere | `null` / `Unknown`, never 0 (BR-04); every figure carries its source (BR-12); complete months only (BR-28) |
 | Caching | Api | `HybridCache`, L1 in-memory; Redis only when the API scales to several instances. Keys include the user's scope; dashboard keys include `dataVersion` |
-| Secrets | Worker | Connector credentials: read-only scope (BR-01), write-only after saving and never shown or exported (BR-19), encrypted with Data Protection, decrypted only by the worker |
+| Secrets | Worker | Connector credentials: read-only scope (BR-01), write-only after saving and never shown or exported (BR-18), encrypted with Data Protection, decrypted only by the worker |
 | Errors | Api | One global `IExceptionHandler` returns `ProblemDetails` (RFC 9457) |
 
 **Related:** [Connector standard](06-connector-standard.md) · [Folder structure and architecture](05-folder-structure.md) · [Database design](database/README.md) · [Use cases](02-use-cases.md)

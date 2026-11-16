@@ -1,6 +1,6 @@
 # 05 — Folder structure and solution architecture
 
-Design status: **TARGET** for the backend, aligned with the 26 use cases (November 2026). The frontend (`src/frontend`) is already coded but still follows the previous model; its target screens are in [Information architecture](04-information-architecture-manager.md). Items marked *assumption* need team confirmation.
+Design status: **TARGET** for the backend, aligned with the 12 use cases (November 2026). The frontend (`src/frontend`) is already coded but still follows the previous model; its target screens are in [Information architecture](04-information-architecture-manager.md). Items marked *assumption* need team confirmation.
 
 
 ## 1. Repository layout
@@ -138,15 +138,15 @@ The modules follow the mind-map branches, plus two technical modules (`ingestion
 
 | Module | Use cases | Owns | Responsibility |
 |---|---|---|---|
-| `identity` | UC21, UC26 | user accounts, roles, permissions, sessions | Accounts provisioned from ILVG (BR-16), password links, login, lockout, RBAC, policies |
-| `organization` | UC22, ILVG sync, holder identity | org units, employees, user scopes, overrides | Five-level tree from ILVG (BR-20), employee and project membership, Manager and Staff scope (BR-15), holder identity (BR-26) |
-| `catalog` | UC01–UC04 | vendors, software, categories, licenses, terms | Software catalog and mapping (BR-36), licenses as the connectors report them, owner unit and shared licenses (BR-25), expiry (BR-31) |
-| `ingestion` | UC23, UC24 | connectors, plan data sources, sync runs, coverage, raw records, files, imports | Create, test, edit, delete, pause connectors; run them at their interval (BR-30); validate the license data contract (BR-18); budget and expense imports (preview → confirm, idempotent, BR-34) |
-| `usage` | UC05, UC09, UC25 | subjects, assignments, usage records, snapshots, employee app usage | Seat status with grace period (BR-03), days used (BR-33), daily snapshots, BCA usage (BR-22) |
-| `finance` | UC10, UC14, UC18 | budget versions and lines, expenses, accounting periods, exchange rates, cost allocations | Budget versions (BR-08), accrual (BR-24), currency (BR-05), cost split into Used, Wasted, Not evaluated (BR-06, BR-23), variance (BR-35), forecast (BR-11) |
-| `optimization` | UC15–UC17 | detection runs and results | Unused and inactive seats (BR-12), waste flag above 20 % (BR-21), waste analysis |
-| `analytics` | UC18–UC20 | read models only | Dashboards, analysis by license, metric definitions (BR-28) |
-| `audit` (shared) | BR-14 | audit logs | Who, old value, new value, time, reason for every change |
+| `identity` | UC08, UC12 | user accounts, roles, permissions, sessions | Accounts provisioned from ILVG (BR-15), password links, login, lockout, RBAC, policies |
+| `organization` | UC09, ILVG sync, holder identity | org units, employees, user scopes, overrides | Five-level tree from ILVG (BR-19), employee and project membership, Manager and Staff scope (BR-14), holder identity (BR-25) |
+| `catalog` | UC01, UC02 | vendors, software, categories, licenses, terms | Software catalog and mapping (BR-35), licenses as the connectors report them, owner unit and shared licenses (BR-24), expiry (BR-30) |
+| `ingestion` | UC10 | connectors, plan data sources, sync runs, coverage, raw records, files, imports | Create, test, edit, delete, pause connectors; run them at their interval (BR-29); validate the license data contract (BR-17); budget and expense imports (preview → confirm, idempotent, BR-33) |
+| `usage` | UC03, UC11 | subjects, assignments, usage records, snapshots, employee app usage | Seat status with grace period (BR-03), days used (BR-32), daily snapshots, BCA usage (BR-21) |
+| `finance` | UC04, UC07 | budget versions and lines, expenses, accounting periods, exchange rates, cost allocations | Budget versions (BR-08), accrual (BR-23), currency (BR-05), cost split into Used, Wasted, Not evaluated (BR-06, BR-22), variance (BR-34) |
+| `optimization` | UC05, UC06 | detection runs and results | Unused and inactive seats (BR-11), waste flag above 20 % (BR-20), waste analysis |
+| `analytics` | UC07 | read models only | Dashboards, analysis by license, metric definitions (BR-27) |
+| `audit` (shared) | BR-13 | audit logs | Who, old value, new value, time, reason for every change |
 
 #### Dependency rules (enforced by NetArchTest):
 
@@ -158,7 +158,7 @@ The modules follow the mind-map branches, plus two technical modules (`ingestion
 
 Request flow: Controller (`Mediator.Send`) → pipeline behaviours (logging, validation, authorization) → handler → `IAppDbContext` (filtered by `AccessScope`) → interceptor writes the audit log.
 
-Every P&L provides an API for its own data in the license data contract (BR-18), so one generic client reads every usage connector: `fetchLicenses`, `fetchTerms`, `fetchHolders`, `fetchActivity`, `fetchUsage(period)`. A dataset a P&L does not deliver returns `NotSupported`, never an empty list, so "no source" stays distinct from "source reports zero". Every record passes the same validator before it is written ([Connector standard](06-connector-standard.md#4-proposal-elms-connector-standard-ecs-v1)). ILVG and BCA have their own clients behind the same interface style.
+Every P&L provides an API for its own data in the license data contract (BR-17), so one generic client reads every usage connector: `fetchLicenses`, `fetchTerms`, `fetchHolders`, `fetchActivity`, `fetchUsage(period)`. A dataset a P&L does not deliver returns `NotSupported`, never an empty list, so "no source" stays distinct from "source reports zero". Every record passes the same validator before it is written ([Connector standard](06-connector-standard.md#4-proposal-elms-connector-standard-ecs-v1)). ILVG and BCA have their own clients behind the same interface style.
 
 ### 4.2 Folder structure
 
@@ -186,7 +186,7 @@ ELMS/
 │  │  └─ ConfigureServices.cs
 │  ├─ Elms.Infrastructure/
 │  │  ├─ Data/                        AppDbContext, Configurations/, Migrations/
-│  │  ├─ Connectors/                  Ecs/ (P&L APIs), Ilvg/, Bca/, Simulated/ (mock data, BR-13)
+│  │  ├─ Connectors/                  Ecs/ (P&L APIs), Ilvg/, Bca/, Simulated/ (mock data, BR-12)
 │  │  └─ ConfigureServices.cs
 │  ├─ Elms.Api/                       Controllers/<Module>/, Program.cs
 │  └─ Elms.Worker/                    Program.cs, Jobs/ (see section 6)
@@ -198,11 +198,11 @@ Dependency direction: `Api / Worker → Infrastructure → Application → Domai
 Conventions:
 
 - One folder per use case: `Elms.Application/<Module>/<Feature>/{Commands,Queries,DTO}`; command/query and handler share one file.
-- Pure business rules (BR-03, BR-06, BR-09, BR-21, BR-23, BR-24) live in `Elms.Domain/Rules` for easy unit tests.
+- Pure business rules (BR-03, BR-06, BR-09, BR-20, BR-22, BR-23) live in `Elms.Domain/Rules` for easy unit tests.
 - One EF configuration file per entity in `Data/Configurations/<Module>/`; an interceptor writes `audit_logs` before/after values.
 - Class names PascalCase English; columns `snake_case` via `EFCore.NamingConventions`.
 - No lazy loading; use `.Select(...)` or `Include`; read-only queries use `AsNoTracking()`.
-- Business constraints live in the database: check constraints, unique indexes, `Restrict` foreign keys (master data is never deleted, BR-14).
+- Business constraints live in the database: check constraints, unique indexes, `Restrict` foreign keys (master data is never deleted, BR-13).
 - One global `IExceptionHandler` returns `ProblemDetails`; controllers do not catch.
 - Check licenses before choosing MediatR / AutoMapper; free alternatives are Mediator (source generator) and Mapperly.
 
@@ -229,21 +229,21 @@ Rules: Domain depends on nothing; Application depends on interfaces only (`IAppD
 | Lists | `page`, `pageSize` (max 100), `sort`, typed filters; returns `{ items, page, pageSize, total }` |
 | Errors | `ProblemDetails` (RFC 9457): 400 validation, 401, 403, 404 (outside scope), 409 (duplicate, wrong state, write conflict) |
 | Concurrency | Optimistic, PostgreSQL `xmin`; the second writer gets 409 |
-| Idempotency | Confirming an import is keyed by its `previewKey`; a repeat returns the first result; the same budget file again is `unchanged` (BR-34) |
+| Idempotency | Confirming an import is keyed by its `previewKey`; a repeat returns the first result; the same budget file again is `unchanged` (BR-33) |
 | Data types | ISO 8601 dates; money as `amount` + `currency`; missing data is `null` with a reason, never `0` (BR-04) |
-| Dashboards | Every response carries `dataDate` and the data source (BR-13) |
+| Dashboards | Every response carries `dataDate` and the data source (BR-12) |
 
 
 ## 6. Background jobs (Hangfire, in `Elms.Worker`)
 
 | Job | Trigger | Work |
 |---|---|---|
-| `SyncSchedulerJob` | Every minute | Start the runs of connectors whose interval has elapsed; write a `paused` run for a paused connector (BR-30) |
-| `ConnectorRunJob` | Scheduler, *Run now*, *Rerun period* | Fetch, validate, normalize one connector and data date; replace, never duplicate (BR-34) |
-| `IlvgSyncJob`, `BcaSyncJob` | Daily | Employees, units, projects, transfers, and their accounts — create for a new employee with a password-link email, disable for a leaver (BR-16); application usage |
+| `SyncSchedulerJob` | Every minute | Start the runs of connectors whose interval has elapsed; write a `paused` run for a paused connector (BR-29) |
+| `ConnectorRunJob` | Scheduler, *Run now*, *Rerun period* | Fetch, validate, normalize one connector and data date; replace, never duplicate (BR-33) |
+| `IlvgSyncJob`, `BcaSyncJob` | Daily | Employees, units, projects, transfers, and their accounts — create for a new employee with a password-link email, disable for a leaver (BR-15); application usage |
 | `DailyPipelineJob` | Daily, after the syncs | Seat status and days used, snapshots, cost split of open months, detection, refresh views |
 | `ImportConfirmJob` | A Manager or Staff confirms an import | Write the budget version or the expenses in one transaction |
-| `MonthCloseJob` | Day 10 of each month | Close the previous month of every company not closed by Staff (UC11) |
+| `MonthCloseJob` | Day 10 of each month | Close the previous month of every company not closed by Staff (UC04) |
 
 All jobs are idempotent (upsert by source key + data date), retried (Polly for API calls, Hangfire up to 3 times), and never overlap. When retries run out the source is marked `failed` and its figures are `Unknown`, not `0`. Jobs run as `SystemUser`, so the audit actor is `system`.
 
@@ -259,18 +259,18 @@ All jobs are idempotent (upsert by source key + data date), retried (Polly for A
 | Reference data (catalog, rates, organization) | `ref:{type}` | 30 min | Staff / Admin write, ILVG sync |
 | Dashboard results | `dash:{name}:{scopeHash}:{filter}:{dataVersion}` | 1 h | `dataVersion` increments |
 
-Keys always include the user's scope (BR-15). `dataVersion` is a counter in the database, bumped whenever a job refreshes the views, so all dashboards show the same version of the numbers (G7). API responses use `Cache-Control: private, no-store`.
+Keys always include the user's scope (BR-14). `dataVersion` is a counter in the database, bumped whenever a job refreshes the views, so all dashboards show the same version of the numbers (G7). API responses use `Cache-Control: private, no-store`.
 
 
 ## 8. Authorization and security
 
-Three independent checks per request (hiding a button is not protection, BR-15):
+Three independent checks per request (hiding a button is not protection, BR-14):
 
 1. **Authentication** — session cookie, user must be `ACTIVE`; otherwise 401.
 2. **RBAC** — `[Authorize(Policy = "budget.plan:write")]` per endpoint, matched against role permissions; otherwise 403.
 3. **Data scope** — an `AccessScope` (role, units or companies with everything under them, employee id) is applied by a global query filter; out-of-scope records return 404.
 
-Also: Employees get a dedicated DTO (`/api/v1/me/licenses`) with no price or cost; login uses ASP.NET Core Identity with lockout after 5 failures for 15 minutes (BR-17); cookies are `HttpOnly`, `Secure`, `SameSite=Lax` with a CSRF token; sessions are stored server-side so disabling a user revokes them immediately; connector credentials are write-only, read-only in scope, encrypted with Data Protection, and only the worker can decrypt them (BR-19). Postgres Row-Level Security is planned after the MVP.
+Also: Employees get a dedicated DTO (`/api/v1/me/licenses`) with no price or cost; login uses ASP.NET Core Identity with lockout after 5 failures for 15 minutes (BR-16); cookies are `HttpOnly`, `Secure`, `SameSite=Lax` with a CSRF token; sessions are stored server-side so disabling a user revokes them immediately; connector credentials are write-only, read-only in scope, encrypted with Data Protection, and only the worker can decrypt them (BR-18). Postgres Row-Level Security is planned after the MVP.
 
 
 ## 9. Deployment

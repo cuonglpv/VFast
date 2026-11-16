@@ -35,7 +35,7 @@ A group of companies (P&Ls) buys software from many providers: Microsoft, Atlass
 | License management team member | `STAFF` | Feeding the system: usage connectors, sync monitoring, software catalog, shared licenses, purchases from SAP and accrual, exchange rates |
 | System administrator | `ADMIN` | Users, roles, permissions, the organization tree, and which Manager owns which unit; sees no license, usage, budget, or cost data. Accounts come from ILVG |
 | Every employee of the group | `EMPLOYEE` | Knowing which licenses they hold and whether they are recorded as used |
-| Each P&L | API provider | Provides an API that returns its licenses, holders, and usage in the license data contract (BR-18) |
+| Each P&L | API provider | Provides an API that returns its licenses, holders, and usage in the license data contract (BR-17) |
 | ILVG (internal HR application) | Source system | Employees, their unit, their projects, and transfers |
 | BCA (usage tracking on company machines) | Source system | How often each employee uses each application |
 | SAP (finance) | Source system | The yearly budget plan by month, and the purchases (PR, PO, invoices), each exported to an ELMS Excel template |
@@ -84,11 +84,11 @@ A license is described by independent axes, so the analysis does not depend on t
 
 ### 4.3 One money model for every license
 
-The analysis is in money, so every license, whatever it counts, is judged with the same three figures (BR-09, BR-23):
+The analysis is in money, so every license, whatever it counts, is judged with the same three figures (BR-09, BR-22):
 
 | Figure | Seat-based license | Usage-based license |
 |---|---|---|
-| **Purchased** | The accrued cost of the month, spread from the invoices (UC11); in quantity, the seats of the PO lines in force (BR-10) | Same |
+| **Purchased** | The accrued cost of the month, spread from the invoices (UC04); in quantity, the seats of the PO lines in force (BR-10) | Same |
 | **Used** | Purchased × `Active` seats ÷ purchased seats | The cost of what was consumed |
 | **Wasted** | The cost of `Unassigned`, `Inactive`, and `No activity` seats | The cost bought but not consumed |
 | **Not evaluated** | The cost of `Not monitored` seats and Unknown data | The cost with no consumption data |
@@ -99,11 +99,11 @@ Purchased = Used + Wasted + Not evaluated; the waste rate is Wasted ÷ Purchased
 
 | Source | What it gives | How |
 |---|---|---|
-| Usage connector of each P&L | Licenses, holders, last activity, daily activity, consumption | An API the P&L provides for its own data, one connector per company and provider, in the license data contract (BR-18, [Connector standard](06-connector-standard.md)) |
+| Usage connector of each P&L | Licenses, holders, last activity, daily activity, consumption | An API the P&L provides for its own data, one connector per company and provider, in the license data contract (BR-17, [Connector standard](06-connector-standard.md)) |
 | ILVG | Employees, units in five levels, projects (with allocation), transfers | API, synced like a connector |
 | BCA | Application usage per employee and day | API, synced like a connector (fields assumed until the API is known) |
-| SAP | Budget plan per unit, license, and month | Exported to the ELMS Excel template and imported by Managers (UC10) |
-| SAP purchases | PO lines: purchased quantity and term; invoices: the cost that becomes Purchased | Exported to the ELMS Excel template and imported by Staff each month; a purchase made outside SAP is entered by hand (UC12) |
+| SAP | Budget plan per unit, license, and month | Exported to the ELMS Excel template and imported by Managers (UC04) |
+| SAP purchases | PO lines: purchased quantity and term; invoices: the cost that becomes Purchased | Exported to the ELMS Excel template and imported by Staff each month; a purchase made outside SAP is entered by hand (UC04) |
 
 Behind a P&L API, the P&L reads its providers. For Microsoft 365, for example, the Graph v1.0 endpoints below give what the contract needs; they must be checked against Microsoft's documentation before the P&L builds its API:
 
@@ -120,14 +120,14 @@ Provider APIs give no organization data, no budget, and no history: units come f
 
 ### 4.5 Cost
 
-- **Purchased is the accrued cost of the invoices** (UC12, UC11): an invoice is spread over the months of the term of its PO line, rounded to the thousand VND, the difference in the last month (BR-24).
-- **One currency per screen:** amounts keep their original currency and are converted with the rate of the invoice date (BR-05, UC13).
-- **Charge-back:** the cost of a license is split over its seats and carried by the units of the holders; unassigned seats stay with the owner (BR-06). A license used by two or more companies is owned by the group and charged back to them (BR-25).
+- **Purchased is the accrued cost of the invoices** (UC04): an invoice is spread over the months of the term of its PO line, rounded to the thousand VND, the difference in the last month (BR-23).
+- **One currency per screen:** amounts keep their original currency and are converted with the rate of the invoice date (BR-05, UC04).
+- **Charge-back:** the cost of a license is split over its seats and carried by the units of the holders; unassigned seats stay with the owner (BR-06). A license used by two or more companies is owned by the group and charged back to them (BR-24).
 
 ## 5. Process (to-be)
 
 ```text
-1. Staff connect each company's provider (UC23) → 2. Collect at each connector's interval; ILVG and BCA daily
+1. Staff connect each company's provider (UC10) → 2. Collect at each connector's interval; ILVG and BCA daily
   → 3. Validate against the license data contract → 4. Daily seat status and cost split
   → 5. Usage, budget, and waste analysis per unit → 6. Managers act at the source
 ```
@@ -138,30 +138,30 @@ Pipeline principles:
 |---|---|---|
 | A1 | Run on a schedule, at each connector's interval | Most providers have no usage webhooks, and reports lag 1–2 days |
 | A2 | Store raw data before normalizing | Rules can change and be recomputed without calling the API again |
-| A3 | Idempotent, incremental sync and import | Re-running creates no duplicates; a failed run is caught up next time (BR-34) |
+| A3 | Idempotent, incremental sync and import | Re-running creates no duplicates; a failed run is caught up next time (BR-33) |
 | A4 | Missing data is never usage = 0 | A failed sync must not create a false waste figure; the status is `Unknown` (BR-04) |
 | A5 | Backfill history on the first connection | Trends are available from day one |
 | A6 | One money model for every archetype | Seats, sessions, and tokens are all judged as Purchased, Used, Wasted, Not evaluated |
-| A7 | Every result shows its evidence, its cost, and its data date | Users can verify it; ELMS never acts on its own (BR-12) |
-| A8 | Encrypted, write-only credentials, read-only scopes | Lower risk; the P&L grants access easily (BR-19) |
-| A9 | Every figure carries its source | Real, assumed, and mock data are never presented the same way (BR-13) |
+| A7 | Every result shows its evidence, its cost, and its data date | Users can verify it; ELMS never acts on its own (BR-11) |
+| A8 | Encrypted, write-only credentials, read-only scopes | Lower risk; the P&L grants access easily (BR-18) |
+| A9 | Every figure carries its source | Real, assumed, and mock data are never presented the same way (BR-12) |
 
 ## 6. Functional decomposition (Epic → Feature)
 
-The epics are the seven branches of the mind map; each leaf is one use case. Bold leaves are Must- and Should-have use cases, plain leaves Could-have ([INVEST requirements](03-invest-requirements.md)). The two self-service use cases every role has, View My Licenses (UC25) and Login / Logout (UC26), are not on the map.
+The epics are the seven branches of the mind map; each leaf is a feature area of a use case, and several leaves can belong to one use case. Bold leaves are Must- and Should-have use cases, plain leaves Could-have ([INVEST requirements](03-invest-requirements.md)). The two self-service use cases every role has, View My Licenses (UC11) and Login / Logout (UC12), are not on the map.
 
 ![ELMS mind map](mindmap.png)
 
 | Epic | Use cases |
 |---|---|
-| E1 License Management | License Information (UC01), License Users and Usage (UC02), License Inventory (UC03), License Catalog (UC04) |
-| E2 Usage | Organization Scope (UC05), Plan vs Utilization Balance (UC06), Subordinate Unit Comparison (UC07), Subordinate Units Table (UC08), Employee Usage (UC09) |
-| E3 Budget Management | Budget Plan (UC10), Cost Accrual (UC11), Purchases (UC12), Exchange Rates (UC13), Spending Forecast (UC14) |
-| E4 Optimization | Wasted Seats (UC15), Waste Ranking and Flag (UC16), Waste Analytics (UC17) |
-| E5 Analytics | Dashboards (UC18), License and Provider Analysis (UC19), Metric Definitions (UC20) |
-| E6 User & Organization | User Roles and Permissions (UC21), Organization Hierarchy (UC22) |
-| E7 Connection Management | Usage Connectors (UC23), Sync Monitoring (UC24) |
-| — Self-service (not on the map) | View My Licenses (UC25), Login / Logout (UC26) |
+| E1 License Management | View License Detail (UC01), Browse License Inventory (UC02) |
+| E2 Usage | View Plan vs Utilization Balance (UC03) |
+| E3 Budget Management | Manage Budget Plan (UC04) |
+| E4 Optimization | Detect Wasted Seats (UC05), Rank and Flag Units by Waste (UC06) |
+| E5 Analytics | View Dashboards (UC07) |
+| E6 User & Organization | Manage User Roles and Permissions (UC08), Manage Organization Hierarchy (UC09) |
+| E7 Connection Management | Manage Usage Connectors (UC10) |
+| — Self-service (not on the map) | View My Licenses (UC11), Login / Logout (UC12) |
 
 ## 7. Scope
 
@@ -188,8 +188,8 @@ The epics are the seven branches of the mind map; each leaf is one use case. Bol
 
 - Every connection is read-only; credentials are write-only.
 - Each P&L provides the API behind its connectors, in the license data contract.
-- A holder is a person: identities are matched to the ILVG employee by employee code, otherwise by email (BR-26).
-- The organization has exactly five levels; units come from ILVG (BR-20).
+- A holder is a person: identities are matched to the ILVG employee by employee code, otherwise by email (BR-25).
+- The organization has exactly five levels; units come from ILVG (BR-19).
 - Seat status uses a 30-day window with a 30-day grace period (BR-03).
 - Assumed until checked: the SAP export carries department codes; BCA reports per day the domain account carrying the ILVG employee code.
 
@@ -197,11 +197,11 @@ The epics are the seven branches of the mind map; each leaf is one use case. Bol
 
 | Risk | Mitigation |
 |---|---|
-| A P&L cannot deliver its API on time | Mock data labelled as mock (BR-13); the connector stays `Pending` |
+| A P&L cannot deliver its API on time | Mock data labelled as mock (BR-12); the connector stays `Pending` |
 | Usage reports anonymize users | Seats become `Not monitored`, their cost Not evaluated, never waste |
-| A sync fails and usage looks like zero | The figures stay `Unknown`; the connector shows `Failed` or `Delayed` (BR-30) |
-| Figures disagree between screens | One set of rules (BR-03, BR-06, BR-09, BR-23) and one definition per metric (UC20) |
-| Per-user usage is sensitive personal data | Every API requires login; data scope is enforced on the backend (BR-15) |
-| BCA or SAP fields differ from the assumptions | The BCA fields (UC09) and the SAP export (BR-08) are checked against the real sources before the import is built |
+| A sync fails and usage looks like zero | The figures stay `Unknown`; the connector shows `Failed` or `Delayed` (BR-29) |
+| Figures disagree between screens | One set of rules (BR-03, BR-06, BR-09, BR-22) and one definition per metric (UC07) |
+| Per-user usage is sensitive personal data | Every API requires login; data scope is enforced on the backend (BR-14) |
+| BCA or SAP fields differ from the assumptions | The BCA fields (UC03) and the SAP export (BR-08) are checked against the real sources before the import is built |
 
 **Related:** [Use cases](02-use-cases.md) · [INVEST requirements](03-invest-requirements.md) · [Data fields research](09-data-fields-research.md)
