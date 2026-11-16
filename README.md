@@ -1,6 +1,6 @@
 # Enterprise License Management System (ELMS) — team VFast
 
-ELMS brings the software licenses of every company of the group into one place. Each company connects its providers (Microsoft, Atlassian, Adobe, GitHub, SAP…) through usage connectors; ELMS reads what each license costs, how much of it is allocated, who holds it, and how much is actually used, and sets it against the budget plan. Managers see, for their units, the money planned, purchased, used, and wasted — down to each license and each user — **and ELMS never assigns, revokes, buys, or changes anything on a provider**.
+ELMS brings the software licenses of every company of the group into one place. Each company connects its providers (Microsoft, Atlassian, Adobe, GitHub, SAP…) through usage connectors; ELMS reads who holds each license and how much is actually used, takes how many seats were bought, for which term, and at what cost from the purchases in SAP, and sets it against the budget plan. Managers see, for their units, the money planned, purchased, used, and wasted — down to each license and each user — **and ELMS never assigns, revokes, buys, or changes anything on a provider**.
 
 ## 1. Requirements — Research, Use Cases, and INVEST
 
@@ -77,7 +77,7 @@ There are four roles: the **Manager** uses the product, **Staff** keep it fed, t
 | UC05 | View Monthly Budget Plan | See the plan by month and compare it with earlier versions | Manager |
 | UC06 | Allocate License Cost | See the cost of each license split over the units that hold it | Manager |
 | UC42 | Accrue License Cost | Spread license costs over the months of their terms, review rounding, close the month | Staff; Manager reads |
-| UC07 | Manage Expenses | Record license expenses with their invoice, or import them from CSV | Staff |
+| UC07 | Manage Purchases | Import the PR, PO, and invoices exported from SAP each month, and enter a purchase made outside SAP | Staff |
 | UC62 | Manage Exchange Rates | Enter the rate of each currency to VND from a date, used to convert invoices and budget lines | Staff |
 | UC34 | Track Monthly Plan Variance | See how actual spending moves away from plan month by month | Manager |
 | UC09 | Forecast License Spending | See the projected year-end spending against plan | Manager |
@@ -120,7 +120,7 @@ There are four roles; each account has exactly one. Every account belongs to a r
 | Role | Who | Responsibility | Data scope |
 |---|---|---|---|
 | **Manager** | Manager of a unit: the group, a P&L, block, department, or project — **the main user** | Browses licenses and who uses them, analyses usage and waste, imports and changes the budget plan of their units and of every unit under them | The units assigned to them and everything under them; the whole group for a Manager of the group |
-| **Staff** | License management team member — hands-on work | Sets up and edits usage connectors, watches the syncs, checks what each company's connectors deliver, runs the monthly accrual, records expenses, exchange rates, and shared licenses, keeps the software catalog | The companies assigned to them; no usage or waste analysis |
+| **Staff** | License management team member — hands-on work | Sets up and edits usage connectors, watches the syncs, checks what each company's connectors deliver, imports the purchases from SAP and enters those made outside it, runs the monthly accrual, records exchange rates and shared licenses, keeps the software catalog | The companies assigned to them; no usage or waste analysis |
 | **Admin** | System operator | Users, roles, permissions, the organization hierarchy and which Manager owns which unit; watches the group through the group overview and dashboards | The whole group through the group overview and the dashboards, down to each license, read-only; no Usage screen, no budget |
 | **Employee** | Every employee of the group | Sees the licenses they hold and whether they are recorded as used | Own licenses only |
 
@@ -135,7 +135,7 @@ There are four roles; each account has exactly one. Every account belongs to a r
 | Budget plan | — | Import and change, own units and every unit under them | — | — |
 | Monthly plan, cost allocation, plan variance, forecast | — | Read, own units | — | — |
 | Cost accrual | — | Read, own units | Run / close month, own companies | — |
-| Expenses and invoices | — | — | Create / edit / import | — |
+| Purchases (PO lines and invoices) | — | — | Import from SAP / create / edit | — |
 | Exchange rates | — | Read | Create / edit, group level | — |
 | Unused and inactive seats, P&L waste flag, waste analysis | — | Read, own units | — | — |
 | License and provider analysis, metric definitions | — | Read, own units | — | — |
@@ -180,7 +180,7 @@ Backlog, per-story INVEST review, and acceptance criteria: [INVEST requirements]
 
 ## 2. Database design
 
-The target schema is PostgreSQL, 40 tables in seven groups: organization and access, software catalog and licenses, collection pipeline, holders and usage, budget and expenses, optimization, audit. It follows the business model: a five-level organization from ILVG, one usage connector per company and provider, a license per connector and company mapped to the software catalog, budget versions imported from Excel, the cost of each month split into Used, Wasted, and Not evaluated, and BCA usage in its own table. Missing data is `Unknown`, never 0; history is kept as frozen daily snapshots and monthly cost allocations.
+The target schema is PostgreSQL, 40 tables in seven groups: organization and access, software catalog and licenses, collection pipeline, holders and usage, budget and expenses, optimization, audit. It follows the business model: a five-level organization from ILVG, one usage connector per company and provider, a license per connector and company mapped to the software catalog, budget versions imported from Excel, purchases (PO lines and invoices) imported from SAP, the cost of each month split into Used, Wasted, and Not evaluated, and BCA usage in its own table. Missing data is `Unknown`, never 0; history is kept as frozen daily snapshots and monthly cost allocations.
 
 ![Entity overview](docs/database/diagrams/erd_overview.png)
 
@@ -188,7 +188,7 @@ Entity overview, one ERD per group, a short explanation of every table, rule-to-
 
 ## 3. Architecture and Folder Structures
 
-ELMS is designed as one monolith with Clean Architecture, deployed as two processes (API and worker) that share one PostgreSQL database. The API serves users; slow work (connector syncs at each interval, budget and expense imports, seat status, cost split, detection) runs in the worker through a PostgreSQL-backed job queue, so no Redis or message broker is required.
+ELMS is designed as one monolith with Clean Architecture, deployed as two processes (API and worker) that share one PostgreSQL database. The API serves users; slow work (connector syncs at each interval, budget and purchase imports, seat status, cost split, detection) runs in the worker through a PostgreSQL-backed job queue, so no Redis or message broker is required.
 
 ### 3.1 System context (C4 level 1)
 
@@ -196,19 +196,19 @@ ELMS is designed as one monolith with Clean Architecture, deployed as two proces
 flowchart TB
     users(["Employee / Staff / Manager / Admin"])
     elms["ELMS<br/>[Software system]<br/>Centralizes the licenses of every P&L, measures usage<br/>and waste in money, compares budget with reality"]
-    pnl["P&L license APIs<br/>[External systems]<br/>one per company and provider:<br/>licenses, terms, holders, usage"]
+    pnl["P&L license APIs<br/>[External systems]<br/>one per company and provider:<br/>licenses, holders, usage"]
     ilvg["ILVG<br/>[External system]<br/>employees, units, projects"]
     bca["BCA<br/>[External system]<br/>application usage on company machines"]
-    files["Budget and invoice files<br/>[Input]<br/>SAP budget export, expenses"]
+    files["SAP files<br/>[Input]<br/>budget plan; PR, PO, and invoices"]
 
     users -- "HTTPS, role-based screens" --> elms
     elms -- "reads at each connector's interval<br/>[read-only connectors]" --> pnl
     elms -- "reads daily [read-only]" --> ilvg
     elms -- "reads daily [read-only]" --> bca
-    files -. "Managers import the budget, Staff the expenses:<br/>preview, then confirm" .-> elms
+    files -. "Managers import the budget, Staff the purchases:<br/>preview, then confirm" .-> elms
 ```
 
-Four roles use ELMS; each account has exactly one. Each P&L provides an API for its own license data; ELMS reads it through one usage connector per company and provider, at each connector's interval, in the license data contract (ECS), and never changes anything at a source. Employees and units come from ILVG, application usage from BCA, the budget plan from an Excel export of SAP, and the cost from the invoices Staff record. Nobody enters licenses, holders, or usage by hand.
+Four roles use ELMS; each account has exactly one. Each P&L provides an API for its own license data; ELMS reads it through one usage connector per company and provider, at each connector's interval, in the license data contract (ECS), and never changes anything at a source. Employees and units come from ILVG, application usage from BCA, the budget plan from an Excel export of SAP, and the purchases — PO lines for seats and terms, invoices for cost — from another SAP export that Staff import each month, with a purchase made outside SAP entered by hand. Nobody enters licenses, holders, or usage by hand.
 
 ### 3.2 Container view (C4 level 2)
 
@@ -310,7 +310,7 @@ Full trees, module table, API conventions, jobs, caching, security, and deployme
 ## Documentation
 
 - [Top-down research](docs/01-research-top-down.md) — problem, stakeholders, goals, license models, data sources, process, epics, scope, risks
-- [Use cases](docs/02-use-cases.md) — actors, role × feature matrix, business rules, system processes, 49 use cases, open decisions
+- [Use cases](docs/02-use-cases.md) — actors, role × feature matrix, business rules, system processes, 49 use cases
 - [INVEST requirements](docs/03-invest-requirements.md) — 49 user stories, INVEST review, acceptance criteria
 - [Information architecture](docs/04-information-architecture-manager.md) — screen catalog, navigation by role, screen specifications, UI conventions, screen-to-API mapping
 - [Folder structure and architecture](docs/05-folder-structure.md) — solution architecture, frontend structure, backend modules and .NET folder layout, API conventions, jobs, caching, security

@@ -1,6 +1,6 @@
 # Feature List
 
-> Design status: TARGET (agreed 13 November 2026, revised 15 November 2026)
+> Design status: TARGET (agreed 13 November 2026, revised 15 and 16 November 2026)
 >
 > Implementation status: NOT STARTED
 
@@ -19,12 +19,12 @@ Status: **Kept** — unchanged; **Changed** — changed by this revision; **New*
 | F05 | License details dialog: cost, start, expiry, expiry status, unallocated or over-allocated quantity | UC59 | Manager | D1 | New |
 | F06 | License users: Active / Inactive / Not monitored counts, holder table with last used, days used against working days as a bar; search, sort, paging, CSV | UC61 | Manager | R | New |
 | F76 | Software catalog: software, provider, category and subcategory; create, edit, merge | UC01 | Staff | M | New |
-| F77 | License and BCA application name mapping to the catalog: *Not mapped* filter, suggestions by provider and name, one mapping for every company; unmapped names under *Uncategorized* | UC01 | Staff | M | New |
+| F77 | License and BCA application name mapping to the catalog: *Not mapped* filter, suggestions by provider and name, one mapping for every company; unmapped names under *Uncategorized*; the name SAP uses for a license when it differs from the connector's | UC01 | Staff | M | New |
 | F07 | License inventory per P&L, grouped by provider, with cost | UC27 | Manager, Staff | UC, D1 | Changed |
 | F08 | Licenses per organization unit and units per license | UC28 | Manager | UC | Kept |
 | F09 | Shared licenses (used by two or more companies): owned by the group, planned by the group per P&L, cost charged back to each company by the seats its people hold, unassigned seats in *Unallocated* of the group; *Possibly shared* proposals | UC47 | Staff, Manager | M | New |
 | F10 | Providers and their licenses per company, view only, from connectors | UC02 | Manager | UC, M | Changed |
-| F11 | Contracts (license terms), view only: start, expiry, auto-renew, cost, renewal filter | UC04 | Manager | UC | Changed |
+| F11 | Contracts (license terms from the SAP PO lines), view only: PO, start, expiry, quantity, cost, renewal filter | UC04 | Manager | UC | Changed |
 
 ### Usage
 
@@ -56,12 +56,12 @@ Status: **Kept** — unchanged; **Changed** — changed by this revision; **New*
 | ID | Feature | Use case | Actors | Source | Status |
 |---|---|---|---|---|---|
 | F32 | Excel template download | UC33 | Manager | M | New |
-| F33 | Budget import from Excel by the Manager of the unit or of any larger unit above it, for a target unit and months; preview with rows to add, replace, remove, and reject; versions; idempotent (same file twice changes nothing, confirm applied once); shared licenses planned by the group per P&L or deeper, P&Ls can change their lines | UC33 | Manager | M | Changed |
+| F33 | Budget import from Excel by the Manager of the unit or of any larger unit above it, for a target unit and months; preview with rows to add, replace, remove, and reject; versions; idempotent (same file twice changes nothing, confirm applied once); shared licenses planned by the group per P&L or deeper, P&Ls can change their lines; no *Shared* column, a line's license is found by its name in SAP | UC33 | Manager | M | Changed |
 | F34 | Monthly budget plan, quantity and amount, version compare | UC05 | Manager | UC | Changed |
 | F35 | Cost allocation per unit | UC06 | Manager | UC | Kept |
 | F36 | Cost accrual by month with rounding and month close | UC42 | Manager, Staff | M | New |
 | F37 | Accrual export for finance | UC42 | Manager, Staff | M | New |
-| F38 | Expenses with invoice and CSV import | UC07 | Staff | UC | Kept |
+| F38 | Purchases: monthly import of the PR, PO lines, and invoices exported from SAP (PO lines give quantity and term, invoices the cost), idempotent by PO and invoice number; hand entry of a purchase made outside SAP | UC07 | Staff | M | Changed |
 | F80 | Exchange rates: rate per currency from a date, rate of the invoice date applied, corrections only for open months | UC62 | Staff | M | New |
 | F39 | Monthly plan variance | UC34 | Manager | UC | Kept |
 | F40 | Spending forecast | UC09 | Manager | UC | Kept |
@@ -128,4 +128,4 @@ Status: **Kept** — unchanged; **Changed** — changed by this revision; **New*
 | F74 | My licenses across all my emails | UC23 | Everyone | UC, M | Changed |
 | F75 | Login / logout | UC24 | Everyone | UC | Kept |
 
-**Count:** 80 features — 14 kept, 15 changed, 51 new. Feature numbers are kept stable; F76 onward were added in the third revision.
+**Count:** 80 features — 13 kept, 16 changed, 51 new. Feature numbers are kept stable; F76 onward were added in the third revision.

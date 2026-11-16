@@ -22,7 +22,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | ID | User story | Value | Dependencies | Priority | Points |
 |---|---|---|---|---|---|
 | **License Management** | | | | | |
-| US57 | As a Manager, I want one list of every license of my units with its monthly cost, allocation, and days to expiry so that I see what we pay for and what expires soon. | Portfolio at a glance | US55, US26, US42 | M | 5 |
+| US57 | As a Manager, I want one list of every license of my units with its monthly cost, allocation, and days to expiry so that I see what we pay for and what expires soon. | Portfolio at a glance | US55, US26, US07, US42 | M | 5 |
 | US58 | As a Manager, I want each license term on a six-month timeline so that I see which renewals come and overlap. | Renewal planning | US57 | M | 3 |
 | US59 | As a Manager, I want the details of a license — cost, term, unallocated or over-allocated seats — so that I can judge it without leaving the list. | Quick check | US57 | M | 2 |
 | US61 | As a Manager, I want to see who holds a license, who uses it, and how many days so that I know whose seat to review. | People behind a license | US59 | M | 5 |
@@ -31,7 +31,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US28 | As a Manager, I want the licenses of any unit, or the units of any license, so that I see where each license is used. | Two-way view | US20, US55 | S | 3 |
 | US47 | As a Staff member, I want to mark a license used by two or more companies as shared so that its cost is charged back to them and its free seats stay with the group. | Fair charge-back | US55, US06 | M | 5 |
 | US02 | As a Manager, I want the providers the group buys from and their licenses so that I know our dependence on each provider. | Provider view | US55 | C | 2 |
-| US04 | As a Manager, I want the license terms with auto-renew and those renewing within 30 or 60 days so that no renewal surprises us. | Renewal control | US55 | C | 2 |
+| US04 | As a Manager, I want the license terms from the PO lines and those renewing within 30 or 60 days so that no renewal surprises us. | Renewal control | US07 | C | 2 |
 | **Usage** | | | | | |
 | US37 | As a Manager, I want to choose the unit to analyse from the organization tree and go down and up so that every panel shows that scope. | Navigation | US20 | M | 5 |
 | US08 | As a Manager, I want Plan, Purchased, and Used of my scope and whether it is over budget so that I see the balance at once. | Balance | US37, US33, US42 | M | 3 |
@@ -45,7 +45,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US05 | As a Manager, I want the plan by month and its earlier versions so that I see what changed. | Plan review | US33 | M | 2 |
 | US06 | As a Manager, I want the cost of each license split over the units that hold it so that each unit carries its own cost. | Cost per unit | US42, US20 | M | 5 |
 | US42 | As a Staff member, I want the cost of each invoice spread over the months of its term and the month closed so that Purchased is right every month. | Monthly cost | US07, US62 | M | 5 |
-| US07 | As a Staff member, I want to record expenses with their invoice and term, or import them, so that ELMS knows what was paid. | Cost source | US55 | M | 3 |
+| US07 | As a Staff member, I want to import the PR, PO, and invoices exported from SAP each month, and enter a purchase made outside SAP, so that ELMS knows how many seats were bought, for which term, and what was paid. | Quantity and cost source | US55 | M | 5 |
 | US62 | As a Staff member, I want to enter the exchange rates from a date so that every amount is converted with the rate of its invoice date. | Correct currency | US24 | M | 2 |
 | US34 | As a Manager, I want the variance between plan and purchased month by month so that I see where spending leaves the plan. | Variance | US33, US42 | S | 3 |
 | US09 | As a Manager, I want the projected year-end spending against plan so that I can act before the year ends. | Early warning | US42, US33 | C | 3 |
@@ -79,7 +79,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US23 | As an employee, I want the licenses I hold across all my emails and whether I am recorded as using them so that I can give back what I do not need. | Self-service | US55, US24 | M | 2 |
 | US24 | As any user, I want to log in and out and land on the screen of my role so that only I see my data. | Protected access | Seeded accounts | M | 3 |
 
-**Total:** 49 stories, 163 points. Must-have: 31 stories (114 points); Should-have: 13 stories (37 points); Could-have: 5 stories (12 points). Story numbers follow the use cases, so they are not in branch order.
+**Total:** 49 stories, 165 points. Must-have: 31 stories (116 points); Should-have: 13 stories (37 points); Could-have: 5 stories (12 points). Story numbers follow the use cases, so they are not in branch order.
 
 ## Per-story INVEST review
 
@@ -96,19 +96,19 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US28 | PASS | PASS | PASS | PASS | PASS | PASS | Unknown unit keeps totals (BR-21). |
 | US47 | PASS | PASS | PASS | PASS | PASS | PASS | Charge-back and free seats BR-26; Staff confirm a proposal. |
 | US02 | PASS | PASS | PASS | PASS | PASS | PASS | No quantity added across licenses (BR-05). Could-have. |
-| US04 | PASS | PASS | PASS | PASS | PASS | PASS | Read-only; "—" when not reported. Could-have. |
+| US04 | PASS | PASS | PASS | PASS | PASS | PASS | Read-only; terms from the PO lines (BR-10); "—" when SAP does not give a field. Could-have. |
 | US37 | PASS | PASS | PASS | PASS | PASS | PASS | Scope from the server (BR-16); shareable link. |
 | US08 | PASS | PASS | PASS | PASS | PASS | PASS | Figures BR-09, BR-24; planned-above rule BR-37. |
 | US48 | PASS | PASS | PASS | PASS | PASS | PASS | Complete months only (BR-31); currency BR-05. |
 | US49 | PASS | PASS | PASS | PASS | PASS | PASS | Efficiency = Used ÷ Purchased. |
 | US50 | PASS | PASS | PASS | PASS | PASS | PASS | License heatmap with Rate / Cost switch; rows add up (BR-21). |
 | US51 | PASS | PASS | PASS | PASS | PASS | PASS | File equals the screen. |
-| US32 | PASS | PASS | PASS | PASS | PASS | PASS | BCA fields assumed (open decisions 3, 6). Could-have. |
+| US32 | PASS | PASS | PASS | PASS | PASS | PASS | BCA fields assumed (UC32). Could-have. |
 | US33 | PASS | PASS | PASS | PASS | PASS | PASS | Largest story (8): per-license replacement in the target subtree BR-08, idempotency BR-36. Splits into: template and preview, confirm with versions, idempotency and concurrency. |
 | US05 | PASS | PASS | PASS | PASS | PASS | PASS | Read-only; versions from US33. |
 | US06 | PASS | PASS | PASS | PASS | PASS | PASS | Split BR-06 with projects and Unallocated; sums equal the total. |
 | US42 | PASS | PASS | PASS | PASS | PASS | PASS | Rounding to the thousand VND BR-25; closed months frozen. |
-| US07 | PASS | PASS | PASS | PASS | PASS | PASS | Closed-month rule BR-10. Splits into: form with invoice, CSV import. |
+| US07 | PASS | PASS | PASS | PASS | PASS | PASS | Shape of the SAP file and closed-month rule in BR-10. Splits into: SAP import, hand entry. |
 | US62 | PASS | PASS | PASS | PASS | PASS | PASS | Rate of the invoice date (BR-05). |
 | US34 | PASS | PASS | PASS | PASS | PASS | PASS | Variance per BR-37. |
 | US09 | PASS | PASS | PASS | PASS | PASS | PASS | Forecast never shown as actual (BR-11). Could-have. |
@@ -146,7 +146,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 #### AC-US57 License List
 
 1. Given 24 licenses held in the Manager's units, when the list opens, then it shows "24 licenses", "As of <data date>", sorted by expiry date soonest first, 10 rows per page.
-2. Given Microsoft 365 E3 with 420 of 500 seats allocated and 4,125 USD accrued for the current month, then its row shows "$4,125 / mo" and "420 / 500" with 84 %.
+2. Given Microsoft 365 E3 with 420 seats allocated by the connector, a PO line of 500 seats in force, and 4,125 USD accrued for the current month, then its row shows "$4,125 / mo" and "420 / 500" with 84 %.
 3. Given 520 of 500 allocated, then the allocation shows in red with "exceeds purchased quantity".
 4. Given the filter "Expires in 0–30 days" and the search "adobe", then only matching rows show and a bar reads "n of N licenses match your filters" with *Clear filters*.
 5. Given a Manager of block A1, then only licenses held in A1 are listed, Allocated counts A1's seats, and Purchased is the P&L's; a license outside their scope requested through the API returns `403`.
@@ -212,8 +212,8 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 #### AC-US04 View Contracts
 
-1. Given license terms with start, expiry, auto-renew, and cost reported, then they are listed and the filter "renewal within 30 days" keeps those renewing by then.
-2. Given a term whose source does not report auto-renew, then the cell shows "—".
+1. Given PO lines with their start, expiry, quantity, and cost imported from SAP, then each is listed as a term with its PO number and the filter "renewal within 30 days" keeps those renewing by then.
+2. Given a purchase entered by hand, then its PO cell is empty; auto-renew and notice period, which SAP does not give, show "—".
 3. Given any role calls a write API on terms, then it returns `403`: terms are read-only.
 
 ### Usage
@@ -277,8 +277,8 @@ Format: **Given** context, **When** action, **Then** observable result.
 3. Given *Confirm* pressed twice, or again after a time-out, then exactly one version exists.
 4. Given the Manager of block A1 previewed a file with M365 E3 and the Manager of P&L A confirmed since an import that changed M365 E3 lines of A1, when A1's confirm is sent, then it is refused: "The plan changed since your preview"; the same holds the other way round, when A1 imported while A's file was in preview. Given A's import touched only Jira, then A1's confirm goes through.
 5. Given a row for a unit outside the target, or a project code not in the hierarchy, then the row is rejected with its reason and the file is not imported until it is fixed or the row is left out.
-6. Given the Manager of the group plans GitHub with rows P&L A 50 million and P&L B 40 million marked *Shared*, then each P&L's Plan includes its row and the other licenses of A and B keep their plan; the Manager of P&L A can later change A's row.
-7. Given P&L B has its own "Microsoft 365 E3" and a share of the group's shared "Microsoft 365 E3", then a row with *Shared* = yes maps to the group's license and a row without it to B's own; both can be planned for the same unit and month.
+6. Given GitHub marked shared and the Manager of the group plans it with rows P&L A 50 million and P&L B 40 million, then each row plans that P&L's share, each P&L's Plan includes its row, and the other licenses of A and B keep their plan; the Manager of P&L A can later change A's row.
+7. Given P&L B has its own "Microsoft 365 E3" and a share of the group's shared "Microsoft 365 E3", then a row "Microsoft 365 E3" for B is rejected as matching two licenses; given Staff record "Microsoft 365 E3 B" as the SAP name of B's own license, then "Microsoft 365 E3" maps to the shared license and "Microsoft 365 E3 B" to B's own, and both can be planned for the same unit and month.
 
 #### AC-US05 View Monthly Budget Plan
 
@@ -302,11 +302,14 @@ Format: **Given** context, **When** action, **Then** observable result.
 3. Given Staff close October for company A, then A's October figures lose the *Provisional* mark and are never recalculated; a later change goes to the next open month. Given A is charged for a shared license and the group's October is still open, then A's October stays *Provisional* until the group closes it.
 4. Given a Manager reads the accrual of their units, when they try to close the month, then it returns `403`.
 
-#### AC-US07 Manage Expenses
+#### AC-US07 Manage Purchases
 
-1. Given an expense of 120 million with its invoice PDF and the term 1 Jan–31 Dec 2027, when saved, then its accrual schedule has 12 months of 10 million.
-2. Given an amount of 0 or an unknown license, then field errors are returned; given a CSV with one invalid row, then no expense is created and the row is listed.
-3. Given an expense in a closed month, when edited, then it is refused and a correcting entry dated in an open month is offered.
+1. Given a SAP file of company A with PO 4500012345 item 10, GitHub Enterprise, 500 seats, 1 Mar 2027 – 29 Feb 2028, and invoice 0001234 of 1.2 billion VND for that item, when confirmed, then GitHub of A has 500 purchased seats and expires on 29 Feb 2028, and its accrual schedule has 12 months of 100 million.
+2. Given the same file imported again, then nothing is added; given the PO quantity changed to 600 in the next file, then the PO line is updated, not duplicated.
+3. Given a PO line whose license matches no license of A and no shared license, or an invoice whose PO line is unknown, then the row is rejected with its reason and the file is not imported until it is fixed or the row is left out.
+4. Given a PO line without any invoice yet, then its 500 seats count in Purchased quantity and its months show Purchased in money `Unknown`.
+5. Given a purchase made on a company card, when Staff enter it by hand with its term 1 Jan–31 Dec 2027, 120 million, and its invoice PDF, then its accrual schedule has 12 months of 10 million and its source is `manual`.
+6. Given a hand entry in a closed month, when edited, then it is refused and a correcting entry dated in an open month is offered.
 
 #### AC-US62 Manage Exchange Rates
 

@@ -196,7 +196,7 @@ What ELMS needs from a provider depends on the archetype of the license, not on 
 | Metered | `entitlements`, `usage` (`consumption`) | Consumption against quota and budget |
 | Capacity | `entitlements`, `usage` (`deployed_units`) | Deployed against purchased; overuse (UC12) |
 
-`costs` is optional for every archetype. Most SaaS APIs (Microsoft Graph, Google, Adobe) do not return it, and Staff enter expenses from invoices (UC07); where a provider has it (FOCUS exports, OpenAI, Anthropic), it is collected. A dataset the provider lacks is `Not supported`; the license then has less data (for example seats stay `Not monitored` without `activity`), never wrong data.
+`costs` is optional for every archetype. Most SaaS APIs (Microsoft Graph, Google, Adobe) do not return it; where a provider has it (FOCUS exports, OpenAI, Anthropic), it is collected for information only. Since 16 Nov 2026 the purchased quantity, the terms, and the cost that ELMS counts come from the PO lines and invoices in SAP (UC07, BR-10), not from the `entitlements` or `costs` datasets. A dataset the provider lacks is `Not supported`; the license then has less data (for example seats stay `Not monitored` without `activity`), never wrong data.
 
 ### 4.7 Validation
 
@@ -287,7 +287,7 @@ Elms.Infrastructure/Connectors/
 
 | Phase | Content | Exit criterion |
 |---|---|---|
-| P0 Specification | ECS v1.0-draft: datasets, envelope, OpenAPI 3.1, JSON Schemas, sample files; team review | Draft approved; decisions in §8 answered |
+| P0 Specification | ECS v1.0-draft: datasets, envelope, OpenAPI 3.1, JSON Schemas, sample files; team review | Draft approved |
 | P1 Core | Validator, `EcsHttpConnector`, file reader, simulated ECS provider for tests and demo; connector step in UC03, the UC25 and UC26 screens; schema change D24 | Simulated provider is connected through UC03, passes the validator every night, and feeds dashboards end to end |
 | P2 Adapters | Microsoft Graph (Allocation datasets), FOCUS cost files (AWS, Azure), OpenAI and Anthropic (Metered datasets and costs) | Real tenant data validated daily for 2 weeks without false `Inactive` |
 | P3 First native provider | One in-house application or reseller implements the ECS datasets of its archetype using the onboarding kit; contract clause drafted with procurement | Provider connected through UC03 and validated every night without ELMS code changes |
@@ -307,18 +307,7 @@ The connector step of US03, US25, and US26 in the [INVEST backlog](03-invest-req
 | Personal data collected without a legal basis | Data minimization; legal review before onboarding (§4.9) |
 | Admin sees license data through connector screens | Admin sees status, counts, error codes only; record contents are Staff-only (BR-16) |
 
-## 8. Decisions to confirm
-
-| # | Question | Proposed answer |
-|---|---|---|
-| C1 | Who configures connectors? | Decided 12 Nov 2026: Staff, when adding a license (UC03); Staff map data (UC25) and operate syncs (UC26); Admin sees sync status only. No separate conformance step: the validator checks every run |
-| C2 | Name of the standard | ELMS Connector Standard (ECS) |
-| C3 | Push (provider sends to ELMS) in v1? | No. Pull and file only; push in a later version |
-| C4 | What to require in new contracts | The datasets of the license's archetype (§4.6), for example "the Allocation datasets within 60 days of the contract start" |
-| C5 | FOCUS version to target for costs | 1.2 columns as the floor (what AWS, Azure, Google Cloud export today); accept 1.3 and 1.4 fields when present |
-| C6 | Where the standard is published | In this repository, `docs/connector-standard/`, after approval |
-
-## 9. Sources
+## 8. Sources
 
 - FinOps Foundation — [What is FOCUS](https://focus.finops.org/what-is-focus/), [FOCUS 1.2 announcement](https://www.finops.org/insights/focus-1-2-available/), [FOCUS 1.2 specification (PDF)](https://focus.finops.org/wp-content/uploads/2025/05/FOCUS-spec-v1_2.pdf), [FOCUS changelog](https://github.com/FinOps-Open-Cost-and-Usage-Spec/FOCUS_Spec/blob/working_draft/CHANGELOG.md)
 - AWS — [Migrating from FOCUS 1.0 to FOCUS 1.2 (Data Exports)](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-focus-1-2-migrating.html)

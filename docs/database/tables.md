@@ -14,9 +14,9 @@ Every table of the ELMS database, what it is for, and what each of its fields me
 | `created_at`, `updated_at` | When the row was created, and when it last changed |
 | `created_by`, `paused_by`, `uploaded_by` … | The user who did it |
 | `is_active` | No longer used when "No". Rows are switched off instead of deleted, so history stays intact |
-| `source` | Where the data came from: `api` or `log` (a connector, ILVG, or BCA), `import` (a file: budget plan or expenses), `manual` (typed by Staff: expenses only). Licenses, holders, and usage always come from a connector |
+| `source` | Where the data came from: `api` or `log` (a connector, ILVG, or BCA), `import` (a file: budget plan, or purchases from SAP), `manual` (typed by Staff: purchases made outside SAP). Licenses, holders, and usage always come from a connector |
 | `sync_run_id`, `import_batch_id` | The connector run or file import that last wrote the row, so every figure can be traced back |
-| `currency` | Three-letter currency code next to an amount from outside (price, expense, budget line), such as `USD`. Figures ELMS computes have no currency field: they are always in the reporting currency (VND) |
+| `currency` | Three-letter currency code next to an amount from outside (price, invoice, budget line), such as `USD`. Figures ELMS computes have no currency field: they are always in the reporting currency (VND) |
 
 ---
 
@@ -186,7 +186,7 @@ Handy links of a software: admin portal, terms of service, license policy. Not u
 
 ### `license_plans`: licenses
 
-One license a connector reports for its company, such as "Microsoft 365 E3" of company A. This is what the rest of the docs call **a license**. Staff declare it when they create the connector; it is *Pending* until the first sync. It stays the same across renewals, so holders, usage, budgets, and expenses keep their history.
+One license a connector reports for its company, such as "Microsoft 365 E3" of company A. This is what the rest of the docs call **a license**. Staff declare it when they create the connector; it is *Pending* until the first sync. It stays the same across renewals, so holders, usage, budgets, PO lines, and invoices keep their history. Budget lines and PO lines find it by its name in SAP among the licenses of their P&L and the shared licenses.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -194,6 +194,7 @@ One license a connector reports for its company, such as "Microsoft 365 E3" of c
 | `connector_id` | link → `connectors` | Yes | The connector that reports it, and so its company and provider |
 | `external_name` | text | Yes | The name as the source gives it (or as Staff typed it before the first sync). One name per connector |
 | `external_ref` | text | | The license's id at the source, such as Microsoft's skuId. Empty until the first sync |
+| `sap_name` | text | | The name SAP files use for it, when SAP names it differently from the connector. Example: P&L A's own GitHub is *GitHub Enterprise A* in SAP because the shared one is *GitHub Enterprise*. Empty = the connector's name |
 | `product_id` | link → `software_products` | | The software it maps to in the catalog. Empty = "Not mapped", shown under "Uncategorized" |
 | `license_type` | choice: `monthly`, `yearly`, `usage_based` | | As the source reports it. Empty until the first sync |
 | `archetype` | choice | Yes | How use is counted: `allocation` (seats), `concurrent` (sessions at once), `metered` (tokens, requests, GB), `capacity` (cores, servers) |
@@ -206,33 +207,35 @@ One license a connector reports for its company, such as "Microsoft 365 E3" of c
 
 ### `contracts`: signed agreements (retired)
 
-Retired: contracts are no longer entered in ELMS. The license terms of UC04 (start, expiry, auto-renew, cost) come from the connectors and are kept in `entitlement_lines`. The table and its fields stay as they were and are not written.
+Retired: contracts are no longer entered in ELMS. The license terms of UC04 (start, expiry, quantity, cost) come from the PO lines in SAP and are kept in `entitlement_lines`. The table and its fields stay as they were and are not written.
 
-### `entitlement_lines`: license terms
+### `entitlement_lines`: PO lines (license terms)
 
-One term or purchase of a license as its connector reports it, for example "500 E3 seats from 1 Jan to 31 Dec 2026 at 36 USD per seat per month". A renewal or an extra purchase adds a new line under the same license. "Purchased" quantity on screens is the total of the lines valid that day; the expiry date drives the License List and its timeline.
+One PO line of a license, imported each month from the SAP purchase file or typed by Staff for a purchase made outside SAP, for example "PO 4500012345 item 10: 500 GitHub Enterprise seats from 1 Mar 2027 to 29 Feb 2028". A renewal or an extra purchase is a new line under the same license. "Purchased" quantity on screens is the total of the lines valid that day; the end of the term is the expiry, which drives the License List and its timeline. Connectors no longer report quantities or terms.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `license_plan_id` | link → `license_plans` | Yes | The license |
+| `license_plan_id` | link → `license_plans` | Yes | The license, found by its name in SAP |
+| `org_unit_id` | link → `org_units` | Yes | The company that issued the PO, or bought outside SAP: a P&L or the group. It stays the same if the license later becomes shared or stops being shared |
 | `contract_id` | link → `contracts` | | Retired; always empty |
 | `quantity` | quantity | | How many were bought: seats, slots, tokens, cores … Empty = unknown, or unlimited |
 | `is_unlimited` | yes/no | Yes | "Yes" when there is no limit (usage-based pay-as-you-go). Such a line can never be over-allocated |
-| `valid_from` | date | Yes | Start of the term. When the source gives none, one year before the expiry |
-| `valid_to` | date | | Expiry or renewal date. Empty = no end |
-| `auto_renew` | yes/no | | Whether the term renews by itself, as the source says. Empty = not reported, shown as "—" |
-| `commercial_term` | choice | Yes | How it is paid: `monthly`, `yearly`, `multi_year`, `perpetual`, `prepaid_credit`, `pay_as_you_go` |
-| `unit_price` | money | | List price for the period of the term, as the source reports it. Empty = unknown |
+| `valid_from` | date | Yes | Start of the term on the PO line |
+| `valid_to` | date | | End of the term on the PO line: the expiry. Empty = no end |
+| `auto_renew` | yes/no | | Not in SAP; shown as "—" |
+| `commercial_term` | choice | Yes | How it is paid, from the length of the term: `monthly`, `yearly`, `multi_year`, `perpetual`, `prepaid_credit`, `pay_as_you_go` |
+| `unit_price` | money | | Net price on the PO line for the period of the term. Empty = unknown |
 | `price_per_qty` | quantity | Yes | How many units that price is for: 1 for a seat, 1,000,000 for "2.50 USD per 1 million tokens". Default 1 |
 | `currency` | text | Yes | Currency of the price |
-| `source` | choice | Yes | Always a connector (`api` or `log`) |
-| `external_ref` | text | | The term's id at the source, so a re-run sync updates the line instead of adding one |
-| `sync_run_id`, `import_batch_id` | link | | Connector run that last wrote it |
-| `created_by` | link → `user_accounts` | | Not used for synced lines |
+| `source` | choice | Yes | `import` (SAP purchase file) or `manual` (typed by Staff) |
+| `external_ref` | text | | PO number and item, such as `4500012345/10`, so a re-import updates the line instead of adding one. Empty for a line typed by Staff |
+| `pr_number` | text | | The purchase requisition the PO came from. Shown, not used in figures |
+| `import_batch_id` | link → `import_batches` | | The import that last wrote it |
+| `created_by` | link → `user_accounts` | | Staff who typed it; empty for imported lines |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
-The money figure "Purchased" is not this price: it is the accrued cost of the expenses (`expenses`, `cost_allocations`). The list price gives the monthly cost of the License List until the team decides between list price and accrued cost (open decision 19).
+The money figure "Purchased" is not this price: it is the accrued cost of the invoices (`expenses`, `cost_allocations`). The monthly cost of the License List is the accrued cost too (UC57, UC42).
 
 ### `entitlement_allocations`: quotas per unit (retired)
 
@@ -278,7 +281,7 @@ For each license: which kinds of data its connector delivers — purchases, hold
 |---|---|---|---|
 | `id` | number | Yes | Row number |
 | `license_plan_id` | link → `license_plans` | Yes | The license |
-| `data_type` | choice | Yes | Which data: `entitlement` (terms), `assignment` (holders), `usage`, `expense` (bills) |
+| `data_type` | choice | Yes | Which data: `assignment` (holders), `usage`. `entitlement` (terms) and `expense` (bills) are no longer read from connectors: they come from SAP |
 | `source_type` | choice | Yes | `api` or `log` |
 | `external_ref` | text | | The license's code in this kind of data, when it differs from `license_plans.external_ref`, such as the product name a usage report uses. Empty = the same. The connector is the license's own (`license_plans.connector_id`) |
 | `granularity` | choice: `per_subject`, `aggregate` | | For usage only: known per person, or only as a total. With totals only, seats show as "Not monitored" |
@@ -335,7 +338,7 @@ Exactly what the vendor's API returned, before ELMS reshapes it. Kept for 180 da
 
 ### `files`: uploaded files
 
-Invoices, budget plan Excel files, and CSV expense files. The file itself is kept in file storage; this table describes it.
+Invoices typed by Staff, budget plan Excel files, and SAP purchase Excel files. The file itself is kept in file storage; this table describes it.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -351,12 +354,12 @@ Invoices, budget plan Excel files, and CSV expense files. The file itself is kep
 
 ### `import_batches`: file imports
 
-Each import of a budget plan (UC33) or of expenses (UC07): who, when, which file, and how many rows. Nothing is written until the preview is checked and confirmed; one bad row rejects the whole file. A budget import has a target unit and months, and changes only the licenses in its file: in that unit and every unit under it, for those months, a license already planned is overwritten (its lines the file no longer has are removed) and a new one is added. Every other license keeps its plan. Example: the group imports a file with only GitHub rows for P&L A and P&L B; their Microsoft 365 and Jira plans do not change.
+Each import of a budget plan (UC33) or of SAP purchases (UC07): who, when, which file, and how many rows. Nothing is written until the preview is checked and confirmed; one bad row rejects the whole file. A budget import has a target unit and months, and changes only the licenses in its file: in that unit and every unit under it, for those months, a license already planned is overwritten (its lines the file no longer has are removed) and a new one is added. Every other license keeps its plan. Example: the group imports a file with only GitHub rows for P&L A and P&L B; their Microsoft 365 and Jira plans do not change. A purchase import adds or updates PO lines and invoices by their SAP numbers, so the same file twice adds nothing.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `import_type` | choice: `budget`, `expense` | Yes | What the file contains |
+| `import_type` | choice: `budget`, `purchase` | Yes | What the file contains: the budget plan, or PO lines and invoices from SAP |
 | `file_id` | link → `files` | Yes | The uploaded file |
 | `target_org_unit_id` | link → `org_units` | | Budget: the unit where, with every unit under it, the file changes the licenses it names |
 | `period_from`, `period_to` | date | | Budget: first and last month the file covers |
@@ -433,7 +436,7 @@ Usage per period: the days each holder was active (for the usage frequency), pea
 
 ### `plan_daily_snapshots`: daily photo of each license
 
-Every day ELMS writes down how many of each license were purchased and its list cost per month. Providers keep no history, so without these photos there would be no trends. A photo is never changed afterwards. The money figure "Purchased" is the accrued cost in `cost_allocations`, not this list cost.
+Every day ELMS writes down how many of each license were purchased and its list cost per month. A new SAP import or an edit overwrites the quantity of a PO line, so without these photos there would be no trends. A photo is never changed afterwards. The money figure "Purchased" is the accrued cost in `cost_allocations`, not this list cost.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -442,7 +445,7 @@ Every day ELMS writes down how many of each license were purchased and its list 
 | `license_plan_id` | link → `license_plans` | Yes | The license |
 | `purchased_qty` | quantity | | Total purchased that day. Empty = unknown, or unlimited |
 | `is_unlimited` | yes/no | Yes | "Yes" when an unlimited purchase was valid that day |
-| `effective_monthly_cost` | money | | List cost of a month at the prices of that day, in VND: the monthly cost of the License List. Empty = price or exchange rate unknown |
+| `effective_monthly_cost` | money | | List cost of a month at the PO prices of that day, in VND. Empty = price or exchange rate unknown |
 | `created_at` | date-time | Yes | When the photo was taken |
 
 ### `plan_unit_daily_snapshots`: daily photo per unit
@@ -505,7 +508,7 @@ Each confirmed budget import creates a new version for its target unit and month
 
 ### `budget_plan_lines`: the plan, line by line
 
-One line per unit, license, and month: "Block A1, Microsoft 365 E3, March 2027: 40 seats, 45 million VND". These are the **Plan** figures compared with Purchased and Used. A line belongs to the deepest unit it names, so a unit's Plan is its own lines plus those of the units under it, and no line is counted twice. A newer import does not delete old lines: it marks them as replaced. P&L Managers can change or add the lines of a shared license for their own units. A P&L can have its own "Microsoft 365 E3" and also a share of the group's shared "Microsoft 365 E3": the *Shared* column of the file tells which one a line plans.
+One line per unit, license, and month: "Block A1, Microsoft 365 E3, March 2027: 40 seats, 45 million VND". These are the **Plan** figures compared with Purchased and Used. A line belongs to the deepest unit it names, so a unit's Plan is its own lines plus those of the units under it, and no line is counted twice. A newer import does not delete old lines: it marks them as replaced. P&L Managers can change or add the lines of a shared license for their own units. The file has no *Shared* column: a line plans a share when its license is a shared one. If a P&L has its own "Microsoft 365 E3" and also a share of the group's shared "Microsoft 365 E3", Staff give its own license another name in SAP (`license_plans.sap_name`), otherwise its lines match two licenses and are rejected.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -513,8 +516,7 @@ One line per unit, license, and month: "Block A1, Microsoft 365 E3, March 2027: 
 | `budget_plan_id` | link → `budget_plans` | Yes | The version that wrote the line |
 | `org_unit_id` | link → `org_units` | Yes | The unit planned: group, P&L, block, department, or project. A shared license is planned by the group per P&L, or deeper; a group line plans the seats the group keeps free |
 | `license_name` | text | Yes | The license as written in the file |
-| `is_shared` | yes/no | Yes | The *Shared* column of the file. "Yes" = the line plans the share of a shared license the group owns; "No" = a license the P&L of the unit owns. Lines of the group unit are always "Yes" |
-| `license_plan_id` | link → `license_plans` | | The license the name and *Shared* match: the group's license for "Yes", the license of the unit's P&L for "No". Empty = "Not mapped". A name that matches two licenses is rejected in the preview |
+| `license_plan_id` | link → `license_plans` | | The license the name matches, by its name in SAP, among the licenses of the unit's P&L and the shared licenses. Empty = "Not mapped". A name that matches two licenses is rejected in the preview |
 | `month` | date | Yes | First day of the month planned |
 | `planned_quantity` | quantity | Yes | How many |
 | `planned_amount` | money | Yes | How much |
@@ -551,26 +553,27 @@ When the month closes the figures are frozen.
 
 The shares of a shared license are its charge-back: each company carries the seats its people hold.
 
-### `expenses`: invoices and charges
+### `expenses`: invoices
 
-What the bills say, on their dates, and the cost that the monthly accrual spreads (UC42). An invoice of 100 million for a 12-month term becomes 8,333,000 a month, rounded to the thousand VND, and 8,337,000 in the last month, so the months always add up to the invoice. An amount in USD is converted with the rate of the invoice date.
+The invoices from the SAP purchase file, each paying a PO line, and those Staff type for a purchase made outside SAP: what the bills say, on their dates, and the cost that the monthly accrual spreads (UC42). An invoice of 100 million for a 12-month term becomes 8,333,000 a month, rounded to the thousand VND, and 8,337,000 in the last month, so the months always add up to the invoice. An amount in USD is converted with the rate of the invoice date. A PO line without an invoice yet counts its seats, but its cost stays unknown.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `expense_date` | date | Yes | Invoice or charge date. Decides which month it belongs to |
-| `service_from`, `service_to` | date | | The license term the bill pays for. Empty = only the month of the bill |
-| `amount` | money | Yes | Amount. Negative only for a correction |
+| `expense_date` | date | Yes | Invoice date. Decides which month it belongs to and the exchange rate |
+| `service_from`, `service_to` | date | | The period the invoice pays for. Empty = the term of its PO line, or only the month of the invoice when it has none |
+| `amount` | money | Yes | Amount. Negative only for a credit note or a correction |
 | `currency` | text | Yes | Currency |
-| `license_plan_id` | link → `license_plans` | Yes | The license billed |
-| `org_unit_id` | link → `org_units` | Yes | The company that pays: the owner of the license when the expense is entered. It stays the same if the license later becomes shared or stops being shared |
+| `license_plan_id` | link → `license_plans` | Yes | The license billed: the license of its PO line |
+| `entitlement_line_id` | link → `entitlement_lines` | | The PO line it pays. Empty only for an invoice typed by Staff without a PO |
+| `org_unit_id` | link → `org_units` | Yes | The company that pays. It stays the same if the license later becomes shared or stops being shared |
 | `description` | text | | Description |
-| `invoice_file_id` | link → `files` | | Scan of the invoice |
+| `invoice_file_id` | link → `files` | | Scan of an invoice typed by Staff |
 | `accrual_schedule` | JSON | | The amount spread month by month over the term, such as `{"2026-01": 10000000, …}`. Months already closed never change |
-| `source` | choice | Yes | `manual` (typed by Staff), `import` (CSV), or a connector |
-| `external_ref` | text | | The bill's id at the source, so a re-run never adds it twice |
-| `sync_run_id`, `import_batch_id` | link | | Connector run or CSV import that last wrote it |
-| `created_by` | link → `user_accounts` | | Staff who entered it |
+| `source` | choice | Yes | `import` (SAP purchase file) or `manual` (typed by Staff) |
+| `external_ref` | text | | Invoice number and line in SAP, such as `5105600123/1`, so a re-import never adds it twice. Empty for an invoice typed by Staff |
+| `import_batch_id` | link → `import_batches` | | The import that last wrote it |
+| `created_by` | link → `user_accounts` | | Staff who typed it; empty for imported invoices |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
 ### `accounting_periods`: months of each company

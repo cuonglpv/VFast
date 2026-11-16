@@ -17,12 +17,12 @@ Diagrams use Mermaid flowcharts so they render in GitHub and GitLab Markdown. No
 
 ## 1. Level 1 — System Context
 
-ELMS is one system. It reads, for every P&L of the group, the licenses, terms, holders, and usage that the P&L's own API returns; it takes employees and units from ILVG, application usage from BCA, the budget plan from an Excel export of SAP, and the cost from the invoices Staff record; and it shows each Manager, in money, what is planned, purchased, used, and wasted. It never changes anything at a source (BR-01).
+ELMS is one system. It reads, for every P&L of the group, the licenses, holders, and usage that the P&L's own API returns; it takes employees and units from ILVG, application usage from BCA, the budget plan from an Excel export of SAP, and the purchases — PO lines for quantities and terms, invoices for cost — from another SAP export that Staff import, with a purchase made outside SAP entered by hand; and it shows each Manager, in money, what is planned, purchased, used, and wasted. It never changes anything at a source (BR-01).
 
 ```mermaid
 flowchart TB
     employee(["Employee<br/>Sees own licenses<br/>and whether they are used"])
-    staff(["Staff<br/>Sets up connectors, keeps the catalog,<br/>expenses, accrual, exchange rates"])
+    staff(["Staff<br/>Sets up connectors, keeps the catalog,<br/>imports purchases, accrual, exchange rates"])
     manager(["Manager<br/>Any unit, the group included:<br/>licenses, usage, waste, budget plan"])
     admin(["Admin<br/>Users, organization, roles,<br/>permissions; group overview"])
 
@@ -31,17 +31,17 @@ flowchart TB
     pnl["P&L license APIs<br/>[External systems]<br/>one per company and provider:<br/>licenses, terms, holders, activity, usage"]
     ilvg["ILVG<br/>[External system]<br/>employees, units, projects, transfers"]
     bca["BCA<br/>[External system]<br/>application usage on company machines"]
-    files["Budget and invoice files<br/>[Input]<br/>SAP budget export (Excel), expense CSV"]
+    files["SAP files<br/>[Input]<br/>budget plan (Excel), PR, PO, and invoices (Excel)"]
 
     employee -- "Views own licenses<br/>[HTTPS]" --> elms
-    staff -- "Connectors, catalog, expenses<br/>[HTTPS]" --> elms
+    staff -- "Connectors, catalog, purchases<br/>[HTTPS]" --> elms
     manager -- "Analyses, imports the budget<br/>[HTTPS]" --> elms
     admin -- "Manages access<br/>[HTTPS]" --> elms
     elms -- "Reads at each connector's interval<br/>[read-only, license data contract]" --> pnl
     elms -- "Reads daily [read-only]" --> ilvg
     elms -- "Reads daily [read-only]" --> bca
     manager -. "Uploads budget<br/>[Excel]" .-> files
-    staff -. "Uploads expenses<br/>[CSV]" .-> files
+    staff -. "Uploads SAP purchases<br/>[Excel]" .-> files
     files -. "Preview, then confirm" .-> elms
 
     classDef person fill:#0F67B1,stroke:#0B4F8A,color:#fff
@@ -57,7 +57,7 @@ flowchart TB
 | Person | Role in ELMS | Data scope |
 |---|---|---|
 | Employee | `EMPLOYEE` — every employee | Own licenses only, across all their emails, without price or cost |
-| Staff | `STAFF` — license management team | The companies assigned to them (the group for group-level Staff): connectors, sync, catalog, shared licenses, expenses, accrual, exchange rates; no usage or waste analysis |
+| Staff | `STAFF` — license management team | The companies assigned to them (the group for group-level Staff): connectors, sync, catalog, shared licenses, purchases, accrual, exchange rates; no usage or waste analysis |
 | Manager | `MANAGER` — manager of a unit at any level, the group included | The units assigned to them and everything under them |
 | Admin | `ADMIN` — system operator | Users, organization, roles, permissions; the group overview and the dashboards, read-only, down to each license (BR-16) |
 
@@ -67,11 +67,11 @@ Each account has exactly one role (BR-17). The full capability matrix is in [Use
 
 | System | What ELMS takes | Delivery |
 |---|---|---|
-| P&L license API (one per company and provider) | Licenses, terms and purchased quantity, holders, last activity, active days, consumption | An API each P&L provides for its own data, in the license data contract (ECS, BR-19); read by one generic connector |
+| P&L license API (one per company and provider) | Licenses, holders, last activity, active days, consumption | An API each P&L provides for its own data, in the license data contract (ECS, BR-19); read by one generic connector |
 | ILVG | Employees, their unit in five levels, their projects, transfers | API, synced daily like a connector |
 | BCA | Application usage per employee and day (fields assumed until its API is known) | API, synced daily like a connector |
 | SAP | Budget plan per unit, license, and month | Excel export in the ELMS template, imported by Managers (UC33) |
-| Invoices | The cost that becomes Purchased | Entered or imported by Staff (UC07) |
+| SAP purchases | PO lines: purchased quantity and term; invoices: the cost that becomes Purchased | Excel export in the ELMS template, imported by Staff each month; a purchase made outside SAP entered by hand (UC07) |
 
 Behind its API, each P&L reads its providers (Microsoft 365, Atlassian, Adobe, GitHub, AI services …); ELMS never calls a provider directly. A P&L whose API is not ready yet has simulated data, labelled as mock on every screen (BR-14). Data fields of each source: [Data fields research](09-data-fields-research.md).
 
@@ -228,16 +228,16 @@ flowchart LR
     identity["identity<br/>UC19, UC21, UC22, UC24<br/>accounts, roles, permissions, sessions"]
     organization["organization<br/>UC20, ILVG sync<br/>five-level tree, employees, projects,<br/>Manager and Staff scope, holder identity"]
     catalog["catalog<br/>UC01, UC02, UC04, UC27, UC28,<br/>UC47, UC57–UC59, UC61<br/>software catalog, licenses, terms,<br/>owner unit, shared licenses"]
-    ingestion["ingestion<br/>UC38, UC55, UC56, UC60, UC26<br/>connectors, sync runs, coverage,<br/>raw records, budget and expense imports"]
+    ingestion["ingestion<br/>UC38, UC55, UC56, UC60, UC26<br/>connectors, sync runs, coverage,<br/>raw records, budget and purchase imports"]
     usage["usage<br/>UC37, UC08, UC48–UC51, UC32, UC23<br/>assignments, usage records, snapshots,<br/>seat status, BCA usage"]
-    finance["finance<br/>UC33, UC05, UC06, UC42, UC07,<br/>UC62, UC34, UC09<br/>budget versions, expenses, accrual,<br/>rates, cost split"]
+    finance["finance<br/>UC33, UC05, UC06, UC42, UC07,<br/>UC62, UC34, UC09<br/>budget versions, purchases, accrual,<br/>rates, cost split"]
     optimization["optimization<br/>UC10, UC11, UC35, UC43, UC52–UC54<br/>detection, waste flag, waste analysis"]
     analytics["analytics<br/>UC36, UC44, UC45, UC15, UC16, UC18<br/>read models only"]
     audit["audit (shared)<br/>BR-15<br/>append-only audit log"]
 
     ingestion -- "normalize into" --> catalog
     ingestion -- "normalize into" --> usage
-    ingestion -- "budget, expenses into" --> finance
+    ingestion -- "budget, purchases into" --> finance
     finance -. "reads seat counts" .-> usage
     optimization -. "reads only" .-> usage
     optimization -. "reads only" .-> finance
@@ -340,7 +340,7 @@ sequenceDiagram
     A-->>M: figures with dataDate and data source (BR-14)
 ```
 
-Other jobs: `IlvgSyncJob` and `BcaSyncJob` (daily); `ImportConfirmJob` writes a confirmed budget version or expense file in one transaction, once per preview key (BR-36); `MonthCloseJob` closes, on day 10, the previous month of every company Staff have not closed (UC42). Records that fail a check are rejected one by one, with the reason kept in `raw_records.normalize_error`; a record count that does not match `total_count` fails the whole run. All jobs are idempotent, never overlap, and run as `SystemUser`, so the audit actor is `system`.
+Other jobs: `IlvgSyncJob` and `BcaSyncJob` (daily); `ImportConfirmJob` writes a confirmed budget version or purchase file in one transaction, once per preview key (BR-36); `MonthCloseJob` closes, on day 10, the previous month of every company Staff have not closed (UC42). Records that fail a check are rejected one by one, with the reason kept in `raw_records.normalize_error`; a record count that does not match `total_count` fails the whole run. All jobs are idempotent, never overlap, and run as `SystemUser`, so the audit actor is `system`.
 
 ## 6. Deployment view
 

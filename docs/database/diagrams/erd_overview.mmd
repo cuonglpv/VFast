@@ -22,6 +22,7 @@ erDiagram
     software_products ||--o{ product_links : links
     org_units ||--o{ license_plans : owns
     license_plans ||--o{ entitlement_lines : "purchased as"
+    org_units ||--o{ entitlement_lines : buys
     vendors |o--o{ connectors : "read by"
     org_units |o--o{ connectors : "company of"
     connectors ||--o{ license_plans : reports
@@ -49,6 +50,7 @@ erDiagram
     license_plans ||--o{ cost_allocations : "cost of"
     org_units ||--o{ cost_allocations : carries
     license_plans ||--o{ expenses : "billed for"
+    entitlement_lines |o--o{ expenses : "paid by"
     org_units ||--o{ expenses : pays
     org_units ||--o{ accounting_periods : closes
     detection_runs ||--o{ detection_results : produces

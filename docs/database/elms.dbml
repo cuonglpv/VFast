@@ -3,7 +3,8 @@
 // Database design (DBML) - design status: TARGET, nothing implemented yet
 //
 // Sources: README.md, docs/01-research-top-down.md, docs/02-use-cases.md
-//          (third revision, 2026-11-15), docs/08-feature-list.md.
+//          (third revision, 2026-11-15, and the decisions of 2026-11-16),
+//          docs/08-feature-list.md.
 // UCxx / BR-xx / Ax in the notes refer to those documents. Dxx refers to the
 // decisions below; docs/database/README.md explains each one.
 //
@@ -14,14 +15,15 @@
 //
 // Business model (docs/02, P&L API model). ELMS reads licenses, holders, and
 // usage from one usage connector per company and provider, employees and units
-// from ILVG, application usage from BCA, and the budget plan from an Excel
-// import. Nobody enters a license in ELMS (BR-01).
+// from ILVG, application usage from BCA, the budget plan from an Excel
+// import, and the purchases (PO lines and invoices) from a SAP Excel import or
+// a hand entry. Nobody enters a license in ELMS (BR-01).
 //
 // Decisions kept from the first design:
 //   D1.  A "license" is a license plan (one tier or SKU, e.g. Microsoft 365 E3)
 //        reported by one connector for one company. Holders, usage, budget
-//        lines, and expenses point to the plan; an entitlement line is one
-//        purchase or term of that plan as the connector reports it.
+//        lines, PO lines, and invoices point to the plan; an entitlement line
+//        is one PO line of that plan, from SAP or entered by hand (D50).
 //   D2.  Employees (directory) and user accounts (login) are separate tables.
 //   D5.  Two cost views: billed = expenses (invoices); effective = the monthly
 //        cost split to units in cost_allocations. Since D33 the effective cost
@@ -78,9 +80,9 @@
 //   D32. Cost split into used, wasted, and not evaluated (BR-24) on
 //        cost_allocations; unassigned seats go to unallocated under the owner
 //        unit, unplaced holders to unknown_unit (BR-06, BR-21).
-//   D33. Purchased = accrued cost of the invoices (BR-09, UC42): an expense
-//        names the term it pays for (service_from, service_to) and keeps its
-//        monthly spread (accrual_schedule), rounded to the thousand VND
+//   D33. Purchased = accrued cost of the invoices (BR-09, UC42): an invoice
+//        (expenses) pays a PO line and is spread over its term (D50); it keeps
+//        its monthly spread (accrual_schedule), rounded to the thousand VND
 //        (BR-25); months are closed per company.
 //   D34. Connector sync interval and pause (BR-32): sync_interval_hours,
 //        paused_at, reconfigured_at; a scheduled run while paused is a
@@ -106,7 +108,7 @@
 //        the target, every unit under it, and the months, each license of the
 //        file replaces its own lines (a line of that license the file no
 //        longer has is removed); licenses not in the file keep their lines. A
-//        license of the file is its name plus the Shared column (D45).
+//        license of the file is its name (D51).
 //   D43. Concurrent budget imports (BR-36): based_on_budget_plan_id is the
 //        latest version of any unit at preview; the confirm is refused when a
 //        line of its scope was written or superseded by a later version, so an
@@ -120,9 +122,7 @@
 //        of the month (cost_allocations.filled_days). The cost of a day that
 //        cannot be split — no complete day in the month, or Purchased quantity
 //        Unknown — is Not evaluated under the owner.
-//   D45. A P&L can hold its own license and a share of a shared license with
-//        the same name: the budget file has a Shared column
-//        (budget_plan_lines.is_shared) that tells which one a line plans.
+//   D45. Superseded by D51: the budget file has no Shared column.
 //   D46. Owner change (UC47): closed months keep the owner they were computed
 //        with; open months follow the new owner. An expense keeps the company
 //        that paid it. A P&L month that carries the cost of a shared license
@@ -135,6 +135,19 @@
 //   D49. Connector status is computed per license (BR-32) from its own
 //        collection_coverage, so a license added to a running connector is
 //        Pending and a license that failed in a partial run is Failed.
+//
+// Decisions of 2026-11-16 (purchases from SAP):
+//   D50. Purchases come from SAP (BR-10, UC07). entitlement_lines are the PO
+//        lines: quantity, term, company (org_unit_id), PO number and item
+//        (external_ref), and PR (pr_number), imported from the SAP purchase
+//        file or entered by hand. expenses are the invoices, each paying a PO
+//        line (entitlement_line_id) unless entered by hand without one.
+//        Connectors no longer give quantities, terms, or billing.
+//   D51. No Shared column in the budget file (supersedes D45). The license of
+//        a budget line or PO line is found by its name in SAP
+//        (license_plans.sap_name, else external_name) among the licenses of
+//        the line's P&L and the shared licenses; a P&L's own license with the
+//        name of a shared one gets another sap_name (BR-26).
 //
 // Conventions:
 //   - Target DBMS: PostgreSQL 15+. Surrogate keys are bigint identity columns;
@@ -172,8 +185,8 @@
 //   - sync_run_id and import_batch_id on a row name the run or import that wrote
 //     it last; source is the source of that write. Licenses, holders, and usage
 //     come from connectors only (source api or log, enforced by the
-//     chk_*_connector_only checks); import and manual remain for budget lines
-//     and expenses.
+//     chk_*_connector_only checks); import and manual are for budget lines and
+//     purchases (entitlement_lines, expenses, D50).
 //   - Connector messages live at the level they describe:
 //       whole run failed           sync_runs.error_message
 //       one plan, kind, and day    collection_coverage.error_code, error_message
@@ -215,8 +228,8 @@ Enum permission_action {
 Enum data_source {
   api [note: 'Collected by a connector from a provider API, ILVG, or BCA']
   log [note: 'Collected by a connector from logs (license server, VPN)']
-  import [note: 'File imported by a user: budget plan (UC33), expenses (UC07)']
-  manual [note: 'Typed in by Staff: expenses only (UC07)']
+  import [note: 'File imported by a user: budget plan (UC33), SAP purchases (UC07)']
+  manual [note: 'Typed in by Staff: purchases made outside SAP (UC07)']
 }
 
 Enum org_level {
@@ -228,7 +241,7 @@ Enum org_level {
 }
 
 Enum connector_kind {
-  usage [note: 'Usage connector of one company and provider (UC55): licenses, holders, usage, terms']
+  usage [note: 'Usage connector of one company and provider (UC55): licenses, holders, usage']
   ilvg [note: 'ILVG: employees and their units (system process)']
   bca [note: 'BCA: application usage of employees on company machines (BR-23)']
 }
@@ -271,15 +284,15 @@ Enum commercial_term {
 }
 
 Enum data_kind {
-  entitlement [note: 'Purchased quantity and validity']
+  entitlement [note: 'Not read from connectors since D50: purchased quantity and terms come from the SAP PO lines']
   assignment [note: 'Who holds the license']
   usage [note: 'Activity, sessions, consumption, deployed units']
-  expense [note: 'Billing data: expenses and invoices']
+  expense [note: 'Not read from connectors since D50: invoices come from SAP']
 }
 
 Enum import_kind {
   budget [note: 'Budget plan from the ELMS Excel template (UC33, BR-08)']
-  expense [note: 'Expenses (UC07)']
+  purchase [note: 'SAP purchase file: PO lines and invoices (UC07, D50)']
 }
 Enum usage_granularity {
   per_subject [note: 'Usage known per user, device, project, or key']
@@ -366,7 +379,7 @@ Table org_units {
   id bigint [pk, increment]
   parent_id bigint [ref: > org_units.id, note: 'NULL only for the group; otherwise the unit one level up']
   level org_level [not null, note: 'group, pnl, block, department, or project (BR-21)']
-  code varchar(50) [not null, unique, note: 'Unit code from ILVG; the key the budget file and connectors use (BR-08)']
+  code varchar(50) [not null, unique, note: 'Unit code from ILVG; the key the budget file, the SAP purchase file, and connectors use (BR-08, BR-10)']
   name varchar(200) [not null]
   is_active boolean [not null, default: true]
   sync_run_id bigint [ref: > sync_runs.id, note: 'ILVG run that wrote the unit last; NULL for the seeded group row']
@@ -671,6 +684,7 @@ Table license_plans {
   connector_id bigint [not null, ref: > connectors.id, note: 'Usage connector that reports the license for its company (D26)']
   external_name varchar(200) [not null, note: 'License name as the source gives it, or as Staff typed it on the connector until the first sync (UC55)']
   external_ref varchar(200) [note: 'Id of the license at the source, e.g. Microsoft Graph skuId; NULL until the first sync']
+  sap_name varchar(200) [note: 'Name SAP files use for the license when it differs from external_name (UC01, D51); NULL = external_name']
   product_id bigint [ref: > software_products.id, note: 'Software of the catalog (UC01, BR-38). NULL = Not mapped, grouped under Uncategorized']
   license_type license_type [note: 'monthly, yearly, or usage_based as the source reports it (BR-02); NULL = Unknown until the first sync']
   archetype license_archetype [not null, default: 'allocation', note: 'How it is counted: seats (allocation), sessions, consumption, or capacity']
@@ -697,8 +711,13 @@ Table license_plans {
     reports for its company, such as "Microsoft 365 E3" of company A. Staff
     declare it on the connector (UC55); it is Pending until the first sync
     (BR-32) and then carries the external_ref and license type of the source.
-    Holders, usage, budget lines, and expenses point to it; it stays the same
-    across renewals. Purchased = sum of its entitlement lines active on a day.
+    Holders, usage, budget lines, PO lines (entitlement_lines), and invoices
+    (expenses) point to it; it stays the same across renewals. Purchased
+    quantity = sum of its PO lines active on a day.
+    Name in SAP (D51): budget lines and PO lines find the license by
+    lower(coalesce(sap_name, external_name)) among the licenses of their P&L
+    and the shared licenses. Staff set sap_name when SAP uses another name
+    (UC01), for example a P&L's own license that has the name of a shared one.
     Software and category (BR-38): product_id maps it to the catalog (UC01).
     Mapping one name maps every license of the same provider with the same
     name (lower(external_name)), in every company; a new name is Not mapped.
@@ -713,8 +732,8 @@ Table license_plans {
     external_ref where external_ref is not null.
     App rule: owner_org_unit_id is the P&L of the connector or the group; a
     row with duplicate_of_id is left out of every figure; the vendor of
-    product_id is the vendor of the connector; changing product_id or
-    owner_org_unit_id is written to audit_logs (BR-15). Changing
+    product_id is the vendor of the connector; changing product_id, sap_name,
+    or owner_org_unit_id is written to audit_logs (BR-15). Changing
     owner_org_unit_id recomputes the open months under the new owner; closed
     months keep the owner they were computed with (D46).
   '''
@@ -775,28 +794,30 @@ Table contracts {
 
 Table entitlement_lines {
   id bigint [pk, increment]
-  license_plan_id bigint [not null, ref: > license_plans.id]
+  license_plan_id bigint [not null, ref: > license_plans.id, note: 'License the PO line names, found by its name in SAP (D51)']
+  org_unit_id bigint [not null, ref: > org_units.id, note: 'Company that issued the PO, or bought outside SAP: a P&L or the group (BR-10); it does not follow a later owner change (D46)']
   contract_id bigint [ref: > contracts.id, note: 'Retired (D38); always NULL']
-  quantity numeric(20,4) [note: 'Purchased quantity of the term. NULL = Unknown, unless is_unlimited']
+  quantity numeric(20,4) [note: 'Quantity of the PO line. NULL = Unknown, unless is_unlimited']
   is_unlimited boolean [not null, default: false, note: 'True for a term bought without a quota (e.g. usage-based pay-as-you-go): quantity is NULL and it can never be over-allocated (BR-07)']
-  valid_from date [not null, note: 'Start of the term; when the source gives none, one year before valid_to (BR-33)']
-  valid_to date [note: 'Expiry or renewal date, inclusive. NULL = open-ended']
-  auto_renew boolean [note: 'As the source reports it; NULL = not reported, shown as "-" (UC04)']
-  commercial_term commercial_term [not null, note: 'How the term is paid; it also fixes the period of unit_price']
-  unit_price numeric(18,4) [note: 'List price of price_per_qty units for the period of the commercial term, as the source reports it. NULL = Unknown']
+  valid_from date [not null, note: 'Start of the term on the PO line (BR-10)']
+  valid_to date [note: 'End of the term on the PO line, inclusive: the expiry (BR-33). NULL = open-ended']
+  auto_renew boolean [note: 'Not in SAP; NULL = shown as "-" (UC04)']
+  commercial_term commercial_term [not null, note: 'How the term is paid, from the length of the term (a month = monthly, a year = yearly, longer = multi_year); it also fixes the period of unit_price']
+  unit_price numeric(18,4) [note: 'Net price of price_per_qty units on the PO line for the period of the commercial term. NULL = Unknown']
   price_per_qty numeric(20,4) [not null, default: 1, note: 'How many units unit_price is quoted for: 1 for a seat, 1000000 for "2.50 USD per 1M tokens"']
   currency char(3) [not null]
-  source data_source [not null, default: 'api', note: 'Source of the row (BR-14): a connector']
-  external_ref varchar(200) [note: 'Subscription or term id at the source']
-  sync_run_id bigint [ref: > sync_runs.id]
+  source data_source [not null, default: 'import', note: 'Source of the row (BR-14): import (SAP purchase file) or manual (hand entry)']
+  external_ref varchar(200) [note: 'PO number and item in SAP, e.g. 4500012345/10: the key a re-import updates (BR-36). NULL for a hand entry']
+  pr_number varchar(50) [note: 'Purchase requisition the PO came from, as SAP gives it; shown in UC07, not used in figures']
   import_batch_id bigint [ref: > import_batches.id]
-  created_by bigint [ref: > user_accounts.id]
+  created_by bigint [ref: > user_accounts.id, note: 'Staff who entered a hand line; NULL for an imported line']
   created_at timestamptz [not null, default: `now()`]
   updated_at timestamptz [not null, default: `now()`]
 
   indexes {
     (license_plan_id, valid_from, valid_to)
     valid_to
+    org_unit_id
   }
 
   checks {
@@ -805,26 +826,33 @@ Table entitlement_lines {
     `valid_to is null or valid_to >= valid_from` [name: 'chk_entitlement_lines_validity']
     `unit_price is null or unit_price >= 0` [name: 'chk_entitlement_lines_unit_price']
     `price_per_qty > 0` [name: 'chk_entitlement_lines_price_per_qty']
-    `source in ('api', 'log')` [name: 'chk_entitlement_lines_connector_only']
-    `(source in ('api', 'log')) = (sync_run_id is not null)` [name: 'chk_entitlement_lines_sync_provenance']
+    `source in ('import', 'manual')` [name: 'chk_entitlement_lines_purchase_source']
     `(source = 'import') = (import_batch_id is not null)` [name: 'chk_entitlement_lines_import_provenance']
+    `(source = 'import') = (external_ref is not null)` [name: 'chk_entitlement_lines_po_ref']
+    `source = 'import' or pr_number is null` [name: 'chk_entitlement_lines_manual_no_pr']
   }
 
   Note: '''
-    One term or purchase of a license as its connector reports it: quantity,
-    validity, auto-renew, and list price. It gives Purchased quantity
-    (UC57, BR-34), the license terms (UC04), and the expiry (BR-33, UC58).
-    A renewal or an extra purchase is a new line under the same license.
+    One PO line of a license (BR-10, D50): quantity, term, and price, from the
+    SAP purchase file (UC07) or entered by hand by Staff for a purchase made
+    outside SAP. It gives Purchased quantity (UC57, BR-34), the license terms
+    (UC04), and the expiry (BR-33, UC58). A renewal or an extra purchase is a
+    new PO line under the same license. Connectors do not report quantities or
+    terms.
     A line is active on a day when valid_from <= day and (valid_to is null or
     valid_to >= day). A renewal starts the day after the previous line ends,
     so the boundary day is never counted twice.
-    The list monthly cost (License List, open decision 19) is computed from
-    unit_price / price_per_qty and the commercial term and frozen daily in
-    plan_daily_snapshots. Purchased in money is the accrued cost of the
-    expenses (D33, cost_allocations), not this price.
-    Partial unique: one line per term at the source (unique on
-    license_plan_id, external_ref where external_ref is not null), so a re-run
-    sync updates the line instead of adding one (A3, BR-36).
+    The list monthly cost is computed from unit_price / price_per_qty and the
+    commercial term and frozen daily in plan_daily_snapshots. Purchased in
+    money is the accrued cost of the invoices (expenses, D33), not this price.
+    A change to a line, by a re-import or a hand edit, changes only the days
+    not frozen yet (plan_daily_snapshots, D9).
+    Partial unique: one line per PO line of a company (unique on org_unit_id,
+    external_ref where external_ref is not null), so a re-import updates the
+    line instead of adding one (BR-36).
+    App rule: org_unit_id is one of the companies of the Staff member who
+    imports or enters the line (BR-16); license_plan_id is a license of that
+    company or a shared license, matched by name (D51).
   '''
 }
 Table entitlement_allocations {
@@ -1110,8 +1138,9 @@ Table files {
   }
 
   Note: '''
-    Uploaded files: expense invoices (PDF or image, at most 10 MB, BR-10),
-    budget plan Excel files (UC33), and CSV expense files. A budget file that
+    Uploaded files: invoice files of hand entries (PDF or image, at most
+    10 MB, BR-10), budget plan Excel files (UC33), and SAP purchase Excel
+    files (UC07). A budget file that
     changes nothing is told by its preview, not by checksum (BR-36). The service
     checks the content type from the bytes, not from the name; files are
     served only through the API with the permission of the row they belong to.
@@ -1153,15 +1182,14 @@ Table import_batches {
   }
 
   Note: '''
-    One import: preview, then confirm (UC33 budget, UC07 expenses). This is
+    One import: preview, then confirm (UC33 budget, UC07 purchases). This is
     the import history "who, when, file, target, months, rows".
     Budget import (BR-08, BR-36, D29, D30, D42, D43):
     - scope of the import = the target and every unit under it, x the months,
-      x the licenses of the file (name and Shared column, D45). Licenses not
+      x the licenses of the file (by name, D51). Licenses not
       in the file and units outside the target are never touched.
     - preview: parse the file, check every row (unit codes in the hierarchy
-      and inside the target subtree, one row per unit, license, Shared, and
-      month), compare with the lines in force of the scope, and count rows to
+      and inside the target subtree, one row per unit, license, and month), compare with the lines in force of the scope, and count rows to
       add (no line in force), replace (another quantity, amount, or
       currency), remove (a line in force of the scope the file no longer
       has), and reject; store based_on = the latest budget_plans id of any
@@ -1179,6 +1207,16 @@ Table import_batches {
       budget_plan_id. Lines that do not change stay as they are.
       A second confirm with the same preview_key returns this result again.
     - a preview older than budget_preview_valid_minutes must be made again.
+    Purchase import (UC07, BR-10, BR-36, D50):
+    - preview: parse the PO lines and invoices; each row's company is one of
+      the importer's companies; each PO line finds its license by name (D51);
+      each invoice finds its PO line, in the file or imported before; count
+      rows to add (new PO number and item, or new invoice), update (another
+      quantity, term, price, or amount), and reject.
+    - confirm: in one transaction, upsert entitlement_lines and expenses by
+      (org_unit_id, external_ref); a change that falls in a closed month is
+      not written there, its difference goes to the next open month (UC42).
+      A second confirm with the same preview_key returns this result again.
     App rule: the target is one of the importer's units or under one
     (user_org_units, BR-16).
   '''
@@ -1360,9 +1398,9 @@ Table plan_daily_snapshots {
 
   Note: '''
     Daily Purchased quantity and list monthly cost per plan, kept by ELMS
-    because providers give no history and a sync overwrites the quantity of a
-    line, so past days cannot be recomputed from entitlement_lines. Feeds the
-    License List (UC57, monthly cost per open decision 19), trends, and the
+    because a re-import or an edit overwrites the quantity of a PO line, so
+    past days cannot be recomputed from entitlement_lines. Feeds the
+    License List (UC57), trends, and the
     seat basis of cost_allocations. Purchased in money is the accrual (D33).
     Rows are frozen once written; a later rate or price correction changes only
     new days (D9, D12). Amounts are converted with the latest exchange rate
@@ -1422,10 +1460,10 @@ Table plan_unit_daily_snapshots {
 }
 Table employee_app_usage {
   id bigint [pk, increment]
-  employee_id bigint [ref: > employees.id, note: 'Employee BCA reports; NULL = BCA identity not matched (open decision 3)']
+  employee_id bigint [ref: > employees.id, note: 'Employee BCA reports; NULL = BCA identity not matched']
   bca_identity varchar(320) [not null, note: 'Identity BCA gives (machine user or email), lowercase']
   application_name varchar(200) [not null, note: 'Application as BCA names it']
-  active_minutes int [note: 'Minutes the application was in use in the period, as assumed (open decision 6)']
+  active_minutes int [note: 'Minutes the application was in use in the period, as assumed (UC32)']
   product_id bigint [ref: > software_products.id, note: 'Catalog software the application maps to, set by the mapping of UC01; NULL = not mapped']
   period_start date [not null]
   period_end date [not null, note: 'Inclusive']
@@ -1457,8 +1495,8 @@ Table employee_app_usage {
     when the license has no usage of its own, and only by the Managers of the
     employee's units (BR-16).
     A member with no machine reporting to BCA has no row: "Not tracked",
-    never "not used" (BR-04). Assumed until the BCA API is known (open
-    decisions 3, 6): BCA reports per day the domain account of the user, which
+    never "not used" (BR-04). Assumed until the BCA API is known (UC32):
+    BCA reports per day the domain account of the user, which
     carries the ILVG employee code, and each application with its active
     minutes, the machines of one person added together; ELMS matches the
     employee by code, otherwise by email. A sync of the same period replaces
@@ -1509,8 +1547,7 @@ Table budget_plan_lines {
   budget_plan_id bigint [not null, ref: > budget_plans.id]
   org_unit_id bigint [not null, ref: > org_units.id, note: 'Deepest unit the line names (group, P&L, block, department, project), inside the target subtree. A shared license is planned per P&L; a group line plans its free seats (BR-26)']
   license_name varchar(200) [not null, note: 'License as written in the file']
-  is_shared boolean [not null, default: false, note: 'Shared column of the file: true = the line plans the share of a shared license (owner the group); false = a license the P&L of the unit owns (D45)']
-  license_plan_id bigint [ref: > license_plans.id, note: 'License the name and Shared column match (see the note); NULL = Not mapped (UC33)']
+  license_plan_id bigint [ref: > license_plans.id, note: 'License the name matches (see the note); NULL = Not mapped (UC33)']
   month date [not null, note: 'First day of the month planned']
   planned_quantity numeric(20,4) [not null]
   planned_amount numeric(18,2) [not null]
@@ -1520,7 +1557,7 @@ Table budget_plan_lines {
   created_at timestamptz [not null, default: `now()`]
 
   indexes {
-    (budget_plan_id, org_unit_id, license_name, is_shared, month) [unique, name: 'uq_budget_plan_lines_version_row']
+    (budget_plan_id, org_unit_id, license_name, month) [unique, name: 'uq_budget_plan_lines_version_row']
     (org_unit_id, month)
     license_plan_id
   }
@@ -1540,23 +1577,23 @@ Table budget_plan_lines {
     A plan is judged where it is set (BR-37): a license planned at a unit above
     the one being viewed is shown there as "Planned at <unit>" and left out of
     its variance.
-    Partial unique: one line in force per unit, license, Shared, and month
-    (unique on org_unit_id, lower(license_name), is_shared, month where
+    Partial unique: one line in force per unit, license, and month
+    (unique on org_unit_id, lower(license_name), month where
     superseded_at is null). The migration makes the version-row index
     case-insensitive too (lower(license_name)), so a file with "M365 E3" and
     "m365 e3" for the same unit and month is rejected in the preview.
     Shared licenses (BR-26): the Manager of the group plans one line per P&L
-    that uses the license, or deeper, with Shared = yes, so each P&L's Plan
-    includes its share and is compared with its charge-back; a group line
-    plans the seats the group keeps free. P&L Managers can then change or add
-    the lines of their units. A P&L can hold its own license and a share of a
-    shared license with the same name; the Shared column tells them apart
-    (D45).
+    that uses the license, or deeper, so each P&L's Plan includes its share
+    and is compared with its charge-back; a group line plans the seats the
+    group keeps free. P&L Managers can then change or add the lines of their
+    units. The file has no Shared column (D51): a line plans a share when its
+    license is a shared one.
     Mapping to license_plan_id, among active licenses that are not
-    duplicates, by lower(external_name): is_shared false -> the license
-    owned by the P&L of org_unit_id; is_shared true -> the license owned by
-    the group. No match -> Not mapped; more than one -> the row is rejected in
-    the preview.
+    duplicates, by lower(coalesce(sap_name, external_name)): the licenses
+    owned by the P&L of org_unit_id (none for a group line) and the licenses
+    owned by the group. No match -> Not mapped; more than one -> the row is
+    rejected in the preview, until Staff give one of them another sap_name
+    (UC01).
     App rule: confirming an import supersedes, in the same transaction, only
     the lines in force of its scope that it replaces or removes, then inserts
     the added and replaced lines (D42, BR-36). A line of the group unit is a
@@ -1597,7 +1634,7 @@ Table cost_allocations {
     Purchased, Used, Wasted, and Not evaluated of a license for one month,
     split to units (UC06, BR-06, BR-09, BR-24, D32). Source of the Usage
     screen, the waste analysis, the financial dashboard, and variance.
-    Cost of the month = the accrual of the expenses of the license for that
+    Cost of the month = the accrual of the invoices of the license for that
     month (expenses.accrual_schedule, D33).
     Split, by method:
       per_seat   day by day (seat-days, D44): each day carries cost / days in
@@ -1626,21 +1663,21 @@ Table cost_allocations {
 }
 Table expenses {
   id bigint [pk, increment]
-  expense_date date [not null, note: 'Invoice or charge date; decides the closed month (BR-10)']
-  service_from date [note: 'First day of the license term the expense pays for; NULL = the month of expense_date (D33)']
-  service_to date [note: 'Last day of that term, inclusive']
-  amount numeric(18,2) [not null, note: 'Negative only for a correcting entry']
+  expense_date date [not null, note: 'Invoice date; decides the closed month and the exchange rate (BR-05, BR-10)']
+  service_from date [note: 'First day of the period the invoice pays for; NULL = the term of its PO line, or the month of expense_date without one (D33)']
+  service_to date [note: 'Last day of that period, inclusive']
+  amount numeric(18,2) [not null, note: 'Negative only for a credit note or a correcting entry']
   currency char(3) [not null]
-  license_plan_id bigint [not null, ref: > license_plans.id]
-  org_unit_id bigint [not null, ref: > org_units.id, note: 'Company that pays the invoice: the owner unit of the license when the expense is entered; it does not follow a later owner change (BR-10, D46)']
+  license_plan_id bigint [not null, ref: > license_plans.id, note: 'License of the PO line, or the license a hand entry names']
+  entitlement_line_id bigint [ref: > entitlement_lines.id, note: 'PO line the invoice pays (BR-10); NULL only for a hand entry without PO']
+  org_unit_id bigint [not null, ref: > org_units.id, note: 'Company that pays the invoice; it does not follow a later owner change (BR-10, D46)']
   description text
   invoice_file_id bigint [ref: > files.id]
-  accrual_schedule jsonb [note: 'Monthly spread of the amount over the term, e.g. {"2026-01": 10000000, ...}; months of closed periods are frozen (BR-25, UC42)']
-  source data_source [not null, default: 'manual']
-  external_ref varchar(200) [note: 'Id of the billing record at the source, for idempotent sync (A3)']
-  sync_run_id bigint [ref: > sync_runs.id]
+  accrual_schedule jsonb [note: 'Monthly spread of the amount over the period, e.g. {"2026-01": 10000000, ...}; months of closed periods are frozen (BR-25, UC42)']
+  source data_source [not null, default: 'import', note: 'Source of the row (BR-14): import (SAP purchase file) or manual (hand entry)']
+  external_ref varchar(200) [note: 'Invoice number and line in SAP, e.g. 5105600123/1: the key a re-import updates (BR-36). NULL for a hand entry']
   import_batch_id bigint [ref: > import_batches.id]
-  created_by bigint [ref: > user_accounts.id]
+  created_by bigint [ref: > user_accounts.id, note: 'Staff who entered a hand entry; NULL for an imported invoice']
   created_at timestamptz [not null, default: `now()`]
   updated_at timestamptz [not null, default: `now()`]
 
@@ -1648,34 +1685,41 @@ Table expenses {
     expense_date
     (license_plan_id, service_from)
     (org_unit_id, expense_date)
+    entitlement_line_id
   }
 
   checks {
     `amount <> 0` [name: 'chk_expenses_amount_not_zero']
     `(service_from is null) = (service_to is null)` [name: 'chk_expenses_service_pair']
     `service_to is null or service_to >= service_from` [name: 'chk_expenses_service_term']
-    `(source in ('api', 'log')) = (sync_run_id is not null)` [name: 'chk_expenses_sync_provenance']
+    `source in ('import', 'manual')` [name: 'chk_expenses_purchase_source']
     `(source = 'import') = (import_batch_id is not null)` [name: 'chk_expenses_import_provenance']
+    `(source = 'import') = (external_ref is not null)` [name: 'chk_expenses_invoice_ref']
+    `source = 'manual' or entitlement_line_id is not null` [name: 'chk_expenses_po_line']
   }
 
   Note: '''
-    Expenses and invoices (UC07): the billed view (D5), and the cost the
-    accrual spreads, so the source of Purchased (D33). Amounts are converted
-    to VND with the rate in force on expense_date (BR-05).
+    Invoices (UC07, BR-10, D50): from the SAP purchase file, each paying a PO
+    line, or entered by hand by Staff for a purchase made outside SAP, with or
+    without a PO line. The billed view (D5), and the cost the accrual
+    spreads, so the source of Purchased (D33). Amounts are converted to VND
+    with the rate in force on expense_date (BR-05).
     Accrual (UC42, BR-25): the amount is spread over the months of
-    service_from..service_to, by days for a month the term starts or ends in;
-    monthly amounts are rounded to the thousand VND and the difference goes to the last
-    month, so the schedule always adds up to the amount. A cost change in the
-    middle of the term (top-up, downgrade) is a new expense from the change;
-    a closed month is never respread, its difference goes to the next open
-    month.
-    A license term without an expense leaves its months with Purchased
-    Unknown (BR-04).
-    Partial unique: one row per billing record
-    (unique on license_plan_id, external_ref where external_ref is not null).
-    App rule: an expense is editable until its month is closed
-    (accounting_periods of its company); afterwards only a correcting entry is
-    allowed, dated in an open month.
+    service_from..service_to, or else of the term of its PO line, by days for
+    a month the period starts or ends in; monthly amounts are rounded to the
+    thousand VND and the difference goes to the last month, so the schedule
+    always adds up to the amount. A cost change in the middle of the term
+    (top-up, downgrade) is a new invoice from the change; a closed month is
+    never respread, its difference goes to the next open month.
+    A PO line without an invoice yet leaves its months with Purchased in money
+    Unknown (BR-04); its seats still count in Purchased quantity.
+    Partial unique: one row per invoice line of a company (unique on
+    org_unit_id, external_ref where external_ref is not null), so a re-import
+    updates the row instead of adding one (BR-36).
+    App rule: license_plan_id is the license of entitlement_line_id when it is
+    set; an invoice is editable until its month is closed (accounting_periods
+    of its company); afterwards only a correcting entry is allowed, dated in
+    an open month.
   '''
 }
 Table accounting_periods {
@@ -1696,7 +1740,7 @@ Table accounting_periods {
 
   Note: '''
     Months of each company and whether they are closed (UC42). A closed month
-    locks its expenses (BR-10), freezes its accrual and cost_allocations (D9),
+    locks its invoices (expenses, BR-10), freezes its accrual and cost_allocations (D9),
     and removes the Provisional mark of its figures (BR-31).
     Closing: Staff close the month of their company after reviewing the
     accrual (UC42); otherwise a system job closes month M on month_close_day
