@@ -116,11 +116,11 @@ The backlog contains **46 user stories (159 story points)**: 29 Must-have (113 p
 | Criterion | Meaning in ELMS |
 |---|---|
 | **Independent** | Each story produces a demonstrable outcome; usage, waste, and dashboard stories run on seeded data labelled as mock, without waiting for the P&L APIs. |
-| **Negotiable** | Layout follows the UI demos but may change while outcome, permissions, and business rules stay fixed. |
+| **Negotiable** | Layout is left to the UI design and may change while outcome, permissions, and business rules stay fixed. |
 | **Valuable** | Each story names the benefit for one role: Employee, Staff, Manager, or Admin. |
 | **Estimable** | Inputs, outputs, roles, data scope, and failure outcomes are explicit; every story is estimated in points. |
 | **Small** | One or more stories per use case; only US18 (budget import with versions and idempotency) reaches 8 points. |
-| **Testable** | Every story has observable criteria, including rules that tie figures across screens. |
+| **Testable** | Every story has observable criteria, including rules that tie figures across use cases. |
 
 ```text
 License Management     US01–US10 (UC01, UC02)         Manager (US09, US10: Staff)
