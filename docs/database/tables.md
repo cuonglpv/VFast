@@ -51,7 +51,7 @@ Everyone who works in the group, whether or not they log in to ELMS, loaded from
 | `unit_since` | date | | Day the person joined that unit. After a transfer, usage and cost count toward the old unit before this day and the new unit from it, day by day. A transfer ILVG reports late counts from the day ELMS receives it |
 | `project_ids` | list of links → `org_units` | | The projects the person works on, when more than one. A seat they hold counts toward each project in equal parts: two projects, half each, and nothing toward `org_unit_id`. Empty = only `org_unit_id` |
 | `left_on` | date | | Last working day. Empty = still with the company. After this day the account is disabled and any seat they still hold is flagged |
-| `source` | choice | Yes | `api` (ILVG) or `manual` (created with an account by Admin before ILVG knows the person) |
+| `source` | choice | Yes | `api` (ILVG) or `manual` (not used: accounts come only from ILVG) |
 | `sync_run_id` | link → `sync_runs` | | ILVG run that last updated the person |
 | `import_batch_id` | link → `import_batches` | | Not used since the HR file import was retired |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
@@ -98,13 +98,13 @@ The people who can log in. Each login belongs to one employee and has exactly on
 | `employee_id` | link → `employees` | Yes | The person. One person has at most one login; the login email is their company email |
 | `role_id` | link → `roles` | Yes | Their role |
 | `password_hash` | text | | The password, scrambled so nobody can read it. Empty until the user sets one: they cannot log in yet |
-| `password_token_hash` | text | | The one-time link a new user opens to set their password (or to reset a forgotten one), stored scrambled. Empty when no link is open |
+| `password_token_hash` | text | | The one-time link, sent by email, that a new user opens to set their password (or to reset a forgotten one), stored scrambled. Empty when no link is open |
 | `password_token_expires_at` | date-time | | When that link stops working |
 | `failed_login_count` | number | Yes | Wrong passwords in a row. Back to 0 after a successful login |
 | `locked_until` | date-time | | After 5 wrong passwords in a row, login is blocked until this time (15 minutes) |
 | `last_login_at` | date-time | | Last successful login, shown in the user list |
-| `disabled_at` | date-time | | When Admin disabled the login. Empty = active. A disabled login cannot sign in, and open sessions end at once |
-| `created_by` | link → `user_accounts` | | Admin who created it |
+| `disabled_at` | date-time | | When Admin, or the ILVG sync for a leaver, disabled the login. Empty = active. A disabled login cannot sign in, and open sessions end at once |
+| `created_by` | link → `user_accounts` | | Empty: accounts are created by the ILVG sync |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
 ### `user_sessions`: who is logged in
@@ -150,7 +150,7 @@ The providers licenses come from, such as Microsoft, Atlassian, or Adobe. A usag
 
 ### `software_categories`: catalog folders
 
-Categories and subcategories of the software catalog, kept by group-level Staff (UC01), for example "Productivity" › "Office & Collaboration". A category in use cannot be deleted.
+Categories and subcategories of the software catalog, kept by group-level Staff (UC04), for example "Productivity" › "Office & Collaboration". A category in use cannot be deleted.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -160,7 +160,7 @@ Categories and subcategories of the software catalog, kept by group-level Staff 
 
 ### `software_products`: software of the catalog
 
-A software of the catalog, such as "Microsoft 365" or "Jira" (UC01). Each license name a connector reports is mapped to one software, so "M365 E3" of one company and "Microsoft 365 E3" of another are counted together under the same software and category.
+A software of the catalog, such as "Microsoft 365" or "Jira" (UC04). Each license name a connector reports is mapped to one software, so "M365 E3" of one company and "Microsoft 365 E3" of another are counted together under the same software and category.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -207,7 +207,7 @@ One license a connector reports for its company, such as "Microsoft 365 E3" of c
 
 ### `contracts`: signed agreements (retired)
 
-Retired: contracts are no longer entered in ELMS. The license terms of UC04 (start, expiry, quantity, cost) come from the PO lines in SAP and are kept in `entitlement_lines`. The table and its fields stay as they were and are not written.
+Retired: contracts are no longer entered in ELMS. The license terms of UC01 (start, expiry, quantity, cost) come from the PO lines in SAP and are kept in `entitlement_lines`. The table and its fields stay as they were and are not written.
 
 ### `entitlement_lines`: PO lines (license terms)
 
@@ -235,7 +235,7 @@ One PO line of a license, imported each month from the SAP purchase file or type
 | `created_by` | link → `user_accounts` | | Staff who typed it; empty for imported lines |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
-The money figure "Purchased" is not this price: it is the accrued cost of the invoices (`expenses`, `cost_allocations`). The monthly cost of the License List is the accrued cost too (UC57, UC42).
+The money figure "Purchased" is not this price: it is the accrued cost of the invoices (`expenses`, `cost_allocations`). The monthly cost of the License List is the accrued cost too (UC01, UC12).
 
 ### `entitlement_allocations`: quotas per unit (retired)
 
@@ -247,7 +247,7 @@ Retired: quotas per unit are not part of the agreed use cases; the cost of a lic
 
 ### `connectors`: connections to the sources
 
-A configured, read-only connection. A **usage connector** reads one provider for one company — for example "VinFast – Microsoft Usage" — and returns its licenses, holders, and usage (UC55). ILVG (employees and units) and BCA (application usage) are connectors too, so every source is watched the same way (UC26). ELMS never changes anything at a source.
+A configured, read-only connection. A **usage connector** reads one provider for one company — for example "VinFast – Microsoft Usage" — and returns its licenses, holders, and usage (UC24). ILVG (employees and units) and BCA (application usage) are connectors too, so every source is watched the same way (UC25). ELMS never changes anything at a source.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -291,7 +291,7 @@ For each license: which kinds of data its connector delivers — purchases, hold
 
 ### `sync_runs`: connector runs
 
-The log of each connector run: when it ran, for which day's data, and whether it worked. It is the run table of UC26.
+The log of each connector run: when it ran, for which day's data, and whether it worked. It is the run table of UC25.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -334,7 +334,7 @@ Exactly what the vendor's API returned, before ELMS reshapes it. Kept for 180 da
 | `payload` | JSON | Yes | The data exactly as received |
 | `fetched_at` | date-time | Yes | When it was received |
 | `normalized_at` | date-time | | When ELMS processed it. Empty = not processed yet |
-| `normalize_error` | text | | Why ELMS could not use it, such as `undeclared_license` (a license the source reports but the connector does not list) or `missing_field`. Empty = used successfully. These are the rejected records Staff see in UC26 |
+| `normalize_error` | text | | Why ELMS could not use it, such as `undeclared_license` (a license the source reports but the connector does not list) or `missing_field`. Empty = used successfully. These are the rejected records Staff see in UC25 |
 
 ### `files`: uploaded files
 
@@ -354,7 +354,7 @@ Invoices typed by Staff, budget plan Excel files, and SAP purchase Excel files. 
 
 ### `import_batches`: file imports
 
-Each import of a budget plan (UC33) or of SAP purchases (UC07): who, when, which file, and how many rows. Nothing is written until the preview is checked and confirmed; one bad row rejects the whole file. A budget import has a target unit and months, and changes only the licenses in its file: in that unit and every unit under it, for those months, a license already planned is overwritten (its lines the file no longer has are removed) and a new one is added. Every other license keeps its plan. Example: the group imports a file with only GitHub rows for P&L A and P&L B; their Microsoft 365 and Jira plans do not change. A purchase import adds or updates PO lines and invoices by their SAP numbers, so the same file twice adds nothing.
+Each import of a budget plan (UC11) or of SAP purchases (UC13): who, when, which file, and how many rows. Nothing is written until the preview is checked and confirmed; one bad row rejects the whole file. A budget import has a target unit and months, and changes only the licenses in its file: in that unit and every unit under it, for those months, a license already planned is overwritten (its lines the file no longer has are removed) and a new one is added. Every other license keeps its plan. Example: the group imports a file with only GitHub rows for P&L A and P&L B; their Microsoft 365 and Jira plans do not change. A purchase import adds or updates PO lines and invoices by their SAP numbers, so the same file twice adds nothing.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -468,7 +468,7 @@ The same daily photo, per unit: how many seats are held, and in which status. Se
 
 ### `employee_app_usage`: applications employees use (BCA)
 
-What BCA reports from company machines: which application each person used, on how many days. Kept in its own table, apart from the license usage, so other services can use it later (BR-23). Only the Managers of the person's units can read it (UC32).
+What BCA reports from company machines: which application each person used, on how many days. Kept in its own table, apart from the license usage, so other services can use it later (BR-22). Only the Managers of the person's units can read it (UC10).
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -477,7 +477,7 @@ What BCA reports from company machines: which application each person used, on h
 | `bca_identity` | text | Yes | How BCA names the person (machine user or email), in lowercase |
 | `application_name` | text | Yes | The application as BCA names it |
 | `active_minutes` | number | | Minutes the application was in use in the period |
-| `product_id` | link → `software_products` | | The catalog software the application maps to, set by Staff in the catalog (UC01). Empty = not mapped |
+| `product_id` | link → `software_products` | | The catalog software the application maps to, set by Staff in the catalog (UC04). Empty = not mapped |
 | `period_start`, `period_end` | date | Yes | The period |
 | `days_used` | number | Yes | Days the application was used in the period |
 | `last_used_at` | date-time | | Last use |
@@ -555,7 +555,7 @@ The shares of a shared license are its charge-back: each company carries the sea
 
 ### `expenses`: invoices
 
-The invoices from the SAP purchase file, each paying a PO line, and those Staff type for a purchase made outside SAP: what the bills say, on their dates, and the cost that the monthly accrual spreads (UC42). An invoice of 100 million for a 12-month term becomes 8,333,000 a month, rounded to the thousand VND, and 8,337,000 in the last month, so the months always add up to the invoice. An amount in USD is converted with the rate of the invoice date. A PO line without an invoice yet counts its seats, but its cost stays unknown.
+The invoices from the SAP purchase file, each paying a PO line, and those Staff type for a purchase made outside SAP: what the bills say, on their dates, and the cost that the monthly accrual spreads (UC12). An invoice of 100 million for a 12-month term becomes 8,333,000 a month, rounded to the thousand VND, and 8,337,000 in the last month, so the months always add up to the invoice. An amount in USD is converted with the rate of the invoice date. A PO line without an invoice yet counts its seats, but its cost stays unknown.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -578,7 +578,7 @@ The invoices from the SAP purchase file, each paying a PO line, and those Staff 
 
 ### `accounting_periods`: months of each company
 
-The months of each company (and of the group, for shared licenses) and whether each one is closed. Staff close a month after checking its accrual (UC42); otherwise it closes by itself on the 10th of the next month. Until then its figures are marked *Provisional*. A P&L month that carries the cost of a shared license stays *Provisional* until the group's month is closed too. A closed month can no longer be edited; a mistake is fixed with a correcting entry in an open month. The fiscal year is the calendar year.
+The months of each company (and of the group, for shared licenses) and whether each one is closed. Staff close a month after checking its accrual (UC12); otherwise it closes by itself on the 10th of the next month. Until then its figures are marked *Provisional*. A P&L month that carries the cost of a shared license stays *Provisional* until the group's month is closed too. A closed month can no longer be edited; a mistake is fixed with a correcting entry in an open month. The fiscal year is the calendar year.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -591,7 +591,7 @@ The months of each company (and of the group, for shared licenses) and whether e
 
 ### `exchange_rates`: currency rates
 
-The rates used to turn USD and other currencies into VND, entered by group-level Staff (UC62). A rate is valid from its date until a newer one is entered; an invoice is converted with the rate of its date.
+The rates used to turn USD and other currencies into VND, entered by group-level Staff (UC14). A rate is valid from its date until a newer one is entered; an invoice is converted with the rate of its date.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -638,7 +638,7 @@ One finding per license, unit, and check: seats nobody holds, seats unused for 3
 
 ### `recommendations`: proposed actions (retired)
 
-Retired with UC13 and UC14: ELMS no longer tracks actions on licenses. The table and its fields stay as they were and are not written.
+Retired with the recommendation use cases: ELMS no longer tracks actions on licenses. The table and its fields stay as they were and are not written.
 
 ---
 
@@ -664,7 +664,7 @@ Who changed what, when, the old and new value, and why. Rows can only be added, 
 
 ### `data_overrides`: corrections to ILVG data
 
-When Admin corrects a value that came from ILVG, for example a unit placed under the wrong parent (UC20). The original value stays beside the correction, and the next ILVG sync does not overwrite it. Licenses, holders, and usage are never corrected in ELMS: they are corrected at the source.
+When Admin corrects a value that came from ILVG, for example a unit placed under the wrong parent (UC23). The original value stays beside the correction, and the next ILVG sync does not overwrite it. Licenses, holders, and usage are never corrected in ELMS: they are corrected at the source.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|

@@ -1,6 +1,6 @@
 # Top-down Problem Analysis & Research
 
-> Design status: TARGET (P&L API business model, third revision of 15 November 2026)
+> Design status: TARGET (P&L API business model, November 2026)
 >
 > Implementation status: NOT STARTED (requirements phase)
 
@@ -33,9 +33,9 @@ A group of companies (P&Ls) buys software from many providers: Microsoft, Atlass
 |---|---|---|
 | Manager of a unit — the group, a P&L, a block, a department, or a project | `MANAGER` | Licenses and who uses them, usage and waste in money, the budget plan of their units |
 | License management team member | `STAFF` | Feeding the system: usage connectors, sync monitoring, software catalog, shared licenses, purchases from SAP and accrual, exchange rates |
-| System administrator | `ADMIN` | Users, roles, permissions, the organization tree, and which Manager owns which unit; reads the group overview and the dashboards |
+| System administrator | `ADMIN` | Users, roles, permissions, the organization tree, and which Manager owns which unit; sees no license, usage, budget, or cost data. Accounts come from ILVG |
 | Every employee of the group | `EMPLOYEE` | Knowing which licenses they hold and whether they are recorded as used |
-| Each P&L | API provider | Provides an API that returns its licenses, holders, and usage in the license data contract (BR-19) |
+| Each P&L | API provider | Provides an API that returns its licenses, holders, and usage in the license data contract (BR-18) |
 | ILVG (internal HR application) | Source system | Employees, their unit, their projects, and transfers |
 | BCA (usage tracking on company machines) | Source system | How often each employee uses each application |
 | SAP (finance) | Source system | The yearly budget plan by month, and the purchases (PR, PO, invoices), each exported to an ELMS Excel template |
@@ -84,11 +84,11 @@ A license is described by independent axes, so the analysis does not depend on t
 
 ### 4.3 One money model for every license
 
-The analysis is in money, so every license, whatever it counts, is judged with the same three figures (BR-09, BR-24):
+The analysis is in money, so every license, whatever it counts, is judged with the same three figures (BR-09, BR-23):
 
 | Figure | Seat-based license | Usage-based license |
 |---|---|---|
-| **Purchased** | The accrued cost of the month, spread from the invoices (UC42); in quantity, the seats of the PO lines in force (BR-10) | Same |
+| **Purchased** | The accrued cost of the month, spread from the invoices (UC12); in quantity, the seats of the PO lines in force (BR-10) | Same |
 | **Used** | Purchased × `Active` seats ÷ purchased seats | The cost of what was consumed |
 | **Wasted** | The cost of `Unassigned`, `Inactive`, and `No activity` seats | The cost bought but not consumed |
 | **Not evaluated** | The cost of `Not monitored` seats and Unknown data | The cost with no consumption data |
@@ -99,11 +99,11 @@ Purchased = Used + Wasted + Not evaluated; the waste rate is Wasted ÷ Purchased
 
 | Source | What it gives | How |
 |---|---|---|
-| Usage connector of each P&L | Licenses, holders, last activity, daily activity, consumption | An API the P&L provides for its own data, one connector per company and provider, in the license data contract (BR-19, [Connector standard](06-connector-standard.md)) |
+| Usage connector of each P&L | Licenses, holders, last activity, daily activity, consumption | An API the P&L provides for its own data, one connector per company and provider, in the license data contract (BR-18, [Connector standard](06-connector-standard.md)) |
 | ILVG | Employees, units in five levels, projects (with allocation), transfers | API, synced like a connector |
 | BCA | Application usage per employee and day | API, synced like a connector (fields assumed until the API is known) |
-| SAP | Budget plan per unit, license, and month | Exported to the ELMS Excel template and imported by Managers (UC33) |
-| SAP purchases | PO lines: purchased quantity and term; invoices: the cost that becomes Purchased | Exported to the ELMS Excel template and imported by Staff each month; a purchase made outside SAP is entered by hand (UC07) |
+| SAP | Budget plan per unit, license, and month | Exported to the ELMS Excel template and imported by Managers (UC11) |
+| SAP purchases | PO lines: purchased quantity and term; invoices: the cost that becomes Purchased | Exported to the ELMS Excel template and imported by Staff each month; a purchase made outside SAP is entered by hand (UC13) |
 
 Behind a P&L API, the P&L reads its providers. For Microsoft 365, for example, the Graph v1.0 endpoints below give what the contract needs; they must be checked against Microsoft's documentation before the P&L builds its API:
 
@@ -120,14 +120,14 @@ Provider APIs give no organization data, no budget, and no history: units come f
 
 ### 4.5 Cost
 
-- **Purchased is the accrued cost of the invoices** (UC07, UC42): an invoice is spread over the months of the term of its PO line, rounded to the thousand VND, the difference in the last month (BR-25).
-- **One currency per screen:** amounts keep their original currency and are converted with the rate of the invoice date (BR-05, UC62).
-- **Charge-back:** the cost of a license is split over its seats and carried by the units of the holders; unassigned seats stay with the owner (BR-06). A license used by two or more companies is owned by the group and charged back to them (BR-26).
+- **Purchased is the accrued cost of the invoices** (UC13, UC12): an invoice is spread over the months of the term of its PO line, rounded to the thousand VND, the difference in the last month (BR-24).
+- **One currency per screen:** amounts keep their original currency and are converted with the rate of the invoice date (BR-05, UC14).
+- **Charge-back:** the cost of a license is split over its seats and carried by the units of the holders; unassigned seats stay with the owner (BR-06). A license used by two or more companies is owned by the group and charged back to them (BR-25).
 
 ## 5. Process (to-be)
 
 ```text
-1. Staff connect each company's provider (UC55) → 2. Collect at each connector's interval; ILVG and BCA daily
+1. Staff connect each company's provider (UC24) → 2. Collect at each connector's interval; ILVG and BCA daily
   → 3. Validate against the license data contract → 4. Daily seat status and cost split
   → 5. Usage, budget, and waste analysis per unit → 6. Managers act at the source
 ```
@@ -138,37 +138,30 @@ Pipeline principles:
 |---|---|---|
 | A1 | Run on a schedule, at each connector's interval | Most providers have no usage webhooks, and reports lag 1–2 days |
 | A2 | Store raw data before normalizing | Rules can change and be recomputed without calling the API again |
-| A3 | Idempotent, incremental sync and import | Re-running creates no duplicates; a failed run is caught up next time (BR-36) |
+| A3 | Idempotent, incremental sync and import | Re-running creates no duplicates; a failed run is caught up next time (BR-34) |
 | A4 | Missing data is never usage = 0 | A failed sync must not create a false waste figure; the status is `Unknown` (BR-04) |
 | A5 | Backfill history on the first connection | Trends are available from day one |
 | A6 | One money model for every archetype | Seats, sessions, and tokens are all judged as Purchased, Used, Wasted, Not evaluated |
 | A7 | Every result shows its evidence, its cost, and its data date | Users can verify it; ELMS never acts on its own (BR-12) |
-| A8 | Encrypted, write-only credentials, read-only scopes | Lower risk; the P&L grants access easily (BR-20) |
-| A9 | Every figure carries its source | Real, assumed, and mock data are never presented the same way (BR-14) |
+| A8 | Encrypted, write-only credentials, read-only scopes | Lower risk; the P&L grants access easily (BR-19) |
+| A9 | Every figure carries its source | Real, assumed, and mock data are never presented the same way (BR-13) |
 
 ## 6. Functional decomposition (Epic → Feature)
 
-The epics are the seven branches of the agreed mind map; each leaf is one use case. Bold leaves are Must- and Should-have use cases, plain leaves Could-have ([INVEST requirements](03-invest-requirements.md)). The two self-service use cases every role has, View My Licenses (UC23) and Login / Logout (UC24), are not on the map.
+The epics are the seven branches of the mind map; each leaf is one use case. Bold leaves are Must- and Should-have use cases, plain leaves Could-have ([INVEST requirements](03-invest-requirements.md)). The two self-service use cases every role has, View My Licenses (UC26) and Login / Logout (UC27), are not on the map.
 
 ![ELMS mind map](mindmap.png)
 
-| Epic | Group | Use cases |
-|---|---|---|
-| E1 License Management | License list & validity | License List (UC57), Validity Timeline (UC58), License Details (UC59), License Users and Activity (UC61) |
-| | Catalog & inventory | Software Catalog (UC01), Inventory by P&L (UC27), Licenses by Organization (UC28), Shared Licenses (UC47), Providers and Licenses (UC02), Contracts (UC04) |
-| E2 Usage | Scope & overview | Organization Scope (UC37), Plan vs Utilization Balance (UC08) |
-| | Subordinate analytics | Unit Comparison (UC48), Annual Trend (UC49), Units Table (UC50), CSV Export (UC51) |
-| | | Employee Usage (UC32) |
-| E3 Budget Management | Planning & cost allocation | Budget Import (UC33), Monthly Plan (UC05), Cost Allocation (UC06), Cost Accrual (UC42) |
-| | Spending & monitoring | Purchases (UC07), Exchange Rates (UC62), Plan Variance (UC34), Forecast (UC09) |
-| E4 Optimization | Detection | Unused (UC10), Inactive (UC11), P&L Waste Flag (UC35) |
-| | Waste analysis | Waste Ranking (UC43), Trend (UC52), Risk Distribution (UC53), Monthly Heatmap (UC54) |
-| E5 Analytics | | Group Overview (UC36), License & Provider Analysis (UC44), Metric Definitions (UC45) |
-| | Dashboards | License Dashboard (UC15), Financial Dashboard (UC16), Optimization Dashboard (UC18) |
-| E6 User & Organization | | Users (UC19), Organization Hierarchy (UC20), Roles (UC21), Permissions (UC22) |
-| E7 Connection Management | Usage connectors | List (UC38), Create (UC55), Edit and delete (UC60), Details (UC56) |
-| | | Sync Monitoring (UC26) |
-| — Self-service (not on the map) | | View My Licenses (UC23), Login / Logout (UC24) |
+| Epic | Use cases |
+|---|---|
+| E1 License Management | License Information (UC01), License Users and Activity (UC02), License Inventory (UC03), Software Catalog (UC04), Shared Licenses (UC05) |
+| E2 Usage | Organization Scope (UC06), Plan vs Utilization Balance (UC07), Subordinate Unit Comparison (UC08), Subordinate Units Table (UC09), Employee Usage (UC10) |
+| E3 Budget Management | Budget Plan (UC11), Cost Accrual (UC12), Purchases (UC13), Exchange Rates (UC14), Spending Forecast (UC15) |
+| E4 Optimization | Wasted Seats (UC16), Waste Ranking and Flag (UC17), Waste Analytics (UC18) |
+| E5 Analytics | Dashboards (UC19), License and Provider Analysis (UC20), Metric Definitions (UC21) |
+| E6 User & Organization | User Roles and Permissions (UC22), Organization Hierarchy (UC23) |
+| E7 Connection Management | Usage Connectors (UC24), Sync Monitoring (UC25) |
+| — Self-service (not on the map) | View My Licenses (UC26), Login / Logout (UC27) |
 
 ## 7. Scope
 
@@ -181,22 +174,22 @@ The epics are the seven branches of the agreed mind map; each leaf is one use ca
 - Purchases imported from SAP or entered by hand, monthly accrual, exchange rates, cost allocation, and charge-back of shared licenses.
 - Software catalog: license and application names mapped to software and category.
 - Employee application usage from BCA.
-- Users, roles, permissions; four roles: Admin, Manager, Staff, Employee.
+- Accounts created from ILVG; roles, data scopes, and permissions set by Admin; four roles: Admin, Manager, Staff, Employee.
 
 ### Out of scope
 
 - Assigning, revoking, buying, renewing, or cancelling anything at a provider.
 - Entering licenses, holders, or usage by hand in ELMS: they come from the P&L APIs.
-- Recommendations and tracking of actions on licenses (UC13, UC14 retired); compliance dashboard (UC17 retired).
-- Detecting a license shortage beyond allocated above purchased (UC12 parked).
-- Notifications outside the application (email, chat); SSO and self-registration.
+- Recommendations and tracking of actions on licenses; a compliance dashboard.
+- Detecting a license shortage beyond allocated above purchased.
+- Creating accounts by hand; notifications outside the application (chat), other than the account email with the password link; SSO and self-registration.
 
 ## 8. Constraints and assumptions
 
 - Every connection is read-only; credentials are write-only.
 - Each P&L provides the API behind its connectors, in the license data contract.
-- A holder is a person: identities are matched to the ILVG employee by employee code, otherwise by email (BR-27).
-- The organization has exactly five levels; units come from ILVG (BR-21).
+- A holder is a person: identities are matched to the ILVG employee by employee code, otherwise by email (BR-26).
+- The organization has exactly five levels; units come from ILVG (BR-20).
 - Seat status uses a 30-day window with a 30-day grace period (BR-03).
 - Assumed until checked: the SAP export carries department codes; BCA reports per day the domain account carrying the ILVG employee code.
 
@@ -204,11 +197,11 @@ The epics are the seven branches of the agreed mind map; each leaf is one use ca
 
 | Risk | Mitigation |
 |---|---|
-| A P&L cannot deliver its API on time | Mock data labelled as mock (BR-14); the connector stays `Pending` |
+| A P&L cannot deliver its API on time | Mock data labelled as mock (BR-13); the connector stays `Pending` |
 | Usage reports anonymize users | Seats become `Not monitored`, their cost Not evaluated, never waste |
-| A sync fails and usage looks like zero | The figures stay `Unknown`; the connector shows `Failed` or `Delayed` (BR-32) |
-| Figures disagree between screens | One set of rules (BR-03, BR-06, BR-09, BR-24) and one definition per metric (UC45) |
-| Per-user usage is sensitive personal data | Every API requires login; data scope is enforced on the backend (BR-16) |
-| BCA or SAP fields differ from the assumptions | The BCA fields (UC32) and the SAP export (BR-08) are checked against the real sources before the import is built |
+| A sync fails and usage looks like zero | The figures stay `Unknown`; the connector shows `Failed` or `Delayed` (BR-30) |
+| Figures disagree between screens | One set of rules (BR-03, BR-06, BR-09, BR-23) and one definition per metric (UC21) |
+| Per-user usage is sensitive personal data | Every API requires login; data scope is enforced on the backend (BR-15) |
+| BCA or SAP fields differ from the assumptions | The BCA fields (UC10) and the SAP export (BR-08) are checked against the real sources before the import is built |
 
 **Related:** [Use cases](02-use-cases.md) · [INVEST requirements](03-invest-requirements.md) · [Data fields research](09-data-fields-research.md)

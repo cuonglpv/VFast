@@ -28,7 +28,7 @@ Fixed organization hierarchy: **Group > P&L > Block > Department > Project**.
 
 The three figures every view is built on: **Budgeted** (plan), **Paid** (purchased), **Actually used**. They are quantities of licenses, not money; cost detail per P&L is out of scope for now.
 
-**Decisions of 16 Nov 2026** ([use cases](02-use-cases.md), BR-10, BR-26): the purchased quantity and the term of a license come from the SAP PO lines, and its cost from the SAP invoices, imported each month by Staff; a purchase made outside SAP is entered by hand. The P&L API therefore no longer needs `purchased_quantity` or the term fields below, which become optional. The budget file has no *Shared* column.
+**Decisions of 16 Nov 2026** ([use cases](02-use-cases.md), BR-10, BR-25): the purchased quantity and the term of a license come from the SAP PO lines, and its cost from the SAP invoices, imported each month by Staff; a purchase made outside SAP is entered by hand. The P&L API therefore no longer needs `purchased_quantity` or the term fields below, which become optional. The budget file has no *Shared* column.
 
 ## 2. How the field list was built
 
@@ -197,7 +197,7 @@ If BCA hides employee identity, usage can only be joined to ILVG through a share
 
 ## 6. SAP — monthly budget plan and purchases
 
-Budget plan file (UC33, BR-08), imported by Managers; it has no *Shared* column:
+Budget plan file (UC11, BR-08), imported by Managers; it has no *Shared* column:
 
 | Group | Fields |
 |---|---|
@@ -206,7 +206,7 @@ Budget plan file (UC33, BR-08), imported by Managers; it has no *Shared* column:
 | Line | `license_name` or `material`, `planned_quantity`, `unit` |
 | Money | `planned_amount`, `currency` |
 
-Purchase file (UC07, BR-10), imported by Staff each month:
+Purchase file (UC13, BR-10), imported by Staff each month:
 
 | Group | Fields |
 |---|---|
