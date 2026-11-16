@@ -88,7 +88,7 @@ The analysis is in money, so every license, whatever it counts, is judged with t
 
 | Figure | Seat-based license | Usage-based license |
 |---|---|---|
-| **Purchased** | The accrued cost of the month, spread from the invoices (UC12); in quantity, the seats of the PO lines in force (BR-10) | Same |
+| **Purchased** | The accrued cost of the month, spread from the invoices (UC11); in quantity, the seats of the PO lines in force (BR-10) | Same |
 | **Used** | Purchased × `Active` seats ÷ purchased seats | The cost of what was consumed |
 | **Wasted** | The cost of `Unassigned`, `Inactive`, and `No activity` seats | The cost bought but not consumed |
 | **Not evaluated** | The cost of `Not monitored` seats and Unknown data | The cost with no consumption data |
@@ -102,8 +102,8 @@ Purchased = Used + Wasted + Not evaluated; the waste rate is Wasted ÷ Purchased
 | Usage connector of each P&L | Licenses, holders, last activity, daily activity, consumption | An API the P&L provides for its own data, one connector per company and provider, in the license data contract (BR-18, [Connector standard](06-connector-standard.md)) |
 | ILVG | Employees, units in five levels, projects (with allocation), transfers | API, synced like a connector |
 | BCA | Application usage per employee and day | API, synced like a connector (fields assumed until the API is known) |
-| SAP | Budget plan per unit, license, and month | Exported to the ELMS Excel template and imported by Managers (UC11) |
-| SAP purchases | PO lines: purchased quantity and term; invoices: the cost that becomes Purchased | Exported to the ELMS Excel template and imported by Staff each month; a purchase made outside SAP is entered by hand (UC13) |
+| SAP | Budget plan per unit, license, and month | Exported to the ELMS Excel template and imported by Managers (UC10) |
+| SAP purchases | PO lines: purchased quantity and term; invoices: the cost that becomes Purchased | Exported to the ELMS Excel template and imported by Staff each month; a purchase made outside SAP is entered by hand (UC12) |
 
 Behind a P&L API, the P&L reads its providers. For Microsoft 365, for example, the Graph v1.0 endpoints below give what the contract needs; they must be checked against Microsoft's documentation before the P&L builds its API:
 
@@ -120,14 +120,14 @@ Provider APIs give no organization data, no budget, and no history: units come f
 
 ### 4.5 Cost
 
-- **Purchased is the accrued cost of the invoices** (UC13, UC12): an invoice is spread over the months of the term of its PO line, rounded to the thousand VND, the difference in the last month (BR-24).
-- **One currency per screen:** amounts keep their original currency and are converted with the rate of the invoice date (BR-05, UC14).
+- **Purchased is the accrued cost of the invoices** (UC12, UC11): an invoice is spread over the months of the term of its PO line, rounded to the thousand VND, the difference in the last month (BR-24).
+- **One currency per screen:** amounts keep their original currency and are converted with the rate of the invoice date (BR-05, UC13).
 - **Charge-back:** the cost of a license is split over its seats and carried by the units of the holders; unassigned seats stay with the owner (BR-06). A license used by two or more companies is owned by the group and charged back to them (BR-25).
 
 ## 5. Process (to-be)
 
 ```text
-1. Staff connect each company's provider (UC24) → 2. Collect at each connector's interval; ILVG and BCA daily
+1. Staff connect each company's provider (UC23) → 2. Collect at each connector's interval; ILVG and BCA daily
   → 3. Validate against the license data contract → 4. Daily seat status and cost split
   → 5. Usage, budget, and waste analysis per unit → 6. Managers act at the source
 ```
@@ -148,20 +148,20 @@ Pipeline principles:
 
 ## 6. Functional decomposition (Epic → Feature)
 
-The epics are the seven branches of the mind map; each leaf is one use case. Bold leaves are Must- and Should-have use cases, plain leaves Could-have ([INVEST requirements](03-invest-requirements.md)). The two self-service use cases every role has, View My Licenses (UC26) and Login / Logout (UC27), are not on the map.
+The epics are the seven branches of the mind map; each leaf is one use case. Bold leaves are Must- and Should-have use cases, plain leaves Could-have ([INVEST requirements](03-invest-requirements.md)). The two self-service use cases every role has, View My Licenses (UC25) and Login / Logout (UC26), are not on the map.
 
 ![ELMS mind map](mindmap.png)
 
 | Epic | Use cases |
 |---|---|
-| E1 License Management | License Information (UC01), License Users and Activity (UC02), License Inventory (UC03), Software Catalog (UC04), Shared Licenses (UC05) |
-| E2 Usage | Organization Scope (UC06), Plan vs Utilization Balance (UC07), Subordinate Unit Comparison (UC08), Subordinate Units Table (UC09), Employee Usage (UC10) |
-| E3 Budget Management | Budget Plan (UC11), Cost Accrual (UC12), Purchases (UC13), Exchange Rates (UC14), Spending Forecast (UC15) |
-| E4 Optimization | Wasted Seats (UC16), Waste Ranking and Flag (UC17), Waste Analytics (UC18) |
-| E5 Analytics | Dashboards (UC19), License and Provider Analysis (UC20), Metric Definitions (UC21) |
-| E6 User & Organization | User Roles and Permissions (UC22), Organization Hierarchy (UC23) |
-| E7 Connection Management | Usage Connectors (UC24), Sync Monitoring (UC25) |
-| — Self-service (not on the map) | View My Licenses (UC26), Login / Logout (UC27) |
+| E1 License Management | License Information (UC01), License Users and Usage (UC02), License Inventory (UC03), License Catalog (UC04) |
+| E2 Usage | Organization Scope (UC05), Plan vs Utilization Balance (UC06), Subordinate Unit Comparison (UC07), Subordinate Units Table (UC08), Employee Usage (UC09) |
+| E3 Budget Management | Budget Plan (UC10), Cost Accrual (UC11), Purchases (UC12), Exchange Rates (UC13), Spending Forecast (UC14) |
+| E4 Optimization | Wasted Seats (UC15), Waste Ranking and Flag (UC16), Waste Analytics (UC17) |
+| E5 Analytics | Dashboards (UC18), License and Provider Analysis (UC19), Metric Definitions (UC20) |
+| E6 User & Organization | User Roles and Permissions (UC21), Organization Hierarchy (UC22) |
+| E7 Connection Management | Usage Connectors (UC23), Sync Monitoring (UC24) |
+| — Self-service (not on the map) | View My Licenses (UC25), Login / Logout (UC26) |
 
 ## 7. Scope
 
@@ -200,8 +200,8 @@ The epics are the seven branches of the mind map; each leaf is one use case. Bol
 | A P&L cannot deliver its API on time | Mock data labelled as mock (BR-13); the connector stays `Pending` |
 | Usage reports anonymize users | Seats become `Not monitored`, their cost Not evaluated, never waste |
 | A sync fails and usage looks like zero | The figures stay `Unknown`; the connector shows `Failed` or `Delayed` (BR-30) |
-| Figures disagree between screens | One set of rules (BR-03, BR-06, BR-09, BR-23) and one definition per metric (UC21) |
+| Figures disagree between screens | One set of rules (BR-03, BR-06, BR-09, BR-23) and one definition per metric (UC20) |
 | Per-user usage is sensitive personal data | Every API requires login; data scope is enforced on the backend (BR-15) |
-| BCA or SAP fields differ from the assumptions | The BCA fields (UC10) and the SAP export (BR-08) are checked against the real sources before the import is built |
+| BCA or SAP fields differ from the assumptions | The BCA fields (UC09) and the SAP export (BR-08) are checked against the real sources before the import is built |
 
 **Related:** [Use cases](02-use-cases.md) · [INVEST requirements](03-invest-requirements.md) · [Data fields research](09-data-fields-research.md)

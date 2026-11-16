@@ -235,7 +235,7 @@ One PO line of a license, imported each month from the SAP purchase file or type
 | `created_by` | link → `user_accounts` | | Staff who typed it; empty for imported lines |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
-The money figure "Purchased" is not this price: it is the accrued cost of the invoices (`expenses`, `cost_allocations`). The monthly cost of the License List is the accrued cost too (UC01, UC12).
+The money figure "Purchased" is not this price: it is the accrued cost of the invoices (`expenses`, `cost_allocations`). The monthly cost of the License List is the accrued cost too (UC01, UC11).
 
 ### `entitlement_allocations`: quotas per unit (retired)
 
@@ -247,7 +247,7 @@ Retired: quotas per unit are not part of the agreed use cases; the cost of a lic
 
 ### `connectors`: connections to the sources
 
-A configured, read-only connection. A **usage connector** reads one provider for one company — for example "VinFast – Microsoft Usage" — and returns its licenses, holders, and usage (UC24). ILVG (employees and units) and BCA (application usage) are connectors too, so every source is watched the same way (UC25). ELMS never changes anything at a source.
+A configured, read-only connection. A **usage connector** reads one provider for one company — for example "VinFast – Microsoft Usage" — and returns its licenses, holders, and usage (UC23). ILVG (employees and units) and BCA (application usage) are connectors too, so every source is watched the same way (UC24). ELMS never changes anything at a source.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -291,7 +291,7 @@ For each license: which kinds of data its connector delivers — purchases, hold
 
 ### `sync_runs`: connector runs
 
-The log of each connector run: when it ran, for which day's data, and whether it worked. It is the run table of UC25.
+The log of each connector run: when it ran, for which day's data, and whether it worked. It is the run table of UC24.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -334,7 +334,7 @@ Exactly what the vendor's API returned, before ELMS reshapes it. Kept for 180 da
 | `payload` | JSON | Yes | The data exactly as received |
 | `fetched_at` | date-time | Yes | When it was received |
 | `normalized_at` | date-time | | When ELMS processed it. Empty = not processed yet |
-| `normalize_error` | text | | Why ELMS could not use it, such as `undeclared_license` (a license the source reports but the connector does not list) or `missing_field`. Empty = used successfully. These are the rejected records Staff see in UC25 |
+| `normalize_error` | text | | Why ELMS could not use it, such as `undeclared_license` (a license the source reports but the connector does not list) or `missing_field`. Empty = used successfully. These are the rejected records Staff see in UC24 |
 
 ### `files`: uploaded files
 
@@ -354,7 +354,7 @@ Invoices typed by Staff, budget plan Excel files, and SAP purchase Excel files. 
 
 ### `import_batches`: file imports
 
-Each import of a budget plan (UC11) or of SAP purchases (UC13): who, when, which file, and how many rows. Nothing is written until the preview is checked and confirmed; one bad row rejects the whole file. A budget import has a target unit and months, and changes only the licenses in its file: in that unit and every unit under it, for those months, a license already planned is overwritten (its lines the file no longer has are removed) and a new one is added. Every other license keeps its plan. Example: the group imports a file with only GitHub rows for P&L A and P&L B; their Microsoft 365 and Jira plans do not change. A purchase import adds or updates PO lines and invoices by their SAP numbers, so the same file twice adds nothing.
+Each import of a budget plan (UC10) or of SAP purchases (UC12): who, when, which file, and how many rows. Nothing is written until the preview is checked and confirmed; one bad row rejects the whole file. A budget import has a target unit and months, and changes only the licenses in its file: in that unit and every unit under it, for those months, a license already planned is overwritten (its lines the file no longer has are removed) and a new one is added. Every other license keeps its plan. Example: the group imports a file with only GitHub rows for P&L A and P&L B; their Microsoft 365 and Jira plans do not change. A purchase import adds or updates PO lines and invoices by their SAP numbers, so the same file twice adds nothing.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -468,7 +468,7 @@ The same daily photo, per unit: how many seats are held, and in which status. Se
 
 ### `employee_app_usage`: applications employees use (BCA)
 
-What BCA reports from company machines: which application each person used, on how many days. Kept in its own table, apart from the license usage, so other services can use it later (BR-22). Only the Managers of the person's units can read it (UC10).
+What BCA reports from company machines: which application each person used, on how many days. Kept in its own table, apart from the license usage, so other services can use it later (BR-22). Only the Managers of the person's units can read it (UC09).
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -555,7 +555,7 @@ The shares of a shared license are its charge-back: each company carries the sea
 
 ### `expenses`: invoices
 
-The invoices from the SAP purchase file, each paying a PO line, and those Staff type for a purchase made outside SAP: what the bills say, on their dates, and the cost that the monthly accrual spreads (UC12). An invoice of 100 million for a 12-month term becomes 8,333,000 a month, rounded to the thousand VND, and 8,337,000 in the last month, so the months always add up to the invoice. An amount in USD is converted with the rate of the invoice date. A PO line without an invoice yet counts its seats, but its cost stays unknown.
+The invoices from the SAP purchase file, each paying a PO line, and those Staff type for a purchase made outside SAP: what the bills say, on their dates, and the cost that the monthly accrual spreads (UC11). An invoice of 100 million for a 12-month term becomes 8,333,000 a month, rounded to the thousand VND, and 8,337,000 in the last month, so the months always add up to the invoice. An amount in USD is converted with the rate of the invoice date. A PO line without an invoice yet counts its seats, but its cost stays unknown.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -578,7 +578,7 @@ The invoices from the SAP purchase file, each paying a PO line, and those Staff 
 
 ### `accounting_periods`: months of each company
 
-The months of each company (and of the group, for shared licenses) and whether each one is closed. Staff close a month after checking its accrual (UC12); otherwise it closes by itself on the 10th of the next month. Until then its figures are marked *Provisional*. A P&L month that carries the cost of a shared license stays *Provisional* until the group's month is closed too. A closed month can no longer be edited; a mistake is fixed with a correcting entry in an open month. The fiscal year is the calendar year.
+The months of each company (and of the group, for shared licenses) and whether each one is closed. Staff close a month after checking its accrual (UC11); otherwise it closes by itself on the 10th of the next month. Until then its figures are marked *Provisional*. A P&L month that carries the cost of a shared license stays *Provisional* until the group's month is closed too. A closed month can no longer be edited; a mistake is fixed with a correcting entry in an open month. The fiscal year is the calendar year.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -591,7 +591,7 @@ The months of each company (and of the group, for shared licenses) and whether e
 
 ### `exchange_rates`: currency rates
 
-The rates used to turn USD and other currencies into VND, entered by group-level Staff (UC14). A rate is valid from its date until a newer one is entered; an invoice is converted with the rate of its date.
+The rates used to turn USD and other currencies into VND, entered by group-level Staff (UC13). A rate is valid from its date until a newer one is entered; an invoice is converted with the rate of its date.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -664,7 +664,7 @@ Who changed what, when, the old and new value, and why. Rows can only be added, 
 
 ### `data_overrides`: corrections to ILVG data
 
-When Admin corrects a value that came from ILVG, for example a unit placed under the wrong parent (UC23). The original value stays beside the correction, and the next ILVG sync does not overwrite it. Licenses, holders, and usage are never corrected in ELMS: they are corrected at the source.
+When Admin corrects a value that came from ILVG, for example a unit placed under the wrong parent (UC22). The original value stays beside the correction, and the next ILVG sync does not overwrite it. Licenses, holders, and usage are never corrected in ELMS: they are corrected at the source.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|

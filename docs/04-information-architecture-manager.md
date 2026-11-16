@@ -1,6 +1,6 @@
 # Information Architecture — ELMS
 
-> Design status: TARGET (27 use cases, November 2026)
+> Design status: TARGET (26 use cases, November 2026)
 >
 > Baseline: [Use cases](02-use-cases.md), [Feature list](08-feature-list.md), the UI demos D1 (`UI/VFast_Usage_Connector_Management (5).html`, on branch `update-usage-connector-management`) and D2 (waste analytics). Where a demo exists, the screen follows it; what the use cases add on top of it is marked *(not in the demo)*.
 
@@ -8,18 +8,18 @@ This document lists the screens of ELMS, who reaches them and how, what each scr
 
 ## 1. Overview
 
-**App shell.** A header with the product name, the **company picker** (the scope of the Usage screen, UC06), the user menu, and logout; a left **sidebar** whose menu depends on the role. Screens open inside the shell; dialogs and drawers open over them.
+**App shell.** A header with the product name, the **company picker** (the scope of the Usage screen, UC05), the user menu, and logout; a left **sidebar** whose menu depends on the role. Screens open inside the shell; dialogs and drawers open over them.
 
 **Principles.**
 
 | # | Principle | Source |
 |---|---|---|
 | P1 | Money first: analysis screens show amounts, in VND or USD at the user's choice, with the rate used | BR-05 |
-| P2 | One scope drives the whole Usage screen; the scope is in the page address | UC06 |
+| P2 | One scope drives the whole Usage screen; the scope is in the page address | UC05 |
 | P3 | Plan, Purchased, Used, and Wasted are always shown together; Not evaluated whenever it is above zero | BR-23 |
 | P4 | Missing data reads `Unknown`, `Not evaluated`, `Not tracked`, or "No data yet", never 0 | BR-04 |
 | P5 | Complete months only; an open month is *Provisional* | BR-29 |
-| P6 | Every figure has a definition behind an info icon | BR-28, UC21 |
+| P6 | Every figure has a definition behind an info icon | BR-28, UC20 |
 | P7 | Mock data is labelled on every screen it reaches | BR-13 |
 | P8 | Menus and buttons follow the permissions, but the API enforces them (`403`) | BR-15 |
 
@@ -33,35 +33,35 @@ This document lists the screens of ELMS, who reaches them and how, what each scr
 | SCR-LIC-ORG-01 | Licenses by organization | Manager | UC03 | — |
 | SCR-LIC-PROV-01 | Providers and licenses | Manager | UC03 | — |
 | SCR-LIC-TERMS-01 | License terms (contracts) | Manager | UC01 | — |
-| SCR-LIC-SHARED-01 | Shared licenses | Staff; Manager reads | UC05 | — |
-| SCR-CATALOG-01 | Software catalog and mapping | Staff | UC04 | — |
-| SCR-USAGE-01 | Usage: scope, balance, comparison, trend, units table, waste analysis | Manager | UC06, UC07, UC08, UC09, UC17, UC18, UC16 | D1, D2 |
-| SCR-EMP-USAGE-01 | Employee usage (BCA) | Manager | UC10 | — |
-| SCR-BUDGET-IMPORT-01 | Budget import | Manager | UC11 | — |
-| SCR-BUDGET-PLAN-01 | Monthly budget plan and versions | Manager | UC11 | — |
-| SCR-ACCRUAL-01 | Cost accrual and month close | Staff; Manager reads | UC12 | — |
-| SCR-EXPENSES-01 | Expenses | Staff | UC13 | — |
-| SCR-RATES-01 | Exchange rates | Staff | UC14 | — |
-| SCR-FORECAST-01 | Spending forecast | Manager | UC15 | — |
-| SCR-ANALYSIS-01 | Analysis by license, software, category, provider | Manager | UC20 | — |
-| SCR-METRICS-01 | Metric definitions | Manager | UC21 | — |
-| SCR-DASH-LIC-01, -FIN-01, -OPT-01 | License, financial, optimization dashboards | Manager | UC19 | — |
-| SCR-COST-01 | Cost allocation (financial dashboard) | Manager | UC19 | — |
-| SCR-VARIANCE-01 | Monthly plan variance (financial dashboard) | Manager | UC19 | — |
-| SCR-CONN-01 | Connector Management | Staff | UC24 | D1 |
-| SCR-CONN-FORM-01 | New / Edit connector dialog | Staff | UC24 | D1 |
-| SCR-CONN-DETAIL-01 | Connector details drawer | Staff | UC24 | D1 v1 |
-| SCR-SYNC-01 | Sync monitoring | Staff | UC25 | — |
-| SCR-USERS-01 | Users: role, scope, access | Admin | UC22 | — |
-| SCR-ORG-01 | Organization hierarchy | Admin | UC23 | — |
-| SCR-ROLES-01 | Roles | Admin | UC22 | — |
-| SCR-PERMS-01 | Permission matrix | Admin | UC22 | — |
-| SCR-MY-01 | My licenses | Everyone | UC26 | — |
-| SCR-LOGIN-01 | Login | Everyone | UC27 | — |
+| SCR-LIC-SHARED-01 | License catalog, tab *Shared* | Staff; Manager reads | UC04 | — |
+| SCR-CATALOG-01 | License catalog, tabs *Software* and *Mapping* | Staff | UC04 | — |
+| SCR-USAGE-01 | Usage: scope, balance, comparison, trend, units table, waste analysis | Manager | UC05, UC06, UC07, UC08, UC16, UC17, UC15 | D1, D2 |
+| SCR-EMP-USAGE-01 | Employee usage (BCA) | Manager | UC09 | — |
+| SCR-BUDGET-IMPORT-01 | Budget import | Manager | UC10 | — |
+| SCR-BUDGET-PLAN-01 | Monthly budget plan and versions | Manager | UC10 | — |
+| SCR-ACCRUAL-01 | Cost accrual and month close | Staff; Manager reads | UC11 | — |
+| SCR-EXPENSES-01 | Expenses | Staff | UC12 | — |
+| SCR-RATES-01 | Exchange rates | Staff | UC13 | — |
+| SCR-FORECAST-01 | Spending forecast | Manager | UC14 | — |
+| SCR-ANALYSIS-01 | Analysis by license, software, category, provider | Manager | UC19 | — |
+| SCR-METRICS-01 | Metric definitions | Manager | UC20 | — |
+| SCR-DASH-LIC-01, -FIN-01, -OPT-01 | License, financial, optimization dashboards | Manager | UC18 | — |
+| SCR-COST-01 | Cost allocation (financial dashboard) | Manager | UC18 | — |
+| SCR-VARIANCE-01 | Monthly plan variance (financial dashboard) | Manager | UC18 | — |
+| SCR-CONN-01 | Connector Management | Staff | UC23 | D1 |
+| SCR-CONN-FORM-01 | New / Edit connector dialog | Staff | UC23 | D1 |
+| SCR-CONN-DETAIL-01 | Connector details drawer | Staff | UC23 | D1 v1 |
+| SCR-SYNC-01 | Sync monitoring | Staff | UC24 | — |
+| SCR-USERS-01 | Users: role, scope, access | Admin | UC21 | — |
+| SCR-ORG-01 | Organization hierarchy | Admin | UC22 | — |
+| SCR-ROLES-01 | Roles | Admin | UC21 | — |
+| SCR-PERMS-01 | Permission matrix | Admin | UC21 | — |
+| SCR-MY-01 | My licenses | Everyone | UC25 | — |
+| SCR-LOGIN-01 | Login | Everyone | UC26 | — |
 
 ## 3. Navigation
 
-**Default screen after login (UC27):** Manager → License List; Staff → Connector Management; Admin → Users; Employee → My licenses.
+**Default screen after login (UC26):** Manager → License List; Staff → Connector Management; Admin → Users; Employee → My licenses.
 
 ```mermaid
 flowchart LR
@@ -112,71 +112,71 @@ flowchart LR
 | SCR-LIC-ORG-01 (UC03) | Unit picker → its licenses; switch to *by license* → the units using it with their share |
 | SCR-LIC-PROV-01 (UC03) | Providers with number of licenses, companies, monthly cost → a provider's licenses with Purchased and Allocated per license |
 | SCR-LIC-TERMS-01 (UC01) | Terms: license, provider, company, start, expiry, auto-renew ("—" when not reported), cost; filter renewal within 30 / 60 days |
-| SCR-LIC-SHARED-01 (UC05) | Shared licenses and *Possibly shared* proposals (confirm, unmark); per license, the charge-back per company and *Unallocated* of the group |
+| SCR-LIC-SHARED-01 (UC04) | Shared licenses and *Possibly shared* proposals (confirm, unmark); per license, the charge-back per company and *Unallocated* of the group |
 | SCR-CATALOG-01 (UC04) | Tabs *Software* (software, provider, category › subcategory, licenses mapped; create, edit, merge) and *Mapping* (license names and BCA application names, filter *Not mapped*, suggested software) |
 
 ### 4.3 Usage (D1 menu *Usage*, D2 *Tổng quan chi phí & sử dụng*)
 
-**SCR-USAGE-01** is one long screen driven by the scope (UC06):
+**SCR-USAGE-01** is one long screen driven by the scope (UC05):
 
 1. **Sidebar tree** Group > Company > Division > Department > Project > License, search in the tree, keyboard; *Unallocated* and *Unknown unit* nodes under a P&L. **Breadcrumb**; **company picker** in the header; title by level (*License Monitoring* at project level).
-2. **Balance (UC07):** three bars Plan Budget, Purchased Cost, Actual Used; badge "Over budget +X" / "Savings vs budget −X"; donut Utilized, Wasted, Not evaluated, Purchased.
-3. **Period and filters (UC08):** tabs *YTD* / *Monthly Comparison* / *Annual Trend*; Year, Month; sort (7 orders); search with "shown / total"; currency USD / VND.
-4. **Unit comparison (UC08)** — cards of 8 units, Plan beside Purchased split into Used, Wasted, Not evaluated; or **annual trend (UC08)** — one card per unit by month with Efficiency.
-5. **Units table (UC09):** rank, unit, Plan, Purchased, Used, Wasted, utilization, variance; paging 10 / 25 / 50; **license heatmap** under each P&L row (chevron) with the *Rate / Cost* switch; *Export CSV* (UC09).
-6. **Waste analysis:** ranking (UC17, D2) — top 10, Used / Waste bar, "% chưa khai thác"; **trend (UC18)** — Plan, Used, Wasted by month, "Filtered: n of N units"; **risk distribution (UC18)** — scatter Purchased × waste rate with medians; **monthly heatmap (UC18)** — own year selector, top 12, *Rate / Cost* switch.
-7. Waste flag in red (Wasted above 20 % of Purchased, UC17) on the tree, the table, and the scatter. Unused and inactive seats (UC16) open from the license panel and the dashboards.
+2. **Balance (UC06):** three bars Plan Budget, Purchased Cost, Actual Used; badge "Over budget +X" / "Savings vs budget −X"; donut Utilized, Wasted, Not evaluated, Purchased.
+3. **Period and filters (UC07):** tabs *YTD* / *Monthly Comparison* / *Annual Trend*; Year, Month; sort (7 orders); search with "shown / total"; currency USD / VND.
+4. **Unit comparison (UC07)** — cards of 8 units, Plan beside Purchased split into Used, Wasted, Not evaluated; or **annual trend (UC07)** — one card per unit by month with Efficiency.
+5. **Units table (UC08):** rank, unit, Plan, Purchased, Used, Wasted, utilization, variance; paging 10 / 25 / 50; **license heatmap** under each P&L row (chevron) with the *Rate / Cost* switch; *Export CSV* (UC08).
+6. **Waste analysis:** ranking (UC16, D2) — top 10, Used / Waste bar, "% chưa khai thác"; **trend (UC17)** — Plan, Used, Wasted by month, "Filtered: n of N units"; **risk distribution (UC17)** — scatter Purchased × waste rate with medians; **monthly heatmap (UC17)** — own year selector, top 12, *Rate / Cost* switch.
+7. Waste flag in red (Wasted above 20 % of Purchased, UC16) on the tree, the table, and the scatter. Unused and inactive seats (UC15) open from the license panel and the dashboards.
 
 The sidebar item **Xếp hạng lãng phí** opens this screen at the Manager's highest unit, sorted by waste, scrolled to the waste analysis.
 
-**SCR-EMP-USAGE-01 (UC10):** unit and period → employees, application, days used, last used (BCA); "Not tracked" without BCA; "No license reported" for an application without a license.
+**SCR-EMP-USAGE-01 (UC09):** unit and period → employees, application, days used, last used (BCA); "Not tracked" without BCA; "No license reported" for an application without a license.
 
 ### 4.4 Budget and cost
 
 | Screen | Content |
 |---|---|
-| SCR-BUDGET-IMPORT-01 (UC11) | Download template → choose target unit and months → upload → preview per unit: add, replace, remove, reject with reasons → *Confirm*; "No changes" for the same file; "The plan changed since your preview"; import history |
-| SCR-BUDGET-PLAN-01 (UC11) | Year and unit → plan by month and license, year total; group by P&L, block, project; compare with an earlier version |
-| SCR-ACCRUAL-01 (UC12) | Company and month → per license term: term cost, accrued this month, to date, remaining; rounding applied; *Close month*; export for finance |
-| SCR-EXPENSES-01 (UC13) | Expenses with invoice and term; add, edit, CSV import; correcting entries for closed months |
-| SCR-RATES-01 (UC14) | Rates per currency and date; add, correct (open months only) |
-| SCR-FORECAST-01 (UC15) | Unit and year → actual by month, forecast for the rest, year-end against plan, upcoming renewals |
+| SCR-BUDGET-IMPORT-01 (UC10) | Download template → choose target unit and months → upload → preview per unit: add, replace, remove, reject with reasons → *Confirm*; "No changes" for the same file; "The plan changed since your preview"; import history |
+| SCR-BUDGET-PLAN-01 (UC10) | Year and unit → plan by month and license, year total; group by P&L, block, project; compare with an earlier version |
+| SCR-ACCRUAL-01 (UC11) | Company and month → per license term: term cost, accrued this month, to date, remaining; rounding applied; *Close month*; export for finance |
+| SCR-EXPENSES-01 (UC12) | Expenses with invoice and term; add, edit, CSV import; correcting entries for closed months |
+| SCR-RATES-01 (UC13) | Rates per currency and date; add, correct (open months only) |
+| SCR-FORECAST-01 (UC14) | Unit and year → actual by month, forecast for the rest, year-end against plan, upcoming renewals |
 
 ### 4.5 Analytics
 
 | Screen | Content |
 |---|---|
-| SCR-ANALYSIS-01 (UC20) | Dimension license, software, category, provider, license type → figures per item → split by unit; compare two periods; CSV |
-| SCR-METRICS-01 (UC21) | Catalog of metrics with formula, unit, source, period, exclusions; the same definition behind every info icon |
-| SCR-DASH-LIC-01 (UC19) | License counts by category, license type, provider; Purchased vs Assigned vs Used; expiring within 30 days |
-| SCR-DASH-FIN-01 (UC19) | Yearly spend, spend by month and unit, plan against actual, forecast |
-| SCR-COST-01 (UC19) | Financial dashboard tab: period → per license: cost, seats, cost per seat, cost per unit; *Unallocated* and *Unknown unit*; chart by unit |
-| SCR-VARIANCE-01 (UC19) | Financial dashboard tab: unit and year → per complete month Plan, Purchased, Used, variance; chart; licenses behind a month's variance |
-| SCR-DASH-OPT-01 (UC19) | Waste, utilization, Not evaluated; unassigned and inactive seats; flagged P&Ls |
+| SCR-ANALYSIS-01 (UC19) | Dimension license, software, category, provider, license type → figures per item → split by unit; compare two periods; CSV |
+| SCR-METRICS-01 (UC20) | Catalog of metrics with formula, unit, source, period, exclusions; the same definition behind every info icon |
+| SCR-DASH-LIC-01 (UC18) | License counts by category, license type, provider; Purchased vs Assigned vs Used; expiring within 30 days |
+| SCR-DASH-FIN-01 (UC18) | Yearly spend, spend by month and unit, plan against actual, forecast |
+| SCR-COST-01 (UC18) | Financial dashboard tab: period → per license: cost, seats, cost per seat, cost per unit; *Unallocated* and *Unknown unit*; chart by unit |
+| SCR-VARIANCE-01 (UC18) | Financial dashboard tab: unit and year → per complete month Plan, Purchased, Used, variance; chart; licenses behind a month's variance |
+| SCR-DASH-OPT-01 (UC18) | Waste, utilization, Not evaluated; unassigned and inactive seats; flagged P&Ls |
 
 ### 4.6 Connector Management (D1)
 
-**SCR-CONN-01 (UC24):** tiles *Companies*, *Providers*, *Licenses*, *Sync Issues*; search *Search company, provider, license…*; filters company, provider, status (`Active`, `Delayed`, `Failed`, `Pending`, `Paused`); sort (5 orders); tree table *Company / Provider / License* with coverage, API contact, created, last sync, status; *Edit* on a provider row; paging by company.
+**SCR-CONN-01 (UC23):** tiles *Companies*, *Providers*, *Licenses*, *Sync Issues*; search *Search company, provider, license…*; filters company, provider, status (`Active`, `Delayed`, `Failed`, `Pending`, `Paused`); sort (5 orders); tree table *Company / Provider / License* with coverage, API contact, created, last sync, status; *Edit* on a provider row; paging by company.
 
-**SCR-CONN-FORM-01 (UC24):** *General* (company, provider, API contact and email); *API Connection* (HTTPS API URL of the P&L, API Key or Bearer Token, masked credential); *Sync interval* in hours *(not in the demo)*; *Licenses* as chips with suggestions; *Test connection* *(not in the demo)*; *Create Connector* / *Save Changes*; *Delete* with confirmation *(not in the demo)*.
+**SCR-CONN-FORM-01 (UC23):** *General* (company, provider, API contact and email); *API Connection* (HTTPS API URL of the P&L, API Key or Bearer Token, masked credential); *Sync interval* in hours *(not in the demo)*; *Licenses* as chips with suggestions; *Test connection* *(not in the demo)*; *Create Connector* / *Save Changes*; *Delete* with confirmation *(not in the demo)*.
 
-**SCR-CONN-DETAIL-01 (UC24):** drawer with company, connector ID, contact, created, last sync, interval, paused or running, API base URL, authentication type, licenses with status — never the credential.
+**SCR-CONN-DETAIL-01 (UC23):** drawer with company, connector ID, contact, created, last sync, interval, paused or running, API base URL, authentication type, licenses with status — never the credential.
 
-**SCR-SYNC-01 (UC25):** connections (source, P&L, status, interval, last run) → runs (data period, status `Running` / `Success` / `Partial` / `Failed` / `Paused`, records received, accepted, rejected, duration) → a run's rejected records with the check that failed; *Run now*, *Rerun period*, *Pause* / *Resume*, change interval, replace credential.
+**SCR-SYNC-01 (UC24):** connections (source, P&L, status, interval, last run) → runs (data period, status `Running` / `Success` / `Partial` / `Failed` / `Paused`, records received, accepted, rejected, duration) → a run's rejected records with the check that failed; *Run now*, *Rerun period*, *Pause* / *Resume*, change interval, replace credential.
 
 ### 4.7 Administration
 
 | Screen | Content |
 |---|---|
-| SCR-USERS-01 (UC22) | Users (name, email, role, unit, managed units or companies, status, last login); accounts come from ILVG, none created here; change role and scope; disable, re-enable |
-| SCR-ORG-01 (UC23) | Five-level tree with codes and source; assign Managers at any level, the group included; correct a unit with a reason; "Unmatched" codes; mark inactive |
-| SCR-ROLES-01 (UC22) | Four roles with their users |
-| SCR-PERMS-01 (UC22) | Matrix feature × role (read, write); change with a reason |
+| SCR-USERS-01 (UC21) | Users (name, email, role, unit, managed units or companies, status, last login); accounts come from ILVG, none created here; change role and scope; disable, re-enable |
+| SCR-ORG-01 (UC22) | Five-level tree with codes and source; assign Managers at any level, the group included; correct a unit with a reason; "Unmatched" codes; mark inactive |
+| SCR-ROLES-01 (UC21) | Four roles with their users |
+| SCR-PERMS-01 (UC21) | Matrix feature × role (read, write); change with a reason |
 
 ### 4.8 Self-service
 
-- **SCR-MY-01 (UC26):** licenses held across all the user's emails: license, provider, P&L, assigned date, status, last used, expiry; a note on Inactive seats; no cost.
-- **SCR-LOGIN-01 (UC27):** email and password; generic error; lock after 5 failures; first password through the one-time link of the account email; *Forgot password* sends a new link.
+- **SCR-MY-01 (UC25):** licenses held across all the user's emails: license, provider, P&L, assigned date, status, last used, expiry; a note on Inactive seats; no cost.
+- **SCR-LOGIN-01 (UC26):** email and password; generic error; lock after 5 failures; first password through the one-time link of the account email; *Forgot password* sends a new link.
 
 ## 5. UI conventions
 
@@ -203,7 +203,7 @@ Every screen implements five states:
 
 ### 5.4 Charts
 
-- Charts use ApexCharts; no numbers painted on bars or slices — values appear in tooltips (the figure card of UC08).
+- Charts use ApexCharts; no numbers painted on bars or slices — values appear in tooltips (the figure card of UC07).
 - Horizontal bars have a calibrated bottom axis with light gridlines.
 - Colours: Plan `#8FB3DD`, Used `#648FC3`, Wasted `#D39B5C`, Not evaluated `#9E9E9E`, waste flag red `#EF4444`; heatmap from low to high waste in one hue.
 - The current month is not drawn (P5).

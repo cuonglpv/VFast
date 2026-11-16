@@ -1,6 +1,6 @@
 # INVEST Requirements & Acceptance Criteria — ELMS
 
-> Design status: TARGET (27 use cases, 47 stories, November 2026)
+> Design status: TARGET (26 use cases, 47 stories, November 2026)
 
 Each story is small enough to implement and test independently. Authentication, authorization, data scope, and error handling are acceptance constraints, not hidden features. Business rules `BR-xx` are defined in [Use cases](02-use-cases.md#business-rules). Each story implements one use case, named in the backlog, and stories are grouped by the branches of the [mind map](mindmap.png).
 
@@ -32,50 +32,50 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US07 | UC03 | As a Manager, I want the licenses of any unit, or the units of any license, so that I see where each license is used. | Two-way view | US40, US42 | S | 3 |
 | US08 | UC03 | As a Manager, I want the providers the group buys from and their licenses so that I know our dependence on each provider. | Provider view | US42 | C | 2 |
 | US09 | UC04 | As a Staff member, I want to keep the software catalog and map every license and application name to a software and category so that the same software is counted together in every company. | One vocabulary | US42 | M | 5 |
-| US10 | UC05 | As a Staff member, I want to mark a license used by two or more companies as shared so that its cost is charged back to them and its free seats stay with the group. | Fair charge-back | US42, US33 | M | 5 |
+| US10 | UC04 | As a Staff member, I want to mark a license used by two or more companies as shared so that its cost is charged back to them and its free seats stay with the group. | Fair charge-back | US42, US33 | M | 5 |
 | **Budget Management** | | | | | | |
-| US11 | UC06 | As a Manager, I want to choose the unit to analyse from the organization tree and go down and up so that every panel shows that scope. | Navigation | US40 | M | 5 |
-| US12 | UC07 | As a Manager, I want Plan, Purchased, and Used of my scope and whether it is over budget so that I see the balance at once. | Balance | US11, US18, US20 | M | 3 |
-| US13 | UC08 | As a Manager, I want to compare the units below my scope year to date or for a month so that I see which unit drifts. | Comparison | US12 | M | 5 |
-| US14 | UC08 | As a Manager, I want each unit month by month over the year so that I see when it drifts. | Trend per unit | US13 | S | 3 |
-| US15 | UC09 | As a Manager, I want a table of the units below my scope with their figures and, per P&L, a license heatmap of waste so that I find the license behind the waste. | Root cause | US13 | M | 5 |
+| US11 | UC05 | As a Manager, I want to choose the unit to analyse from the organization tree and go down and up so that every panel shows that scope. | Navigation | US40 | M | 5 |
+| US12 | UC06 | As a Manager, I want Plan, Purchased, and Used of my scope and whether it is over budget so that I see the balance at once. | Balance | US11, US18, US20 | M | 3 |
+| US13 | UC07 | As a Manager, I want to compare the units below my scope year to date or for a month so that I see which unit drifts. | Comparison | US12 | M | 5 |
+| US14 | UC07 | As a Manager, I want each unit month by month over the year so that I see when it drifts. | Trend per unit | US13 | S | 3 |
+| US15 | UC08 | As a Manager, I want a table of the units below my scope with their figures and, per P&L, a license heatmap of waste so that I find the license behind the waste. | Root cause | US13 | M | 5 |
 | **Optimization** | | | | | | |
-| US16 | UC09 | As a Manager, I want to export the units listed as CSV so that I can share the figures. | Reporting | US15 | S | 2 |
-| US17 | UC10 | As a Manager, I want to see how often each employee uses each application, from BCA, so that I can compare use with the licenses held. | Usage evidence | US40, US09 | C | 3 |
-| US18 | UC11 | As a Manager, I want to import the budget plan of my unit or any unit under it from Excel, safely and repeatably, so that the plan matches SAP. | Plan in ELMS | US40 | M | 8 |
+| US16 | UC08 | As a Manager, I want to export the units listed as CSV so that I can share the figures. | Reporting | US15 | S | 2 |
+| US17 | UC09 | As a Manager, I want to see how often each employee uses each application, from BCA, so that I can compare use with the licenses held. | Usage evidence | US40, US09 | C | 3 |
+| US18 | UC10 | As a Manager, I want to import the budget plan of my unit or any unit under it from Excel, safely and repeatably, so that the plan matches SAP. | Plan in ELMS | US40 | M | 8 |
 | **Analytics** | | | | | | |
-| US19 | UC11 | As a Manager, I want the plan by month and its earlier versions so that I see what changed. | Plan review | US18 | M | 2 |
-| US20 | UC12 | As a Staff member, I want the cost of each invoice spread over the months of its term and the month closed so that Purchased is right every month. | Monthly cost | US21, US22 | M | 5 |
-| US21 | UC13 | As a Staff member, I want to import the PR, PO, and invoices exported from SAP each month, and enter a purchase made outside SAP, so that ELMS knows how many seats were bought, for which term, and what was paid. | Quantity and cost source | US42 | M | 5 |
+| US19 | UC10 | As a Manager, I want the plan by month and its earlier versions so that I see what changed. | Plan review | US18 | M | 2 |
+| US20 | UC11 | As a Staff member, I want the cost of each invoice spread over the months of its term and the month closed so that Purchased is right every month. | Monthly cost | US21, US22 | M | 5 |
+| US21 | UC12 | As a Staff member, I want to import the PR, PO, and invoices exported from SAP each month, and enter a purchase made outside SAP, so that ELMS knows how many seats were bought, for which term, and what was paid. | Quantity and cost source | US42 | M | 5 |
 | **User & Organization** | | | | | | |
-| US22 | UC14 | As a Staff member, I want to enter the exchange rates from a date so that every amount is converted with the rate of its invoice date. | Correct currency | US47 | M | 2 |
-| US23 | UC15 | As a Manager, I want the projected year-end spending against plan so that I can act before the year ends. | Early warning | US20, US18 | C | 3 |
+| US22 | UC13 | As a Staff member, I want to enter the exchange rates from a date so that every amount is converted with the rate of its invoice date. | Correct currency | US47 | M | 2 |
+| US23 | UC14 | As a Manager, I want the projected year-end spending against plan so that I can act before the year ends. | Early warning | US20, US18 | C | 3 |
 | **Connection Management** | | | | | | |
-| US24 | UC16 | As a Manager, I want the seats bought but given to nobody and their cost so that I stop paying for them. | Waste found | US33 | M | 3 |
-| US25 | UC16 | As a Manager, I want the seats not used for 30 days and their cost so that I know whose seat to reclaim. | Waste found | US05 | M | 3 |
+| US24 | UC15 | As a Manager, I want the seats bought but given to nobody and their cost so that I stop paying for them. | Waste found | US33 | M | 3 |
+| US25 | UC15 | As a Manager, I want the seats not used for 30 days and their cost so that I know whose seat to reclaim. | Waste found | US05 | M | 3 |
 | **Self-service** | | | | | | |
-| US26 | UC17 | As a Manager, I want P&Ls that waste more than 20 % of what they buy shown in red so that I see where to act first. | Prioritization | US33 | M | 2 |
-| US27 | UC17 | As a Manager, I want the units ranked by money wasted so that I start with the largest. | Prioritization | US13 | M | 3 |
-| US28 | UC18 | As a Manager, I want Plan, Used, and Wasted month by month on one chart so that I see whether waste grows. | Trend | US13, US18 | S | 3 |
-| US29 | UC18 | As a Manager, I want the units placed by spend and waste rate so that I see where high spend meets high waste. | Risk view | US13 | S | 3 |
-| US30 | UC18 | As a Manager, I want a heatmap of waste per unit and month, as a rate or in money, so that I see when each unit wastes. | Seasonality | US13 | S | 3 |
-| US31 | UC19 | As a Manager, I want a license dashboard so that counts, allocation, and expiries are on one screen. | Overview | US01, US09 | S | 3 |
-| US32 | UC19 | As a Manager, I want a financial dashboard so that spending, plan, and forecast are on one screen. | Financial overview | US33, US34, US23 | S | 3 |
-| US33 | UC19 | As a Manager, I want the cost of each license split over the units that hold it on the financial dashboard so that each unit carries its own cost. | Cost per unit | US20, US40 | M | 5 |
-| US34 | UC19 | As a Manager, I want the variance between plan and purchased month by month on the financial dashboard so that I see where spending leaves the plan. | Variance | US18, US20 | S | 3 |
-| US35 | UC19 | As a Manager, I want an optimization dashboard so that waste, unused and inactive seats, and flagged P&Ls are on one screen. | Waste overview | US24–US26 | S | 3 |
-| US36 | UC20 | As a Manager, I want the same figures per license, software, category, provider, or license type so that I see which software wastes most. | License view | US09, US33 | S | 3 |
-| US37 | UC21 | As a Manager, I want the definition of every figure where it appears so that I read the numbers the same way as everyone. | Shared meaning | — | S | 2 |
-| US38 | UC22 | As an Admin, I want to give each user a role and a data scope — the units of a Manager, the companies of a Staff member — and disable or re-enable their access so that each person sees exactly what their job needs. | Access control | US47, US40 | M | 5 |
-| US39 | UC22 | As an Admin, I want to adjust which features each role may read or write so that permissions fit the group. | Permission control | US38 | M | 3 |
-| US40 | UC23 | As an Admin, I want to review the five-level organization from ILVG and assign Managers to units so that data scope follows the organization. | Organization | ILVG connector | M | 3 |
-| US41 | UC24 | As a Staff member, I want every connector of my companies with its licenses and sync status so that I see which data is in trouble. | Data health | US42 | M | 3 |
-| US42 | UC24 | As a Staff member, I want to connect a company's provider API with its licenses and interval so that its data flows into ELMS. | Data in | US47 | M | 5 |
-| US43 | UC24 | As a Staff member, I want to edit or delete a connector so that it follows changes at the P&L. | Data upkeep | US42 | M | 3 |
-| US44 | UC24 | As a Staff member, I want the details of a connector so that I can check its settings without editing it. | Quick check | US42 | C | 2 |
-| US45 | UC25 | As a Staff member, I want every sync run, its rejected records, reruns, and pause so that missing data is fixed instead of read as zero. | Data completeness | US42 | M | 5 |
-| US46 | UC26 | As an employee, I want the licenses I hold across all my emails and whether I am recorded as using them so that I can give back what I do not need. | Self-service | US42, US47 | M | 2 |
-| US47 | UC27 | As any user, I want to log in and out and land on the screen of my role so that only I see my data. | Protected access | Accounts from ILVG | M | 3 |
+| US26 | UC16 | As a Manager, I want P&Ls that waste more than 20 % of what they buy shown in red so that I see where to act first. | Prioritization | US33 | M | 2 |
+| US27 | UC16 | As a Manager, I want the units ranked by money wasted so that I start with the largest. | Prioritization | US13 | M | 3 |
+| US28 | UC17 | As a Manager, I want Plan, Used, and Wasted month by month on one chart so that I see whether waste grows. | Trend | US13, US18 | S | 3 |
+| US29 | UC17 | As a Manager, I want the units placed by spend and waste rate so that I see where high spend meets high waste. | Risk view | US13 | S | 3 |
+| US30 | UC17 | As a Manager, I want a heatmap of waste per unit and month, as a rate or in money, so that I see when each unit wastes. | Seasonality | US13 | S | 3 |
+| US31 | UC18 | As a Manager, I want a license dashboard so that counts, allocation, and expiries are on one screen. | Overview | US01, US09 | S | 3 |
+| US32 | UC18 | As a Manager, I want a financial dashboard so that spending, plan, and forecast are on one screen. | Financial overview | US33, US34, US23 | S | 3 |
+| US33 | UC18 | As a Manager, I want the cost of each license split over the units that hold it on the financial dashboard so that each unit carries its own cost. | Cost per unit | US20, US40 | M | 5 |
+| US34 | UC18 | As a Manager, I want the variance between plan and purchased month by month on the financial dashboard so that I see where spending leaves the plan. | Variance | US18, US20 | S | 3 |
+| US35 | UC18 | As a Manager, I want an optimization dashboard so that waste, unused and inactive seats, and flagged P&Ls are on one screen. | Waste overview | US24–US26 | S | 3 |
+| US36 | UC19 | As a Manager, I want the same figures per license, software, category, provider, or license type so that I see which software wastes most. | License view | US09, US33 | S | 3 |
+| US37 | UC20 | As a Manager, I want the definition of every figure where it appears so that I read the numbers the same way as everyone. | Shared meaning | — | S | 2 |
+| US38 | UC21 | As an Admin, I want to give each user a role and a data scope — the units of a Manager, the companies of a Staff member — and disable or re-enable their access so that each person sees exactly what their job needs. | Access control | US47, US40 | M | 5 |
+| US39 | UC21 | As an Admin, I want to adjust which features each role may read or write so that permissions fit the group. | Permission control | US38 | M | 3 |
+| US40 | UC22 | As an Admin, I want to review the five-level organization from ILVG and assign Managers to units so that data scope follows the organization. | Organization | ILVG connector | M | 3 |
+| US41 | UC23 | As a Staff member, I want every connector of my companies with its licenses and sync status so that I see which data is in trouble. | Data health | US42 | M | 3 |
+| US42 | UC23 | As a Staff member, I want to connect a company's provider API with its licenses and interval so that its data flows into ELMS. | Data in | US47 | M | 5 |
+| US43 | UC23 | As a Staff member, I want to edit or delete a connector so that it follows changes at the P&L. | Data upkeep | US42 | M | 3 |
+| US44 | UC23 | As a Staff member, I want the details of a connector so that I can check its settings without editing it. | Quick check | US42 | C | 2 |
+| US45 | UC24 | As a Staff member, I want every sync run, its rejected records, reruns, and pause so that missing data is fixed instead of read as zero. | Data completeness | US42 | M | 5 |
+| US46 | UC25 | As an employee, I want the licenses I hold across all my emails and whether I am recorded as using them so that I can give back what I do not need. | Self-service | US42, US47 | M | 2 |
+| US47 | UC26 | As any user, I want to log in and out and land on the screen of my role so that only I see my data. | Protected access | Accounts from ILVG | M | 3 |
 
 **Total:** 47 stories, 162 points. Must-have: 29 stories (113 points); Should-have: 13 stories (37 points); Could-have: 5 stories (12 points). A use case is one goal of its actor; when it is too large for one story it is split into several, so one use case can have several stories.
 
@@ -85,7 +85,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 
 | Story | I | N | V | E | S | T | Notes |
 |---|---|---|---|---|---|---|---|
-| US01 | PASS | PASS | PASS | PASS | PASS | PASS | Monthly cost = accrued cost of the current month (UC12); expiry buckets BR-31; allocation BR-32. |
+| US01 | PASS | PASS | PASS | PASS | PASS | PASS | Monthly cost = accrued cost of the current month (UC11); expiry buckets BR-31; allocation BR-32. |
 | US02 | PASS | PASS | PASS | PASS | PASS | PASS | Testable with a fixed "today". |
 | US03 | PASS | PASS | PASS | PASS | PASS | PASS | Unknown start date rule BR-31. |
 | US04 | PASS | PASS | PASS | PASS | PASS | PASS | Read-only; terms from the PO lines (BR-10); "—" when SAP does not give a field. Could-have. |
@@ -101,7 +101,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US14 | PASS | PASS | PASS | PASS | PASS | PASS | Efficiency = Used ÷ Purchased. |
 | US15 | PASS | PASS | PASS | PASS | PASS | PASS | License heatmap with Rate / Cost switch; rows add up (BR-20). |
 | US16 | PASS | PASS | PASS | PASS | PASS | PASS | File equals the screen. |
-| US17 | PASS | PASS | PASS | PASS | PASS | PASS | BCA fields assumed (UC10). Could-have. |
+| US17 | PASS | PASS | PASS | PASS | PASS | PASS | BCA fields assumed (UC09). Could-have. |
 | US18 | PASS | PASS | PASS | PASS | PASS | PASS | Largest story (8): per-license replacement in the target subtree BR-08, idempotency BR-34. Splits into: template and preview, confirm with versions, idempotency and concurrency. |
 | US19 | PASS | PASS | PASS | PASS | PASS | PASS | Read-only; versions from US18. |
 | US20 | PASS | PASS | PASS | PASS | PASS | PASS | Rounding to the thousand VND BR-24; closed months frozen. |
@@ -167,7 +167,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 2. Given a purchase entered by hand, then its PO cell is empty; auto-renew and notice period, which SAP does not give, show "—".
 3. Given any role calls a write API on terms, then it returns `403`: terms are read-only.
 
-#### AC-US05 License Users and Activity
+#### AC-US05 License Users and Usage
 
 1. Given 500 allocated seats — 400 Active, 60 Inactive or No activity, 40 Not monitored — then the summary shows these counts and each count filters the table.
 2. Given a holder with activity on 6 of 22 working days in the last 30 days, then the row shows "6 / 22" with a bar.

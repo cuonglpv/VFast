@@ -197,7 +197,7 @@ If BCA hides employee identity, usage can only be joined to ILVG through a share
 
 ## 6. SAP — monthly budget plan and purchases
 
-Budget plan file (UC11, BR-08), imported by Managers; it has no *Shared* column:
+Budget plan file (UC10, BR-08), imported by Managers; it has no *Shared* column:
 
 | Group | Fields |
 |---|---|
@@ -206,7 +206,7 @@ Budget plan file (UC11, BR-08), imported by Managers; it has no *Shared* column:
 | Line | `license_name` or `material`, `planned_quantity`, `unit` |
 | Money | `planned_amount`, `currency` |
 
-Purchase file (UC13, BR-10), imported by Staff each month:
+Purchase file (UC12, BR-10), imported by Staff each month:
 
 | Group | Fields |
 |---|---|

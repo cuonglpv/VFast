@@ -1,6 +1,6 @@
 # 05 — Folder structure and solution architecture
 
-Design status: **TARGET** for the backend, aligned with the 27 use cases (November 2026). The frontend (`src/frontend`) is already coded but still follows the previous model; its target screens are in [Information architecture](04-information-architecture-manager.md). Items marked *assumption* need team confirmation.
+Design status: **TARGET** for the backend, aligned with the 26 use cases (November 2026). The frontend (`src/frontend`) is already coded but still follows the previous model; its target screens are in [Information architecture](04-information-architecture-manager.md). Items marked *assumption* need team confirmation.
 
 
 ## 1. Repository layout
@@ -138,14 +138,14 @@ The modules follow the mind-map branches, plus two technical modules (`ingestion
 
 | Module | Use cases | Owns | Responsibility |
 |---|---|---|---|
-| `identity` | UC22, UC27 | user accounts, roles, permissions, sessions | Accounts provisioned from ILVG (BR-16), password links, login, lockout, RBAC, policies |
-| `organization` | UC23, ILVG sync, holder identity | org units, employees, user scopes, overrides | Five-level tree from ILVG (BR-20), employee and project membership, Manager and Staff scope (BR-15), holder identity (BR-26) |
-| `catalog` | UC01–UC05 | vendors, software, categories, licenses, terms | Software catalog and mapping (BR-36), licenses as the connectors report them, owner unit and shared licenses (BR-25), expiry (BR-31) |
-| `ingestion` | UC24, UC25 | connectors, plan data sources, sync runs, coverage, raw records, files, imports | Create, test, edit, delete, pause connectors; run them at their interval (BR-30); validate the license data contract (BR-18); budget and expense imports (preview → confirm, idempotent, BR-34) |
-| `usage` | UC06, UC10, UC26 | subjects, assignments, usage records, snapshots, employee app usage | Seat status with grace period (BR-03), days used (BR-33), daily snapshots, BCA usage (BR-22) |
-| `finance` | UC11, UC15, UC19 | budget versions and lines, expenses, accounting periods, exchange rates, cost allocations | Budget versions (BR-08), accrual (BR-24), currency (BR-05), cost split into Used, Wasted, Not evaluated (BR-06, BR-23), variance (BR-35), forecast (BR-11) |
-| `optimization` | UC16–UC18 | detection runs and results | Unused and inactive seats (BR-12), waste flag above 20 % (BR-21), waste analysis |
-| `analytics` | UC19–UC21 | read models only | Dashboards, analysis by license, metric definitions (BR-28) |
+| `identity` | UC21, UC26 | user accounts, roles, permissions, sessions | Accounts provisioned from ILVG (BR-16), password links, login, lockout, RBAC, policies |
+| `organization` | UC22, ILVG sync, holder identity | org units, employees, user scopes, overrides | Five-level tree from ILVG (BR-20), employee and project membership, Manager and Staff scope (BR-15), holder identity (BR-26) |
+| `catalog` | UC01–UC04 | vendors, software, categories, licenses, terms | Software catalog and mapping (BR-36), licenses as the connectors report them, owner unit and shared licenses (BR-25), expiry (BR-31) |
+| `ingestion` | UC23, UC24 | connectors, plan data sources, sync runs, coverage, raw records, files, imports | Create, test, edit, delete, pause connectors; run them at their interval (BR-30); validate the license data contract (BR-18); budget and expense imports (preview → confirm, idempotent, BR-34) |
+| `usage` | UC05, UC09, UC25 | subjects, assignments, usage records, snapshots, employee app usage | Seat status with grace period (BR-03), days used (BR-33), daily snapshots, BCA usage (BR-22) |
+| `finance` | UC10, UC14, UC18 | budget versions and lines, expenses, accounting periods, exchange rates, cost allocations | Budget versions (BR-08), accrual (BR-24), currency (BR-05), cost split into Used, Wasted, Not evaluated (BR-06, BR-23), variance (BR-35), forecast (BR-11) |
+| `optimization` | UC15–UC17 | detection runs and results | Unused and inactive seats (BR-12), waste flag above 20 % (BR-21), waste analysis |
+| `analytics` | UC18–UC20 | read models only | Dashboards, analysis by license, metric definitions (BR-28) |
 | `audit` (shared) | BR-14 | audit logs | Who, old value, new value, time, reason for every change |
 
 #### Dependency rules (enforced by NetArchTest):
@@ -243,7 +243,7 @@ Rules: Domain depends on nothing; Application depends on interfaces only (`IAppD
 | `IlvgSyncJob`, `BcaSyncJob` | Daily | Employees, units, projects, transfers, and their accounts — create for a new employee with a password-link email, disable for a leaver (BR-16); application usage |
 | `DailyPipelineJob` | Daily, after the syncs | Seat status and days used, snapshots, cost split of open months, detection, refresh views |
 | `ImportConfirmJob` | A Manager or Staff confirms an import | Write the budget version or the expenses in one transaction |
-| `MonthCloseJob` | Day 10 of each month | Close the previous month of every company not closed by Staff (UC12) |
+| `MonthCloseJob` | Day 10 of each month | Close the previous month of every company not closed by Staff (UC11) |
 
 All jobs are idempotent (upsert by source key + data date), retried (Polly for API calls, Hangfire up to 3 times), and never overlap. When retries run out the source is marked `failed` and its figures are `Unknown`, not `0`. Jobs run as `SystemUser`, so the audit actor is `system`.
 

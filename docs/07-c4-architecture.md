@@ -1,6 +1,6 @@
 # 07 — C4 Architecture
 
-> Aligned with the P&L API business model and the 27 use cases (November 2026).
+> Aligned with the P&L API business model and the 26 use cases (November 2026).
 
 The C4 model describes a system at four zoom levels. Each level answers one question for one audience:
 
@@ -70,8 +70,8 @@ Each account has exactly one role (BR-16). The full capability matrix is in [Use
 | P&L license API (one per company and provider) | Licenses, holders, last activity, active days, consumption | An API each P&L provides for its own data, in the license data contract (ECS, BR-18); read by one generic connector |
 | ILVG | Employees, their unit in five levels, their projects, transfers | API, synced daily like a connector |
 | BCA | Application usage per employee and day (fields assumed until its API is known) | API, synced daily like a connector |
-| SAP | Budget plan per unit, license, and month | Excel export in the ELMS template, imported by Managers (UC11) |
-| SAP purchases | PO lines: purchased quantity and term; invoices: the cost that becomes Purchased | Excel export in the ELMS template, imported by Staff each month; a purchase made outside SAP entered by hand (UC13) |
+| SAP | Budget plan per unit, license, and month | Excel export in the ELMS template, imported by Managers (UC10) |
+| SAP purchases | PO lines: purchased quantity and term; invoices: the cost that becomes Purchased | Excel export in the ELMS template, imported by Staff each month; a purchase made outside SAP entered by hand (UC12) |
 
 Behind its API, each P&L reads its providers (Microsoft 365, Atlassian, Adobe, GitHub, AI services …); ELMS never calls a provider directly. A P&L whose API is not ready yet has simulated data, labelled as mock on every screen (BR-13). Data fields of each source: [Data fields research](09-data-fields-research.md).
 
@@ -225,14 +225,14 @@ Eight business modules follow the mind-map branches, plus a shared `audit` modul
 
 ```mermaid
 flowchart LR
-    identity["identity<br/>UC22, UC27<br/>accounts, roles, permissions, sessions"]
-    organization["organization<br/>UC23, ILVG sync<br/>five-level tree, employees, projects,<br/>Manager and Staff scope, holder identity"]
-    catalog["catalog<br/>UC01–UC05<br/>software catalog, licenses, terms,<br/>owner unit, shared licenses"]
-    ingestion["ingestion<br/>UC24, UC25<br/>connectors, sync runs, coverage,<br/>raw records, budget and purchase imports"]
-    usage["usage<br/>UC06, UC10, UC26<br/>assignments, usage records, snapshots,<br/>seat status, BCA usage"]
-    finance["finance<br/>UC11, UC15, UC19<br/>budget versions, purchases, accrual,<br/>rates, cost split"]
-    optimization["optimization<br/>UC16–UC18<br/>detection, waste flag, waste analysis"]
-    analytics["analytics<br/>UC19–UC21<br/>read models only"]
+    identity["identity<br/>UC21, UC26<br/>accounts, roles, permissions, sessions"]
+    organization["organization<br/>UC22, ILVG sync<br/>five-level tree, employees, projects,<br/>Manager and Staff scope, holder identity"]
+    catalog["catalog<br/>UC01–UC04<br/>software catalog, licenses, terms,<br/>owner unit, shared licenses"]
+    ingestion["ingestion<br/>UC23, UC24<br/>connectors, sync runs, coverage,<br/>raw records, budget and purchase imports"]
+    usage["usage<br/>UC05, UC09, UC25<br/>assignments, usage records, snapshots,<br/>seat status, BCA usage"]
+    finance["finance<br/>UC10, UC14, UC18<br/>budget versions, purchases, accrual,<br/>rates, cost split"]
+    optimization["optimization<br/>UC15–UC17<br/>detection, waste flag, waste analysis"]
+    analytics["analytics<br/>UC18–UC20<br/>read models only"]
     audit["audit (shared)<br/>BR-14<br/>append-only audit log"]
 
     ingestion -- "normalize into" --> catalog
@@ -340,7 +340,7 @@ sequenceDiagram
     A-->>M: figures with dataDate and data source (BR-13)
 ```
 
-Other jobs: `IlvgSyncJob` (daily; also creates the account of a new employee and disables a leaver's, BR-16) and `BcaSyncJob` (daily); `ImportConfirmJob` writes a confirmed budget version or purchase file in one transaction, once per preview key (BR-34); `MonthCloseJob` closes, on day 10, the previous month of every company Staff have not closed (UC12). Records that fail a check are rejected one by one, with the reason kept in `raw_records.normalize_error`; a record count that does not match `total_count` fails the whole run. All jobs are idempotent, never overlap, and run as `SystemUser`, so the audit actor is `system`.
+Other jobs: `IlvgSyncJob` (daily; also creates the account of a new employee and disables a leaver's, BR-16) and `BcaSyncJob` (daily); `ImportConfirmJob` writes a confirmed budget version or purchase file in one transaction, once per preview key (BR-34); `MonthCloseJob` closes, on day 10, the previous month of every company Staff have not closed (UC11). Records that fail a check are rejected one by one, with the reason kept in `raw_records.normalize_error`; a record count that does not match `total_count` fails the whole run. All jobs are idempotent, never overlap, and run as `SystemUser`, so the audit actor is `system`.
 
 ## 6. Deployment view
 
