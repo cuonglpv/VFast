@@ -6,27 +6,29 @@
 
 System: **Enterprise License Management System (ELMS)**, built by team VFast.
 
-This document answers one question from the revised business model: *when ELMS calls a P&L's license API, what can the response contain so that ELMS can show how licenses are used?* It also lists the fields expected from the three other sources: BCA (actual usage on company machines), ILVG (employees and organization), and SAP (monthly budget plan).
+This document answers one question from the revised business model: *when ELMS calls a P&L's license API, what can the response contain so that ELMS can show how licenses are used?* It also lists the fields expected from the three other sources: BCA (actual usage on company machines), ILVG (employees and organization), and SAP (monthly budget plan, and the purchases: PR, PO, invoices).
 
 ## 1. Revised data flow
 
 ```text
-P&L license API  ─┐  licenses the P&L uses, quantities, holders
+P&L license API  ─┐  licenses the P&L uses, holders, usage
 BCA usage API    ─┤  actual usage per member, measured on company machines
 ILVG employee API─┼→ ELMS connectors → actual-usage tables → waste per P&L / block / department / project
-SAP import       ─┘  monthly budget plan
+SAP imports      ─┘  monthly budget plan; purchases (PR, PO lines, invoices)
 ```
 
 | Source | Owner | ELMS gets | Direction |
 |---|---|---|---|
-| P&L license API | Each P&L builds it to the ELMS contract; ELMS calls it | Every license the P&L uses, with quantities, holders, and usage | ELMS → P&L, read-only |
+| P&L license API | Each P&L builds it to the ELMS contract; ELMS calls it | Every license the P&L uses, with holders and usage | ELMS → P&L, read-only |
 | BCA API | Endpoint tracking tool | Usage frequency per member; licenses found on company machines | ELMS → BCA, read-only |
 | ILVG API | Internal application | Employees and the unit each belongs to | ELMS → ILVG, read-only |
-| SAP | Finance | Monthly budget plan per P&L, block, project | File import |
+| SAP | Finance | Monthly budget plan per P&L, block, project; purchases: PO lines (quantity, term) and invoices (cost) | File imports |
 
 Fixed organization hierarchy: **Group > P&L > Block > Department > Project**.
 
 The three figures every view is built on: **Budgeted** (plan), **Paid** (purchased), **Actually used**. They are quantities of licenses, not money; cost detail per P&L is out of scope for now.
+
+**Decisions of 16 Nov 2026** ([use cases](02-use-cases.md), BR-10, BR-24): the purchased quantity and the term of a license come from the SAP PO lines, and its cost from the SAP invoices, imported each month by Staff; a purchase made outside SAP is entered by hand. The P&L API therefore no longer needs `purchased_quantity` or the term fields below, which become optional. The budget file has no *Shared* column.
 
 ## 2. How the field list was built
 
@@ -88,8 +90,8 @@ Findings that shape the contract:
 | `metric` | What is counted: `user`, `device`, `concurrent_session`, `token`, `request`, `credit`, `gb`, `core`, … | M |
 | `unit` | Unit of the quantities | M |
 | `status` | `active`, `trial`, `suspended`, `expired`, `cancelled` | M |
-| `start_date`, `end_date` | Validity | R |
-| `renewal_date`, `auto_renew` | Next renewal | R |
+| `start_date`, `end_date` | Validity, for information: the term ELMS uses is the SAP PO line (BR-10) | O |
+| `renewal_date`, `auto_renew` | Next renewal, for information | O |
 | `billing_cycle` | `monthly`, `yearly`, `multi_year`, `prepaid` | R |
 | `is_trial` | Trial or paid | O |
 
@@ -97,9 +99,9 @@ Findings that shape the contract:
 
 | Field | Meaning | Seen in | Priority |
 |---|---|---|---|
-| `purchased_quantity` | Seats paid for | Graph `prepaidUnits.enabled`, Snipe-IT `seats`, GitHub `seat_breakdown.total` | M |
+| `purchased_quantity` | Seats paid for, for information: ELMS takes the purchased quantity from the SAP PO lines (BR-10) | Graph `prepaidUnits.enabled`, Snipe-IT `seats`, GitHub `seat_breakdown.total` | O |
 | `assigned_quantity` | Seats given to someone | Graph `consumedUnits` | M |
-| `available_quantity` | Purchased minus assigned | Snipe-IT `free_seats_count` | R |
+| `available_quantity` | Purchased minus assigned | Snipe-IT `free_seats_count` | O |
 | `active_quantity` | Seats with activity in the period | GitHub `active_this_cycle` | M |
 | `inactive_quantity` | Assigned seats without activity in the period | GitHub `inactive_this_cycle` | R |
 | `suspended_quantity`, `warning_quantity` | Seats in grace or suspended | Graph `prepaidUnits.suspended`, `.warning` | O |
@@ -168,7 +170,7 @@ Findings that shape the contract:
 
 ### 3.10 Commercial fields (deferred)
 
-Not requested now. Listed so the contract can add them later without a redesign: `unit_price`, `currency`, `billed_cost`, `purchase_order`, `invoice_id`, `contract_ref`, `purchase_date`, `supplier` (Snipe-IT `purchase_cost`, `order_number`, `purchase_order`, `supplier`; FOCUS `BilledCost`, `EffectiveCost`, `InvoiceId`).
+Not requested: purchase orders and invoices come from SAP (BR-10). Listed so the contract can add them later without a redesign: `unit_price`, `currency`, `billed_cost`, `purchase_order`, `invoice_id`, `contract_ref`, `purchase_date`, `supplier` (Snipe-IT `purchase_cost`, `order_number`, `purchase_order`, `supplier`; FOCUS `BilledCost`, `EffectiveCost`, `InvoiceId`).
 
 ## 4. BCA — actual usage on company machines
 
@@ -193,15 +195,23 @@ If BCA hides employee identity, usage can only be joined to ILVG through a share
 | Projects | `project_code`, `project_name`, `allocation_percent`, `from`, `to` (a person can be on several projects) |
 | Units | `unit_code`, `unit_name`, `unit_level` (P&L, block, department, project), `parent_code`, `is_active` |
 
-## 6. SAP — monthly budget plan
+## 6. SAP — monthly budget plan and purchases
+
+Budget plan file (UC04, BR-08), imported by Managers; it has no *Shared* column:
 
 | Group | Fields |
 |---|---|
 | Period | `fiscal_year`, `month`, `plan_version` |
 | Organization | `pnl_name`, `company_code`, `block_code`, `department_code` or `cost_center`, `project_code`, `project_name` |
 | Line | `license_name` or `material`, `planned_quantity`, `unit` |
-| Paid | `paid_quantity`, `posting_date`, `document_number` — if SAP is also the source of the "Paid" figure |
-| Money (deferred) | `planned_amount`, `paid_amount`, `currency` |
+| Money | `planned_amount`, `currency` |
+
+Purchase file (UC04, BR-10), imported by Staff each month:
+
+| Group | Fields |
+|---|---|
+| PO line | `company_code`, `pr_number`, `po_number`, `po_item`, `vendor`, `license_name` or `material`, `quantity`, `unit`, `term_start`, `term_end`, `net_price`, `amount`, `currency` |
+| Invoice | `company_code`, `invoice_number`, `invoice_line`, `invoice_date`, `po_number`, `po_item`, `amount`, `currency` |
 
 ## 7. Actual-usage tables (proposal)
 
@@ -212,14 +222,5 @@ If BCA hides employee identity, usage can only be joined to ILVG through a share
 | Employee usage | Employee × license or application × period | Active days, sessions, minutes, last use; columns to be decided |
 
 A new license type later becomes a new table of the same pattern.
-
-## 8. Open questions
-
-1. Which system provides **Paid**: the P&L API (`purchased_quantity`) or SAP actuals?
-2. Is the SAP plan in quantities, in money, or both? The three figures can only be compared in one unit.
-3. When is a P&L shown in red: which ratio (used / paid, paid / budgeted) and which threshold?
-4. A holder working on several projects: which project does the seat count toward?
-5. Does BCA return identifiable employees? If not, what is the join key with ILVG?
-6. Which fields can the P&Ls really deliver in phase 1? The `M` set above is the proposed minimum.
 
 **Related:** [Research](01-research-top-down.md) · [Connector standard](06-connector-standard.md)

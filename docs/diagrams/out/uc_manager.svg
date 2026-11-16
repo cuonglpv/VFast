@@ -1,84 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="664" height="2394" viewBox="0 0 664 2394" font-family="Liberation Sans, Arial, Helvetica, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="642" height="990" viewBox="0 0 642 990" font-family="Liberation Sans, Arial, Helvetica, sans-serif">
 <rect width="100%" height="100%" fill="#ffffff"/>
 <g transform="translate(-14.5,16.0)">
-<rect x="260.0" y="0.0" width="403.0" height="2362.0" rx="0" fill="#F8FAFC" stroke="#334155" stroke-width="1.3"/><text x="461.5" y="34.1" font-size="17" fill="#0f172a" text-anchor="middle" font-weight="bold" xml:space="preserve">Enterprise License Management System</text>
-<rect x="290.0" y="70.0" width="343.0" height="518.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="461.5" y="94.3" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">License Management</text>
-<ellipse cx="409.0" cy="134.0" rx="79.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="409.0" y="138.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View License List</text>
-<ellipse cx="446.5" cy="186.0" rx="116.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="446.5" y="190.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View License Validity Timeline</text>
-<ellipse cx="418.5" cy="238.0" rx="88.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="418.5" y="242.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View License Details</text>
-<ellipse cx="452.0" cy="290.0" rx="122.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="452.0" y="294.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View License Users and Activity</text>
-<ellipse cx="442.0" cy="342.0" rx="112.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="442.0" y="346.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View Providers and Licenses</text>
-<ellipse cx="402.0" cy="394.0" rx="72.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="402.0" y="398.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View Contracts</text>
-<ellipse cx="449.0" cy="446.0" rx="119.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="449.0" y="450.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View License Inventory by P&amp;L</text>
-<ellipse cx="447.5" cy="498.0" rx="117.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="447.5" y="502.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View Licenses by Organization</text>
-<ellipse cx="431.5" cy="550.0" rx="101.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="431.5" y="554.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Manage Shared Licenses</text>
-<rect x="290.0" y="606.0" width="343.0" height="414.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="461.5" y="630.4" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">Usage</text>
-<ellipse cx="442.5" cy="670.0" rx="112.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="442.5" y="674.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Navigate Organization Scope</text>
-<ellipse cx="452.0" cy="722.0" rx="122.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="452.0" y="726.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View Plan vs Utilization Balance</text>
-<ellipse cx="437.5" cy="774.0" rx="107.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="437.5" y="778.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Compare Subordinate Units</text>
-<ellipse cx="435.0" cy="826.0" rx="105.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="435.0" y="830.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View Annual Trend by Unit</text>
-<ellipse cx="443.5" cy="878.0" rx="113.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="443.5" y="882.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View Subordinate Units Table</text>
-<ellipse cx="418.5" cy="930.0" rx="88.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="418.5" y="934.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Export Usage Report</text>
-<ellipse cx="426.0" cy="982.0" rx="96.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="426.0" y="986.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Track Employee Usage</text>
-<rect x="290.0" y="1038.0" width="343.0" height="362.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="461.5" y="1062.3" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">Budget Management</text>
-<ellipse cx="447.5" cy="1102.0" rx="117.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="447.5" y="1106.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Import Budget Plan from Excel</text>
-<ellipse cx="434.5" cy="1154.0" rx="104.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="434.5" y="1158.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View Monthly Budget Plan</text>
-<ellipse cx="421.5" cy="1206.0" rx="91.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="421.5" y="1210.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Allocate License Cost</text>
-<ellipse cx="418.5" cy="1258.0" rx="88.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="418.5" y="1262.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Accrue License Cost</text>
-<ellipse cx="442.0" cy="1310.0" rx="112.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="442.0" y="1314.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Track Monthly Plan Variance</text>
-<ellipse cx="437.0" cy="1362.0" rx="107.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="437.0" y="1366.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Forecast License Spending</text>
-<rect x="290.0" y="1418.0" width="343.0" height="414.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="461.5" y="1442.3" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">Optimization</text>
-<ellipse cx="429.0" cy="1482.0" rx="99.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="429.0" y="1486.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Detect Unused Licenses</text>
-<ellipse cx="422.5" cy="1534.0" rx="92.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="422.5" y="1538.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Detect Inactive Usage</text>
-<ellipse cx="405.5" cy="1586.0" rx="75.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="405.5" y="1590.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Flag P&amp;L Waste</text>
-<ellipse cx="419.5" cy="1638.0" rx="89.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="419.5" y="1642.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Rank Units by Waste</text>
-<ellipse cx="463.5" cy="1690.0" rx="133.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="463.5" y="1694.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Track Plan, Usage and Waste Trend</text>
-<ellipse cx="442.0" cy="1742.0" rx="112.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="442.0" y="1746.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View Waste Risk Distribution</text>
-<ellipse cx="445.5" cy="1794.0" rx="115.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="445.5" y="1798.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View Monthly Waste Heatmap</text>
-<rect x="290.0" y="1850.0" width="343.0" height="310.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="461.5" y="1874.3" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">Analytics</text>
-<ellipse cx="453.5" cy="1914.0" rx="123.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="453.5" y="1918.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Analyze by License and Provider</text>
-<ellipse cx="424.5" cy="1966.0" rx="94.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="424.5" y="1970.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View Metric Definitions</text>
-<ellipse cx="429.5" cy="2018.0" rx="99.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="429.5" y="2022.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View License Dashboard</text>
-<ellipse cx="433.0" cy="2070.0" rx="103.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="433.0" y="2074.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View Financial Dashboard</text>
-<ellipse cx="443.5" cy="2122.0" rx="113.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="443.5" y="2126.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View Optimization Dashboard</text>
-<rect x="290.0" y="2178.0" width="343.0" height="154.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="461.5" y="2202.3" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">Self-service</text>
-<ellipse cx="411.0" cy="2242.0" rx="81.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="411.0" y="2246.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View My Licenses</text>
-<ellipse cx="399.0" cy="2294.0" rx="69.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="399.0" y="2298.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Login / Logout</text>
-<circle cx="60" cy="1147.0" r="6" fill="#fff" stroke="#000" stroke-width="1.3"/><line x1="60" y1="1153.0" x2="60" y2="1168.0" stroke="#000" stroke-width="1.3" fill="none"/><line x1="49" y1="1158.0" x2="71" y2="1158.0" stroke="#000" stroke-width="1.3" fill="none"/><line x1="60" y1="1168.0" x2="50" y2="1181.0" stroke="#000" stroke-width="1.3" fill="none"/><line x1="60" y1="1168.0" x2="70" y2="1181.0" stroke="#000" stroke-width="1.3" fill="none"/><text x="60.0" y="1198.3" font-size="14" fill="#000000" text-anchor="middle" font-weight="bold" xml:space="preserve">Manager</text>
-<path d="M71.0,1158.0 L330.0,134.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,186.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,238.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,290.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,342.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,394.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,446.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,498.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,550.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,670.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,722.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,774.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,826.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,878.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,930.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,982.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,1102.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,1154.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,1206.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,1258.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,1310.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,1362.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,1482.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,1534.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,1586.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,1638.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,1690.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,1742.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,1794.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,1914.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,1966.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,2018.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,2070.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,2122.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,2242.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,1158.0 L330.0,2294.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<rect x="260.0" y="0.0" width="380.0" height="958.0" rx="0" fill="#F8FAFC" stroke="#334155" stroke-width="1.3"/><text x="450.0" y="34.1" font-size="17" fill="#0f172a" text-anchor="middle" font-weight="bold" xml:space="preserve">Enterprise License Management System</text>
+<rect x="290.0" y="70.0" width="320.0" height="154.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="450.0" y="94.3" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">License Management</text>
+<ellipse cx="415.0" cy="134.0" rx="85.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="415.0" y="138.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View License Detail</text>
+<ellipse cx="433.0" cy="186.0" rx="103.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="433.0" y="190.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Browse License Inventory</text>
+<rect x="290.0" y="242.0" width="320.0" height="102.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="450.0" y="266.4" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">Usage</text>
+<ellipse cx="452.0" cy="306.0" rx="122.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="452.0" y="310.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View Plan vs Utilization Balance</text>
+<rect x="290.0" y="362.0" width="320.0" height="102.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="450.0" y="386.4" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">Budget Management</text>
+<ellipse cx="418.5" cy="426.0" rx="88.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="418.5" y="430.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Manage Budget Plan</text>
+<rect x="290.0" y="482.0" width="320.0" height="154.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="450.0" y="506.4" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">Optimization</text>
+<ellipse cx="420.0" cy="546.0" rx="90.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="420.0" y="550.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Detect Wasted Seats</text>
+<ellipse cx="446.5" cy="598.0" rx="116.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="446.5" y="602.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Rank and Flag Units by Waste</text>
+<rect x="290.0" y="654.0" width="320.0" height="102.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="450.0" y="678.4" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">Analytics</text>
+<ellipse cx="408.5" cy="718.0" rx="78.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="408.5" y="722.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View Dashboards</text>
+<rect x="290.0" y="774.0" width="320.0" height="154.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="450.0" y="798.4" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">Self-service</text>
+<ellipse cx="411.0" cy="838.0" rx="81.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="411.0" y="842.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View My Licenses</text>
+<ellipse cx="399.0" cy="890.0" rx="69.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="399.0" y="894.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Login / Logout</text>
+<circle cx="60" cy="445.0" r="6" fill="#fff" stroke="#000" stroke-width="1.3"/><line x1="60" y1="451.0" x2="60" y2="466.0" stroke="#000" stroke-width="1.3" fill="none"/><line x1="49" y1="456.0" x2="71" y2="456.0" stroke="#000" stroke-width="1.3" fill="none"/><line x1="60" y1="466.0" x2="50" y2="479.0" stroke="#000" stroke-width="1.3" fill="none"/><line x1="60" y1="466.0" x2="70" y2="479.0" stroke="#000" stroke-width="1.3" fill="none"/><text x="60.0" y="496.3" font-size="14" fill="#000000" text-anchor="middle" font-weight="bold" xml:space="preserve">Manager</text>
+<path d="M71.0,456.0 L330.0,134.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M71.0,456.0 L330.0,186.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M71.0,456.0 L330.0,306.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M71.0,456.0 L330.0,426.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M71.0,456.0 L330.0,546.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M71.0,456.0 L330.0,598.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M71.0,456.0 L330.0,718.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M71.0,456.0 L330.0,838.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M71.0,456.0 L330.0,890.0" fill="none" stroke="#334155" stroke-width="1.1"/>
 </g></svg>
