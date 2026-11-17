@@ -8,7 +8,7 @@ Each story is small enough to implement and test independently. Authentication, 
 
 | Principle | Application in this backlog |
 |---|---|
-| Independent | Each story produces a demonstrable outcome and lists only unavoidable prerequisites. Usage, waste, and dashboard stories run on seeded data labelled as mock (BR-12), so they do not wait for the P&L APIs. |
+| Independent | Each story produces a demonstrable outcome and lists only unavoidable prerequisites. Usage, waste, and dashboard stories run on seeded data in a separate demo database (BR-12), so they do not wait for the P&L APIs. |
 | Negotiable | Layout is left to the UI design and may change; the outcome, permissions, and business rules stay fixed. |
 | Valuable | Every story names the benefit for one role: Employee, Staff, Manager, or Admin. |
 | Estimable | Inputs, outputs, roles, data scope, and failure outcomes are explicit; each story has a story-point estimate. |
@@ -100,7 +100,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US14 | PASS | PASS | PASS | PASS | PASS | PASS | Efficiency = Used ÷ Purchased. |
 | US15 | PASS | PASS | PASS | PASS | PASS | PASS | Waste per license as a rate or in money; rows add up (BR-19). |
 | US16 | PASS | PASS | PASS | PASS | PASS | PASS | File equals the units listed. |
-| US17 | PASS | PASS | PASS | PASS | PASS | PASS | BCA fields assumed (UC03). Could-have. |
+| US17 | PASS | PASS | PASS | PASS | PASS | PASS | BCA fields as in UC03. Could-have. |
 | US18 | PASS | PASS | PASS | PASS | PASS | PASS | Largest story (8): per-license replacement in the target subtree BR-08, idempotency BR-33. Splits into: template and preview, confirm with versions, idempotency and concurrency. |
 | US19 | PASS | PASS | PASS | PASS | PASS | PASS | Read-only; versions from US18. |
 | US20 | PASS | PASS | PASS | PASS | PASS | PASS | Rounding to the thousand VND BR-23; closed months frozen. |
@@ -161,7 +161,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 #### AC-US04 View Contracts
 
 1. Given PO lines with their start, expiry, quantity, and cost imported from SAP, then each is listed as a term with its PO number and the filter "renewal within 30 days" keeps those renewing by then.
-2. Given a purchase entered by hand, then it has no PO number; auto-renew and notice period, which SAP does not give, are shown as missing, never guessed.
+2. Given a purchase entered by hand, then it has no PO number.
 3. Given any role calls a write API on terms, then it returns `403`: terms are read-only.
 
 #### AC-US05 License Users and Usage
@@ -204,10 +204,9 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 1. Given GitHub reported by company A's connector with holders in P&L A and P&L B, then it is listed as *Possibly shared* and nothing changes until Staff confirm.
 2. Given Staff confirm, then the owner becomes the group; with 1,000 seats at 100,000 VND, A holding 500 and B 300, A is charged 50 million, B 30 million, and 20 million of the 200 free seats stays in *Unallocated* of the group.
-3. Given the same license reported by two connectors, then it is listed "Also reported by <company>"; after Staff pick one source, it is counted once.
-4. Given Staff unmark a shared license, then its owner goes back to the P&L of its connector.
-5. Given a Manager of P&L A, then they see A's share only.
-6. Given GitHub of P&L A marked shared in June with January–May closed, then January–May stay with A and June onward goes to the group; A's invoices still name A as the company that paid.
+3. Given Staff unmark a shared license, then its owner goes back to the P&L of its connector.
+4. Given a Manager of P&L A, then they see A's share only.
+5. Given GitHub of P&L A marked shared in June with January–May closed, then January–May stay with A and June onward goes to the group; A's invoices still name A as the company that paid.
 
 ### Usage
 
@@ -389,7 +388,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 1. Given the catalog opened, then each metric shows its formula, unit, source, period, and what it excludes.
 2. Given "Waste rate" wherever it appears, then its definition reads "Wasted ÷ Purchased".
-3. Given a metric computed on mock data, then its definition says so.
+3. Given a metric computed over days without data, then its definition says so.
 
 ### User & Organization
 
@@ -446,12 +445,12 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 #### AC-US44 Monitor Data Synchronization
 
-1. Given a run with 1,000 records of which 12 failed the contract, then the run shows `Partial` and the 12 rejected records with the check that failed.
+1. Given a run with 1,000 records of which 12 failed the contract, then the run shows `Success` with 988 accepted and the 12 rejected records with the check that failed.
 2. Given a failed day rerun, then its figures are replaced and never duplicated.
 3. Given a connector paused at 09:00 with a 6-hour interval, then the runs of 12:00 and 18:00 are recorded as `Paused`, its licenses show `Paused`, and it is not a sync issue; resuming starts a run at once.
 4. Given a failed run, then nothing is written and the figures of that day stay `Unknown`.
 5. Given a 6-hour interval and a last success 9 hours ago, then the licenses show `Delayed`.
-6. Given a `Partial` run in which "M365 E3" failed with `permission_denied` and "Visio" was complete, then M365 E3 shows `Failed` and Visio `Active`.
+6. Given a 6-hour interval and runs that bring data for "Visio" but none for "M365 E3" for 9 hours, then Visio shows `Active` and M365 E3 `Delayed`.
 
 ### Self-service
 

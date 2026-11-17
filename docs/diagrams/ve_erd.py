@@ -35,14 +35,13 @@ LAYOUT = {
     ],
     'erd_license_catalog': [
         ['vendors', 'software_categories'],
-        ['software_products', 'contracts'],
-        ['license_plans', 'entitlement_lines', 'product_links'],
-        ['entitlement_allocations'],
+        ['software_products'],
+        ['license_plans', 'entitlement_lines'],
     ],
     'erd_collection': [
         ['files', 'connectors'],
         ['import_batches', 'plan_data_sources', 'sync_runs'],
-        ['collection_coverage', 'raw_records'],
+        ['raw_records'],
     ],
     'erd_holders_usage': [
         ['subjects', 'plan_daily_snapshots'],
@@ -50,13 +49,12 @@ LAYOUT = {
         ['plan_unit_daily_snapshots', 'employee_app_usage'],
     ],
     'erd_budget_cost': [
-        ['budget_plans', 'accounting_periods', 'exchange_rates'],
+        ['accounting_periods', 'exchange_rates'],
         ['budget_plan_lines', 'cost_allocations', 'expenses'],
     ],
     'erd_optimization': [
         ['detection_runs'],
         ['detection_results'],
-        ['recommendations'],
     ],
     'erd_audit': [
         ['audit_logs'],

@@ -69,7 +69,7 @@ Each account has exactly one role (BR-15). The full capability matrix is in [Use
 |---|---|---|
 | P&L license API (one per company and provider) | Licenses, holders, last activity, active days, consumption | An API each P&L provides for its own data, in the license data contract (ECS, BR-17); read by one generic connector |
 | ILVG | Employees, their unit in five levels, their projects, transfers | API, synced daily like a connector |
-| BCA | Application usage per employee and day (fields assumed until its API is known) | API, synced daily like a connector |
+| BCA | Application usage per employee and day | API, synced daily like a connector |
 | SAP | Budget plan per unit, license, and month | Excel export in the ELMS template, imported by Managers (UC04) |
 | SAP purchases | PO lines: purchased quantity and term; invoices: the cost that becomes Purchased | Excel export in the ELMS template, imported by Staff each month; a purchase made outside SAP entered by hand (UC04) |
 
@@ -146,7 +146,7 @@ The API never calls a source, and the worker never serves a user request.
 | Scheduled sync at each connector's interval (6 hours by default) | Realtime events | P&L APIs push changes and users need same-hour numbers |
 | Cookie session | JWT | A mobile app or third-party API is needed |
 
-Non-functional assumptions: about 30 P&Ls, 5,000 accounts, 100–300 daily users, 500 licenses, and 150,000 assignments; dashboards p95 under 1 s; license data as old as each connector's interval; 99.5 % availability in business hours. Source: [05 §2](05-folder-structure.md).
+Non-functional targets: about 30 P&Ls, 5,000 accounts, 100–300 daily users, 500 licenses, and 150,000 assignments; dashboards p95 under 1 s; license data as old as each connector's interval; 99.5 % availability in business hours. Source: [05 §2](05-folder-structure.md).
 
 ## 3. Level 3 — Component
 
@@ -380,7 +380,7 @@ flowchart TB
 | Migrations | A separate pipeline step before the apps start, never at application startup |
 | Environments | dev (Docker Compose: postgres, api, worker, web, a simulated P&L API), staging (a P&L test API), prod |
 | Operations | `/health`, structured logs with `request_id` (Serilog / OpenTelemetry), Hangfire dashboard for Admin only, alert when a connector stays `Failed` or `Delayed` for a day |
-| Backup targets | RPO ≤ 24 h, RTO ≤ 4 h (assumption, [05 §2](05-folder-structure.md)) |
+| Backup targets | RPO ≤ 24 h, RTO ≤ 4 h ([05 §2](05-folder-structure.md)) |
 
 ## 7. Cross-cutting concerns
 

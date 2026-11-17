@@ -19,7 +19,7 @@ Features of the [use cases](02-use-cases.md), by mind-map branch and use case. E
 | F07 | License inventory per unit, grouped by provider, with purchased, assigned, used, cost, status, and expiry | UC02 | Main | Manager, Staff |
 | F08 | Units per license, with their share | UC02 | A | Manager, Staff |
 | F09 | Providers with their licenses and the companies using each; quantities per license only | UC02 | B | Manager, Staff |
-| F10 | Software catalog: software, provider, category, subcategory; create, edit, merge | UC02 | C | Staff |
+| F10 | Software catalog: software, provider, category; create, edit, merge | UC02 | C | Staff |
 | F11 | License name mapping to the catalog: names not mapped, suggestion by provider and name, one mapping for every company; unmapped names under *Uncategorized*; the SAP name of a license | UC02 | D | Staff |
 | F12 | BCA application name mapping to the catalog | UC02 | E | Staff |
 | F13 | Shared licenses: *possibly shared* proposals, confirmation makes the group the owner, charge-back per company by the seats its people hold, unassigned seats in *Unallocated* of the group; open months only | UC02 | F | Staff; Manager reads its share |

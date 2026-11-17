@@ -1,7 +1,5 @@
 # Data Fields Research — P&L License API, BCA, ILVG, SAP
 
-> Design status: DRAFT (input for the revised mind map; not yet reflected in documents 01–06 or the database)
->
 > Implementation status: NOT STARTED
 
 System: **Enterprise License Management System (ELMS)**, built by team VFast.
@@ -56,7 +54,7 @@ Findings that shape the contract:
 
 ## 3. P&L license API — field catalogue
 
-`M` = mandatory, `R` = recommended, `O` = optional. Priority is a proposal.
+`M` = mandatory, `R` = recommended, `O` = optional.
 
 ### 3.1 Response envelope
 
@@ -212,15 +210,5 @@ Purchase file (UC04, BR-10), imported by Staff each month:
 |---|---|
 | PO line | `company_code`, `pr_number`, `po_number`, `po_item`, `vendor`, `license_name` or `material`, `quantity`, `unit`, `term_start`, `term_end`, `net_price`, `amount`, `currency` |
 | Invoice | `company_code`, `invoice_number`, `invoice_line`, `invoice_date`, `po_number`, `po_item`, `amount`, `currency` |
-
-## 7. Actual-usage tables (proposal)
-
-| Table | One row per | Main columns |
-|---|---|---|
-| Monthly license usage | License × unit × month | Budgeted, paid, assigned, active quantity |
-| Usage-based license usage | License × unit × period (× meter) | Quota, consumed, remaining, unit |
-| Employee usage | Employee × license or application × period | Active days, sessions, minutes, last use; columns to be decided |
-
-A new license type later becomes a new table of the same pattern.
 
 **Related:** [Research](01-research-top-down.md) · [Connector standard](06-connector-standard.md)

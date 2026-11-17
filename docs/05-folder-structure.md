@@ -1,6 +1,6 @@
 # 05 — Folder structure and solution architecture
 
-Design status: **TARGET** for the backend, aligned with the 12 use cases (November 2026). The frontend (`src/frontend`) is already coded but still follows the previous model; its target screens are in [Information architecture](04-information-architecture-manager.md). Items marked *assumption* need team confirmation.
+Design status: **TARGET** for the backend, aligned with the 12 use cases (November 2026). The frontend (`src/frontend`) is already coded but still follows the previous model; its target screens are in [Information architecture](04-information-architecture-manager.md).
 
 
 ## 1. Repository layout
@@ -44,11 +44,11 @@ One monolith built with Clean Architecture, deployed as two processes (`Elms.Api
 | Tests | xUnit, Testcontainers (PostgreSQL), NetArchTest |
 | Delivery | Docker (Compose for dev), Nginx or Caddy, GitHub Actions |
 
-### Assumptions (non-functional)
+### Non-functional targets
 
 | Property | Target |
 |---|---|
-| Scale | ~30 P&Ls, ~5,000 accounts, 100–300 daily users, ~500 licenses, ~150,000 assignments *(assumption)* |
+| Scale | ~30 P&Ls, ~5,000 accounts, 100–300 daily users, ~500 licenses, ~150,000 assignments |
 | Latency | Dashboards p95 < 1 s; lists p95 < 500 ms (server-side paging) |
 | Freshness | License data as old as each connector's sync interval (6 hours by default); ILVG and BCA daily; analysis on complete months |
 | Availability | 99.5 % in business hours; RPO ≤ 24 h, RTO ≤ 4 h |
@@ -158,7 +158,7 @@ The modules follow the mind-map branches, plus two technical modules (`ingestion
 
 Request flow: Controller (`Mediator.Send`) → pipeline behaviours (logging, validation, authorization) → handler → `IAppDbContext` (filtered by `AccessScope`) → interceptor writes the audit log.
 
-Every P&L provides an API for its own data in the license data contract (BR-17), so one generic client reads every usage connector: `fetchLicenses`, `fetchTerms`, `fetchHolders`, `fetchActivity`, `fetchUsage(period)`. A dataset a P&L does not deliver returns `NotSupported`, never an empty list, so "no source" stays distinct from "source reports zero". Every record passes the same validator before it is written ([Connector standard](06-connector-standard.md#4-proposal-elms-connector-standard-ecs-v1)). ILVG and BCA have their own clients behind the same interface style.
+Every P&L provides an API for its own data in the license data contract (BR-17), so one generic client reads every usage connector: `fetchLicenses`, `fetchTerms`, `fetchHolders`, `fetchActivity`, `fetchUsage(period)`. A dataset a P&L does not deliver returns `NotSupported`, never an empty list, so "no source" stays distinct from "source reports zero". Every record passes the same validator before it is written ([Connector standard](06-connector-standard.md)). ILVG and BCA have their own clients behind the same interface style.
 
 ### 4.2 Folder structure
 

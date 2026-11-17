@@ -101,7 +101,7 @@ Purchased = Used + Wasted + Not evaluated; the waste rate is Wasted ÷ Purchased
 |---|---|---|
 | Usage connector of each P&L | Licenses, holders, last activity, daily activity, consumption | An API the P&L provides for its own data, one connector per company and provider, in the license data contract (BR-17, [Connector standard](06-connector-standard.md)) |
 | ILVG | Employees, units in five levels, projects (with allocation), transfers | API, synced like a connector |
-| BCA | Application usage per employee and day | API, synced like a connector (fields assumed until the API is known) |
+| BCA | Application usage per employee and day | API, synced like a connector |
 | SAP | Budget plan per unit, license, and month | Exported to the ELMS Excel template and imported by Managers (UC04) |
 | SAP purchases | PO lines: purchased quantity and term; invoices: the cost that becomes Purchased | Exported to the ELMS Excel template and imported by Staff each month; a purchase made outside SAP is entered by hand (UC04) |
 
@@ -144,7 +144,7 @@ Pipeline principles:
 | A6 | One money model for every archetype | Seats, sessions, and tokens are all judged as Purchased, Used, Wasted, Not evaluated |
 | A7 | Every result shows its evidence, its cost, and its data date | Users can verify it; ELMS never acts on its own (BR-11) |
 | A8 | Encrypted, write-only credentials, read-only scopes | Lower risk; the P&L grants access easily (BR-18) |
-| A9 | Every figure carries its source | Real, assumed, and mock data are never presented the same way (BR-12) |
+| A9 | Every figure carries its source | Every figure shows where it came from (BR-12) |
 
 ## 6. Functional decomposition (Epic → Feature)
 
@@ -184,24 +184,23 @@ The epics are the seven branches of the mind map; each leaf is a feature area of
 - Detecting a license shortage beyond allocated above purchased.
 - Creating accounts by hand; notifications outside the application (chat), other than the account email with the password link; SSO and self-registration.
 
-## 8. Constraints and assumptions
+## 8. Constraints
 
 - Every connection is read-only; credentials are write-only.
 - Each P&L provides the API behind its connectors, in the license data contract.
 - A holder is a person: identities are matched to the ILVG employee by employee code, otherwise by email (BR-25).
 - The organization has exactly five levels; units come from ILVG (BR-19).
 - Seat status uses a 30-day window with a 30-day grace period (BR-03).
-- Assumed until checked: the SAP export carries department codes; BCA reports per day the domain account carrying the ILVG employee code.
+- The SAP export carries department codes; BCA reports per day the domain account carrying the ILVG employee code.
 
 ## 9. Key risks
 
 | Risk | Mitigation |
 |---|---|
-| A P&L cannot deliver its API on time | Mock data labelled as mock (BR-12); the connector stays `Pending` |
+| A P&L cannot deliver its API on time | The connector stays `Pending` and its figures `Unknown` (BR-04); demos run on a separate demo database |
 | Usage reports anonymize users | Seats become `Not monitored`, their cost Not evaluated, never waste |
 | A sync fails and usage looks like zero | The figures stay `Unknown`; the connector shows `Failed` or `Delayed` (BR-29) |
 | Figures disagree between screens | One set of rules (BR-03, BR-06, BR-09, BR-22) and one definition per metric (UC07) |
 | Per-user usage is sensitive personal data | Every API requires login; data scope is enforced on the backend (BR-14) |
-| BCA or SAP fields differ from the assumptions | The BCA fields (UC03) and the SAP export (BR-08) are checked against the real sources before the import is built |
 
 **Related:** [Use cases](02-use-cases.md) · [INVEST requirements](03-invest-requirements.md) · [Data fields research](09-data-fields-research.md)

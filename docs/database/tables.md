@@ -14,7 +14,7 @@ Every table of the ELMS database, what it is for, and what each of its fields me
 | `created_at`, `updated_at` | When the row was created, and when it last changed |
 | `created_by`, `paused_by`, `uploaded_by` … | The user who did it |
 | `is_active` | No longer used when "No". Rows are switched off instead of deleted, so history stays intact |
-| `source` | Where the data came from: `api` or `log` (a connector, ILVG, or BCA), `import` (a file: budget plan, or purchases from SAP), `manual` (typed by Staff: purchases made outside SAP). Licenses, holders, and usage always come from a connector |
+| `source` | Where the data came from: `api` or `log` (a connector, ILVG, or BCA). Holders and usage always come from a connector, so their tables have no `source`, only `sync_run_id`. A purchase (PO line, invoice) has no `source` either: it came from the SAP file when `import_batch_id` is set, and was typed by Staff when `created_by` is set |
 | `sync_run_id`, `import_batch_id` | The connector run or file import that last wrote the row, so every figure can be traced back |
 | `currency` | Three-letter currency code next to an amount from outside (price, invoice, budget line), such as `USD`. Figures ELMS computes have no currency field: they are always in the reporting currency (VND) |
 
@@ -39,7 +39,9 @@ The shape of the group in five fixed levels: **group > P&L > block > department 
 
 ### `employees`: staff list
 
-Everyone who works in the group, whether or not they log in to ELMS, loaded from ILVG. It tells ELMS which unit a person is in, so when Microsoft reports that `an@company.com` holds an E3 seat, the cost of that seat goes to An's unit.
+Everyone who works in the group, whether or not they log in to ELMS, loaded from ILVG. It tells ELMS which unit a person is in, so when Microsoft reports that `an@company.com` holds an E3 seat, the cost of that seat goes to An's unit. Which licenses a person holds is in `license_assignments` (through their identities in `subjects`), and how often they use each one is in `usage_records`.
+
+ILVG gives no transfer date. Every day ELMS writes down the unit of each seat holder (`plan_unit_daily_snapshots`), so after a transfer the cost counts toward the new unit from the day ELMS receives it, and the days before stay with the old unit.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -47,13 +49,11 @@ Everyone who works in the group, whether or not they log in to ELMS, loaded from
 | `employee_code` | text | | ILVG employee id. Stays the same when the email changes; it joins ILVG, BCA, and the accounts at each provider |
 | `full_name` | text | Yes | Name shown on screens |
 | `email` | text | Yes | Current company email, in lowercase; also the login email |
-| `org_unit_id` | link → `org_units` | | Current unit, at any level. Empty = "Unknown unit" |
-| `unit_since` | date | | Day the person joined that unit. After a transfer, usage and cost count toward the old unit before this day and the new unit from it, day by day. A transfer ILVG reports late counts from the day ELMS receives it |
-| `project_ids` | list of links → `org_units` | | The projects the person works on, when more than one. A seat they hold counts toward each project in equal parts: two projects, half each, and nothing toward `org_unit_id`. Empty = only `org_unit_id` |
-| `left_on` | date | | Last working day. Empty = still with the company. After this day the account is disabled and any seat they still hold is flagged |
-| `source` | choice | Yes | `api` (ILVG) or `manual` (not used: accounts come only from ILVG) |
-| `sync_run_id` | link → `sync_runs` | | ILVG run that last updated the person |
-| `import_batch_id` | link → `import_batches` | | Not used since the HR file import was retired |
+| `org_unit_id` | link → `org_units` | | The unit of the person's position, from ILVG: their department, or their block or P&L when the position is not in a department. Never a project: projects are in `project_ids`. Empty = "Unknown unit" |
+| `project_ids` | list of links → `org_units` | | The projects the person works on, from ILVG, one or more. A seat they hold counts toward each project in equal parts — one project, the whole seat; two projects, half each — and nothing toward `org_unit_id`. Empty = no project: the seat counts toward `org_unit_id` |
+| `left_on` | date | | Last working day, from ILVG. Empty = still with the company. After this day the account is disabled and any seat they still hold is flagged |
+| `source` | choice | Yes | Always `api`: employees come only from ILVG |
+| `sync_run_id` | link → `sync_runs` | Yes | ILVG run that last updated the person |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
 ### `roles`: the four roles
@@ -74,7 +74,7 @@ Every feature that can be switched on for a role, once for reading and once for 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `feature_code` | text | Yes | The feature, such as `license_list`, `usage`, `budget_plan`, `connectors`, `software_catalog` |
+| `feature_code` | text | Yes | The code of the feature, such as `123FV@`, not its name. The name shown is in `description` |
 | `action` | choice: `read`, `write` | Yes | View only, or also change |
 | `description` | text | | Explanation shown in the permission matrix |
 
@@ -90,7 +90,7 @@ The tick boxes of the permission matrix: one row = one role is allowed one permi
 
 ### `user_accounts`: logins
 
-The people who can log in. Each login belongs to one employee and has exactly one role.
+The people who can log in: one row per person, kept as long as the person has an account — not one row per login. Each account belongs to one employee and has exactly one role. Each login opens a row in `user_sessions`; setting or resetting a password uses the link fields below.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -100,11 +100,10 @@ The people who can log in. Each login belongs to one employee and has exactly on
 | `password_hash` | text | | The password, scrambled so nobody can read it. Empty until the user sets one: they cannot log in yet |
 | `password_token_hash` | text | | The one-time link, sent by email, that a new user opens to set their password (or to reset a forgotten one), stored scrambled. Empty when no link is open |
 | `password_token_expires_at` | date-time | | When that link stops working |
-| `failed_login_count` | number | Yes | Wrong passwords in a row. Back to 0 after a successful login |
+| `failed_login_count` | number | Yes | Wrong passwords in a row. Back to 0 after a successful login. Counted on the server, never in the browser: someone guessing passwords calls the API directly, so a count in the browser would not stop them |
 | `locked_until` | date-time | | After 5 wrong passwords in a row, login is blocked until this time (15 minutes) |
 | `last_login_at` | date-time | | Last successful login, shown in the user list |
-| `disabled_at` | date-time | | When Admin, or the ILVG sync for a leaver, disabled the login. Empty = active. A disabled login cannot sign in, and open sessions end at once |
-| `created_by` | link → `user_accounts` | | Empty: accounts are created by the ILVG sync |
+| `disabled_at` | date-time | | When Admin, or the ILVG sync for a leaver, disabled the login. Empty = active. A disabled login cannot sign in, and open sessions end at once. The account stays, so its history in `audit_logs` still names the person |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
 ### `user_sessions`: who is logged in
@@ -114,14 +113,16 @@ One row per open login session. Sessions are kept on the server so that disablin
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `user_account_id` | link → `user_accounts` | Yes | Whose session |
-| `token_hash` | text | Yes | The session key from the browser cookie, stored scrambled so a database leak does not expose sessions |
+| `user_account_id` | link → `user_accounts` | Yes | Whose session. On every request ELMS finds the session, then checks that this account is still enabled and reads its role |
+| `token_hash` | text | Yes | The session key kept in the browser cookie, stored scrambled. On each request ELMS scrambles the cookie value the same way and looks for this row; a database leak gives nobody a usable key |
 | `created_at` | date-time | Yes | Login time |
-| `expires_at` | date-time | Yes | When the session ends on its own |
+| `expires_at` | date-time | Yes | When the session ends on its own; after it the user logs in again. Expired rows are deleted by a daily job |
 
 ### `user_org_units`: what a Manager or Staff member may see
 
 Which units a Manager is responsible for, and which companies a Staff member works on (formerly `manager_org_units`). A Manager can be given any unit, the whole group included, and sees it with everything under it. A Staff member is given P&Ls, or the group for group-level Staff, who see every company and keep the software catalog and the shared licenses. Admin and Employee have no rows.
+
+It is not taken from `employees.org_unit_id`, because what a person looks after is not the unit they work in: a finance director who sits in the group's Finance department may manage P&L A and P&L B, and a Staff member of the group may work on three companies. `employees.org_unit_id` is one unit and decides where their own seats are charged; this table can hold several units and decides what they see.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -135,13 +136,14 @@ Which units a Manager is responsible for, and which companies a Staff member wor
 
 ### `vendors`: providers
 
-The providers licenses come from, such as Microsoft, Atlassian, or Adobe. A usage connector reads one provider for one company.
+The providers licenses come from, such as Microsoft, Atlassian, Adobe, or OpenAI. A usage connector reads one provider for one company. A provider is the same whether its licenses are paid per seat or as you go: how a license is paid is on its PO lines (`entitlement_lines.commercial_term`).
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
+| `code` | text | Yes | Short code of the provider, unique, such as `MSFT`, `ATLASSIAN` |
 | `name` | text | Yes | Provider name, unique |
-| `kind` | choice: `publisher`, `reseller` | Yes | `publisher` makes the software. `reseller` was used for contracts, which are retired |
+| `kind` | choice: `publisher`, `reseller` | Yes | `publisher` makes the software. `reseller` is not used |
 | `website` | text | | Website |
 | `support_contact` | text | | Who to call for support: name, email, phone |
 | `is_active` | yes/no | Yes | "No" for a provider no longer used |
@@ -150,43 +152,42 @@ The providers licenses come from, such as Microsoft, Atlassian, or Adobe. A usag
 
 ### `software_categories`: catalog folders
 
-Categories and subcategories of the software catalog, kept by group-level Staff (UC02), for example "Productivity" › "Office & Collaboration". A category in use cannot be deleted.
+Categories of the software catalog, one level, kept by group-level Staff (UC02), for example "Productivity", "Design", "Development". A category in use cannot be deleted.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `parent_id` | link → `software_categories` | | The category a subcategory sits in. Empty for a top-level category |
-| `name` | text | Yes | Name |
+| `name` | text | Yes | Name, unique |
 
 ### `software_products`: software of the catalog
 
 A software of the catalog, such as "Microsoft 365" or "Jira" (UC02). Each license name a connector reports is mapped to one software, so "M365 E3" of one company and "Microsoft 365 E3" of another are counted together under the same software and category.
 
+The figures of a software are not stored here: its seats Active, Inactive, No activity, and Not monitored, per unit and day, are the sum over its licenses of `plan_unit_daily_snapshots`.
+
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
 | `vendor_id` | link → `vendors` | Yes | The provider |
-| `category_id` | link → `software_categories` | | Its category or subcategory. Empty = "Uncategorized" |
+| `category_id` | link → `software_categories` | | Its category. Empty = "Uncategorized" |
 | `name` | text | Yes | Software name |
 | `description` | text | | Short description |
 | `is_active` | yes/no | Yes | "No" for a software no longer used. A software with licenses mapped to it is merged into another, never deleted |
 | `created_by` | link → `user_accounts` | | Staff who added it |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
-### `product_links`: useful links
-
-Handy links of a software: admin portal, terms of service, license policy. Not used by the agreed use cases; kept for later.
-
-| Field | Type | Required | Meaning |
-|---|---|---|---|
-| `id` | number | Yes | Row number |
-| `product_id` | link → `software_products` | Yes | The product |
-| `label` | text | Yes | Text shown, such as "Admin portal" |
-| `url` | text | Yes | The address |
-
 ### `license_plans`: licenses
 
 One license a connector reports for its company, such as "Microsoft 365 E3" of company A. This is what the rest of the docs call **a license**. Staff declare it when they create the connector; it is *Pending* until the first sync. It stays the same across renewals, so holders, usage, budgets, PO lines, and invoices keep their history. Budget lines and PO lines find it by its name in SAP among the licenses of their P&L and the shared licenses.
+
+The figures of a license are kept elsewhere, by day:
+
+| What | Where |
+|---|---|
+| Who holds it | `license_assignments` |
+| Seats Active, Inactive, No activity, Not monitored, per unit (P&L, block, department, project) | `plan_unit_daily_snapshots`; a P&L adds up the units under it |
+| How often each holder uses it | `usage_records`, metric `active_days`; per unit, the holders of that unit added up |
+| Purchased quantity | `plan_daily_snapshots` |
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -200,14 +201,10 @@ One license a connector reports for its company, such as "Microsoft 365 E3" of c
 | `archetype` | choice | Yes | How use is counted: `allocation` (seats), `concurrent` (sessions at once), `metered` (tokens, requests, GB), `capacity` (cores, servers) |
 | `unit` | text | Yes | What is counted: seat, device, slot, token, core … |
 | `owner_org_unit_id` | link → `org_units` | Yes | The owner: the P&L of the connector, or the group for a license shared by two or more companies. The owner carries the seats nobody holds and plans the license |
-| `duplicate_of_id` | link → `license_plans` | | Set when the same license is reported by two connectors and Staff chose the other one as the source; this row is then counted nowhere |
+| `last_sync_run_id` | link → `sync_runs` | | The latest successful run that brought data for this license. It gives the license's connector status. Empty = no data yet (*Pending*) |
 | `is_active` | yes/no | Yes | "No" when the connector no longer reports it or was deleted |
 | `created_by` | link → `user_accounts` | | Staff who declared it |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
-
-### `contracts`: signed agreements (retired)
-
-Retired: contracts are no longer entered in ELMS. The license terms of UC01 (start, expiry, quantity, cost) come from the PO lines in SAP and are kept in `entitlement_lines`. The table and its fields stay as they were and are not written.
 
 ### `entitlement_lines`: PO lines (license terms)
 
@@ -218,28 +215,22 @@ One PO line of a license, imported each month from the SAP purchase file or type
 | `id` | number | Yes | Row number |
 | `license_plan_id` | link → `license_plans` | Yes | The license, found by its name in SAP |
 | `org_unit_id` | link → `org_units` | Yes | The company that issued the PO, or bought outside SAP: a P&L or the group. It stays the same if the license later becomes shared or stops being shared |
-| `contract_id` | link → `contracts` | | Retired; always empty |
-| `quantity` | quantity | | How many were bought: seats, slots, tokens, cores … Empty = unknown, or unlimited |
-| `is_unlimited` | yes/no | Yes | "Yes" when there is no limit (usage-based pay-as-you-go). Such a line can never be over-allocated |
-| `valid_from` | date | Yes | Start of the term on the PO line |
+| `quantity` | quantity | | How many were bought: seats, slots, tokens, cores … Empty = unknown; always empty for `pay_as_you_go`, which has no limit |
+| `valid_from` | date | Yes | Start of the term on the PO line. From this day the line counts in "Purchased" |
 | `valid_to` | date | | End of the term on the PO line: the expiry. Empty = no end |
-| `auto_renew` | yes/no | | Not in SAP; shown as "—" |
-| `commercial_term` | choice | Yes | How it is paid, from the length of the term: `monthly`, `yearly`, `multi_year`, `perpetual`, `prepaid_credit`, `pay_as_you_go` |
+| `commercial_term` | choice | Yes | How it is paid, from the length of the term: `monthly`, `yearly`, `multi_year`, `perpetual`, `prepaid_credit`, `pay_as_you_go`. A `pay_as_you_go` line has no limit, so it can never be over-allocated |
 | `unit_price` | money | | Net price on the PO line for the period of the term. Empty = unknown |
 | `price_per_qty` | quantity | Yes | How many units that price is for: 1 for a seat, 1,000,000 for "2.50 USD per 1 million tokens". Default 1 |
 | `currency` | text | Yes | Currency of the price |
-| `source` | choice | Yes | `import` (SAP purchase file) or `manual` (typed by Staff) |
 | `external_ref` | text | | PO number and item, such as `4500012345/10`, so a re-import updates the line instead of adding one. Empty for a line typed by Staff |
 | `pr_number` | text | | The purchase requisition the PO came from. Shown, not used in figures |
-| `import_batch_id` | link → `import_batches` | | The import that last wrote it |
-| `created_by` | link → `user_accounts` | | Staff who typed it; empty for imported lines |
+| `import_batch_id` | link → `import_batches` | | The SAP import that last wrote it. Empty = typed by Staff |
+| `created_by` | link → `user_accounts` | | Staff who typed it. Empty = imported from SAP |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
+`valid_from` and `valid_to` are needed because a license is bought again and again: the term says which PO lines count on a given day. They give the "Purchased" quantity of each day (the lines valid that day), the expiry shown in the License List, the commercial term, and the period an invoice is spread over when the invoice gives none. Example: 500 seats from 1 Mar 2027 to 29 Feb 2028, then a renewal of 600 from 1 Mar 2028 → Purchased is 500 on 15 Feb 2028 and 600 on 15 Mar 2028.
+
 The money figure "Purchased" is not this price: it is the accrued cost of the invoices (`expenses`, `cost_allocations`). The monthly cost of the License List is the accrued cost too (UC01, UC04).
-
-### `entitlement_allocations`: quotas per unit (retired)
-
-Retired: quotas per unit are not part of the agreed use cases; the cost of a license goes to the units of the people who hold its seats. The table stays as it was and is not written.
 
 ---
 
@@ -259,23 +250,24 @@ A configured, read-only connection. A **usage connector** reads one provider for
 | `connector_type` | text | Yes | Which program runs it, such as `generic_rest`, `ms_graph`, `ilvg`, `bca` |
 | `api_url` | text | Yes | Full HTTPS address of the API the P&L provides for its own data, such as `https://api.company.com/v1/usage` |
 | `auth_type` | choice: `api_key`, `bearer_token` | Yes | How it signs in |
-| `credentials_ref` | text | Yes | Where the key or token is kept. The secret itself is never stored, shown, exported, or logged |
-| `contact_name` | text | | API contact of the company. Required for a usage connector |
-| `contact_email` | text | | Email of the API contact. Required for a usage connector |
+| `credentials_ref` | text | Yes | Where the API key or token is kept: a reference to the secret store, such as `vault:connectors/42`. At each run the worker reads the secret through it to call the API. The secret itself is never stored here, shown, exported, or logged |
+| `contact_name` | text | | The person at the company who answers for its API, called when runs fail or the data looks wrong. Required for a usage connector |
+| `contact_email` | text | | Email of that person. Staff can search connectors by it. Required for a usage connector |
 | `sync_interval_hours` | number | Yes | How often it runs, typed freely by Staff in hours (at least 1). Default 6 |
 | `reconfigured_at` | date-time | Yes | Last change of company, provider, authentication, or API URL. From that moment every license of the connector is *Pending* again |
 | `paused_at` | date-time | | When Staff paused it. Empty = running. While paused, each scheduled run is recorded with status `paused` |
 | `paused_by` | link → `user_accounts` | | Who paused it |
-| `is_simulated` | yes/no | Yes | "Yes" for a demo connector with fake data, so its figures are labelled as mock |
 | `is_active` | yes/no | Yes | "No" once Staff delete it: no more runs, its licenses become inactive, and the data already collected stays. A new connector for the same company and provider can then be created |
 | `created_by` | link → `user_accounts` | | Staff who created it |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
-The status of each license of a connector is worked out, not stored, from what the runs since `reconfigured_at` brought for that license (`collection_coverage`): *Paused* while the connector is paused; *Pending* while no data has come for it yet, which includes a license added to a running connector; *Failed* when the latest run failed as a whole or failed for this license; *Delayed* when its latest data is older than the interval; *Active* otherwise. *Sync issues* = Delayed + Failed.
+The status of each license of a connector is worked out, not stored, from the runs of the connector and the license's `last_sync_run_id`: *Paused* while the connector is paused; *Pending* while no run since `reconfigured_at` has brought data for it, which includes a license added to a running connector; *Failed* when the latest run failed; *Delayed* when its latest data is older than the interval, which includes a license the latest runs brought nothing for; *Active* otherwise. *Sync issues* = Delayed + Failed.
 
 ### `plan_data_sources`: what each license's connector delivers
 
-For each license: which kinds of data its connector delivers — purchases, holders, usage — and how. Licenses, holders, and usage always come from the connector; nobody types them.
+For each license: which kinds of data its connector delivers — holders, usage — and how. Licenses, holders, and usage always come from the connector; nobody types them.
+
+It is needed because not every source gives the same detail, and the seat status depends on it. Example: Microsoft gives usage per person and per day, so ELMS can say An used E3 on 6 of 22 working days; another provider gives only the total of active users, so its seats are *Not monitored* and never counted as waste; a third gives only the last activity date, so status works but days used is *Not tracked*. A source connected 10 days ago cannot call anyone inactive for 30 days yet (`monitoring_since`).
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -298,41 +290,27 @@ The log of each connector run: when it ran, for which day's data, and whether it
 | `id` | number | Yes | Row number |
 | `connector_id` | link → `connectors` | Yes | The connector that ran |
 | `trigger` | choice | Yes | `scheduled` (at its interval), `manual` (run now, or rerun a period), `backfill` (loading past history on the first connection) |
-| `status` | choice | Yes | `running`, `success`, `partial` (some licenses failed; see `collection_coverage`), `failed` (nothing written), `paused` (the connector is paused: nothing read) |
+| `status` | choice | Yes | `running`, `success`, `failed` (nothing written), `paused` (the connector is paused: nothing read) |
 | `data_date` | date | Yes | The day the fetched figures describe. A rerun of the same day replaces its figures, never duplicates them |
 | `window_start`, `window_end` | date-time | | The time range read, for connectors that read only what is new since last time |
-| `error_message` | text | | Why the whole run failed, such as "invalid credentials". Only filled when status is `failed` |
+| `error_message` | text | | Why the run failed, such as "invalid credentials". Only filled when status is `failed` |
 | `started_at` | date-time | Yes | Start |
 | `finished_at` | date-time | | End. Empty while running; the same as the start for a paused run |
 
-### `collection_coverage`: did we get everything?
+A day of a connector counts as complete when a run for that day succeeded. A day without one is *Unknown*: it is never read as "nobody used it", and it is never used to flag waste. The data lake cleans the data before ELMS reads it, so ELMS does not track gaps inside one license.
 
-For each license, kind of data, and day: was the data complete? This stops the classic mistake of reading a failed sync as "nobody used it". Days that are not complete are never used to flag waste.
+### `raw_records`: records read from the data lake
 
-| Field | Type | Required | Meaning |
-|---|---|---|---|
-| `id` | number | Yes | Row number |
-| `license_plan_id` | link → `license_plans` | Yes | The license |
-| `data_type` | choice | Yes | Which data: terms, holders, usage, or bills |
-| `data_date` | date | Yes | The day |
-| `status` | choice | Yes | `complete`, `partial` (some missing), `failed` (nothing) |
-| `sync_run_id` | link → `sync_runs` | Yes | The run that wrote this day |
-| `error_code` | text | | Why it is not complete, such as `permission_denied`, `anonymized_report`, `contract_violation` (records that failed the license data contract) |
-| `error_message` | text | | The provider's own message for this license, such as "Insufficient privileges to access reports" |
-| `collected_at` | date-time | Yes | When it was recorded |
-
-### `raw_records`: what the vendor sent
-
-Exactly what the vendor's API returned, before ELMS reshapes it. Kept for 180 days, so figures can be recomputed when a rule changes without asking the vendor again.
+Connectors push what they collect to a data lake, which cleans it before ELMS reads it. This table keeps the cleaned records as ELMS read them, before they are written to the other tables — not the raw data of the provider. Kept for 180 days, so figures can be recomputed when a rule changes without reading the data lake again.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
 | `sync_run_id` | link → `sync_runs` | Yes | The run that fetched it |
-| `record_type` | text | Yes | What kind of object, such as `subscribedSku`, `user`, `activeUserDetail` |
-| `external_id` | text | | Its id at the vendor |
-| `payload` | JSON | Yes | The data exactly as received |
-| `fetched_at` | date-time | Yes | When it was received |
+| `record_type` | text | Yes | What kind of record, as in the license data contract: `license`, `holder`, `usage` |
+| `external_id` | text | | Its id at the source, such as the license id or the holder's account |
+| `payload` | JSON | Yes | The cleaned record as the data lake delivered it |
+| `fetched_at` | date-time | Yes | When ELMS read it |
 | `normalized_at` | date-time | | When ELMS processed it. Empty = not processed yet |
 | `normalize_error` | text | | Why ELMS could not use it, such as `undeclared_license` (a license the source reports but the connector does not list) or `missing_field`. Empty = used successfully. These are the rejected records Staff see in UC10 |
 
@@ -343,63 +321,59 @@ Invoices typed by Staff, budget plan Excel files, and SAP purchase Excel files. 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `storage_key` | text | Yes | Where the file is kept in file storage |
-| `original_name` | text | Yes | File name as uploaded |
-| `content_type` | text | Yes | File type, such as PDF, image, Excel, CSV |
+| `storage_key` | text | Yes | Where the file is kept in file storage, such as `imports/2027/03/7f3a….xlsx`. The file itself is not in the database |
+| `original_name` | text | Yes | File name as uploaded, such as `SAP_PO_2027-03.xlsx`, shown in the import history |
+| `content_type` | text | Yes | File type, such as PDF, image, Excel, CSV. Checked from the content, not from the name |
 | `size_bytes` | number | Yes | Size. At most 10 MB |
 | `checksum` | text | Yes | Fingerprint of the content, so the import history can show the same file uploaded again. Whether a budget file changes anything is decided by its preview |
-| `contract_id` | link → `contracts` | | Retired; always empty |
 | `uploaded_by` | link → `user_accounts` | | Who uploaded it |
 | `uploaded_at` | date-time | Yes | When |
 
 ### `import_batches`: file imports
 
-Each import of a budget plan (UC04) or of SAP purchases (UC04): who, when, which file, and how many rows. Nothing is written until the preview is checked and confirmed; one bad row rejects the whole file. A budget import has a target unit and months, and changes only the licenses in its file: in that unit and every unit under it, for those months, a license already planned is overwritten (its lines the file no longer has are removed) and a new one is added. Every other license keeps its plan. Example: the group imports a file with only GitHub rows for P&L A and P&L B; their Microsoft 365 and Jira plans do not change. A purchase import adds or updates PO lines and invoices by their SAP numbers, so the same file twice adds nothing.
+Each import of a budget plan (UC04) or of SAP purchases (UC04): who, when, which file, and how many rows. A confirmed budget import is also a **version of the plan** of its target unit, for example "P&L A, 2027, January–December, version 3": it holds only the lines it added or replaced, it is never edited, and earlier versions are kept for comparison. Nothing is written until the preview is checked and confirmed; one bad row rejects the whole file. A budget import has a target unit and months, and changes only the licenses in its file: in that unit and every unit under it, for those months, a license already planned is overwritten (its lines the file no longer has are removed) and a new one is added. Every other license keeps its plan. Example: the group imports a file with only GitHub rows for P&L A and P&L B; their Microsoft 365 and Jira plans do not change. A purchase import adds or updates PO lines and invoices by their SAP numbers, so the same file twice adds nothing.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `import_type` | choice: `budget`, `purchase` | Yes | What the file contains: the budget plan, or PO lines and invoices from SAP |
+| `import_type` | choice: `budget`, `purchase` | Yes | What the file contains: the budget plan (Manager), or PO lines and invoices from SAP (Staff) |
 | `file_id` | link → `files` | Yes | The uploaded file |
-| `target_org_unit_id` | link → `org_units` | | Budget: the unit where, with every unit under it, the file changes the licenses it names |
-| `period_from`, `period_to` | date | | Budget: first and last month the file covers |
-| `preview_key` | text | Yes | A unique key per preview. Pressing *Confirm* twice, or again after a time-out, applies the import once |
-| `based_on_budget_plan_id` | link → `budget_plans` | | Budget: the latest plan version of any unit when the preview was made. If another import changed a line this file would change since then — at the same unit, above, or below — the confirm is refused: "The plan changed since your preview" |
-| `budget_plan_id` | link → `budget_plans` | | Budget: the version this import created |
-| `status` | choice | Yes | `previewed` (checked, nothing written), `confirmed` (written), `rejected` (has errors), `unchanged` (the file changes nothing, for example the same file again: nothing to do) |
+| `target_org_unit_id` | link → `org_units` | | Budget only: the unit the Manager chose. The file changes the licenses it names in this unit and every unit under it, and nowhere else. Example: target Block A1 → the other blocks of P&L A keep their plan |
+| `period_from`, `period_to` | date | | Budget only: first and last month the file covers, such as January to December 2027 |
+| `preview_key` | text | Yes | A unique key given to each preview. *Confirm* sends it back, so pressing *Confirm* twice, or again after a time-out, applies the import once |
+| `based_on_import_id` | link → `import_batches` | | Budget only: the latest confirmed budget import, of any unit, when the preview was made. If an import confirmed since then changed a line this file would change — at the same unit, above, or below — the confirm is refused: "The plan changed since your preview" |
+| `version_no` | number | | Budget only: the version of the target unit's plan this import became once confirmed: 1, 2, 3 … per target unit. Empty while previewed, and when rejected or unchanged |
+| `note` | text | | Budget only: free notes of the Manager on the version |
+| `status` | choice | Yes | `previewed` (checked, nothing written yet), `confirmed` (written), `rejected` (at least one row has an error: nothing written), `unchanged` (the file changes nothing, for example the same file again: nothing written) |
 | `rows_total` | number | Yes | Rows in the file |
-| `rows_added` | number | Yes | New rows |
+| `rows_added` | number | Yes | Rows that add a line: a budget line, PO line, or invoice ELMS did not have |
 | `rows_updated` | number | Yes | Rows that replace an existing line with another quantity, amount, or currency |
-| `rows_removed` | number | Yes | Budget: lines of the file's licenses, in the target and under it, that the file no longer has |
-| `rows_rejected` | number | Yes | Rows with errors |
-| `error_report` | JSON | | Which rows were wrong and why |
+| `rows_removed` | number | Yes | Budget only: lines of the file's licenses, in the target and under it, that the file no longer has. Always 0 for a purchase import |
+| `rows_rejected` | number | Yes | Rows with errors. More than 0 = the whole file is rejected |
+| `error_report` | JSON | | Which rows were wrong and why, such as `[{"row": 12, "error": "Unit B9 not in the hierarchy"}]`, shown in the preview |
 | `imported_by` | link → `user_accounts` | Yes | Who uploaded it |
-| `created_at` | date-time | Yes | Upload time |
-| `confirmed_at` | date-time | | When it was confirmed |
+| `created_at` | date-time | Yes | Upload time, when the preview was made |
+| `confirmed_at` | date-time | | When it was confirmed. Empty until then |
 
 ---
 
 ## 4. Holders and usage
 
-### `subjects`: identities at a provider
+### `subjects`: accounts at a provider
 
-Who or what holds a license on the provider's side: a user account, a shared mailbox, a device, a project, or an API key. Each identity belongs to the connector (company tenant) that reports it. Kept apart from `employees` because some identities match no employee. One employee can have several identities over time — an old and a new email, or accounts in two companies — and all of them count as the same person.
+The accounts that hold licenses on the provider's side: people, and also shared mailboxes, service accounts, devices, and API keys, which are not people. Each account belongs to the connector (company tenant) that reports it, so the same email in the tenants of two companies is two accounts.
+
+A person is always an ILVG employee: a person the source reports whose employee code and email are not in ILVG does not exist for ELMS, and the record is rejected (`unknown_employee`, shown to Staff in UC10). One employee can have several accounts — an old and a new email, or accounts in two companies — and all of them count as the same person.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `connector_id` | link → `connectors` | Yes | The connector it was reported by |
-| `subject_type` | choice | Yes | `user`, `device`, `project`, `api_key`, `other` |
-| `account_type` | choice: `personal`, `shared`, `service` | Yes | A person, a group mailbox, or a service account. A shared or service account is judged as a whole: used by anyone in the last 30 days = Active. It is listed apart, never as an inactive person |
-| `identifier` | text | Yes | How the provider names it, in lowercase: email, device name, project name, key label |
-| `external_id` | text | | The provider's permanent id. Keeps the same identity when a user is renamed |
-| `display_name` | text | | Name shown when it matches no employee |
-| `employee_id` | link → `employees` | | The person, matched by ILVG employee id or email. Empty = "Unknown employee" |
-| `org_unit_id` | link → `org_units` | | The unit that owns a shared or service account, a project, or a key |
-| `is_enabled` | yes/no | | Whether the account is still enabled at the provider. "No" while it still holds a seat = flagged. Empty = unknown |
-| `source` | choice | Yes | Always a connector |
-| `sync_run_id`, `import_batch_id` | link | | Connector run that last wrote it |
-| `first_seen_at` | date-time | Yes | First time ELMS saw it |
+| `connector_id` | link → `connectors` | Yes | The connector (company tenant) the account lives at |
+| `holder_type` | choice: `person`, `shared`, `service`, `device`, `api_key` | Yes | What the account is. A `shared` mailbox or `service` account is judged as a whole: used by anyone in the last 30 days = Active. It is listed apart, never as an inactive person |
+| `identifier` | text | Yes | How the provider names it, in lowercase: email, mailbox, device name, key label. Unique per connector, so each sync updates the same account |
+| `employee_id` | link → `employees` | | The person, matched by ILVG employee code, otherwise by email. Set only for a `person`, and always set for one |
+| `org_unit_id` | link → `org_units` | | The unit that owns an account that is not a person — mailbox, service account, device, key — and carries its cost. Empty for a person, whose unit is in `employees`; empty for the others = "Unknown unit" |
+| `sync_run_id` | link → `sync_runs` | Yes | Connector run that last wrote it |
 
 ### `license_assignments`: who holds what
 
@@ -413,8 +387,7 @@ One identity holding one license, for example "An has held an E3 seat since 3 Ma
 | `assigned_on` | date | | Day the seat was given, as reported by the provider. When unknown, the day ELMS first saw the seat (`created_at`) is used |
 | `ended_on` | date | | Day the seat was taken back. Empty = still held |
 | `last_active_at` | date-time | | Last time the license was used. Empty = no use recorded |
-| `source` | choice | Yes | Always a connector |
-| `sync_run_id`, `import_batch_id` | link | | Connector run that last wrote it |
+| `sync_run_id` | link → `sync_runs` | Yes | Connector run that last wrote it |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
 ### `usage_records`: usage per period
@@ -430,22 +403,20 @@ Usage per period: the days each holder was active (for the usage frequency), pea
 | `period_start` | date | Yes | First day of the period |
 | `period_end` | date | Yes | Last day of the period |
 | `quantity` | quantity | Yes | The figure |
-| `source` | choice | Yes | Always a connector |
-| `sync_run_id`, `import_batch_id` | link | | Connector run that last wrote it |
+| `sync_run_id` | link → `sync_runs` | Yes | Connector run that last wrote it |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
 ### `plan_daily_snapshots`: daily photo of each license
 
-Every day ELMS writes down how many of each license were purchased and its list cost per month. A new SAP import or an edit overwrites the quantity of a PO line, so without these photos there would be no trends. A photo is never changed afterwards. The money figure "Purchased" is the accrued cost in `cost_allocations`, not this list cost.
+Every day ELMS writes down how many of each license were purchased. A new SAP import or an edit overwrites the quantity of a PO line, so without these photos there would be no trends. A photo is never changed afterwards. The money figure "Purchased" is the accrued cost in `cost_allocations`.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
 | `snapshot_date` | date | Yes | The day |
 | `license_plan_id` | link → `license_plans` | Yes | The license |
-| `purchased_qty` | quantity | | Total purchased that day. Empty = unknown, or unlimited |
-| `is_unlimited` | yes/no | Yes | "Yes" when an unlimited purchase was valid that day |
-| `effective_monthly_cost` | money | | List cost of a month at the PO prices of that day, in VND. Empty = price or exchange rate unknown |
+| `purchased_qty` | quantity | | Total purchased that day. Empty = unknown, or no limit |
+| `is_unlimited` | yes/no | Yes | "Yes" when a `pay_as_you_go` PO line was valid that day: there is no limit |
 | `created_at` | date-time | Yes | When the photo was taken |
 
 ### `plan_unit_daily_snapshots`: daily photo per unit
@@ -468,43 +439,24 @@ The same daily photo, per unit: how many seats are held, and in which status. Se
 
 ### `employee_app_usage`: applications employees use (BCA)
 
-What BCA reports from company machines: which application each person used, on how many days. Kept in its own table, apart from the license usage, so other services can use it later (BR-21). Only the Managers of the person's units can read it (UC03).
+What BCA reports from company machines: which application each person used, day by day. One row = one person used one application on one day, so days used in a period is the number of rows and the last use is the latest day. Kept in its own table, apart from the license usage, so other services can use it later (BR-21). Only the Managers of the person's units can read it (UC03).
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `employee_id` | link → `employees` | | The person BCA reports. Empty = BCA identity not matched to an employee yet |
-| `bca_identity` | text | Yes | How BCA names the person (machine user or email), in lowercase |
+| `employee_id` | link → `employees` | Yes | The person BCA reports, matched by ILVG employee code, otherwise by email. A person not in ILVG is rejected |
 | `application_name` | text | Yes | The application as BCA names it |
-| `active_minutes` | number | | Minutes the application was in use in the period |
+| `usage_date` | date | Yes | The day it was used |
+| `active_minutes` | number | | Minutes the application was in use that day. Empty = unknown |
 | `product_id` | link → `software_products` | | The catalog software the application maps to, set by Staff in the catalog (UC02). Empty = not mapped |
-| `period_start`, `period_end` | date | Yes | The period |
-| `days_used` | number | Yes | Days the application was used in the period |
-| `last_used_at` | date-time | | Last use |
-| `source` | choice | Yes | Always `api` (BCA) |
 | `sync_run_id` | link → `sync_runs` | Yes | BCA run that wrote it |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
-A person whose machine does not report to BCA has no row: "Not tracked", never "not used". Until the BCA API is known, ELMS assumes that BCA reports per day the domain account of the user — which carries the ILVG employee code — and each application with its active minutes; the person is matched by employee code, otherwise by email.
+A person whose machine does not report to BCA has no row: "Not tracked", never "not used". BCA reports per day the domain account of the user — which carries the ILVG employee code — and each application with its active minutes; the person is matched by employee code, otherwise by email.
 
 ---
 
 ## 5. Budget, cost, and expenses
-
-### `budget_plans`: budget versions
-
-Each confirmed budget import creates a new version for its target unit and months, for example "P&L A, 2027, January–December, version 3". A version holds only the lines its import added or replaced. A Manager imports for their own unit or any unit under it: the Manager of a P&L can change the plan of the P&L and of each block; the Manager of a block only that block and what is under it. Versions are never edited; earlier ones are kept for comparison.
-
-| Field | Type | Required | Meaning |
-|---|---|---|---|
-| `id` | number | Yes | Row number |
-| `org_unit_id` | link → `org_units` | Yes | The target unit of the import |
-| `fiscal_year` | number | Yes | The year, which is the calendar year |
-| `period_from`, `period_to` | date | Yes | First and last month the import covered |
-| `version_no` | number | Yes | 1, 2, 3 … per target unit |
-| `note` | text | | Free notes |
-| `created_by` | link → `user_accounts` | Yes | Manager who confirmed the import |
-| `created_at` | date-time | Yes | When |
 
 ### `budget_plan_lines`: the plan, line by line
 
@@ -513,7 +465,7 @@ One line per unit, license, and month: "Block A1, Microsoft 365 E3, March 2027: 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `budget_plan_id` | link → `budget_plans` | Yes | The version that wrote the line |
+| `import_batch_id` | link → `import_batches` | Yes | The budget import (version) that wrote the line |
 | `org_unit_id` | link → `org_units` | Yes | The unit planned: group, P&L, block, department, or project. A shared license is planned by the group per P&L, or deeper; a group line plans the seats the group keeps free |
 | `license_name` | text | Yes | The license as written in the file |
 | `license_plan_id` | link → `license_plans` | | The license the name matches, by its name in SAP, among the licenses of the unit's P&L and the shared licenses. Empty = "Not mapped". A name that matches two licenses is rejected in the preview |
@@ -521,9 +473,7 @@ One line per unit, license, and month: "Block A1, Microsoft 365 E3, March 2027: 
 | `planned_quantity` | quantity | Yes | How many |
 | `planned_amount` | money | Yes | How much |
 | `currency` | text | Yes | Currency of the amount |
-| `superseded_at` | date-time | | When a later import replaced the line. Empty = the line is in force |
-| `superseded_by_plan_id` | link → `budget_plans` | | The version that replaced it |
-| `created_at` | date-time | Yes | When |
+| `superseded_by_import_id` | link → `import_batches` | | The later budget import that replaced or removed the line; when is its `confirmed_at`. Empty = the line is in force |
 
 ### `cost_allocations`: who carries the cost, and how much of it is used
 
@@ -545,8 +495,7 @@ When the month closes the figures are frozen.
 | `method` | choice | Yes | How it was split: `per_seat` (by seats held), `per_usage` (by consumption), `direct` (the bill names the unit), `none` (could not be split) |
 | `basis_qty` | quantity | | What the share is based on: average seats held over the month (seat-days ÷ days of the month), or consumption. Explains "why Sales pays 30" |
 | `filled_days` | number | | Split by seats: days of the month whose seats were taken from the nearest complete day because their data was incomplete. 0 = every day had its own data. Empty for the other methods |
-| `amount` | money | | The share of Purchased, in VND. Empty = unknown |
-| `used_amount` | money | | Part of the share for seats in use (Active) or consumption |
+| `used_amount` | money | | Part of the share for seats in use (Active) or consumption. The share of Purchased is `used_amount` + `wasted_amount` + `not_evaluated_amount`, in VND; all three empty = unknown |
 | `wasted_amount` | money | | Part for Inactive and No activity seats; all of an Unallocated share |
 | `not_evaluated_amount` | money | | Part for seats that cannot be judged: Not monitored, or data Unknown. Never counted as used or wasted |
 | `computed_at` | date-time | Yes | Last computed |
@@ -570,10 +519,9 @@ The invoices from the SAP purchase file, each paying a PO line, and those Staff 
 | `description` | text | | Description |
 | `invoice_file_id` | link → `files` | | Scan of an invoice typed by Staff |
 | `accrual_schedule` | JSON | | The amount spread month by month over the term, such as `{"2026-01": 10000000, …}`. Months already closed never change |
-| `source` | choice | Yes | `import` (SAP purchase file) or `manual` (typed by Staff) |
 | `external_ref` | text | | Invoice number and line in SAP, such as `5105600123/1`, so a re-import never adds it twice. Empty for an invoice typed by Staff |
-| `import_batch_id` | link → `import_batches` | | The import that last wrote it |
-| `created_by` | link → `user_accounts` | | Staff who typed it; empty for imported invoices |
+| `import_batch_id` | link → `import_batches` | | The SAP import that last wrote it. Empty = typed by Staff |
+| `created_by` | link → `user_accounts` | | Staff who typed it. Empty = imported from SAP |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
 ### `accounting_periods`: months of each company
@@ -584,8 +532,7 @@ The months of each company (and of the group, for shared licenses) and whether e
 |---|---|---|---|
 | `id` | number | Yes | Row number |
 | `org_unit_id` | link → `org_units` | Yes | The company: a P&L, or the group |
-| `period_year` | number | Yes | Calendar year |
-| `period_month` | number | Yes | Month, 1 to 12 |
+| `month` | date | Yes | First day of the month, such as 1 March 2027. Its year is the fiscal year |
 | `closed_at` | date-time | | When it was closed. Empty = still open (Provisional) |
 | `closed_by` | link → `user_accounts` | | Who closed it. Empty = closed automatically |
 
@@ -608,15 +555,14 @@ The rates used to turn USD and other currencies into VND, entered by group-level
 
 ### `detection_runs`: daily checks
 
-Each daily run of the waste checks. It keeps the threshold and rule version used, so an old result can still be explained after the rules change.
+Each daily run of the waste checks. It keeps the version of the rules used, thresholds included, so an old result can still be explained after the rules change.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
 | `data_date` | date | Yes | The day of data checked |
-| `inactivity_threshold_days` | number | Yes | Days without use that counted as inactive (30) |
-| `rule_version` | text | Yes | Version of the check rules, such as "2026.11" |
-| `status` | choice | Yes | `running`, `success`, `partial`, `failed`. Screens show the latest successful run |
+| `rule_version` | text | Yes | Version of the check rules, such as "2026.11". The thresholds are part of it (30 days without use = inactive): changing a threshold makes a new version |
+| `status` | choice | Yes | `running`, `success`, `failed`. Screens show the latest successful run |
 | `started_at` | date-time | Yes | Start |
 | `finished_at` | date-time | | End |
 
@@ -630,15 +576,10 @@ One finding per license, unit, and check: seats nobody holds, seats unused for 3
 | `detection_run_id` | link → `detection_runs` | Yes | The run |
 | `license_plan_id` | link → `license_plans` | Yes | The license |
 | `org_unit_id` | link → `org_units` | | The unit the finding belongs to: the owner for seats nobody holds, the holders' unit otherwise. Empty = holders with "Unknown unit" |
-| `check_type` | choice | Yes | `unused` (seats nobody holds), `inactive` (seats not used for 30 days), `overuse` (more given than bought), `leaver` (seats of people who left or of disabled accounts) |
+| `check_type` | choice | Yes | `unused` (seats nobody holds), `inactive` (seats not used for 30 days), `overuse` (more given than bought), `leaver` (seats of people who left) |
 | `flagged_qty` | quantity | | How many. It also gives the verdict: empty = not evaluated, 0 = nothing found, more than 0 = flagged |
 | `monthly_cost` | money | | What the flagged seats cost per month, in VND |
 | `flagged_since` | date | | First day of the current run of flagged days |
-| `created_at` | date-time | Yes | When it was found |
-
-### `recommendations`: proposed actions (retired)
-
-Retired with the recommendation use cases: ELMS no longer tracks actions on licenses. The table and its fields stay as they were and are not written.
 
 ---
 
@@ -669,8 +610,7 @@ When Admin corrects a value that came from ILVG, for example a unit placed under
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `entity_type` | text | Yes | Table of the corrected row: `org_units` |
-| `entity_id` | number | Yes | The corrected row |
+| `org_unit_id` | link → `org_units` | Yes | The corrected unit |
 | `field_name` | text | Yes | The corrected field, such as `parent_id` |
 | `original_value` | text | | What ILVG says. Each sync keeps it up to date |
 | `override_value` | text | Yes | The value Admin entered |

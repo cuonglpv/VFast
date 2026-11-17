@@ -115,7 +115,7 @@ The backlog contains **46 user stories (159 story points)**: 29 Must-have (113 p
 
 | Criterion | Meaning in ELMS |
 |---|---|
-| **Independent** | Each story produces a demonstrable outcome; usage, waste, and dashboard stories run on seeded data labelled as mock, without waiting for the P&L APIs. |
+| **Independent** | Each story produces a demonstrable outcome; usage, waste, and dashboard stories run on seeded data in a separate demo database, without waiting for the P&L APIs. |
 | **Negotiable** | Layout is left to the UI design and may change while outcome, permissions, and business rules stay fixed. |
 | **Valuable** | Each story names the benefit for one role: Employee, Staff, Manager, or Admin. |
 | **Estimable** | Inputs, outputs, roles, data scope, and failure outcomes are explicit; every story is estimated in points. |
@@ -141,7 +141,7 @@ The target schema is PostgreSQL, 40 tables in seven groups: organization and acc
 
 ![Entity overview](docs/database/diagrams/erd_overview.png)
 
-Entity overview, one ERD per group, a short explanation of every table, rule-to-schema traceability, and the decisions still to confirm (D24–D41): [Database design](docs/database/README.md). Source [`elms.dbml`](docs/database/elms.dbml), reference DDL [`schema.sql`](docs/database/schema.sql), draw.io files in [`docs/database/diagrams/`](docs/database/diagrams/).
+Entity overview, one ERD per group, a short explanation of every table, rule-to-schema traceability, and the design decisions (D1–D51): [Database design](docs/database/README.md). Source [`elms.dbml`](docs/database/elms.dbml), reference DDL [`schema.sql`](docs/database/schema.sql), draw.io files in [`docs/database/diagrams/`](docs/database/diagrams/).
 
 ## 3. Architecture and Folder Structures
 
@@ -249,7 +249,7 @@ ELMS/
 │  │  ├─ <Module>/<Feature>/          e.g. Catalog/Software, Finance/BudgetImports
 │  │  │  └─ Commands/  Queries/  DTO/
 │  │  ├─ Analytics/<Dashboard>/Queries/   Read views with Dapper
-│  │  ├─ Ingestion/Pipeline/          Steps of a sync run: fetch, validate, normalize, coverage
+│  │  ├─ Ingestion/Pipeline/          Steps of a sync run: fetch, validate, normalize
 │  │  └─ ConfigureServices.cs
 │  ├─ Elms.Infrastructure/
 │  │  ├─ Data/                        AppDbContext, Configurations/, Migrations/
