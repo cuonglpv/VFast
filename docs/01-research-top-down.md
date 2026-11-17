@@ -127,7 +127,7 @@ Provider APIs give no organization data, no budget, and no history: units come f
 ## 5. Process (to-be)
 
 ```text
-1. Staff connect each company's provider (UC10) → 2. Collect at each connector's interval; ILVG and BCA daily
+1. Staff connect each company's provider (UC11) → 2. Collect at each connector's interval; ILVG and BCA daily
   → 3. Validate against the license data contract → 4. Daily seat status and cost split
   → 5. Usage, budget, and waste analysis per unit → 6. Managers act at the source
 ```
@@ -148,20 +148,19 @@ Pipeline principles:
 
 ## 6. Functional decomposition (Epic → Feature)
 
-The epics are the seven branches of the mind map; each leaf is a feature area of a use case, and several leaves can belong to one use case. Bold leaves are Must- and Should-have use cases, plain leaves Could-have ([INVEST requirements](03-invest-requirements.md)). The two self-service use cases every role has, View My Licenses (UC11) and Login / Logout (UC12), are not on the map.
+The mind map collects the ideas of the product; the epics group the use cases, close to its branches but not one to one. Bold leaves are Must- and Should-have, plain leaves Could-have ([INVEST requirements](03-invest-requirements.md)). The two self-service use cases every role has, View My Licenses (UC10) and Login / Logout (UC11), are not on the map.
 
 ![ELMS mind map](mindmap.png)
 
 | Epic | Use cases |
 |---|---|
 | E1 License Management | View License Detail (UC01), Browse License Inventory (UC02) |
-| E2 Usage | View Plan vs Utilization Balance (UC03) |
-| E3 Budget Management | Manage Budget Plan (UC04) |
-| E4 Optimization | Detect Wasted Seats (UC05), Rank and Flag Units by Waste (UC06) |
-| E5 Analytics | View Dashboards (UC07) |
-| E6 User & Organization | Manage User Roles and Permissions (UC08), Manage Organization Hierarchy (UC09) |
-| E7 Connection Management | Manage Usage Connectors (UC10) |
-| — Self-service (not on the map) | View My Licenses (UC11), Login / Logout (UC12) |
+| E2 Optimization | Track License Waste (UC03) |
+| E3 Budget Management | Manage Budget Plan (UC04), Forecast Spending (UC05) |
+| E4 Analytics | View Dashboards (UC06) |
+| E5 User & Organization | Manage User Roles and Permissions (UC07), Manage Organization Hierarchy (UC08) |
+| E6 Connection Management | Manage Data Connectors (UC09) |
+| — Self-service (not on the map) | View My Licenses (UC10), Login / Logout (UC11) |
 
 ## 7. Scope
 
@@ -200,7 +199,7 @@ The epics are the seven branches of the mind map; each leaf is a feature area of
 | A P&L cannot deliver its API on time | Mock data labelled as mock (BR-12); the connector stays `Pending` |
 | Usage reports anonymize users | Seats become `Not monitored`, their cost Not evaluated, never waste |
 | A sync fails and usage looks like zero | The figures stay `Unknown`; the connector shows `Failed` or `Delayed` (BR-29) |
-| Figures disagree between screens | One set of rules (BR-03, BR-06, BR-09, BR-22) and one definition per metric (UC07) |
+| Figures disagree between screens | One set of rules (BR-03, BR-06, BR-09, BR-22) and one definition per metric (UC08) |
 | Per-user usage is sensitive personal data | Every API requires login; data scope is enforced on the backend (BR-14) |
 | BCA or SAP fields differ from the assumptions | The BCA fields (UC03) and the SAP export (BR-08) are checked against the real sources before the import is built |
 

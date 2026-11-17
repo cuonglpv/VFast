@@ -1,112 +1,90 @@
 # Feature List
 
-> Design status: TARGET (November 2026)
->
-> Implementation status: NOT STARTED
-
-Features of the [use cases](02-use-cases.md), by mind-map branch and use case. Each feature is derived from a flow or a rule of the use case specification, not from a screen: when a screen changes, the use case is updated first and this list follows it.
+Features of the [use cases](02-use-cases.md), by mind-map branch. Each feature is something the system can do for an actor, taken from what its use case covers.
 
 ### License Management
 
-| ID | Feature | Use case | Flow | Actors |
-|---|---|---|---|---|
-| F01 | License list: name, provider, company, monthly cost accrued from the invoices, allocated / purchased with the allocation rate, expiry date and days to expiry with its bucket, data date | UC01 | Main | Manager |
-| F02 | License list search (license, provider, company), filters (company, expiry bucket), sort (expiry, name, monthly cost, allocation rate, purchased quantity), count of matches, clear filters | UC01 | Main | Manager |
-| F03 | Validity of each license term over a period moved back and forth: today, expiry bucket, final 7 days, terms running past or outside the period | UC01 | A | Manager |
-| F04 | License details: cost, start, expiry, expiry status, allocated / purchased, unallocated or over-allocated quantity | UC01 | B | Manager |
-| F05 | License users: seat counts (allocated, active, inactive, not monitored, unallocated) as filters; holders with emails, unit, status, last used, days used against working days or `Not tracked`; period choice; search, sort, CSV export; shared and service accounts apart; `Holder moved` | UC01 | C | Manager |
-| F06 | License terms from the SAP PO lines: PO, start, expiry, quantity, cost; filter by vendor, company, renewal within 30 or 60 days | UC01 | D | Manager |
-| F07 | License inventory per unit, grouped by provider, with purchased, assigned, used, cost, status, and expiry | UC02 | Main | Manager, Staff |
-| F08 | Units per license, with their share | UC02 | A | Manager, Staff |
-| F09 | Providers with their licenses and the companies using each; quantities per license only | UC02 | B | Manager, Staff |
-| F10 | Software catalog: software, provider, category, subcategory; create, edit, merge | UC02 | C | Staff |
-| F11 | License name mapping to the catalog: names not mapped, suggestion by provider and name, one mapping for every company; unmapped names under *Uncategorized*; the SAP name of a license | UC02 | D | Staff |
-| F12 | BCA application name mapping to the catalog | UC02 | E | Staff |
-| F13 | Shared licenses: *possibly shared* proposals, confirmation makes the group the owner, charge-back per company by the seats its people hold, unassigned seats in *Unallocated* of the group; open months only | UC02 | F | Staff; Manager reads its share |
-
-### Usage
-
-| ID | Feature | Use case | Flow | Actors |
-|---|---|---|---|---|
-| F14 | Plan, Purchased, and Used of the scope on one scale; over or under budget with the amount; utilization with Used, Wasted, Not evaluated | UC03 | Main | Manager |
-| F15 | Period: year to date, one month, or a year; complete months only, up to the previous month | UC03 | Main, B | Manager |
-| F16 | Scope over the hierarchy Group > P&L > Block > Department > Project > License, with *Unallocated* and *Unknown unit*; search a unit; path back to the group; starts at the Manager's highest unit; limited to the Manager's units | UC03 | A | Manager |
-| F17 | Scope shareable as a link | UC03 | A | Manager |
-| F18 | Comparison of the units below: Plan beside Purchased split into Used, Wasted, Not evaluated; search with count; order (waste, name, plan, used, utilization); year; currency VND or USD; select a unit to go down | UC03 | B | Manager |
-| F19 | Figure card of a unit and period: Plan, Purchased (% of plan), Used and Wasted (% of purchased) | UC03, UC06 | B | Manager |
-| F20 | Annual trend per unit: monthly Plan beside Purchased split, utilization for the year, year totals | UC03 | B | Manager |
-| F21 | Table of the units below: rank, level, Plan, Purchased, Used, Wasted, utilization, variance vs plan (licenses planned above left out) | UC03 | C | Manager |
-| F22 | Waste per license and month for a unit, as a rate or in money; license rows add up to the unit; shared licenses marked; open a license | UC03 | C | Manager |
-| F23 | Export of the units listed, with the license rows opened, readable in Excel with Vietnamese text | UC03 | C | Manager |
-| F24 | Employee usage from BCA: members, applications, days used, last used; filters; per employee and per application; applications without a license | UC03 | D | Manager |
-
-### Budget Management
-
-| ID | Feature | Use case | Flow | Actors |
-|---|---|---|---|---|
-| F25 | Budget plan Excel template | UC04 | Main | Manager |
-| F26 | Budget import for a target unit and months, by the Manager of the unit or of any larger unit; preview with rows to add, replace, remove, and reject; a new version on confirm; only the licenses in the file change; idempotent (BR-33); a line's license found by its SAP name | UC04 | Main | Manager |
-| F27 | Shared licenses planned by the group per P&L or deeper; P&L Managers change the lines of their units | UC04 | Main | Manager |
-| F28 | Monthly plan, quantity and amount, grouped by P&L, block, or project; version compare; lines marked with the import that changed them | UC04 | A | Manager |
-| F29 | Purchases: monthly import of the PR, PO lines, and invoices exported from SAP, idempotent by PO and invoice number; preview; hand entry of a purchase made outside SAP and its invoice | UC04 | B | Staff |
-| F30 | Monthly accrual of each term from its invoices, rounding to the thousand VND, month close, export for finance | UC04 | C | Staff |
-| F31 | Exchange rates per currency from a date; rate of the invoice date applied; corrections only for open months | UC04 | D | Staff |
+| ID | Feature | Use case | Actors |
+|---|---|---|---|
+| F01 | License list of the user's units, cloud services included: monthly cost, company, allocated against purchased, days to expiry; search, filter, sort | UC01 | Manager |
+| F02 | Term of each license over time and the renewals coming | UC01 | Manager |
+| F03 | License details: cost, term, unallocated or over-allocated seats | UC01 | Manager |
+| F04 | Users of a license: holders, seat status, last use, how often they use it | UC01 | Manager |
+| F05 | Cloud service details: its accounts, the units they are assigned to, the cost of each month by service | UC01 | Manager |
+| F06 | License terms from the PO lines, with those renewing soon | UC01 | Manager |
+| F07 | Licenses by unit — which units use a license, which licenses a unit has — and by provider | UC01 | Manager |
+| F08 | Inventory each company's sources deliver, by provider, to check nothing is missing | UC02 | Staff |
+| F09 | Software catalog with categories | UC02 | Staff |
+| F10 | Mapping of license and application names to the catalog | UC02 | Staff |
+| F11 | Shared licenses: mark a license used by several companies, see what each company is charged | UC02 | Staff; Manager sees its share |
+| F12 | Assignment of each cloud account to a unit, or sharing it between units | UC02 | Staff |
 
 ### Optimization
 
-| ID | Feature | Use case | Flow | Actors |
-|---|---|---|---|---|
-| F32 | Unassigned seats with their monthly and yearly cost and a total | UC05 | Main | Manager |
-| F33 | Inactive seats (30 days without use) with their monthly and yearly cost and a total; leavers, `Holder moved`, shared and service accounts apart | UC05 | A | Manager |
-| F34 | Units ranked by Wasted: Purchased split into Used and Wasted, waste rate; first 10, all on request | UC06 | Main | Manager |
-| F35 | Waste flag above 20 % of Purchased, wherever the unit appears, with the units and licenses that cause it | UC06 | Main, A | Manager |
-| F36 | Ranking by waste from the Manager's highest unit | UC06 | Trigger | Manager |
-| F37 | Monthly trend of Plan, Used, and Wasted on one scale, over the units listed after the search, with their count; current month left out | UC06 | B | Manager |
-| F38 | Units placed by Purchased and waste rate against the medians; high spend with high waste highlighted | UC06 | C | Manager |
-| F39 | Waste per unit and month of a chosen year, first 12 units, all on request | UC06 | D | Manager |
-| F40 | One choice between waste rate and wasted amount for the waste per unit and per license | UC06, UC03 | D | Manager |
+| ID | Feature | Use case | Actors |
+|---|---|---|---|
+| F13 | Choice of the unit in the hierarchy and of the period | UC03 | Manager |
+| F14 | Plan, Spend, and Actual of a unit, cloud included, and how far Spend is from the plan | UC03 | Manager |
+| F15 | Comparison of the units below a unit | UC03 | Manager |
+| F16 | Plan, Spend, and Actual month by month | UC03 | Manager |
+| F17 | Plan, Spend, and Actual per license of a unit | UC03 | Manager |
+| F18 | Export of the figures | UC03 | Manager |
+| F19 | *No use* seats, by how long they have been unused, with their cost | UC03 | Manager |
+| F20 | *Inactive* seats — held by people who have left — to reclaim, with their cost | UC03 | Manager |
+| F21 | *Unassigned* seats with their cost | UC03 | Manager |
+| F22 | Employee usage of applications from BCA | UC03 | Manager |
+
+### Budget Management
+
+| ID | Feature | Use case | Actors |
+|---|---|---|---|
+| F23 | Budget plan import from the SAP Excel export, for a unit and the units under it | UC04 | Manager |
+| F24 | Plan by month and comparison of its versions | UC04 | Manager |
+| F25 | Monthly cloud budget of a unit | UC04 | Manager |
+| F26 | Purchase import from SAP: PR, PO, invoices | UC04 | Staff |
+| F27 | Entry of a purchase made outside SAP | UC04 | Staff |
+| F28 | Monthly accrual of license costs and month close | UC04 | Staff |
+| F29 | Exchange rates | UC04 | Staff |
+| F30 | Spend of the past months and forecast of the months left, licenses and cloud | UC05 | Manager |
+| F31 | Year-end forecast against the plan | UC05 | Manager |
+| F32 | Amounts that will fall due — license renewals and the cloud cost to come — with their expected value | UC05 | Manager |
+| F33 | What drives the forecast: renewals before year end, growing cloud services | UC05 | Manager |
 
 ### Analytics
 
-| ID | Feature | Use case | Flow | Actors |
-|---|---|---|---|---|
-| F41 | License dashboard: totals, by category, type, and provider; purchased, assigned, used; expiring within 30 days; top applications by holder status | UC07 | Main | Manager |
-| F42 | Financial dashboard: yearly spend, spend by month, plan against actual | UC07 | Main | Manager |
-| F43 | Optimization dashboard: waste, utilization, Not evaluated, unassigned and inactive seats, flagged units | UC07 | Main | Manager |
-| F44 | Cost per unit: per license total cost, seats, cost per seat, cost per unit; cost per department | UC07 | A | Manager |
-| F45 | Monthly plan variance with year-to-date total and the licenses that explain it | UC07 | B | Manager |
-| F46 | Analysis by license, software, category, provider, license type; split by unit; two periods; export | UC07 | C | Manager |
-| F47 | Metric definitions: formula, unit, source, period rule, exclusions; available wherever the metric appears | UC07 | D | Manager |
+| ID | Feature | Use case | Actors |
+|---|---|---|---|
+| F34 | License dashboard: counts by category, type, and provider; expiring soon; seats by status | UC06 | Manager |
+| F35 | Spending dashboard: licenses and cloud, by month and by unit, against plan, with the forecast | UC06 | Manager |
+| F36 | Figures by license, software, category, or provider | UC06 | Manager |
+| F37 | Definition of every figure | UC06 | Manager |
 
 ### User & Organization
 
-| ID | Feature | Use case | Flow | Actors |
-|---|---|---|---|---|
-| F48 | Accounts from ILVG: one per employee with the role Employee, one-time password link by email, leavers disabled | UC08 | System | System |
-| F49 | Role and data scope per user (Manager units, Staff companies); disable and re-enable access | UC08 | Main | Admin |
-| F50 | Roles with their users | UC08 | A | Admin |
-| F51 | Permissions per role and feature, read or write, changed with a reason | UC08 | B | Admin |
-| F52 | Organization hierarchy, Manager assignment, corrections, inactive units, unmatched codes | UC09 | Main | Admin |
+| ID | Feature | Use case | Actors |
+|---|---|---|---|
+| F38 | Accounts created from ILVG, disabled when the employee leaves | UC07 | System |
+| F39 | Role and data scope of each user; disable and re-enable access | UC07 | Admin |
+| F40 | Permissions of each role | UC07 | Admin |
+| F41 | Organization hierarchy from ILVG, with corrections | UC08 | Admin |
+| F42 | Assignment of Managers to units | UC08 | Admin |
 
 ### Connection Management
 
-| ID | Feature | Use case | Flow | Actors |
-|---|---|---|---|---|
-| F53 | Connector overview: number of companies, providers, licenses, and sync issues | UC10 | Main | Staff |
-| F54 | Connectors per company, provider, and license with coverage, API contact, created, last sync, status; search, filters (company, provider, status), order | UC10 | Main | Staff |
-| F55 | Create a connector: company, provider, API contact and email, HTTPS API URL, API key or bearer token, sync interval in hours (6 by default), at least one license; name generated; licenses `Pending` until the first sync | UC10 | A | Staff |
-| F56 | Connection test before save | UC10 | A, B | Staff |
-| F57 | Edit a connector: credential kept unless provider or authentication changes; reconfiguring sets its licenses back to `Pending` | UC10 | B | Staff |
-| F58 | Delete a connector: confirmation naming its licenses, sync stops, licenses inactive, collected data kept for past months | UC10 | B | Staff |
-| F59 | Connector details without the credential | UC10 | C | Staff |
-| F60 | Sync monitoring: runs with records received, accepted, rejected; reasons; run now, rerun a period; pause and resume, every skipped run recorded as `Paused` | UC10 | D | Staff |
+| ID | Feature | Use case | Actors |
+|---|---|---|---|
+| F43 | Connectors per company and provider, with their licenses: create, edit, delete | UC09 | Staff |
+| F44 | Cloud providers connected through their API, or their billing file uploaded when there is none | UC09 | Staff |
+| F45 | Connection test before saving | UC09 | Staff |
+| F46 | Connectors and licenses with sync problems | UC09 | Staff |
+| F47 | Sync runs: follow, rerun a period, pause and resume | UC09 | Staff |
 
 ### Self-service
 
-| ID | Feature | Use case | Flow | Actors |
-|---|---|---|---|---|
-| F61 | My licenses across all my emails | UC11 | Main | Everyone |
-| F62 | Login / logout, starting point by role | UC12 | Main | Everyone |
-| F63 | Set and reset the password with a one-time link to the account email | UC12 | A | Everyone |
+| ID | Feature | Use case | Actors |
+|---|---|---|---|
+| F48 | My licenses across all my emails, with status and last use | UC10 | Everyone |
+| F49 | Login and logout | UC11 | Everyone |
+| F50 | Set and reset the password with a link sent to the account email | UC11 | Everyone |
 
-**Count:** 63 features.
+**Count:** 50 features.

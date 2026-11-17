@@ -247,7 +247,7 @@ Retired: quotas per unit are not part of the agreed use cases; the cost of a lic
 
 ### `connectors`: connections to the sources
 
-A configured, read-only connection. A **usage connector** reads one provider for one company — for example "VinFast – Microsoft Usage" — and returns its licenses, holders, and usage (UC10). ILVG (employees and units) and BCA (application usage) are connectors too, so every source is watched the same way (UC10). ELMS never changes anything at a source.
+A configured, read-only connection. A **usage connector** reads one provider for one company — for example "VinFast – Microsoft Usage" — and returns its licenses, holders, and usage (UC09). ILVG (employees and units) and BCA (application usage) are connectors too, so every source is watched the same way (UC09). ELMS never changes anything at a source.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -291,7 +291,7 @@ For each license: which kinds of data its connector delivers — purchases, hold
 
 ### `sync_runs`: connector runs
 
-The log of each connector run: when it ran, for which day's data, and whether it worked. It is the run table of UC10.
+The log of each connector run: when it ran, for which day's data, and whether it worked. It is the run table of UC09.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -334,7 +334,7 @@ Exactly what the vendor's API returned, before ELMS reshapes it. Kept for 180 da
 | `payload` | JSON | Yes | The data exactly as received |
 | `fetched_at` | date-time | Yes | When it was received |
 | `normalized_at` | date-time | | When ELMS processed it. Empty = not processed yet |
-| `normalize_error` | text | | Why ELMS could not use it, such as `undeclared_license` (a license the source reports but the connector does not list) or `missing_field`. Empty = used successfully. These are the rejected records Staff see in UC10 |
+| `normalize_error` | text | | Why ELMS could not use it, such as `undeclared_license` (a license the source reports but the connector does not list) or `missing_field`. Empty = used successfully. These are the rejected records Staff see in UC09 |
 
 ### `files`: uploaded files
 
@@ -664,7 +664,7 @@ Who changed what, when, the old and new value, and why. Rows can only be added, 
 
 ### `data_overrides`: corrections to ILVG data
 
-When Admin corrects a value that came from ILVG, for example a unit placed under the wrong parent (UC09). The original value stays beside the correction, and the next ILVG sync does not overwrite it. Licenses, holders, and usage are never corrected in ELMS: they are corrected at the source.
+When Admin corrects a value that came from ILVG, for example a unit placed under the wrong parent (UC08). The original value stays beside the correction, and the next ILVG sync does not overwrite it. Licenses, holders, and usage are never corrected in ELMS: they are corrected at the source.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|

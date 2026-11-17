@@ -1,6 +1,6 @@
 # 07 — C4 Architecture
 
-> Aligned with the P&L API business model and the 12 use cases (November 2026).
+> Aligned with the P&L API business model and the 11 use cases (November 2026).
 
 The C4 model describes a system at four zoom levels. Each level answers one question for one audience:
 
@@ -225,14 +225,14 @@ Eight business modules follow the mind-map branches, plus a shared `audit` modul
 
 ```mermaid
 flowchart LR
-    identity["identity<br/>UC08, UC12<br/>accounts, roles, permissions, sessions"]
-    organization["organization<br/>UC09, ILVG sync<br/>five-level tree, employees, projects,<br/>Manager and Staff scope, holder identity"]
+    identity["identity<br/>UC07, UC11<br/>accounts, roles, permissions, sessions"]
+    organization["organization<br/>UC08, ILVG sync<br/>five-level tree, employees, projects,<br/>Manager and Staff scope, holder identity"]
     catalog["catalog<br/>UC01, UC02<br/>software catalog, licenses, terms,<br/>owner unit, shared licenses"]
-    ingestion["ingestion<br/>UC10<br/>connectors, sync runs, coverage,<br/>raw records, budget and purchase imports"]
-    usage["usage<br/>UC03, UC11<br/>assignments, usage records, snapshots,<br/>seat status, BCA usage"]
-    finance["finance<br/>UC04, UC07<br/>budget versions, purchases, accrual,<br/>rates, cost split"]
-    optimization["optimization<br/>UC05, UC06<br/>detection, waste flag, waste analysis"]
-    analytics["analytics<br/>UC07<br/>read models only"]
+    ingestion["ingestion<br/>UC09<br/>connectors, sync runs, coverage,<br/>raw records, budget and purchase imports"]
+    usage["usage<br/>UC03, UC10<br/>assignments, usage records, snapshots,<br/>seat status, BCA usage"]
+    finance["finance<br/>UC04, UC06<br/>budget versions, purchases, accrual,<br/>rates, cost split"]
+    optimization["optimization<br/>UC03<br/>detection, waste flag, waste analysis"]
+    analytics["analytics<br/>UC06<br/>read models only"]
     audit["audit (shared)<br/>BR-13<br/>append-only audit log"]
 
     ingestion -- "normalize into" --> catalog
