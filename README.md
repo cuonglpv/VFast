@@ -1,6 +1,6 @@
 # Enterprise License Management System (ELMS) — team VFast
 
-ELMS brings the software licenses of every company of the group, cloud services included, into one place. Each company connects its providers (Microsoft, Atlassian, Adobe, GitHub…) through usage connectors; ELMS reads who holds each license and how much is actually used, takes what was bought and the cloud bills from SAP, and sets them against the budget plan. Managers see, for their units, Plan, Spend, and Actual — down to each license and each user — and judge waste from them, with a forecast of where the year will land. **ELMS never assigns, revokes, buys, or pays for anything.**
+ELMS brings the software licenses of every company of the group, cloud services included, into one place. Each company connects its providers (Microsoft, Atlassian, Adobe, GitHub…) through usage connectors; ELMS reads who holds each license and how much is actually used, takes what was bought from SAP and the cloud costs from AWS, Azure, and the other cloud providers, and sets them against the budget plan. Managers see, for their units, Plan, Spend, and Actual — down to each license and each user — and judge waste from them, with a forecast of where the year will land. **ELMS never assigns, revokes, buys, or pays for anything.**
 
 ## 1. Requirements — Research, Use Cases, and INVEST
 
@@ -25,7 +25,7 @@ License and usage data are scattered across each provider's admin portal, and ev
 | G3 Measure automatically | License, assignment, and usage data arrive through usage connectors on a schedule; nobody types them in |
 | G4 Show the seats to act on | Seats not used, unassigned, or held by people who have left, with their cost |
 | G5 Plan and reconcile the budget | Plan, Spend, and Actual compared per unit, license, and month, with a year-end forecast |
-| G6 Cover cloud services | Pay-as-you-go cloud services tracked like licenses, per unit against plan, with the bills that fall due |
+| G6 Cover cloud services | Pay-as-you-go cloud services tracked like licenses, per unit against their budget, with the cost to come |
 | G7 Trustworthy figures | Numbers match across screens; missing data is `Unknown`, never zero |
 
 What makes this project different:
@@ -54,12 +54,12 @@ There are four roles: the **Manager** uses the product, **Staff** keep it fed, t
 | ID | Use case | Goal | Actors |
 |---|---|---|---|
 | | **License Management** | | |
-| UC01 | View License Detail | Know every license of my units, cloud services included: what it costs, how much of it is allocated, when it expires, and who uses it | Manager |
-| UC02 | Browse License Inventory | See which licenses each unit and provider has; for Staff, keep the catalog, the shared licenses, and the cloud accounts assigned to units, so the figures land on the right units | Manager, Staff |
+| UC01 | View License Detail | Know every license of my units, cloud services included, by unit or by provider: what it costs, how much of it is allocated, when it expires, and who uses it | Manager |
+| UC02 | Browse License Inventory | Check the licenses each company's sources deliver, and keep the catalog, the shared licenses, and the cloud accounts assigned to units, so the figures land on the right units | Staff |
 | | **Optimization** | | |
 | UC03 | Track License Waste | Judge where licenses are wasted, from Plan, Spend, and Actual of every unit and the seats that are not used, unassigned, or held by people who have left | Manager |
 | | **Budget Management** | | |
-| UC04 | Manage Budget Plan | Managers set the plan of their units; Staff bring in what was bought and the cloud bills, so Plan and Spend are right every month | Manager, Staff |
+| UC04 | Manage Budget Plan | Managers set the license plan and the cloud budget of their units; Staff bring in what was bought, so Plan and Spend are right every month | Manager, Staff |
 | UC05 | Forecast Spending | Know before the year ends where spending will land against the plan, and what the coming bills will be | Manager |
 | | **Analytics** | | |
 | UC06 | View Dashboards | See licenses, spending, and usage of my units at a glance, by unit or by license, provider, and category | Manager |
@@ -67,7 +67,7 @@ There are four roles: the **Manager** uses the product, **Staff** keep it fed, t
 | UC07 | Manage User Roles and Permissions | Give each user the role and the data scope their job needs | Admin |
 | UC08 | Manage Organization Hierarchy | Keep the hierarchy from ILVG right and assign Managers to units | Admin |
 | | **Connection Management** | | |
-| UC09 | Manage Data Connectors | Connect the data sources of each company so their licenses and usage flow into ELMS, and keep the syncs healthy | Staff |
+| UC09 | Manage Data Connectors | Connect the data sources — each company's license APIs and the cloud providers — so licenses, usage, and cloud costs flow into ELMS, and keep the syncs healthy | Staff |
 | | **Self-service** | | |
 | UC10 | View My Licenses | See the licenses I hold and whether I use them | Everyone |
 | UC11 | Login / Logout | Sign in and out; set the password from the account email | Everyone |
@@ -80,26 +80,26 @@ There are four roles; each account has exactly one. Every account belongs to a r
 
 | Role | Who | Responsibility | Data scope |
 |---|---|---|---|
-| **Manager** | Manager of a unit: the group, a P&L, block, department, or project — **the main user** | Browses licenses and who uses them, tracks waste, plans the budget of their units, follows the forecast, reads the dashboards | The units assigned to them and everything under them; the whole group for a Manager of the group |
-| **Staff** | License management team member — hands-on work | Connects the data sources, imports the purchases and the cloud bills from SAP, runs the monthly accrual, keeps the exchange rates, the software catalog, the shared licenses, and the assignment of cloud accounts to units | The companies assigned to them |
+| **Manager** | Manager of a unit: the group, a P&L, block, department, or project — **the main user** | Browses licenses and who uses them, tracks waste, plans the license and cloud budget of their units, follows the forecast, reads the dashboards | The units assigned to them and everything under them; the whole group for a Manager of the group |
+| **Staff** | License management team member — hands-on work | Connects the data sources, imports the purchases from SAP, runs the monthly accrual, keeps the exchange rates, the software catalog, the shared licenses, and the assignment of cloud accounts to units | The companies assigned to them |
 | **Admin** | System operator | Gives each user a role and a data scope, sets the permissions of each role, keeps the organization hierarchy and which Manager owns which unit | Users, roles, permissions, and the hierarchy; no license, usage, budget, or cost data |
 | **Employee** | Every employee of the group | Sees the licenses they hold and whether they are recorded as used | Own licenses only |
 
 | Capability | Admin | Manager | Staff | Employee |
 |---|---|---|---|---|
 | View License Detail (UC01) | — | Read, own units | — | — |
-| Browse License Inventory (UC02) | — | Read, own units | Read, own companies; catalog, shared licenses, cloud accounts | — |
+| Browse License Inventory (UC02) | — | — | Read, own companies; catalog, shared licenses, cloud accounts | — |
 | Track License Waste (UC03) | — | Read, own units | — | — |
-| Manage Budget Plan (UC04) | — | Plan of own units | Purchases and cloud bills, accrual, exchange rates | — |
+| Manage Budget Plan (UC04) | — | License plan and cloud budget of own units | Purchases, accrual, exchange rates | — |
 | Forecast Spending (UC05) | — | Read, own units | — | — |
 | View Dashboards (UC06) | — | Read, own units | — | — |
 | Manage User Roles and Permissions, Organization Hierarchy (UC07, UC08) | Edit | — | — | — |
-| Manage Data Connectors (UC09) | — | — | Create / edit / delete, own companies | — |
+| Manage Data Connectors (UC09) | — | — | Create / edit / delete, own companies and cloud providers | — |
 | View My Licenses (UC10) | Read own | Read own | Read own | Read own |
 
 - The backend enforces every cell of this table and the data scope; hiding a button in the interface is not enough, and a call outside the role returns `403`.
 - ELMS never writes to a provider or to SAP: "edit" here changes data in ELMS only.
-- Every change to connectors, budget imports, purchases, cloud bills, user roles and scopes, the hierarchy, and permissions is recorded with who, old value, new value, and time.
+- Every change to connectors, budget imports, purchases, cloud budgets and account assignments, user roles and scopes, the hierarchy, and permissions is recorded with who, old value, new value, and time.
 
 The role × use case matrix: [Use cases](docs/02-use-cases.md#role--use-case-matrix).
 

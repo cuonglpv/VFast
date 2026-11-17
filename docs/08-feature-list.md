@@ -10,10 +10,10 @@ Features of the [use cases](02-use-cases.md), by mind-map branch. Each feature i
 | F02 | Term of each license over time and the renewals coming | UC01 | Manager |
 | F03 | License details: cost, term, unallocated or over-allocated seats | UC01 | Manager |
 | F04 | Users of a license: holders, seat status, last use, how often they use it | UC01 | Manager |
-| F05 | Cloud service details: its accounts, the units they are assigned to, the bills of each month | UC01 | Manager |
+| F05 | Cloud service details: its accounts, the units they are assigned to, the cost of each month by service | UC01 | Manager |
 | F06 | License terms from the PO lines, with those renewing soon | UC01 | Manager |
-| F07 | Licenses of any unit, and units of any license | UC02 | Manager, Staff |
-| F08 | Providers and their licenses | UC02 | Manager, Staff |
+| F07 | Licenses by unit — which units use a license, which licenses a unit has — and by provider | UC01 | Manager |
+| F08 | Inventory each company's sources deliver, by provider, to check nothing is missing | UC02 | Staff |
 | F09 | Software catalog with categories | UC02 | Staff |
 | F10 | Mapping of license and application names to the catalog | UC02 | Staff |
 | F11 | Shared licenses: mark a license used by several companies, see what each company is charged | UC02 | Staff; Manager sees its share |
@@ -40,14 +40,14 @@ Features of the [use cases](02-use-cases.md), by mind-map branch. Each feature i
 |---|---|---|---|
 | F23 | Budget plan import from the SAP Excel export, for a unit and the units under it | UC04 | Manager |
 | F24 | Plan by month and comparison of its versions | UC04 | Manager |
-| F25 | Purchase import from SAP: PR, PO, invoices | UC04 | Staff |
-| F26 | Cloud bill import from SAP | UC04 | Staff |
+| F25 | Monthly cloud budget of a unit | UC04 | Manager |
+| F26 | Purchase import from SAP: PR, PO, invoices | UC04 | Staff |
 | F27 | Entry of a purchase made outside SAP | UC04 | Staff |
 | F28 | Monthly accrual of license costs and month close | UC04 | Staff |
 | F29 | Exchange rates | UC04 | Staff |
 | F30 | Spend of the past months and forecast of the months left, licenses and cloud | UC05 | Manager |
 | F31 | Year-end forecast against the plan | UC05 | Manager |
-| F32 | Bills that will fall due — license renewals and cloud bills — with their expected amount | UC05 | Manager |
+| F32 | Amounts that will fall due — license renewals and the cloud cost to come — with their expected value | UC05 | Manager |
 | F33 | What drives the forecast: renewals before year end, growing cloud services | UC05 | Manager |
 
 ### Analytics
@@ -74,16 +74,17 @@ Features of the [use cases](02-use-cases.md), by mind-map branch. Each feature i
 | ID | Feature | Use case | Actors |
 |---|---|---|---|
 | F43 | Connectors per company and provider, with their licenses: create, edit, delete | UC09 | Staff |
-| F44 | Connection test before saving | UC09 | Staff |
-| F45 | Connectors and licenses with sync problems | UC09 | Staff |
-| F46 | Sync runs: follow, rerun a period, pause and resume | UC09 | Staff |
+| F44 | Cloud providers connected through their API, or their billing file uploaded when there is none | UC09 | Staff |
+| F45 | Connection test before saving | UC09 | Staff |
+| F46 | Connectors and licenses with sync problems | UC09 | Staff |
+| F47 | Sync runs: follow, rerun a period, pause and resume | UC09 | Staff |
 
 ### Self-service
 
 | ID | Feature | Use case | Actors |
 |---|---|---|---|
-| F47 | My licenses across all my emails, with status and last use | UC10 | Everyone |
-| F48 | Login and logout | UC11 | Everyone |
-| F49 | Set and reset the password with a link sent to the account email | UC11 | Everyone |
+| F48 | My licenses across all my emails, with status and last use | UC10 | Everyone |
+| F49 | Login and logout | UC11 | Everyone |
+| F50 | Set and reset the password with a link sent to the account email | UC11 | Everyone |
 
-**Count:** 49 features.
+**Count:** 50 features.
