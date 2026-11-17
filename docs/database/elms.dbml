@@ -289,13 +289,6 @@ Enum commercial_term {
   perpetual [note: 'Perpetual with maintenance; only maintenance counts as cost (BR-05)']
 }
 
-Enum data_kind {
-  entitlement [note: 'Not read from connectors since D50: purchased quantity and terms come from the SAP PO lines']
-  assignment [note: 'Who holds the license']
-  usage [note: 'Activity, sessions, consumption, deployed units']
-  expense [note: 'Not read from connectors since D50: invoices come from SAP']
-}
-
 Enum import_kind {
   budget [note: 'Budget plan from the ELMS Excel template (UC04, BR-08)']
   purchase [note: 'SAP purchase file: PO lines and invoices (UC04, D50)']
@@ -646,6 +639,9 @@ Table license_plans {
   unit varchar(30) [not null, default: 'seat', note: 'What is counted: seat, device, slot, token, credit, GB, core ...']
   owner_org_unit_id bigint [not null, ref: > org_units.id, note: 'Owner unit (D27): the P&L of the connector, or the group for a shared license (BR-24)']
   last_sync_run_id bigint [ref: > sync_runs.id, note: 'Latest successful run that brought data for the license; gives its connector status (BR-29, D49). NULL = no data yet (Pending)']
+  usage_granularity usage_granularity [note: 'How the connector gives usage: per_subject (per holder) or aggregate (totals only). NULL = no usage source: seats are Not monitored, never waste (BR-03, BR-04, D7)']
+  has_daily_activity boolean [note: 'Per-holder usage only: true when the source gives activity per day (active_days), so days used are counted; false when it gives only the last activity date, so frequency is Not tracked (BR-32)']
+  monitoring_since date [note: 'First day the connector delivered usage for the license; a seat is called Inactive only after 30 days of monitoring (BR-03). NULL = no usage yet']
   is_active boolean [not null, default: true, note: 'False once the connector no longer reports it, Staff removed it from the connector, or the connector was deleted (UC10)']
   created_by bigint [ref: > user_accounts.id]
   created_at timestamptz [not null, default: `now()`]
@@ -655,6 +651,11 @@ Table license_plans {
     product_id
     owner_org_unit_id
     archetype
+  }
+
+  checks {
+    `has_daily_activity is null or usage_granularity = 'per_subject'` [name: 'chk_license_plans_daily_activity']
+    `usage_granularity is null or monitoring_since is not null` [name: 'chk_license_plans_monitoring_since']
   }
 
   Note: '''
@@ -817,40 +818,6 @@ Table connectors {
     resume are written to audit_logs (BR-13). Delete (UC10, D40) sets
     is_active false on the connector and its licenses in one transaction,
     after a confirmation; nothing is removed.
-  '''
-}
-Table plan_data_sources {
-  id bigint [pk, increment]
-  license_plan_id bigint [not null, ref: > license_plans.id]
-  data_type data_kind [not null]
-  source_type data_source [not null, default: 'api', note: 'Stamped as source on every row collected for this plan and kind of data']
-  external_ref varchar(200) [note: 'Key of the plan in this kind of data when it differs from license_plans.external_ref, e.g. the product name a usage report uses; NULL = the same']
-  granularity usage_granularity [note: 'Required for usage: per subject or aggregate only']
-  has_daily_activity boolean [note: 'Usage per subject: true when the source gives activity per day (active_days), false when it gives only the last activity date, so frequency is Not tracked (BR-32)']
-  monitoring_since date [not null, default: `current_date`, note: 'First day this source delivered data; Inactive needs 30 days of monitoring (BR-03)']
-  created_at timestamptz [not null, default: `now()`]
-  updated_at timestamptz [not null, default: `now()`]
-
-  indexes {
-    (license_plan_id, data_type) [unique, name: 'uq_plan_data_sources_plan_type']
-  }
-
-  checks {
-    `source_type in ('api', 'log')` [name: 'chk_plan_data_sources_connector_only']
-    `(data_type = 'usage') = (granularity is not null)` [name: 'chk_plan_data_sources_granularity']
-    `has_daily_activity is null or (data_type = 'usage' and granularity = 'per_subject')` [name: 'chk_plan_data_sources_daily_activity']
-  }
-
-  Note: '''
-    Which kinds of data the connector of a plan delivers, and how (BR-12).
-    Licenses, holders, and usage come from connectors only (BR-01).
-    - A plan with no "usage" row, or with an aggregate one, has no per-seat
-      usage: its seats are "Not monitored" (BR-03, D7) and are never counted as
-      waste (BR-04, BR-22).
-    - has_daily_activity false: seat status is computed from the last activity
-      date, frequency is Not tracked (BR-32).
-    The connector is the one of the plan (license_plans.connector_id); it is
-    not copied here, so the two cannot disagree.
   '''
 }
 Table sync_runs {
@@ -1112,10 +1079,10 @@ Table license_assignments {
     App rule: the subject belongs to the connector of the plan
     (subjects.connector_id = license_plans.connector_id).
     Seat status (BR-03, D31) is computed, not stored, for an open assignment,
-    on the data date D. S = the usage source of the plan, T =
+    on the data date D. L = the license (license_plans), T =
     inactivity_threshold_days (30), G = new_seat_grace_days (30), held =
     D - (assigned_on, or created_at when unknown):
-      Not monitored = no S, or S.granularity = aggregate
+      Not monitored = L.usage_granularity is NULL or aggregate
       Active        = last_active_at within the last T days, or held < G days
                       and never used (grace period)
       Inactive      = last_active_at older than T days
@@ -1126,9 +1093,9 @@ Table license_assignments {
     active_days usage_records of the subject and plan over the period, shown
     against working days = Monday to Friday without public holidays from the
     later of the period start and assigned_on; Not tracked when
-    S.has_daily_activity is not true.
+    L.has_daily_activity is not true.
     Detection (UC05) flags Inactive and No activity only when the day D of
-    the connector is complete (D8) and S.monitoring_since is at least T days old.
+    the connector is complete (D8) and L.monitoring_since is at least T days old.
     Unassigned = purchased quantity minus open assignments.
   '''
 }
@@ -1691,7 +1658,6 @@ TableGroup license_catalog {
 
 TableGroup collection_pipeline {
   connectors
-  plan_data_sources
   sync_runs
   raw_records
   files

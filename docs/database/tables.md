@@ -202,6 +202,9 @@ The figures of a license are kept elsewhere, by day:
 | `unit` | text | Yes | What is counted: seat, device, slot, token, core … |
 | `owner_org_unit_id` | link → `org_units` | Yes | The owner: the P&L of the connector, or the group for a license shared by two or more companies. The owner carries the seats nobody holds and plans the license |
 | `last_sync_run_id` | link → `sync_runs` | | The latest successful run that brought data for this license. It gives the license's connector status. Empty = no data yet (*Pending*) |
+| `usage_granularity` | choice: `per_subject`, `aggregate` | | How the connector gives usage: per holder, or only as a total (such as "120 active users this month"). Empty = no usage source. With totals only or no source, seats are *Not monitored* and never counted as waste |
+| `has_daily_activity` | yes/no | | For usage per holder: "Yes" when the source gives the days each person was active, so days used can be counted (6 / 22); "No" when it gives only the last activity date, so status works but days used is *Not tracked* |
+| `monitoring_since` | date | | First day the connector sent usage for this license. A seat is called inactive only after 30 days of watching: connected on 1 March → nobody is inactive before 31 March. Empty = no usage yet |
 | `is_active` | yes/no | Yes | "No" when the connector no longer reports it or was deleted |
 | `created_by` | link → `user_accounts` | | Staff who declared it |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
@@ -262,24 +265,6 @@ A configured, read-only connection. A **usage connector** reads one provider for
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
 The status of each license of a connector is worked out, not stored, from the runs of the connector and the license's `last_sync_run_id`: *Paused* while the connector is paused; *Pending* while no run since `reconfigured_at` has brought data for it, which includes a license added to a running connector; *Failed* when the latest run failed; *Delayed* when its latest data is older than the interval, which includes a license the latest runs brought nothing for; *Active* otherwise. *Sync issues* = Delayed + Failed.
-
-### `plan_data_sources`: what each license's connector delivers
-
-For each license: which kinds of data its connector delivers — holders, usage — and how. Licenses, holders, and usage always come from the connector; nobody types them.
-
-It is needed because not every source gives the same detail, and the seat status depends on it. Example: Microsoft gives usage per person and per day, so ELMS can say An used E3 on 6 of 22 working days; another provider gives only the total of active users, so its seats are *Not monitored* and never counted as waste; a third gives only the last activity date, so status works but days used is *Not tracked*. A source connected 10 days ago cannot call anyone inactive for 30 days yet (`monitoring_since`).
-
-| Field | Type | Required | Meaning |
-|---|---|---|---|
-| `id` | number | Yes | Row number |
-| `license_plan_id` | link → `license_plans` | Yes | The license |
-| `data_type` | choice | Yes | Which data: `assignment` (holders), `usage`. `entitlement` (terms) and `expense` (bills) are no longer read from connectors: they come from SAP |
-| `source_type` | choice | Yes | `api` or `log` |
-| `external_ref` | text | | The license's code in this kind of data, when it differs from `license_plans.external_ref`, such as the product name a usage report uses. Empty = the same. The connector is the license's own (`license_plans.connector_id`) |
-| `granularity` | choice: `per_subject`, `aggregate` | | For usage only: known per person, or only as a total. With totals only, seats show as "Not monitored" |
-| `has_daily_activity` | yes/no | | For usage per person: "Yes" when the source gives activity day by day, so days used can be counted; "No" when it gives only the last activity date, so days used is "Not tracked" |
-| `monitoring_since` | date | Yes | First day this source sent data. A seat is called inactive only after 30 days of watching |
-| `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
 ### `sync_runs`: connector runs
 

@@ -25,7 +25,6 @@ erDiagram
     org_units |o--o{ connectors : "company of"
     connectors ||--o{ license_plans : reports
     connectors ||--o{ sync_runs : runs
-    license_plans ||--o{ plan_data_sources : "collected from"
     sync_runs |o--o{ license_plans : "last data of"
     sync_runs ||--o{ raw_records : stores
     files ||--o{ import_batches : "imported from"

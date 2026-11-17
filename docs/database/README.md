@@ -74,7 +74,7 @@ Source: [`diagrams/erd_overview.mmd`](diagrams/erd_overview.mmd) (Mermaid, ELK l
   | `Inactive` | Used before, but not in the last 30 days |
   | `No activity` | Never used, and held for 30 days or more |
 
-- **Usage frequency (BR-32).** Days used = the `active_days` usage records of the holder over the period, shown against working days (Monday to Friday without public holidays) as a bar, for example 6 / 22, without bands; *Not tracked* when the source gives only the last activity date (`plan_data_sources.has_daily_activity`).
+- **Usage frequency (BR-32).** Days used = the `active_days` usage records of the holder over the period, shown against working days (Monday to Friday without public holidays) as a bar, for example 6 / 22, without bands; *Not tracked* when the source gives only the last activity date (`license_plans.has_daily_activity`).
 - **Snapshots.** `plan_daily_snapshots` keeps Purchased quantity and the list monthly cost per license and day; `plan_unit_daily_snapshots` keeps the seats per status and unit per day as shares (a person on two projects counts half in each), with the shared/service part counted apart. Both are frozen. The unit snapshots of every day of a month are the seat basis of its cost split (D44); the seat counts shown for a month are those of its last day (BR-03).
 - **BCA (D36, BR-21).** `employee_app_usage` keeps which application each employee used, on how many days and for how many minutes, in its own table. BCA reports per day the domain account carrying the ILVG employee code. Only the Managers of the employee's units read it (UC03).
 
@@ -107,7 +107,7 @@ Source: [`diagrams/erd_overview.mmd`](diagrams/erd_overview.mmd) (Mermaid, ELK l
 
 ## Tables
 
-A plain-language tour of the 34 tables. Every field is explained in [Tables and fields](tables.md); exact rules are in [`elms.dbml`](elms.dbml).
+A plain-language tour of the 33 tables. Every field is explained in [Tables and fields](tables.md); exact rules are in [`elms.dbml`](elms.dbml).
 
 ### Organization and access
 
@@ -131,7 +131,6 @@ A plain-language tour of the 34 tables. Every field is explained in [Tables and 
 ### Collection pipeline
 
 - **`connectors`**: the usage connectors of each company and provider, and the ILVG and BCA sources, with their interval, pause, and deletion.
-- **`plan_data_sources`**: which data the connector of each license delivers, and how.
 - **`sync_runs`**: the log of each run, paused runs included.
 - **`raw_records`**: the cleaned records read from the data lake, kept 180 days, with the reason when a record was rejected.
 - **`files`**: invoices typed by Staff, budget files, and SAP purchase files.
@@ -168,8 +167,8 @@ A plain-language tour of the 34 tables. Every field is explained in [Tables and 
 
 | Rule | Where it is enforced in the database |
 |---|---|
-| BR-01 Read-only toward sources | No write-back table; licenses, holders, usage only from `sync_runs` (required `sync_run_id` on holders and usage, `chk_plan_data_sources_connector_only`) |
-| BR-03 Seat status | `license_assignments.last_active_at`, `assigned_on`; `plan_data_sources.granularity`, `monitoring_since`; counts in `plan_unit_daily_snapshots` |
+| BR-01 Read-only toward sources | No write-back table; licenses, holders, usage only from `sync_runs` (required `sync_run_id` on holders and usage) |
+| BR-03 Seat status | `license_assignments.last_active_at`, `assigned_on`; `license_plans.usage_granularity`, `monitoring_since`; counts in `plan_unit_daily_snapshots` |
 | BR-04 Unknown is not 0 | Nullable figures; a connector day without a successful run is Unknown; snapshot counts without defaults; `cost_allocations.not_evaluated_amount`; `detection_results.flagged_qty` NULL |
 | BR-06 Cost allocation | `cost_allocations` (bucket, owner unit for `unallocated` and `unknown_unit`, seat-days, `filled_days`); `employees.project_ids`; seat shares in `plan_unit_daily_snapshots` |
 | BR-08 Budget | `import_batches.version_no`, `budget_plan_lines.org_unit_id`, `superseded_by_import_id`, `uq_budget_plan_lines_current`; license by `license_plans.sap_name` |
@@ -187,7 +186,7 @@ A plain-language tour of the 34 tables. Every field is explained in [Tables and 
 | BR-26 Account type | `subjects.holder_type`; `plan_unit_daily_snapshots.shared_service_qty` |
 | BR-29 Connector status | `connectors.sync_interval_hours`, `reconfigured_at`, `paused_at`; `run_status` `paused`; per license from `license_plans.last_sync_run_id` |
 | BR-20 Waste flag | Computed from `cost_allocations`: Wasted above 20 % of Purchased |
-| BR-32 Frequency | `usage_metric` `active_days`; `plan_data_sources.has_daily_activity` |
+| BR-32 Frequency | `usage_metric` `active_days`; `license_plans.has_daily_activity` |
 | BR-33 Idempotency | `import_batches.preview_key`, `based_on_import_id`, `import_status` `unchanged`; `uq_entitlement_lines_company_po`, `uq_expenses_company_invoice`, `uq_usage_records_period` |
 | BR-35 Catalog | `license_plans.product_id`, `software_products.category_id` |
 

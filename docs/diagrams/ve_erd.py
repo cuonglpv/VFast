@@ -40,7 +40,7 @@ LAYOUT = {
     ],
     'erd_collection': [
         ['files', 'connectors'],
-        ['import_batches', 'plan_data_sources', 'sync_runs'],
+        ['import_batches', 'sync_runs'],
         ['raw_records'],
     ],
     'erd_holders_usage': [
