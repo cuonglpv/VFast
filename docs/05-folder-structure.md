@@ -1,6 +1,6 @@
 # 05 — Folder structure and solution architecture
 
-Design status: **TARGET** for the backend, aligned with the 12 use cases (November 2026). The frontend (`src/frontend`) is already coded but still follows the previous model; its target screens are in [Information architecture](04-information-architecture-manager.md).
+Design status: **TARGET** for the backend, aligned with the 11 use cases (November 2026). The frontend (`src/frontend`) is already coded but still follows the previous model; its target screens are in [Information architecture](04-information-architecture-manager.md).
 
 
 ## 1. Repository layout
@@ -138,14 +138,14 @@ The modules follow the mind-map branches, plus two technical modules (`ingestion
 
 | Module | Use cases | Owns | Responsibility |
 |---|---|---|---|
-| `identity` | UC08, UC12 | user accounts, roles, permissions, sessions | Accounts provisioned from ILVG (BR-15), password links, login, lockout, RBAC, policies |
-| `organization` | UC09, ILVG sync, holder identity | org units, employees, user scopes, overrides | Five-level tree from ILVG (BR-19), employee and project membership, Manager and Staff scope (BR-14), holder identity (BR-25) |
+| `identity` | UC07, UC11 | user accounts, roles, permissions, sessions | Accounts provisioned from ILVG (BR-15), password links, login, lockout, RBAC, policies |
+| `organization` | UC08, ILVG sync, holder identity | org units, employees, user scopes, overrides | Five-level tree from ILVG (BR-19), employee and project membership, Manager and Staff scope (BR-14), holder identity (BR-25) |
 | `catalog` | UC01, UC02 | vendors, software, categories, licenses, terms | Software catalog and mapping (BR-35), licenses as the connectors report them, owner unit and shared licenses (BR-24), expiry (BR-30) |
-| `ingestion` | UC10 | connectors, plan data sources, sync runs, coverage, raw records, files, imports | Create, test, edit, delete, pause connectors; run them at their interval (BR-29); validate the license data contract (BR-17); budget and expense imports (preview → confirm, idempotent, BR-33) |
-| `usage` | UC03, UC11 | subjects, assignments, usage records, snapshots, employee app usage | Seat status with grace period (BR-03), days used (BR-32), daily snapshots, BCA usage (BR-21) |
-| `finance` | UC04, UC07 | budget versions and lines, expenses, accounting periods, exchange rates, cost allocations | Budget versions (BR-08), accrual (BR-23), currency (BR-05), cost split into Used, Wasted, Not evaluated (BR-06, BR-22), variance (BR-34) |
-| `optimization` | UC05, UC06 | detection runs and results | Unused and inactive seats (BR-11), waste flag above 20 % (BR-20), waste analysis |
-| `analytics` | UC07 | read models only | Dashboards, analysis by license, metric definitions (BR-27) |
+| `ingestion` | UC09 | connectors, plan data sources, sync runs, coverage, raw records, files, imports | Create, test, edit, delete, pause connectors; run them at their interval (BR-29); validate the license data contract (BR-17); budget and expense imports (preview → confirm, idempotent, BR-33) |
+| `usage` | UC03, UC10 | subjects, assignments, usage records, snapshots, employee app usage | Seat status with grace period (BR-03), days used (BR-32), daily snapshots, BCA usage (BR-21) |
+| `finance` | UC04, UC06 | budget versions and lines, expenses, accounting periods, exchange rates, cost allocations | Budget versions (BR-08), accrual (BR-23), currency (BR-05), cost split into Used, Wasted, Not evaluated (BR-06, BR-22), variance (BR-34) |
+| `optimization` | UC03 | detection runs and results | Unused and inactive seats (BR-11), waste flag above 20 % (BR-20), waste analysis |
+| `analytics` | UC06 | read models only | Dashboards, analysis by license, metric definitions (BR-27) |
 | `audit` (shared) | BR-13 | audit logs | Who, old value, new value, time, reason for every change |
 
 #### Dependency rules (enforced by NetArchTest):

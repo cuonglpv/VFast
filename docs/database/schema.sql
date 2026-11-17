@@ -726,7 +726,7 @@ CREATE INDEX ON "data_overrides" ("org_unit_id", "field_name");
 
 COMMENT ON TABLE "org_units" IS 'The organization in five fixed levels: group > P&L > block > department >
 project (BR-19, D24). A "unit" in the docs is one row of this table. Units
-come from ILVG (system process); Admin assigns Managers (UC09) and can
+come from ILVG (system process); Admin assigns Managers (UC08) and can
 correct a unit ILVG placed wrongly, with a reason, through data_overrides.
 Partial unique: one group row (unique on level where level = ''group'').
 App rule: the parent of a unit is one level up (pnl -> group, block -> pnl,
@@ -735,7 +735,7 @@ Admin cannot mark inactive a unit with active employees, a current budget
 line, or licenses it owns; when ILVG no longer reports such a unit, the
 sync marks it inactive anyway and the unit is listed to Admin (computed:
 inactive units that still have any of these), who moves what is left
-(D48, UC09). Every figure of a unit is the sum of the units
+(D48, UC08). Every figure of a unit is the sum of the units
 under it (BR-19); Unallocated and Unknown unit are buckets of
 cost_allocations under the owner unit, not rows here.
 ';
@@ -762,7 +762,7 @@ the whole seat for one, half a seat each for two, and nothing toward
 org_unit_id (BR-06, D39).
 The other emails of a person over time are the person subjects matched to
 this employee (subjects.employee_id), so one person holds licenses under
-several emails (UC01, UC11).
+several emails (UC01, UC10).
 App rule: every element of project_ids is an org_units row of level project.
 App rule: once left_on has passed, the account of the employee is disabled
 (same transaction when the day is already past, otherwise the daily job)
@@ -781,21 +781,21 @@ COMMENT ON COLUMN "employees"."left_on" IS 'Last working day, from ILVG; NULL = 
 
 COMMENT ON COLUMN "employees"."source" IS 'Always api: employees come only from the ILVG sync (BR-15)';
 
-COMMENT ON TABLE "roles" IS 'The four fixed roles (BR-15). Seeded; UC08 changes the role of a user, not this list.';
+COMMENT ON TABLE "roles" IS 'The four fixed roles (BR-15). Seeded; UC07 changes the role of a user, not this list.';
 
 COMMENT ON COLUMN "roles"."code" IS 'ADMIN, MANAGER, STAFF, EMPLOYEE';
 
-COMMENT ON TABLE "permissions" IS 'Catalogue of what can be granted: feature x (read | write) (UC08). Seeded.';
+COMMENT ON TABLE "permissions" IS 'Catalogue of what can be granted: feature x (read | write) (UC07). Seeded.';
 
 COMMENT ON COLUMN "permissions"."feature_code" IS 'Code of the feature, one per row of the role x feature matrix, e.g. 123FV@; not the feature name. The name shown is in description';
 
 COMMENT ON TABLE "role_permissions" IS 'Permission matrix; permissions belong to roles, never to single users (BR-15).
 App rule: Employee cannot be granted price or cost features; the permission
-Admin needs to manage permissions cannot be removed (UC08). Every change is
+Admin needs to manage permissions cannot be removed (UC07). Every change is
 written to audit_logs with its reason.
 ';
 
-COMMENT ON TABLE "user_accounts" IS 'Login accounts (UC08, UC12). Accounts are disabled, never deleted.
+COMMENT ON TABLE "user_accounts" IS 'Login accounts (UC07, UC11). Accounts are disabled, never deleted.
 First password and reset (D22): the ILVG sync creates the account of a new
 employee with the role Employee (BR-15), and "Forgot password" on the login
 screen asks for a new link; each stores the hash of a new random token and
@@ -822,10 +822,10 @@ COMMENT ON COLUMN "user_accounts"."failed_login_count" IS 'Consecutive failures;
 
 COMMENT ON COLUMN "user_accounts"."locked_until" IS 'Set to now + 15 minutes after 5 failures in a row (BR-16)';
 
-COMMENT ON COLUMN "user_accounts"."disabled_at" IS 'NULL = active. Set = disabled: cannot log in and open sessions are revoked (UC08); cleared on re-enable';
+COMMENT ON COLUMN "user_accounts"."disabled_at" IS 'NULL = active. Set = disabled: cannot log in and open sessions are revoked (UC07); cleared on re-enable';
 
 COMMENT ON TABLE "user_sessions" IS 'Server-side sessions, so disabling an account ends its open sessions at once
-(UC08, BR-16). A new session id is issued at login (no session fixation).
+(UC07, BR-16). A new session id is issued at login (no session fixation).
 Logout, disabling the account, and a role change delete the rows of the
 session; expired rows are purged by a daily job. Cookie sessions need
 CSRF protection (SameSite cookie plus a CSRF token on writes).
@@ -836,8 +836,8 @@ COMMENT ON COLUMN "user_sessions"."token_hash" IS 'SHA-256 of the session id kep
 COMMENT ON TABLE "user_org_units" IS 'Data scope of a Manager or a Staff member (BR-14, D25); was
 manager_org_units.
   MANAGER  the units they are responsible for, at any level, the group
-           included (UC09); a unit covers everything under it
-  STAFF    the companies they work on (UC08): a P&L, or the group for
+           included (UC08); a unit covers everything under it
+  STAFF    the companies they work on (UC07): a P&L, or the group for
            group-level Staff, who see every company and keep the software
            catalog and the shared licenses (UC02)
 Admin and Employee have no rows: Admin reads no license data; an Employee reads only their own licenses.
@@ -869,8 +869,8 @@ App rule: a category used by a product cannot be deleted.
 ';
 
 COMMENT ON TABLE "software_products" IS 'Software of the catalog (UC02, BR-35), e.g. Microsoft 365: the level the
-license names of every company map to, so the License Dashboard (UC07)
-and the analysis by software and category (UC07) count M365 E3 of company
+license names of every company map to, so the License Dashboard (UC06)
+and the analysis by software and category (UC06) count M365 E3 of company
 A and Microsoft 365 E3 of company B together.
 Figures per software (seats Active, Inactive, No activity, Not monitored,
 per unit and day) are not stored here: they are the sum of
@@ -884,7 +884,7 @@ COMMENT ON COLUMN "software_products"."category_id" IS 'Its category. NULL is sh
 
 COMMENT ON TABLE "license_plans" IS 'The unit everything else calls "a license" (D1): one license a connector
 reports for its company, such as "Microsoft 365 E3" of company A. Staff
-declare it on the connector (UC10); it is Pending until the first sync
+declare it on the connector (UC09); it is Pending until the first sync
 (BR-29) and then carries the external_ref of the source.
 License type (BR-02) is not stored: it is the commercial_term of the PO
 line in force on the day (entitlement_lines); Unknown without one.
@@ -919,7 +919,7 @@ months keep the owner they were computed with (D46).
 
 COMMENT ON COLUMN "license_plans"."connector_id" IS 'Usage connector that reports the license for its company (D26)';
 
-COMMENT ON COLUMN "license_plans"."external_name" IS 'License name as the source gives it, or as Staff typed it on the connector until the first sync (UC10)';
+COMMENT ON COLUMN "license_plans"."external_name" IS 'License name as the source gives it, or as Staff typed it on the connector until the first sync (UC09)';
 
 COMMENT ON COLUMN "license_plans"."external_ref" IS 'Id of the license at the source, e.g. Microsoft Graph skuId; NULL until the first sync';
 
@@ -939,7 +939,7 @@ COMMENT ON COLUMN "license_plans"."usage_granularity" IS 'How the connector give
 
 COMMENT ON COLUMN "license_plans"."monitoring_since" IS 'First day the connector delivered usage for the license; a seat is called Inactive only after 30 days of monitoring (BR-03). NULL = no usage yet';
 
-COMMENT ON COLUMN "license_plans"."is_active" IS 'False once the connector no longer reports it, Staff removed it from the connector, or the connector was deleted (UC10)';
+COMMENT ON COLUMN "license_plans"."is_active" IS 'False once the connector no longer reports it, Staff removed it from the connector, or the connector was deleted (UC09)';
 
 COMMENT ON TABLE "entitlement_lines" IS 'One PO line of a license (BR-10, D50): quantity and term, from the
 SAP purchase file (UC04) or entered by hand by Staff for a purchase made
@@ -990,7 +990,7 @@ COMMENT ON TABLE "connectors" IS 'One read-only connection (D26, D37). A usage c
 for one company and answers in the license data contract (BR-17); its
 licenses are the license_plans rows with its connector_id. ILVG and BCA are
 connectors of their own kind, so every source is monitored the same way
-(UC10).
+(UC09).
 Status of each license of a connector (BR-29, D49), computed, not stored,
 from the runs of the connector and license_plans.last_sync_run_id:
   Paused   paused_at is set
@@ -1008,8 +1008,8 @@ deleted connector can be created again; one ILVG and one BCA connector
 App rule: a connection is saved only after its test passes (BR-18);
 editing company, provider, authentication, or API URL sets reconfigured_at
 and requires a new credential when provider or authentication changes
-(UC10); the interval and the licenses can change without it. Pause and
-resume are written to audit_logs (BR-13). Delete (UC10, D40) sets
+(UC09); the interval and the licenses can change without it. Pause and
+resume are written to audit_logs (BR-13). Delete (UC09, D40) sets
 is_active false on the connector and its licenses in one transaction,
 after a confirmation; nothing is removed.
 ';
@@ -1020,36 +1020,36 @@ COMMENT ON COLUMN "connectors"."org_unit_id" IS 'Company of a usage connector: a
 
 COMMENT ON COLUMN "connectors"."vendor_id" IS 'Provider a usage connector reads. NULL for ILVG and BCA';
 
-COMMENT ON COLUMN "connectors"."name" IS 'Generated: "<Company> - <Provider> Usage" (UC10)';
+COMMENT ON COLUMN "connectors"."name" IS 'Generated: "<Company> - <Provider> Usage" (UC09)';
 
 COMMENT ON COLUMN "connectors"."connector_type" IS 'Implementation key, e.g. generic_rest, ms_graph, ilvg, bca';
 
-COMMENT ON COLUMN "connectors"."api_url" IS 'Full HTTPS address of the endpoint the P&L provides for its own data (UC10), e.g. https://api.company.com/v1/usage';
+COMMENT ON COLUMN "connectors"."api_url" IS 'Full HTTPS address of the endpoint the P&L provides for its own data (UC09), e.g. https://api.company.com/v1/usage';
 
-COMMENT ON COLUMN "connectors"."auth_type" IS 'API key or bearer token (UC10)';
+COMMENT ON COLUMN "connectors"."auth_type" IS 'API key or bearer token (UC09)';
 
 COMMENT ON COLUMN "connectors"."credentials_ref" IS 'Where the API key or token is kept: a reference to the secret store, never the secret itself. The worker reads the secret through it at each run; write-only, never shown, exported, or logged (BR-18)';
 
-COMMENT ON COLUMN "connectors"."contact_name" IS 'Person at the company who answers for its API, called when runs fail; required for a usage connector (UC10)';
+COMMENT ON COLUMN "connectors"."contact_name" IS 'Person at the company who answers for its API, called when runs fail; required for a usage connector (UC09)';
 
-COMMENT ON COLUMN "connectors"."contact_email" IS 'Email of that person, also searchable in UC10; required for a usage connector';
+COMMENT ON COLUMN "connectors"."contact_email" IS 'Email of that person, also searchable in UC09; required for a usage connector';
 
-COMMENT ON COLUMN "connectors"."sync_interval_hours" IS 'How often the connector runs, typed freely by Staff, at least 1 (BR-29, UC10)';
+COMMENT ON COLUMN "connectors"."sync_interval_hours" IS 'How often the connector runs, typed freely by Staff, at least 1 (BR-29, UC09)';
 
 COMMENT ON COLUMN "connectors"."reconfigured_at" IS 'Last change of company, provider, authentication, or API URL: every license is Pending again and runs before it no longer count (BR-29)';
 
-COMMENT ON COLUMN "connectors"."paused_at" IS 'NULL = running; set = paused by Staff (UC10): scheduled runs are written with status paused';
+COMMENT ON COLUMN "connectors"."paused_at" IS 'NULL = running; set = paused by Staff (UC09): scheduled runs are written with status paused';
 
-COMMENT ON COLUMN "connectors"."is_active" IS 'False once deleted by Staff (UC10): no more runs; its licenses become inactive and the data collected stays (BR-13)';
+COMMENT ON COLUMN "connectors"."is_active" IS 'False once deleted by Staff (UC09): no more runs; its licenses become inactive and the data collected stays (BR-13)';
 
 COMMENT ON TABLE "sync_runs" IS 'One execution of a connector, or one scheduled slot of a paused connector
-(status paused, nothing read, BR-29), so the run table of UC10 shows the
+(status paused, nothing read, BR-29), so the run table of UC09 shows the
 pause like any run. A failed or paused run writes no figures, so that day
 stays Unknown instead of 0 (A4, BR-04); the next run catches up (A3). A
 rerun of the same connector and data date replaces the figures and never
 duplicates them (BR-33).
 A day of a connector is complete when a run for that data_date succeeded;
-otherwise it is Unknown: detection reports not_evaluated (UC05, UC06) and
+otherwise it is Unknown: detection reports not_evaluated (UC03) and
 daily snapshots are not written for it (D8). The data lake cleans the data
 before ELMS reads it, so ELMS does not track gaps inside one license.
 A backfill writes one run per data date.
@@ -1059,7 +1059,7 @@ are not stored: they are counted from those tables while the records are
 kept.
 ';
 
-COMMENT ON COLUMN "sync_runs"."trigger" IS 'scheduled, manual (run now or rerun a period, UC10), or backfill';
+COMMENT ON COLUMN "sync_runs"."trigger" IS 'scheduled, manual (run now or rerun a period, UC09), or backfill';
 
 COMMENT ON COLUMN "sync_runs"."data_date" IS 'The day the collected figures describe (reports lag 1-2 days); the period a rerun replaces';
 
@@ -1074,8 +1074,8 @@ are kept so figures can be recomputed when a rule changes without reading
 the data lake again (A2). A failed run is reported in sync_runs.
 A record ELMS cannot use keeps its reason in normalize_error; the
 rejected records of a run, with the check that failed, are what Staff see
-in UC10. A license the source reports but the connector does not declare
-is undeclared_license, listed for Staff to add to the connector (UC10), so
+in UC09. A license the source reports but the connector does not declare
+is undeclared_license, listed for Staff to add to the connector (UC09), so
 no purchase is silently left out. A person whose employee code and email
 are not in ILVG does not exist for ELMS: the record is unknown_employee.
 A written row points to the run that wrote it (sync_run_id), not to its
@@ -1222,7 +1222,7 @@ later of the period start and assigned_on; Not tracked when the license
 has no active_days usage_records (its source gives only the last activity
 date). A source with daily activity sends 0 for a holder who was not
 active (see usage_records), so a missing row is never read as 0.
-Detection (UC05) flags Inactive and No activity only when the day D of
+Detection (UC03) flags Inactive and No activity only when the day D of
 the connector is complete (D8) and L.monitoring_since is at least T days old.
 Unassigned = purchased quantity minus open assignments.
 ';
@@ -1377,7 +1377,7 @@ COMMENT ON COLUMN "budget_plan_lines"."month" IS 'First day of the month planned
 COMMENT ON COLUMN "budget_plan_lines"."superseded_by_import_id" IS 'Budget import that replaced or removed the line; NULL = in force. When: its confirmed_at';
 
 COMMENT ON TABLE "cost_allocations" IS 'Purchased, Used, Wasted, and Not evaluated of a license for one month,
-split to units (UC07, BR-06, BR-09, BR-22, D32). Source of the Usage
+split to units (UC06, BR-06, BR-09, BR-22, D32). Source of the Usage
 screen, the waste analysis, the financial dashboard, and variance.
 Cost of the month = the accrual of the invoices of the license for that
 month (expenses.accrual_schedule, D33).
@@ -1400,7 +1400,7 @@ Split, by method:
              row, all Not evaluated
 The share of a row (Purchased) = used_amount + wasted_amount +
 not_evaluated_amount; it is not stored on its own.
-The rows of a license and month add up to its cost (UC07 result), and the
+The rows of a license and month add up to its cost (UC06 result), and the
 units add up the hierarchy (BR-19). Charge-back of a shared license is the
 unit rows of the companies that hold its seats (BR-24).
 Rows of an open month are recomputed daily. Closing the month computes
@@ -1492,7 +1492,7 @@ toward the reporting currency. An amount is converted with the rate in
 force on its invoice date.
 The rate of a day = the row with the latest effective_from on or before that
 day. Without a rate, converted figures are Unknown and amounts are shown per
-currency, never added (UC07).
+currency, never added (UC06).
 A corrected rate changes only figures not yet frozen; frozen snapshots and
 cost_allocations of closed months keep the rate they were computed with.
 ';
@@ -1521,11 +1521,11 @@ Leaver check (D20): open seats whose employee has a left_on before the
 data date.
 A seat flagged as leaver is not counted again in inactive.
 Shared and service accounts (BR-26) are judged as whole accounts and
-listed apart in UC05, never as an inactive person.
+listed apart in UC03, never as an inactive person.
 Manager data scope (BR-14): a Manager sees the rows of their units, plus the
 Unknown-unit rows of the licenses their units own.
 Lists and dashboards read the same rows, so figures tie across screens
-(UC05, UC07). Not evaluated (flagged_qty NULL) when the connector day of
+(UC03, UC06). Not evaluated (flagged_qty NULL) when the connector day of
 the data date is not complete (D8) or the figures needed are Unknown.
 The figures shown beside a result are read from their owner table for the
 data date of the run, never copied here:
@@ -1533,7 +1533,7 @@ data date of the run, never copied here:
   Assigned, seat statuses = plan_unit_daily_snapshots
   Peak, deployed units    = usage_records
   Unassigned, Excess      = flagged_qty
-The per-seat list of UC05 is the current list of license_assignments: it
+The per-seat list of UC03 is the current list of license_assignments: it
 is shown for the latest run only; older runs keep their counts, not names.
 The unique index needs NULLS NOT DISTINCT because org_unit_id may be NULL.
 ';
@@ -1561,11 +1561,11 @@ COMMENT ON COLUMN "audit_logs"."entity_type" IS 'Table name of the changed row';
 
 COMMENT ON COLUMN "audit_logs"."entity_id" IS 'id of the changed row; every table has a single-column id';
 
-COMMENT ON COLUMN "audit_logs"."reason" IS 'Required where a rule asks for one: permission change (UC08), unit correction (UC09)';
+COMMENT ON COLUMN "audit_logs"."reason" IS 'Required where a rule asks for one: permission change (UC07), unit correction (UC08)';
 
 COMMENT ON COLUMN "audit_logs"."correlation_id" IS 'Request id, or sync_run / job id for system changes';
 
-COMMENT ON TABLE "data_overrides" IS 'Admin correction of a value that came from ILVG (UC09): a unit placed
+COMMENT ON TABLE "data_overrides" IS 'Admin correction of a value that came from ILVG (UC08): a unit placed
 under the wrong parent, with a reason; the original value is kept beside
 it. While an override is in force, an ILVG sync updates original_value here
 and leaves the corrected column. Licenses, holders, and usage are never
@@ -1577,7 +1577,7 @@ App rule: the sync and an Admin edit lock the edited row (SELECT ... FOR
 UPDATE) so neither overwrites the other.
 ';
 
-COMMENT ON COLUMN "data_overrides"."org_unit_id" IS 'The corrected unit (UC09)';
+COMMENT ON COLUMN "data_overrides"."org_unit_id" IS 'The corrected unit (UC08)';
 
 COMMENT ON COLUMN "data_overrides"."field_name" IS 'The corrected field, e.g. parent_id';
 

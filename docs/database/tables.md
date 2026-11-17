@@ -237,7 +237,7 @@ The price on the PO is not kept. The money figure "Purchased" is the accrued cos
 
 ### `connectors`: connections to the sources
 
-A configured, read-only connection. A **usage connector** reads one provider for one company — for example "VinFast – Microsoft Usage" — and returns its licenses, holders, and usage (UC10). ILVG (employees and units) and BCA (application usage) are connectors too, so every source is watched the same way (UC10). ELMS never changes anything at a source.
+A configured, read-only connection. A **usage connector** reads one provider for one company — for example "VinFast – Microsoft Usage" — and returns its licenses, holders, and usage (UC09). ILVG (employees and units) and BCA (application usage) are connectors too, so every source is watched the same way (UC09). ELMS never changes anything at a source.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -264,7 +264,7 @@ The status of each license of a connector is worked out, not stored, from the ru
 
 ### `sync_runs`: connector runs
 
-The log of each connector run: when it ran, for which day's data, and whether it worked. It is the run table of UC10.
+The log of each connector run: when it ran, for which day's data, and whether it worked. It is the run table of UC09.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -293,7 +293,7 @@ Connectors push what they collect to a data lake, which cleans it before ELMS re
 | `payload` | JSON | Yes | The cleaned record as the data lake delivered it |
 | `fetched_at` | date-time | Yes | When ELMS read it |
 | `normalized_at` | date-time | | When ELMS processed it. Empty = not processed yet |
-| `normalize_error` | text | | Why ELMS could not use it, such as `undeclared_license` (a license the source reports but the connector does not list) or `missing_field`. Empty = used successfully. These are the rejected records Staff see in UC10 |
+| `normalize_error` | text | | Why ELMS could not use it, such as `undeclared_license` (a license the source reports but the connector does not list) or `missing_field`. Empty = used successfully. These are the rejected records Staff see in UC09 |
 
 ### `files`: uploaded files
 
@@ -344,7 +344,7 @@ Each import of a budget plan (UC04) or of SAP purchases (UC04): who, when, which
 
 The accounts that hold licenses on the provider's side: people, and also shared mailboxes, service accounts, devices, and API keys, which are not people. Each account belongs to the connector (company tenant) that reports it, so the same email in the tenants of two companies is two accounts.
 
-A person is always an ILVG employee: a person the source reports whose employee code and email are not in ILVG does not exist for ELMS, and the record is rejected (`unknown_employee`, shown to Staff in UC10). One employee can have several accounts — an old and a new email, or accounts in two companies — and all of them count as the same person.
+A person is always an ILVG employee: a person the source reports whose employee code and email are not in ILVG does not exist for ELMS, and the record is rejected (`unknown_employee`, shown to Staff in UC09). One employee can have several accounts — an old and a new email, or accounts in two companies — and all of them count as the same person.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -586,7 +586,7 @@ Who changed what, when, the old and new value, and why. Rows can only be added, 
 
 ### `data_overrides`: corrections to ILVG data
 
-When Admin corrects a value that came from ILVG, for example a unit placed under the wrong parent (UC09). The original value stays beside the correction, and the next ILVG sync does not overwrite it. Licenses, holders, and usage are never corrected in ELMS: they are corrected at the source.
+When Admin corrects a value that came from ILVG, for example a unit placed under the wrong parent (UC08). The original value stays beside the correction, and the next ILVG sync does not overwrite it. Licenses, holders, and usage are never corrected in ELMS: they are corrected at the source.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
