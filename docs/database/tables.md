@@ -16,7 +16,7 @@ Every table of the ELMS database, what it is for, and what each of its fields me
 | `is_active` | No longer used when "No". Rows are switched off instead of deleted, so history stays intact |
 | `source` | Where the data came from: `api` or `log` (a connector, ILVG, or BCA). Holders and usage always come from a connector, so their tables have no `source`, only `sync_run_id`. A purchase (PO line, invoice) has no `source` either: it came from the SAP file when `import_batch_id` is set, and was typed by Staff when `created_by` is set |
 | `sync_run_id`, `import_batch_id` | The connector run or file import that last wrote the row, so every figure can be traced back |
-| `currency` | Three-letter currency code next to an amount from outside (price, invoice, budget line), such as `USD`. Figures ELMS computes have no currency field: they are always in the reporting currency (VND) |
+| `currency` | Three-letter currency code next to an amount from outside (invoice, budget line), such as `USD`. Figures ELMS computes have no currency field: they are always in the reporting currency (VND) |
 
 ---
 
@@ -222,9 +222,6 @@ One PO line of a license, imported each month from the SAP purchase file or type
 | `valid_from` | date | Yes | Start of the term on the PO line. From this day the line counts in "Purchased" |
 | `valid_to` | date | | End of the term on the PO line: the expiry. Empty = no end |
 | `commercial_term` | choice | Yes | How it is paid, from the length of the term: `monthly`, `yearly`, `multi_year`, `perpetual`, `prepaid_credit`, `pay_as_you_go`. A `pay_as_you_go` line has no limit, so it can never be over-allocated |
-| `unit_price` | money | | Net price on the PO line for the period of the term. Empty = unknown |
-| `price_per_qty` | quantity | Yes | How many units that price is for: 1 for a seat, 1,000,000 for "2.50 USD per 1 million tokens". Default 1 |
-| `currency` | text | Yes | Currency of the price |
 | `external_ref` | text | | PO number and item, such as `4500012345/10`, so a re-import updates the line instead of adding one. Empty for a line typed by Staff |
 | `pr_number` | text | | The purchase requisition the PO came from. Shown, not used in figures |
 | `import_batch_id` | link → `import_batches` | | The SAP import that last wrote it. Empty = typed by Staff |
@@ -233,7 +230,7 @@ One PO line of a license, imported each month from the SAP purchase file or type
 
 `valid_from` and `valid_to` are needed because a license is bought again and again: the term says which PO lines count on a given day. They give the "Purchased" quantity of each day (the lines valid that day), the expiry shown in the License List, the commercial term, and the period an invoice is spread over when the invoice gives none. Example: 500 seats from 1 Mar 2027 to 29 Feb 2028, then a renewal of 600 from 1 Mar 2028 → Purchased is 500 on 15 Feb 2028 and 600 on 15 Mar 2028.
 
-The money figure "Purchased" is not this price: it is the accrued cost of the invoices (`expenses`, `cost_allocations`). The monthly cost of the License List is the accrued cost too (UC01, UC04).
+The price on the PO is not kept. The money figure "Purchased" is the accrued cost of the invoices (`expenses`, `cost_allocations`), and so is the monthly cost of the License List (UC01, UC04). The cost of one seat is that monthly cost divided by the seats of the license — the larger of purchased and given — for example 100 million for 500 seats = 200,000 a seat a month.
 
 ---
 
@@ -563,7 +560,7 @@ One finding per license, unit, and check: seats nobody holds, seats unused for 3
 | `org_unit_id` | link → `org_units` | | The unit the finding belongs to: the owner for seats nobody holds, the holders' unit otherwise. Empty = holders with "Unknown unit" |
 | `check_type` | choice | Yes | `unused` (seats nobody holds), `inactive` (seats not used for 30 days), `overuse` (more given than bought), `leaver` (seats of people who left) |
 | `flagged_qty` | quantity | | How many. It also gives the verdict: empty = not evaluated, 0 = nothing found, more than 0 = flagged |
-| `monthly_cost` | money | | What the flagged seats cost per month, in VND |
+| `monthly_cost` | money | | What the flagged seats cost per month, in VND: the license's accrued cost of the month ÷ its seats (the larger of purchased and given) × `flagged_qty`. Empty = unknown, such as no invoice yet |
 | `flagged_since` | date | | First day of the current run of flagged days |
 
 ---

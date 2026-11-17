@@ -155,7 +155,7 @@
 // Conventions:
 //   - Target DBMS: PostgreSQL 15+. Surrogate keys are bigint identity columns;
 //     every table has a single-column id so audit_logs can point to any row.
-//   - Money is numeric(18,2). Amounts from outside (prices, expenses, budget
+//   - Money is numeric(18,2). Amounts from outside (expenses, budget
 //     lines) carry an ISO 4217 currency; figures ELMS computes (snapshots,
 //     allocations, detection costs) are in the reporting currency and carry
 //     none. Amounts in different currencies are only added through
@@ -696,10 +696,7 @@ Table entitlement_lines {
   quantity numeric(20,4) [note: 'Quantity of the PO line. NULL = Unknown; always NULL for pay_as_you_go, which has no quota']
   valid_from date [not null, note: 'Start of the term on the PO line (BR-10): from this day the line counts in Purchased']
   valid_to date [note: 'End of the term on the PO line, inclusive: the expiry (BR-30). NULL = open-ended']
-  commercial_term commercial_term [not null, note: 'How the term is paid, from the length of the term (a month = monthly, a year = yearly, longer = multi_year); it also fixes the period of unit_price. pay_as_you_go = no quota: the line can never be over-allocated (BR-07)']
-  unit_price numeric(18,4) [note: 'Net price of price_per_qty units on the PO line for the period of the commercial term. NULL = Unknown']
-  price_per_qty numeric(20,4) [not null, default: 1, note: 'How many units unit_price is quoted for: 1 for a seat, 1000000 for "2.50 USD per 1M tokens"']
-  currency char(3) [not null]
+  commercial_term commercial_term [not null, note: 'How the term is paid, from the length of the term (a month = monthly, a year = yearly, longer = multi_year); it is the license type (BR-02). pay_as_you_go = no quota: the line can never be over-allocated (BR-07)']
   external_ref varchar(200) [note: 'PO number and item in SAP, e.g. 4500012345/10: the key a re-import updates (BR-33). NULL for a hand entry']
   pr_number varchar(50) [note: 'Purchase requisition the PO came from, as SAP gives it; shown in UC04, not used in figures']
   import_batch_id bigint [ref: > import_batches.id, note: 'SAP import that last wrote the line; NULL for a hand entry']
@@ -717,15 +714,13 @@ Table entitlement_lines {
     `quantity is null or quantity >= 0` [name: 'chk_entitlement_lines_quantity']
     `commercial_term <> 'pay_as_you_go' or quantity is null` [name: 'chk_entitlement_lines_payg_no_quota']
     `valid_to is null or valid_to >= valid_from` [name: 'chk_entitlement_lines_validity']
-    `unit_price is null or unit_price >= 0` [name: 'chk_entitlement_lines_unit_price']
-    `price_per_qty > 0` [name: 'chk_entitlement_lines_price_per_qty']
     `(import_batch_id is null) = (created_by is not null)` [name: 'chk_entitlement_lines_provenance']
     `(import_batch_id is not null) = (external_ref is not null)` [name: 'chk_entitlement_lines_po_ref']
     `import_batch_id is not null or pr_number is null` [name: 'chk_entitlement_lines_manual_no_pr']
   }
 
   Note: '''
-    One PO line of a license (BR-10, D50): quantity, term, and price, from the
+    One PO line of a license (BR-10, D50): quantity and term, from the
     SAP purchase file (UC04) or entered by hand by Staff for a purchase made
     outside SAP. It gives Purchased quantity (UC01, BR-31), the license terms
     (UC01), and the expiry (BR-30, UC01). A renewal or an extra purchase is a
@@ -737,8 +732,9 @@ Table entitlement_lines {
     day (the lines active that day), the expiry in the License List, the
     commercial term, and the default period an invoice is spread over
     (expenses.service_from, service_to).
-    unit_price is shown with the line; Purchased in money is the accrued cost
-    of the invoices (expenses, D33), not this price.
+    The price on the PO is not kept: Purchased in money is the accrued cost of
+    the invoices (expenses, D33), and the cost of a seat is derived from it
+    (cost_allocations).
     A change to a line, by a re-import or a hand edit, changes only the days
     not frozen yet (plan_daily_snapshots, D9).
     Partial unique: one line per PO line of a company (unique on org_unit_id,
@@ -999,7 +995,7 @@ Table import_batches {
       the importer's companies; each PO line finds its license by name (D51);
       each invoice finds its PO line, in the file or imported before; count
       rows to add (new PO number and item, or new invoice), update (another
-      quantity, term, price, or amount), and reject.
+      quantity, term, or amount), and reject.
     - confirm: in one transaction, upsert entitlement_lines and expenses by
       (org_unit_id, external_ref); a change that falls in a closed month is
       not written there, its difference goes to the next open month (UC04).
@@ -1520,7 +1516,7 @@ Table detection_results {
   org_unit_id bigint [ref: > org_units.id, note: 'Unit the result belongs to (D10). NULL only for inactive or leaver seats of holders with Unknown unit']
   check_type detection_check [not null]
   flagged_qty numeric(20,4) [note: 'Unassigned seats, inactive seats, or seats allocated above purchased. NULL = not evaluated; 0 = clear; more than 0 = flagged']
-  monthly_cost numeric(18,2) [note: 'Monthly cost of the flagged quantity, in the reporting currency; NULL = Unknown']
+  monthly_cost numeric(18,2) [note: 'Monthly cost of the flagged quantity, in the reporting currency: the accrued cost of the license for the month of the data date / max(purchased, assigned) seats x flagged_qty (D33, D44). NULL = Unknown (no invoice yet, or seats Unknown)']
   flagged_since date [note: 'First day of the current unbroken flagged streak']
 
   indexes {

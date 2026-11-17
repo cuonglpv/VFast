@@ -265,9 +265,6 @@ CREATE TABLE "entitlement_lines" (
   "valid_from" date NOT NULL,
   "valid_to" date,
   "commercial_term" commercial_term NOT NULL,
-  "unit_price" numeric(18,4),
-  "price_per_qty" numeric(20,4) NOT NULL DEFAULT 1,
-  "currency" char(3) NOT NULL,
   "external_ref" varchar(200),
   "pr_number" varchar(50),
   "import_batch_id" bigint,
@@ -277,8 +274,6 @@ CREATE TABLE "entitlement_lines" (
   CONSTRAINT "chk_entitlement_lines_quantity" CHECK (quantity is null or quantity >= 0),
   CONSTRAINT "chk_entitlement_lines_payg_no_quota" CHECK (commercial_term <> 'pay_as_you_go' or quantity is null),
   CONSTRAINT "chk_entitlement_lines_validity" CHECK (valid_to is null or valid_to >= valid_from),
-  CONSTRAINT "chk_entitlement_lines_unit_price" CHECK (unit_price is null or unit_price >= 0),
-  CONSTRAINT "chk_entitlement_lines_price_per_qty" CHECK (price_per_qty > 0),
   CONSTRAINT "chk_entitlement_lines_provenance" CHECK ((import_batch_id is null) = (created_by is not null)),
   CONSTRAINT "chk_entitlement_lines_po_ref" CHECK ((import_batch_id is not null) = (external_ref is not null)),
   CONSTRAINT "chk_entitlement_lines_manual_no_pr" CHECK (import_batch_id is not null or pr_number is null)
@@ -950,7 +945,7 @@ COMMENT ON COLUMN "license_plans"."monitoring_since" IS 'First day the connector
 
 COMMENT ON COLUMN "license_plans"."is_active" IS 'False once the connector no longer reports it, Staff removed it from the connector, or the connector was deleted (UC10)';
 
-COMMENT ON TABLE "entitlement_lines" IS 'One PO line of a license (BR-10, D50): quantity, term, and price, from the
+COMMENT ON TABLE "entitlement_lines" IS 'One PO line of a license (BR-10, D50): quantity and term, from the
 SAP purchase file (UC04) or entered by hand by Staff for a purchase made
 outside SAP. It gives Purchased quantity (UC01, BR-31), the license terms
 (UC01), and the expiry (BR-30, UC01). A renewal or an extra purchase is a
@@ -962,8 +957,9 @@ so the boundary day is never counted twice. The term gives Purchased on a
 day (the lines active that day), the expiry in the License List, the
 commercial term, and the default period an invoice is spread over
 (expenses.service_from, service_to).
-unit_price is shown with the line; Purchased in money is the accrued cost
-of the invoices (expenses, D33), not this price.
+The price on the PO is not kept: Purchased in money is the accrued cost of
+the invoices (expenses, D33), and the cost of a seat is derived from it
+(cost_allocations).
 A change to a line, by a re-import or a hand edit, changes only the days
 not frozen yet (plan_daily_snapshots, D9).
 Partial unique: one line per PO line of a company (unique on org_unit_id,
@@ -984,11 +980,7 @@ COMMENT ON COLUMN "entitlement_lines"."valid_from" IS 'Start of the term on the 
 
 COMMENT ON COLUMN "entitlement_lines"."valid_to" IS 'End of the term on the PO line, inclusive: the expiry (BR-30). NULL = open-ended';
 
-COMMENT ON COLUMN "entitlement_lines"."commercial_term" IS 'How the term is paid, from the length of the term (a month = monthly, a year = yearly, longer = multi_year); it also fixes the period of unit_price. pay_as_you_go = no quota: the line can never be over-allocated (BR-07)';
-
-COMMENT ON COLUMN "entitlement_lines"."unit_price" IS 'Net price of price_per_qty units on the PO line for the period of the commercial term. NULL = Unknown';
-
-COMMENT ON COLUMN "entitlement_lines"."price_per_qty" IS 'How many units unit_price is quoted for: 1 for a seat, 1000000 for "2.50 USD per 1M tokens"';
+COMMENT ON COLUMN "entitlement_lines"."commercial_term" IS 'How the term is paid, from the length of the term (a month = monthly, a year = yearly, longer = multi_year); it is the license type (BR-02). pay_as_you_go = no quota: the line can never be over-allocated (BR-07)';
 
 COMMENT ON COLUMN "entitlement_lines"."external_ref" IS 'PO number and item in SAP, e.g. 4500012345/10: the key a re-import updates (BR-33). NULL for a hand entry';
 
@@ -1156,7 +1148,7 @@ Purchase import (UC04, BR-10, BR-33, D50):
   the importer''s companies; each PO line finds its license by name (D51);
   each invoice finds its PO line, in the file or imported before; count
   rows to add (new PO number and item, or new invoice), update (another
-  quantity, term, price, or amount), and reject.
+  quantity, term, or amount), and reject.
 - confirm: in one transaction, upsert entitlement_lines and expenses by
   (org_unit_id, external_ref); a change that falls in a closed month is
   not written there, its difference goes to the next open month (UC04).
@@ -1547,7 +1539,7 @@ COMMENT ON COLUMN "detection_results"."org_unit_id" IS 'Unit the result belongs 
 
 COMMENT ON COLUMN "detection_results"."flagged_qty" IS 'Unassigned seats, inactive seats, or seats allocated above purchased. NULL = not evaluated; 0 = clear; more than 0 = flagged';
 
-COMMENT ON COLUMN "detection_results"."monthly_cost" IS 'Monthly cost of the flagged quantity, in the reporting currency; NULL = Unknown';
+COMMENT ON COLUMN "detection_results"."monthly_cost" IS 'Monthly cost of the flagged quantity, in the reporting currency: the accrued cost of the license for the month of the data date / max(purchased, assigned) seats x flagged_qty (D33, D44). NULL = Unknown (no invoice yet, or seats Unknown)';
 
 COMMENT ON COLUMN "detection_results"."flagged_since" IS 'First day of the current unbroken flagged streak';
 
