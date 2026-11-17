@@ -188,6 +188,7 @@ The figures of a license are kept elsewhere, by day:
 | Seats Active, Inactive, No activity, Not monitored, per unit (P&L, block, department, project) | `plan_unit_daily_snapshots`; a P&L adds up the units under it |
 | How often each holder uses it | `usage_records`, metric `active_days`; per unit, the holders of that unit added up |
 | Purchased quantity | `plan_daily_snapshots` |
+| License type (monthly, yearly, pay-as-you-go …) | `commercial_term` of its PO line in force (`entitlement_lines`) |
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -197,7 +198,6 @@ The figures of a license are kept elsewhere, by day:
 | `external_ref` | text | | The license's id at the source, such as Microsoft's skuId. Empty until the first sync |
 | `sap_name` | text | | The name SAP files use for it, when SAP names it differently from the connector. Example: P&L A's own GitHub is *GitHub Enterprise A* in SAP because the shared one is *GitHub Enterprise*. Empty = the connector's name |
 | `product_id` | link → `software_products` | | The software it maps to in the catalog. Empty = "Not mapped", shown under "Uncategorized" |
-| `license_type` | choice: `monthly`, `yearly`, `usage_based` | | As the source reports it. Empty until the first sync |
 | `archetype` | choice | Yes | How use is counted: `allocation` (seats), `concurrent` (sessions at once), `metered` (tokens, requests, GB), `capacity` (cores, servers) |
 | `unit` | text | Yes | What is counted: seat, device, slot, token, core … |
 | `owner_org_unit_id` | link → `org_units` | Yes | The owner: the P&L of the connector, or the group for a license shared by two or more companies. The owner carries the seats nobody holds and plans the license |

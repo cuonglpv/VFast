@@ -72,14 +72,14 @@ A license is described by independent axes, so the analysis does not depend on t
 | Axis | Question | Values |
 |---|---|---|
 | Measurement archetype | What is counted? | Allocation (seats, devices), Concurrent, Metered, Capacity |
-| License type (BR-02) | How is it billed? | `monthly`, `yearly`, `usage_based`, as the P&L reports it |
+| License type (BR-02) | How is it billed? | `monthly`, `yearly`, `multi_year`, `perpetual`, `prepaid_credit`, `pay_as_you_go`, from the PO line in SAP |
 | Source | Where does the data come from? | The usage connector of the P&L; BCA for application usage |
 
 | Example license | Archetype | License type |
 |---|---|---|
 | Microsoft 365 E3 | Allocation (seat) | Yearly |
 | Jira Software | Allocation (seat) | Monthly |
-| OpenAI API | Metered (token) | Usage-based |
+| OpenAI API | Metered (token) | Pay-as-you-go |
 | Floating engineering software | Concurrent (slot) | Yearly |
 
 ### 4.3 One money model for every license

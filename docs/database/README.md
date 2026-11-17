@@ -44,7 +44,7 @@ Source: [`diagrams/erd_overview.mmd`](diagrams/erd_overview.mmd) (Mermaid, ELK l
 
 ![License catalog](diagrams/erd_license_catalog.png)
 
-- **Licenses come from connectors (D26).** A `license_plans` row is declared by Staff when they create the connector (UC10) and stays *Pending* until the first sync; the sync fills its `external_ref`, `license_type`, holders, and usage. Its quantities and terms come from SAP (D50).
+- **Licenses come from connectors (D26).** A `license_plans` row is declared by Staff when they create the connector (UC10) and stays *Pending* until the first sync; the sync fills its `external_ref`, holders, and usage. Its license type is the `commercial_term` of its PO line in force. Its quantities and terms come from SAP (D50).
 - **Catalog mapping (D28, BR-35).** `product_id` maps the license name to a software of the catalog (UC02), and the software has a category (one level). Mapping one name maps the same name of the same provider in every company. NULL = *Not mapped*, grouped under *Uncategorized*.
 - **Owner unit and shared licenses (D27, BR-24).** `owner_org_unit_id` is the P&L of the connector, or the group when the license is used by two or more companies. The owner carries the unassigned seats and plans the license; the held seats are charged back to the holders' units.
 - **Terms are PO lines (D50, BR-10, UC01).** `entitlement_lines` are the PO lines imported each month from SAP (`external_ref` = PO number and item, `pr_number`) or typed by Staff for a purchase made outside SAP: company, quantity, term, commercial term, and net price; a `pay_as_you_go` line has no quantity. Purchased quantity is the sum of the lines valid that day; the end of the term is the expiry that drives the License List.

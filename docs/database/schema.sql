@@ -35,12 +35,6 @@ CREATE TYPE "connector_auth" AS ENUM (
   'bearer_token'
 );
 
-CREATE TYPE "license_type" AS ENUM (
-  'monthly',
-  'yearly',
-  'usage_based'
-);
-
 CREATE TYPE "holder_type" AS ENUM (
   'person',
   'shared',
@@ -248,7 +242,6 @@ CREATE TABLE "license_plans" (
   "external_ref" varchar(200),
   "sap_name" varchar(200),
   "product_id" bigint,
-  "license_type" license_type,
   "archetype" license_archetype NOT NULL DEFAULT 'allocation',
   "unit" varchar(30) NOT NULL DEFAULT 'seat',
   "owner_org_unit_id" bigint NOT NULL,
@@ -899,7 +892,9 @@ COMMENT ON COLUMN "software_products"."category_id" IS 'Its category. NULL is sh
 COMMENT ON TABLE "license_plans" IS 'The unit everything else calls "a license" (D1): one license a connector
 reports for its company, such as "Microsoft 365 E3" of company A. Staff
 declare it on the connector (UC10); it is Pending until the first sync
-(BR-29) and then carries the external_ref and license type of the source.
+(BR-29) and then carries the external_ref of the source.
+License type (BR-02) is not stored: it is the commercial_term of the PO
+line in force on the day (entitlement_lines); Unknown without one.
 Holders, usage, budget lines, PO lines (entitlement_lines), and invoices
 (expenses) point to it; it stays the same across renewals. Purchased
 quantity = sum of its PO lines active on a day.
@@ -938,8 +933,6 @@ COMMENT ON COLUMN "license_plans"."external_ref" IS 'Id of the license at the so
 COMMENT ON COLUMN "license_plans"."sap_name" IS 'Name SAP files use for the license when it differs from external_name (UC02, D51); NULL = external_name';
 
 COMMENT ON COLUMN "license_plans"."product_id" IS 'Software of the catalog (UC02, BR-35). NULL = Not mapped, grouped under Uncategorized';
-
-COMMENT ON COLUMN "license_plans"."license_type" IS 'monthly, yearly, or usage_based as the source reports it (BR-02); NULL = Unknown until the first sync';
 
 COMMENT ON COLUMN "license_plans"."archetype" IS 'How it is counted: seats (allocation), sessions, consumption, or capacity';
 
@@ -1316,7 +1309,7 @@ COMMENT ON COLUMN "plan_unit_daily_snapshots"."active_qty" IS 'Seats Active (gra
 
 COMMENT ON COLUMN "plan_unit_daily_snapshots"."shared_service_qty" IS 'Of the four above: seats of shared and service accounts, listed apart (BR-26)';
 
-COMMENT ON COLUMN "plan_unit_daily_snapshots"."used_qty" IS 'usage_based plans: consumption attributed to the unit; NULL = Unknown';
+COMMENT ON COLUMN "plan_unit_daily_snapshots"."used_qty" IS 'Metered plans: consumption attributed to the unit; NULL = Unknown';
 
 COMMENT ON TABLE "employee_app_usage" IS 'Employee usage of applications on company machines, from BCA (BR-21, D36):
 kept in its own table, separate from the license usage tables, so later

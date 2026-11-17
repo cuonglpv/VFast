@@ -61,7 +61,8 @@
 //        Staff member (a P&L, or the group for group-level Staff) (BR-14).
 //   D26. One usage connector per company and provider (connectors.org_unit_id,
 //        vendor_id). A license_plans row is one license a connector reports:
-//        its external name, license type, and connector.
+//        its external name and connector. Its license type (BR-02) is the
+//        commercial_term of its PO line in force (entitlement_lines).
 //   D27. Owner unit (BR-24): the P&L of the connector, or the group for a
 //        shared license (used by two or more companies).
 //   D28. Software catalog mapping (BR-35): license_plans.product_id NULL =
@@ -255,11 +256,6 @@ Enum connector_auth {
   bearer_token
 }
 
-Enum license_type {
-  monthly
-  yearly
-  usage_based [note: 'Paid by consumption; consumers instead of seats (UC01)']
-}
 
 Enum holder_type {
   person [note: 'One employee of ILVG']
@@ -330,7 +326,7 @@ Enum cost_bucket {
 }
 Enum allocation_method {
   per_seat [note: 'Accrued cost split day by day over max(purchased, assigned) seats, by the seats of each day (seat-days, BR-06, D44)']
-  per_usage [note: 'usage_based license: split by the consumption of subjects with a known unit']
+  per_usage [note: 'Metered license: split by the consumption of subjects with a known unit']
   direct [note: 'Expense that names a unit goes to that unit']
   none [note: 'No seat data in the whole month: the cost stays with the owner (unallocated) as Not evaluated (BR-04, D44)']
 }
@@ -634,7 +630,6 @@ Table license_plans {
   external_ref varchar(200) [note: 'Id of the license at the source, e.g. Microsoft Graph skuId; NULL until the first sync']
   sap_name varchar(200) [note: 'Name SAP files use for the license when it differs from external_name (UC02, D51); NULL = external_name']
   product_id bigint [ref: > software_products.id, note: 'Software of the catalog (UC02, BR-35). NULL = Not mapped, grouped under Uncategorized']
-  license_type license_type [note: 'monthly, yearly, or usage_based as the source reports it (BR-02); NULL = Unknown until the first sync']
   archetype license_archetype [not null, default: 'allocation', note: 'How it is counted: seats (allocation), sessions, consumption, or capacity']
   unit varchar(30) [not null, default: 'seat', note: 'What is counted: seat, device, slot, token, credit, GB, core ...']
   owner_org_unit_id bigint [not null, ref: > org_units.id, note: 'Owner unit (D27): the P&L of the connector, or the group for a shared license (BR-24)']
@@ -662,7 +657,9 @@ Table license_plans {
     The unit everything else calls "a license" (D1): one license a connector
     reports for its company, such as "Microsoft 365 E3" of company A. Staff
     declare it on the connector (UC10); it is Pending until the first sync
-    (BR-29) and then carries the external_ref and license type of the source.
+    (BR-29) and then carries the external_ref of the source.
+    License type (BR-02) is not stored: it is the commercial_term of the PO
+    line in force on the day (entitlement_lines); Unknown without one.
     Holders, usage, budget lines, PO lines (entitlement_lines), and invoices
     (expenses) point to it; it stays the same across renewals. Purchased
     quantity = sum of its PO lines active on a day.
@@ -1186,7 +1183,7 @@ Table plan_unit_daily_snapshots {
   no_activity_qty numeric(20,4) [not null]
   not_monitored_qty numeric(20,4) [not null]
   shared_service_qty numeric(20,4) [not null, note: 'Of the four above: seats of shared and service accounts, listed apart (BR-26)']
-  used_qty numeric(20,4) [note: 'usage_based plans: consumption attributed to the unit; NULL = Unknown']
+  used_qty numeric(20,4) [note: 'Metered plans: consumption attributed to the unit; NULL = Unknown']
   created_at timestamptz [not null, default: `now()`]
 
   indexes {
