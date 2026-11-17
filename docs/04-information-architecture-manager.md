@@ -35,7 +35,7 @@ This document lists the screens of ELMS, who reaches them and how, what each scr
 | SCR-LIC-TERMS-01 | License terms (contracts) | Manager | UC01 | — |
 | SCR-LIC-SHARED-01 | License catalog, tab *Shared* | Staff; Manager reads | UC02 | — |
 | SCR-CATALOG-01 | License catalog, tabs *Software* and *Mapping* | Staff | UC02 | — |
-| SCR-USAGE-01 | Usage: scope, balance, comparison, trend, units table, waste analysis | Manager | UC03, UC05 | D1, D2 |
+| SCR-USAGE-01 | Usage: scope, balance, comparison, trend, units table, waste analysis | Manager | UC03 | D1, D2 |
 | SCR-EMP-USAGE-01 | Employee usage (BCA) | Manager | UC03 | — |
 | SCR-BUDGET-IMPORT-01 | Budget import | Manager | UC04 | — |
 | SCR-BUDGET-PLAN-01 | Monthly budget plan and versions | Manager | UC04 | — |
@@ -123,8 +123,8 @@ flowchart LR
 3. **Period and filters (UC03):** tabs *YTD* / *Monthly Comparison* / *Annual Trend*; Year, Month; sort (7 orders); search with "shown / total"; currency USD / VND.
 4. **Unit comparison (UC03)** — cards of 8 units, Plan beside Purchased split into Used, Wasted, Not evaluated; or **annual trend (UC03)** — one card per unit by month with Efficiency.
 5. **Units table (UC03):** rank, unit, Plan, Purchased, Used, Wasted, utilization, variance; paging 10 / 25 / 50; **license heatmap** under each P&L row (chevron) with the *Rate / Cost* switch; *Export CSV* (UC03).
-6. **Waste analysis:** ranking (UC05, D2) — top 10, Used / Waste bar, "% chưa khai thác"; **trend (UC05)** — Plan, Used, Wasted by month, "Filtered: n of N units"; **risk distribution (UC05)** — scatter Purchased × waste rate with medians; **monthly heatmap (UC05)** — own year selector, top 12, *Rate / Cost* switch.
-7. Waste flag in red (Wasted above 20 % of Purchased, UC05) on the tree, the table, and the scatter. Unused and inactive seats (UC05) open from the license panel and the dashboards.
+6. **Waste analysis:** ranking (UC03, D2) — top 10, Used / Waste bar, "% chưa khai thác"; **trend (UC03)** — Plan, Used, Wasted by month, "Filtered: n of N units"; **risk distribution (UC03)** — scatter Purchased × waste rate with medians; **monthly heatmap (UC03)** — own year selector, top 12, *Rate / Cost* switch.
+7. Waste flag in red (Wasted above 20 % of Purchased, UC03) on the tree, the table, and the scatter. Unused and inactive seats (UC03) open from the license panel and the dashboards.
 
 The sidebar item **Xếp hạng lãng phí** opens this screen at the Manager's highest unit, sorted by waste, scrolled to the waste analysis.
 

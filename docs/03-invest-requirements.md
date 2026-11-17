@@ -47,13 +47,13 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US21 | UC04 | As a Staff member, I want to import the PR, PO, and invoices exported from SAP each month, and enter a purchase made outside SAP, so that ELMS knows how many seats were bought, for which term, and what was paid. | Quantity and cost source | US41 | M | 5 |
 | US22 | UC04 | As a Staff member, I want to enter the exchange rates from a date so that every amount is converted with the rate of its invoice date. | Correct currency | US46 | M | 2 |
 | **Optimization** | | | | | | |
-| US23 | UC05 | As a Manager, I want the seats bought but given to nobody and their cost so that I stop paying for them. | Waste found | US32 | M | 3 |
-| US24 | UC05 | As a Manager, I want the seats not used for 30 days and their cost so that I know whose seat to reclaim. | Waste found | US05 | M | 3 |
-| US25 | UC05 | As a Manager, I want the units that waste more than 20 % of what they buy flagged so that I see where to act first. | Prioritization | US32 | M | 2 |
-| US26 | UC05 | As a Manager, I want the units ranked by money wasted so that I start with the largest. | Prioritization | US13 | M | 3 |
-| US27 | UC05 | As a Manager, I want Plan, Used, and Wasted month by month on one scale so that I see whether waste grows. | Trend | US13, US18 | S | 3 |
-| US28 | UC05 | As a Manager, I want the units placed by spend and waste rate so that I see where high spend meets high waste. | Risk view | US13 | S | 3 |
-| US29 | UC05 | As a Manager, I want the waste of each unit in each month, as a rate or in money, so that I see when each unit wastes. | Seasonality | US13 | S | 3 |
+| US23 | UC03 | As a Manager, I want the seats bought but given to nobody and their cost so that I stop paying for them. | Waste found | US32 | M | 3 |
+| US24 | UC03 | As a Manager, I want the seats not used for 30 days and their cost so that I know whose seat to reclaim. | Waste found | US05 | M | 3 |
+| US25 | UC03 | As a Manager, I want the units that waste more than 20 % of what they buy flagged so that I see where to act first. | Prioritization | US32 | M | 2 |
+| US26 | UC03 | As a Manager, I want the units ranked by money wasted so that I start with the largest. | Prioritization | US13 | M | 3 |
+| US27 | UC03 | As a Manager, I want Plan, Used, and Wasted month by month on one scale so that I see whether waste grows. | Trend | US13, US18 | S | 3 |
+| US28 | UC03 | As a Manager, I want the units placed by spend and waste rate so that I see where high spend meets high waste. | Risk view | US13 | S | 3 |
+| US29 | UC03 | As a Manager, I want the waste of each unit in each month, as a rate or in money, so that I see when each unit wastes. | Seasonality | US13 | S | 3 |
 | **Analytics** | | | | | | |
 | US30 | UC06 | As a Manager, I want a license dashboard so that counts, allocation, and expiries are seen together. | Overview | US01, US09 | S | 3 |
 | US31 | UC06 | As a Manager, I want a financial dashboard so that spending and plan are seen together. | Financial overview | US32, US33 | S | 3 |

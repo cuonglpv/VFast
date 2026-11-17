@@ -1396,7 +1396,7 @@ COMMENT ON TABLE "collection_coverage" IS 'Whether the data of a plan and kind i
 (decision D8). A connector run writes one row per plan and kind it
 collects; a later run of the same day replaces the row.
 No row, partial, or failed = Unknown for that day: detection reports
-not_evaluated (UC05) and daily snapshots are not written.
+not_evaluated (UC03) and daily snapshots are not written.
 A successful run that finds 0 holders writes complete, so a true 0 is
 told apart from a missing day. Data the provider returns but ELMS cannot
 use is not complete: a usage report with anonymized user names, or
@@ -1558,7 +1558,7 @@ active_days usage_records of the subject and plan over the period, shown
 against working days = Monday to Friday without public holidays from the
 later of the period start and assigned_on; Not tracked when
 S.has_daily_activity is not true.
-Detection (UC05) flags Inactive and No activity only when the usage
+Detection (UC03) flags Inactive and No activity only when the usage
 coverage of D is complete and S.monitoring_since is at least T days old.
 Unassigned = purchased quantity minus open assignments.
 ';
@@ -1878,11 +1878,11 @@ Leaver check (D20): open seats whose subject is disabled at the provider
 (is_enabled = false) or whose employee has a left_on before the data date.
 A seat flagged as leaver is not counted again in inactive.
 Shared and service accounts (BR-26) are judged as whole accounts and
-listed apart in UC05, never as an inactive person.
+listed apart in UC03, never as an inactive person.
 Manager data scope (BR-14): a Manager sees the rows of their units, plus the
 Unknown-unit rows of the licenses their units own.
 Lists and dashboards read the same rows, so figures tie across screens
-(UC05, UC06). Not evaluated (flagged_qty NULL) when the coverage of
+(UC03, UC06). Not evaluated (flagged_qty NULL) when the coverage of
 the data date is not complete (D8) or the figures needed are Unknown.
 The figures shown beside a result are read from their owner table for the
 data date of the run, never copied here:
@@ -1890,7 +1890,7 @@ data date of the run, never copied here:
   Assigned, seat statuses = plan_unit_daily_snapshots
   Peak, deployed units    = usage_records
   Unassigned, Excess      = flagged_qty
-The per-seat list of UC05 is the current list of license_assignments: it
+The per-seat list of UC03 is the current list of license_assignments: it
 is shown for the latest run only; older runs keep their counts, not names.
 The unique index needs NULLS NOT DISTINCT because org_unit_id may be NULL.
 ';

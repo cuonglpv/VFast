@@ -96,7 +96,7 @@ Source: [`diagrams/erd_overview.mmd`](diagrams/erd_overview.mmd) (Mermaid, ELK l
 ![Optimization](diagrams/erd_optimization.png)
 
 - **Results (BR-11).** One `detection_results` row per run, license, check, and unit. Checks: `unused` (seats nobody holds, owner unit), `inactive` (Inactive and No activity), `overuse` (allocated above purchased, BR-31), `leaver` (D20). The verdict is read from `flagged_qty`: NULL = not evaluated, 0 = clear, more than 0 = flagged.
-- **Shared and service accounts (BR-26)** are judged as whole accounts and listed apart in UC05, never as inactive people.
+- **Shared and service accounts (BR-26)** are judged as whole accounts and listed apart in UC03, never as inactive people.
 - **Retired.** `recommendations` (recommendations, retired) is kept and not written (D38).
 
 ## Audit

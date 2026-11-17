@@ -231,7 +231,7 @@ flowchart LR
     ingestion["ingestion<br/>UC09<br/>connectors, sync runs, coverage,<br/>raw records, budget and purchase imports"]
     usage["usage<br/>UC03, UC10<br/>assignments, usage records, snapshots,<br/>seat status, BCA usage"]
     finance["finance<br/>UC04, UC06<br/>budget versions, purchases, accrual,<br/>rates, cost split"]
-    optimization["optimization<br/>UC05<br/>detection, waste flag, waste analysis"]
+    optimization["optimization<br/>UC03<br/>detection, waste flag, waste analysis"]
     analytics["analytics<br/>UC06<br/>read models only"]
     audit["audit (shared)<br/>BR-13<br/>append-only audit log"]
 

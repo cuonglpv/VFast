@@ -1,6 +1,6 @@
 # Enterprise License Management System (ELMS) — team VFast
 
-ELMS brings the software licenses of every company of the group into one place. Each company connects its providers (Microsoft, Atlassian, Adobe, GitHub, SAP…) through usage connectors; ELMS reads who holds each license and how much is actually used, takes how many seats were bought, for which term, and at what cost from the purchases in SAP, and sets it against the budget plan. Managers see, for their units, the money planned, purchased, used, and wasted — down to each license and each user — **and ELMS never assigns, revokes, buys, or changes anything on a provider**.
+ELMS brings the software licenses of every company of the group, cloud services included, into one place. Each company connects its providers (Microsoft, Atlassian, Adobe, GitHub…) through usage connectors; ELMS reads who holds each license and how much is actually used, takes what was bought and the cloud bills from SAP, and sets them against the budget plan. Managers see, for their units, Plan, Spend, and Actual — down to each license and each user — and judge waste from them, with a forecast of where the year will land. **ELMS never assigns, revokes, buys, or pays for anything.**
 
 ## 1. Requirements — Research, Use Cases, and INVEST
 
@@ -10,7 +10,7 @@ Requirements are derived top-down: business problem → stakeholders → goals �
 
 ![ELMS mind map](docs/mindmap.png)
 
-The map has seven branches: **License Management**, **Usage**, **Budget Management**, **Optimization**, **Analytics**, **User & Organization**, and **Connection Management**. Each leaf is a feature area of a use case — several leaves can belong to one use case: bold leaves are Must- and Should-have, plain leaves Could-have. UC10 View My Licenses and UC11 Login / Logout are self-service use cases every role has and are not on the map. Use cases are numbered in the order of the map.
+The map collects the ideas of the product in seven branches: **License Management**, **Usage**, **Budget Management**, **Optimization**, **Analytics**, **User & Organization**, and **Connection Management**. Bold leaves are Must- and Should-have, plain leaves Could-have. The use cases are grouped close to these branches but not one to one: the map holds ideas, the use cases the goals of the actors.
 
 Editable source: [`docs/mindmap/vfast.xmind`](docs/mindmap/vfast.xmind) (open with XMind); `docs/mindmap.png` is exported from it.
 
@@ -21,18 +21,18 @@ License and usage data are scattered across each provider's admin portal, and ev
 | Goal | Measured by |
 |---|---|
 | G1 Centralize licenses | Every license of every company listed with provider, cost, allocated / purchased, and expiry in one list |
-| G2 Know who uses what | Every assigned seat has exactly one status over the last 30 days — `Active`, `Inactive`, `No activity`, or `Not monitored` — and every holder a usage frequency |
+| G2 Know who uses what | Every assigned seat has one status — `Active`, `Inactive` (holder has left), `No use`, or `Not monitored` — and every holder a usage frequency |
 | G3 Measure automatically | License, assignment, and usage data arrive through usage connectors on a schedule; nobody types them in |
-| G4 Express waste as money | Underutilized accounts and their annual cost on one screen |
-| G5 Plan and reconcile the budget | Plan, Purchased, and Used compared per unit, license, and month |
-| G6 Make waste visible | Waste (the cost of unassigned and inactive seats) shown per unit, license, and month, with the units wasting most first |
+| G4 Show the seats to act on | Seats not used, unassigned, or held by people who have left, with their cost |
+| G5 Plan and reconcile the budget | Plan, Spend, and Actual compared per unit, license, and month, with a year-end forecast |
+| G6 Cover cloud services | Pay-as-you-go cloud services tracked like licenses, per unit against plan, with the bills that fall due |
 | G7 Trustworthy figures | Numbers match across screens; missing data is `Unknown`, never zero |
 
 What makes this project different:
 
 1. **One view from group to user** — the same figures from the group down to a P&L, block, department, project, license, and the people holding it.
-2. **Plan, Purchased, Used** — Plan − Purchased is unspent budget; Purchased splits into Used, Wasted, and Not evaluated; each gap is a different problem with a different fix.
-3. **Missing data is not guessed** — a failed sync is `Unknown`, never usage 0, so it never creates a false waste finding.
+2. **Plan, Spend, Actual** — the user compares what was planned, what was spent, and what is really used, and judges waste from the gaps; ELMS does not compute waste for them.
+3. **Missing data is not guessed** — a failed sync is `Unknown`, never usage 0, so it never suggests a seat is unused when it is not.
 4. **Read-only toward every source** — ELMS shows the evidence; changes to licenses are made at the source, never by ELMS.
 5. **One connector contract** — every usage connector, one per company and provider, answers in the same license data contract; nothing enters ELMS without passing its validator.
 
@@ -49,31 +49,30 @@ There are four roles: the **Manager** uses the product, **Staff** keep it fed, t
 | ![Manager](docs/diagrams/out/uc_manager.png) | ![Staff](docs/diagrams/out/uc_staff.png) |
 | ![Admin](docs/diagrams/out/uc_admin.png) | ![Employee](docs/diagrams/out/uc_employee.png) |
 
-11 use cases, by mind-map branch. A use case is one large flow of action of one actor; its smaller branches and the cases it handles are flows and alternatives in its specification, not use cases of their own. Manager and Staff work within the units or companies assigned to them, and a Manager can be assigned to the whole group; the Admin sees no license or cost data. Analysis shows complete months only, up to the previous month.
+11 use cases, by mind-map branch. A use case is one large flow of action of one actor; its smaller branches and the cases it handles are not use cases of their own. Manager and Staff work within the units or companies assigned to them, and a Manager can be assigned to the whole group; the Admin sees no license or cost data.
 
-| ID | Use case | What the user can do | Actor |
+| ID | Use case | Goal | Actors |
 |---|---|---|---|
 | | **License Management** | | |
-| UC01 | View License Detail | See every license with its monthly cost, company, allocated / purchased and days to expiry, its term on a validity timeline, and its details; search, filter, sort, page; see who holds it, who is active or inactive, when each last used it and how often; list the terms of the PO lines and those renewing soon | Manager |
-| UC02 | Browse License Inventory | See the licenses of a P&L or of any unit, the units that use a license, and the licenses of each provider; Staff also keep the software catalog, map license and application names to it, and mark shared licenses | Manager, Staff |
-| | **Usage** | | |
-| UC03 | View Plan vs Utilization Balance | Choose the unit to analyse; see its Plan, Purchased and Used, whether it is over budget, and how much of what was bought is used; compare the units below it, read their table and export it; see how often each employee uses each application | Manager |
-| | **Budget Management** | | |
-| UC04 | Manage Budget Plan | Managers import the budget plan of their units from Excel and see it by month and by version; Staff import the purchases from SAP, enter those made outside it, close the monthly accrual, and keep the exchange rates | Manager, Staff |
+| UC01 | View License Detail | Know every license of my units, cloud services included: what it costs, how much of it is allocated, when it expires, and who uses it | Manager |
+| UC02 | Browse License Inventory | See which licenses each unit and provider has; for Staff, keep the catalog, the shared licenses, and the cloud accounts assigned to units, so the figures land on the right units | Manager, Staff |
 | | **Optimization** | | |
-| UC05 | Track License Waste | See seats bought but given to nobody and seats not used for 30 days with what they cost; see the units wasting the most money first, those wasting more than 20 % flagged, and what causes it; follow Plan, Used and Wasted month by month, spot units where high spend meets high waste, and see in which months each unit wastes | Manager |
+| UC03 | Track License Waste | Judge where licenses are wasted, from Plan, Spend, and Actual of every unit and the seats that are not used, unassigned, or held by people who have left | Manager |
+| | **Budget Management** | | |
+| UC04 | Manage Budget Plan | Managers set the plan of their units; Staff bring in what was bought and the cloud bills, so Plan and Spend are right every month | Manager, Staff |
+| UC05 | Forecast Spending | Know before the year ends where spending will land against the plan, and what the coming bills will be | Manager |
 | | **Analytics** | | |
-| UC06 | View Dashboards | See licenses, spending against plan with cost per unit and variance, and waste at a glance; read the same figures per license, software, category, provider or license type; look up what each figure means | Manager |
+| UC06 | View Dashboards | See licenses, spending, and usage of my units at a glance, by unit or by license, provider, and category | Manager |
 | | **User & Organization** | | |
-| UC07 | Manage User Roles and Permissions | Give each user a role and a data scope, disable or re-enable access; grant or remove permissions per role | Admin |
-| UC08 | Manage Organization Hierarchy | Review the five-level hierarchy and assign Managers to units | Admin |
+| UC07 | Manage User Roles and Permissions | Give each user the role and the data scope their job needs | Admin |
+| UC08 | Manage Organization Hierarchy | Keep the hierarchy from ILVG right and assign Managers to units | Admin |
 | | **Connection Management** | | |
-| UC09 | Manage Usage Connectors | See every company's connectors, providers and licenses with their sync status; create, read, edit, and delete a connector; follow sync runs, rerun a period, pause or resume a connector | Staff |
+| UC09 | Manage Data Connectors | Connect the data sources of each company so their licenses and usage flow into ELMS, and keep the syncs healthy | Staff |
 | | **Self-service** | | |
-| UC10 | View My Licenses | See the licenses they hold and whether they use them | Everyone |
-| UC11 | Login / Logout | Sign in and out, set the password from the link of the account email | Everyone |
+| UC10 | View My Licenses | See the licenses I hold and whether I use them | Everyone |
+| UC11 | Login / Logout | Sign in and out; set the password from the account email | Everyone |
 
-Role × feature matrix, business rules, system processes, and the specification of every use case: [Use cases](docs/02-use-cases.md). Features per use case: [Feature list](docs/08-feature-list.md).
+Actors, core concepts, role × use case matrix, what each use case covers, and system processes: [Use cases](docs/02-use-cases.md). Features per use case: [Feature list](docs/08-feature-list.md).
 
 ### 1.4 Roles and permissions
 
@@ -81,32 +80,28 @@ There are four roles; each account has exactly one. Every account belongs to a r
 
 | Role | Who | Responsibility | Data scope |
 |---|---|---|---|
-| **Manager** | Manager of a unit: the group, a P&L, block, department, or project — **the main user** | Browses licenses and who uses them, analyses usage and waste, imports and changes the budget plan of their units and of every unit under them, reads the dashboards | The units assigned to them and everything under them; the whole group for a Manager of the group |
-| **Staff** | License management team member — hands-on work | Sets up and edits usage connectors, watches the syncs, checks what each company's connectors deliver, imports the purchases from SAP and enters those made outside it, runs the monthly accrual, records exchange rates and shared licenses, keeps the software catalog | The companies assigned to them; no usage or waste analysis |
+| **Manager** | Manager of a unit: the group, a P&L, block, department, or project — **the main user** | Browses licenses and who uses them, tracks waste, plans the budget of their units, follows the forecast, reads the dashboards | The units assigned to them and everything under them; the whole group for a Manager of the group |
+| **Staff** | License management team member — hands-on work | Connects the data sources, imports the purchases and the cloud bills from SAP, runs the monthly accrual, keeps the exchange rates, the software catalog, the shared licenses, and the assignment of cloud accounts to units | The companies assigned to them |
 | **Admin** | System operator | Gives each user a role and a data scope, sets the permissions of each role, keeps the organization hierarchy and which Manager owns which unit | Users, roles, permissions, and the hierarchy; no license, usage, budget, or cost data |
 | **Employee** | Every employee of the group | Sees the licenses they hold and whether they are recorded as used | Own licenses only |
 
 | Capability | Admin | Manager | Staff | Employee |
 |---|---|---|---|---|
-| License detail: list, timeline, details, users and usage, terms (UC01) | — | Read, own units | — | — |
-| License inventory (UC02) | — | Read, own units | Read, own companies | — |
-| License catalog: software, mapping, shared licenses (UC02) | — | Read; the share of shared licenses their units carry | Catalog and shared licenses: create / edit, group level; mapping: own companies | — |
-| Plan vs utilization balance: scope, unit comparison, units table and export, employee usage (UC03) | — | Read, own units | — | — |
-| Budget plan (UC04) | — | Import and read, own units and every unit under them | — | — |
-| Purchases from SAP: PO lines and invoices (UC04) | — | — | Import from SAP / create / edit, own companies | — |
-| Monthly accrual (UC04) | — | — | Run / close month, own companies | — |
-| Exchange rates (UC04) | — | Read | Create / edit, group level | — |
-| License waste: wasted seats, ranking, flag, and analytics (UC05) | — | Read, own units | — | — |
-| Dashboards: cost per unit, plan variance, license and provider analysis, metric definitions (UC06) | — | Read, own units | — | — |
-| User roles and permissions, organization hierarchy (UC07, UC08) | Edit | — | — | — |
-| Usage connectors and sync runs (UC09) | — | — | Create / edit / delete, read / rerun / pause runs, own companies | — |
-| My licenses (UC10) | Read own | Read own | Read own | Read own |
+| View License Detail (UC01) | — | Read, own units | — | — |
+| Browse License Inventory (UC02) | — | Read, own units | Read, own companies; catalog, shared licenses, cloud accounts | — |
+| Track License Waste (UC03) | — | Read, own units | — | — |
+| Manage Budget Plan (UC04) | — | Plan of own units | Purchases and cloud bills, accrual, exchange rates | — |
+| Forecast Spending (UC05) | — | Read, own units | — | — |
+| View Dashboards (UC06) | — | Read, own units | — | — |
+| Manage User Roles and Permissions, Organization Hierarchy (UC07, UC08) | Edit | — | — | — |
+| Manage Data Connectors (UC09) | — | — | Create / edit / delete, own companies | — |
+| View My Licenses (UC10) | Read own | Read own | Read own | Read own |
 
 - The backend enforces every cell of this table and the data scope; hiding a button in the interface is not enough, and a call outside the role returns `403`.
-- ELMS never writes to a provider: "edit" here changes data in ELMS only.
-- Every change to connectors, budget imports, purchases, user roles and scopes, the hierarchy, and permissions is recorded with who, old value, new value, and time.
+- ELMS never writes to a provider or to SAP: "edit" here changes data in ELMS only.
+- Every change to connectors, budget imports, purchases, cloud bills, user roles and scopes, the hierarchy, and permissions is recorded with who, old value, new value, and time.
 
-The full role × feature matrix with the business rules: [Use cases](docs/02-use-cases.md#role--feature-matrix).
+The role × use case matrix: [Use cases](docs/02-use-cases.md#role--use-case-matrix).
 
 ### 1.5 INVEST requirements
 
@@ -125,7 +120,7 @@ The backlog contains **46 user stories (159 story points)**: 29 Must-have (113 p
 License Management     US01–US10 (UC01, UC02)         Manager (US09, US10: Staff)
 Usage                  US11–US17 (UC03)               Manager
 Budget Management      US18–US22 (UC04)               Manager (US20–US22: Staff)
-Optimization           US23–US29 (UC05)               Manager
+Optimization           US23–US29 (UC03)               Manager
 Analytics              US30–US36 (UC06)               Manager
 User & Organization    US37–US39 (UC07, UC08)         Admin
 Connection Management  US40–US44 (UC09)               Staff

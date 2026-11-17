@@ -191,7 +191,7 @@ What ELMS needs from a provider depends on the archetype of the license, not on 
 
 | Archetype | Datasets needed | What ELMS can do with them |
 |---|---|---|
-| Allocation (seat, named user) | `entitlements`, `subjects`, `assignments`, `activity` | Purchased, assigned, and unassigned seats; seat status (BR-03); unused and inactive detection (UC05); cost allocation by holder (BR-06) |
+| Allocation (seat, named user) | `entitlements`, `subjects`, `assignments`, `activity` | Purchased, assigned, and unassigned seats; seat status (BR-03); unused and inactive detection (UC03); cost allocation by holder (BR-06) |
 | Concurrent | `entitlements`, `usage` (`peak_concurrent`) | Peak against purchased slots; overuse (out of scope) |
 | Metered | `entitlements`, `usage` (`consumption`) | Consumption against quota and budget |
 | Capacity | `entitlements`, `usage` (`deployed_units`) | Deployed against purchased; overuse (out of scope) |
@@ -239,7 +239,7 @@ The mind map branch **Connector Management** has one group, Sync & Data Quality,
 | Leaf | Use case | Actor |
 |---|---|---|
 | Data Source Mapping | Map Connector Data (no longer a use case) | Staff |
-| Sync Monitoring | UC09 Manage Usage Connectors (sync monitoring) | Staff |
+| Sync Monitoring | UC09 Manage Data Connectors (sync monitoring) | Staff |
 
 The provider plan chosen when a license is added (*Manage License Entitlements*) shows in *Map Connector Data* as linked; *Map Connector Data* is where Staff link plans that appear later at the provider, fix a wrong link, and switch the primary source. Full specification: [Use cases](02-use-cases.md#connector-management).
 

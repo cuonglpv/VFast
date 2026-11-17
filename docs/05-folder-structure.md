@@ -144,7 +144,7 @@ The modules follow the mind-map branches, plus two technical modules (`ingestion
 | `ingestion` | UC09 | connectors, plan data sources, sync runs, coverage, raw records, files, imports | Create, test, edit, delete, pause connectors; run them at their interval (BR-29); validate the license data contract (BR-17); budget and expense imports (preview → confirm, idempotent, BR-33) |
 | `usage` | UC03, UC10 | subjects, assignments, usage records, snapshots, employee app usage | Seat status with grace period (BR-03), days used (BR-32), daily snapshots, BCA usage (BR-21) |
 | `finance` | UC04, UC06 | budget versions and lines, expenses, accounting periods, exchange rates, cost allocations | Budget versions (BR-08), accrual (BR-23), currency (BR-05), cost split into Used, Wasted, Not evaluated (BR-06, BR-22), variance (BR-34) |
-| `optimization` | UC05 | detection runs and results | Unused and inactive seats (BR-11), waste flag above 20 % (BR-20), waste analysis |
+| `optimization` | UC03 | detection runs and results | Unused and inactive seats (BR-11), waste flag above 20 % (BR-20), waste analysis |
 | `analytics` | UC06 | read models only | Dashboards, analysis by license, metric definitions (BR-27) |
 | `audit` (shared) | BR-13 | audit logs | Who, old value, new value, time, reason for every change |
 
