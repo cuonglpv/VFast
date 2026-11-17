@@ -203,7 +203,6 @@ The figures of a license are kept elsewhere, by day:
 | `owner_org_unit_id` | link → `org_units` | Yes | The owner: the P&L of the connector, or the group for a license shared by two or more companies. The owner carries the seats nobody holds and plans the license |
 | `last_sync_run_id` | link → `sync_runs` | | The latest successful run that brought data for this license. It gives the license's connector status. Empty = no data yet (*Pending*) |
 | `usage_granularity` | choice: `per_subject`, `aggregate` | | How the connector gives usage: per holder, or only as a total (such as "120 active users this month"). Empty = no usage source. With totals only or no source, seats are *Not monitored* and never counted as waste |
-| `has_daily_activity` | yes/no | | For usage per holder: "Yes" when the source gives the days each person was active, so days used can be counted (6 / 22); "No" when it gives only the last activity date, so status works but days used is *Not tracked* |
 | `monitoring_since` | date | | First day the connector sent usage for this license. A seat is called inactive only after 30 days of watching: connected on 1 March → nobody is inactive before 31 March. Empty = no usage yet |
 | `is_active` | yes/no | Yes | "No" when the connector no longer reports it or was deleted |
 | `created_by` | link → `user_accounts` | | Staff who declared it |
@@ -359,7 +358,7 @@ A person is always an ILVG employee: a person the source reports whose employee 
 
 ### `license_assignments`: who holds what
 
-One identity holding one license, for example "An has held an E3 seat since 3 March and was last active 2 days ago". Ended rows stay for history. From the last activity ELMS works out the seat status over the last 30 days: **Active** (used in the last 30 days, or given less than 30 days ago and not used yet), **Inactive** (used before, not in the last 30 days), **No activity** (never used, held 30 days or more), or **Not monitored** (no usage source). How often the person uses it is shown as days used against working days, for example 6 / 22, from the active days in `usage_records`; *Not tracked* when the source gives only the last activity date.
+One identity holding one license, for example "An has held an E3 seat since 3 March and was last active 2 days ago". Ended rows stay for history. From the last activity ELMS works out the seat status over the last 30 days: **Active** (used in the last 30 days, or given less than 30 days ago and not used yet), **Inactive** (used before, not in the last 30 days), **No activity** (never used, held 30 days or more), or **Not monitored** (no usage source). How often the person uses it is shown as days used against working days, for example 6 / 22, from the active days in `usage_records`; *Not tracked* when the license has no active days at all, because its source gives only the last activity date.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -381,7 +380,7 @@ Usage per period: the days each holder was active (for the usage frequency), pea
 | `id` | number | Yes | Row number |
 | `license_plan_id` | link → `license_plans` | Yes | The license |
 | `subject_id` | link → `subjects` | | Whose usage. Empty = total for the whole license |
-| `metric` | choice | Yes | What is measured: `active_days` (days a holder was active, for days used), `active_subjects` (active users, total only), `peak_concurrent` (most sessions at once), `consumption` (tokens, requests, GB), `deployed_units` (cores, servers) |
+| `metric` | choice | Yes | What is measured: `active_days` (days a holder was active, for days used; a source with daily activity sends one for every holder, 0 included, so a missing row never reads as 0), `active_subjects` (active users, total only), `peak_concurrent` (most sessions at once), `consumption` (tokens, requests, GB), `deployed_units` (cores, servers) |
 | `period_start` | date | Yes | First day of the period |
 | `period_end` | date | Yes | Last day of the period |
 | `quantity` | quantity | Yes | The figure |

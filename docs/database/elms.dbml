@@ -635,7 +635,6 @@ Table license_plans {
   owner_org_unit_id bigint [not null, ref: > org_units.id, note: 'Owner unit (D27): the P&L of the connector, or the group for a shared license (BR-24)']
   last_sync_run_id bigint [ref: > sync_runs.id, note: 'Latest successful run that brought data for the license; gives its connector status (BR-29, D49). NULL = no data yet (Pending)']
   usage_granularity usage_granularity [note: 'How the connector gives usage: per_subject (per holder) or aggregate (totals only). NULL = no usage source: seats are Not monitored, never waste (BR-03, BR-04, D7)']
-  has_daily_activity boolean [note: 'Per-holder usage only: true when the source gives activity per day (active_days), so days used are counted; false when it gives only the last activity date, so frequency is Not tracked (BR-32)']
   monitoring_since date [note: 'First day the connector delivered usage for the license; a seat is called Inactive only after 30 days of monitoring (BR-03). NULL = no usage yet']
   is_active boolean [not null, default: true, note: 'False once the connector no longer reports it, Staff removed it from the connector, or the connector was deleted (UC10)']
   created_by bigint [ref: > user_accounts.id]
@@ -649,7 +648,6 @@ Table license_plans {
   }
 
   checks {
-    `has_daily_activity is null or usage_granularity = 'per_subject'` [name: 'chk_license_plans_daily_activity']
     `usage_granularity is null or monitoring_since is not null` [name: 'chk_license_plans_monitoring_since']
   }
 
@@ -1085,8 +1083,10 @@ Table license_assignments {
     Usage frequency (BR-32), computed, without bands: days used = sum of
     active_days usage_records of the subject and plan over the period, shown
     against working days = Monday to Friday without public holidays from the
-    later of the period start and assigned_on; Not tracked when
-    L.has_daily_activity is not true.
+    later of the period start and assigned_on; Not tracked when the license
+    has no active_days usage_records (its source gives only the last activity
+    date). A source with daily activity sends 0 for a holder who was not
+    active (see usage_records), so a missing row is never read as 0.
     Detection (UC05) flags Inactive and No activity only when the day D of
     the connector is complete (D8) and L.monitoring_since is at least T days old.
     Unassigned = purchased quantity minus open assignments.
@@ -1123,6 +1123,11 @@ Table usage_records {
     activity for Allocation plans without per-user data, and the active days of
     each holder for days used (active_days, BR-32). The last activity of
     a seat lives in license_assignments.last_active_at.
+    Send zero (BR-17): a source that gives activity per day sends, for each
+    period, one active_days row for every holder of the license, 0 included
+    for a holder who was not active. So a license with active_days rows has
+    days used for every holder, and a license without any has frequency Not
+    tracked; a missing row is never read as 0 (BR-04, BR-32).
     A sync of the same period replaces the row (A3, BR-33): the unique index
     must be created with NULLS NOT DISTINCT so it also holds for aggregate rows,
     where subject_id is NULL.

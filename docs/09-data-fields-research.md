@@ -151,7 +151,7 @@ Findings that shape the contract:
 |---|---|---|---|
 | `last_activity_at` | Last real use | GitHub `last_activity_at`, Graph "Last Activity Date" | M when available |
 | `last_login_at` | Last sign-in | GitHub `last_authenticated_at`, Graph `signInActivity` | R |
-| `active_days` | Days with activity in the period | — | R |
+| `active_days` | Days with activity in the period; when the source has it, sent for every holder, 0 included | — | R |
 | `session_count`, `usage_minutes` | Frequency and duration | — | O |
 | `feature_activity` | Last activity per application or feature | Graph (Exchange, Teams, OneDrive, …) | O |
 | `last_activity_client` | Client used | GitHub `last_activity_editor` | O |
