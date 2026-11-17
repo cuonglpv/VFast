@@ -33,7 +33,7 @@ Features of the [use cases](02-use-cases.md), by mind-map branch and use case. E
 | F16 | Scope over the hierarchy Group > P&L > Block > Department > Project > License, with *Unallocated* and *Unknown unit*; search a unit; path back to the group; starts at the Manager's highest unit; limited to the Manager's units | UC03 | A | Manager |
 | F17 | Scope shareable as a link | UC03 | A | Manager |
 | F18 | Comparison of the units below: Plan beside Purchased split into Used, Wasted, Not evaluated; search with count; order (waste, name, plan, used, utilization); year; currency VND or USD; select a unit to go down | UC03 | B | Manager |
-| F19 | Figure card of a unit and period: Plan, Purchased (% of plan), Used and Wasted (% of purchased) | UC03, UC06 | B | Manager |
+| F19 | Figure card of a unit and period: Plan, Purchased (% of plan), Used and Wasted (% of purchased) | UC03, UC05 | B | Manager |
 | F20 | Annual trend per unit: monthly Plan beside Purchased split, utilization for the year, year totals | UC03 | B | Manager |
 | F21 | Table of the units below: rank, level, Plan, Purchased, Used, Wasted, utilization, variance vs plan (licenses planned above left out) | UC03 | C | Manager |
 | F22 | Waste per license and month for a unit, as a rate or in money; license rows add up to the unit; shared licenses marked; open a license | UC03 | C | Manager |
@@ -58,55 +58,55 @@ Features of the [use cases](02-use-cases.md), by mind-map branch and use case. E
 |---|---|---|---|---|
 | F32 | Unassigned seats with their monthly and yearly cost and a total | UC05 | Main | Manager |
 | F33 | Inactive seats (30 days without use) with their monthly and yearly cost and a total; leavers, `Holder moved`, shared and service accounts apart | UC05 | A | Manager |
-| F34 | Units ranked by Wasted: Purchased split into Used and Wasted, waste rate; first 10, all on request | UC06 | Main | Manager |
-| F35 | Waste flag above 20 % of Purchased, wherever the unit appears, with the units and licenses that cause it | UC06 | Main, A | Manager |
-| F36 | Ranking by waste from the Manager's highest unit | UC06 | Trigger | Manager |
-| F37 | Monthly trend of Plan, Used, and Wasted on one scale, over the units listed after the search, with their count; current month left out | UC06 | B | Manager |
-| F38 | Units placed by Purchased and waste rate against the medians; high spend with high waste highlighted | UC06 | C | Manager |
-| F39 | Waste per unit and month of a chosen year, first 12 units, all on request | UC06 | D | Manager |
-| F40 | One choice between waste rate and wasted amount for the waste per unit and per license | UC06, UC03 | D | Manager |
+| F34 | Units ranked by Wasted: Purchased split into Used and Wasted, waste rate; first 10, all on request | UC05 | B | Manager |
+| F35 | Waste flag above 20 % of Purchased, wherever the unit appears, with the units and licenses that cause it | UC05 | B, C | Manager |
+| F36 | Ranking by waste from the Manager's highest unit | UC05 | Trigger | Manager |
+| F37 | Monthly trend of Plan, Used, and Wasted on one scale, over the units listed after the search, with their count; current month left out | UC05 | D | Manager |
+| F38 | Units placed by Purchased and waste rate against the medians; high spend with high waste highlighted | UC05 | E | Manager |
+| F39 | Waste per unit and month of a chosen year, first 12 units, all on request | UC05 | F | Manager |
+| F40 | One choice between waste rate and wasted amount for the waste per unit and per license | UC05, UC03 | F | Manager |
 
 ### Analytics
 
 | ID | Feature | Use case | Flow | Actors |
 |---|---|---|---|---|
-| F41 | License dashboard: totals, by category, type, and provider; purchased, assigned, used; expiring within 30 days; top applications by holder status | UC07 | Main | Manager |
-| F42 | Financial dashboard: yearly spend, spend by month, plan against actual | UC07 | Main | Manager |
-| F43 | Optimization dashboard: waste, utilization, Not evaluated, unassigned and inactive seats, flagged units | UC07 | Main | Manager |
-| F44 | Cost per unit: per license total cost, seats, cost per seat, cost per unit; cost per department | UC07 | A | Manager |
-| F45 | Monthly plan variance with year-to-date total and the licenses that explain it | UC07 | B | Manager |
-| F46 | Analysis by license, software, category, provider, license type; split by unit; two periods; export | UC07 | C | Manager |
-| F47 | Metric definitions: formula, unit, source, period rule, exclusions; available wherever the metric appears | UC07 | D | Manager |
+| F41 | License dashboard: totals, by category, type, and provider; purchased, assigned, used; expiring within 30 days; top applications by holder status | UC06 | Main | Manager |
+| F42 | Financial dashboard: yearly spend, spend by month, plan against actual | UC06 | Main | Manager |
+| F43 | Optimization dashboard: waste, utilization, Not evaluated, unassigned and inactive seats, flagged units | UC06 | Main | Manager |
+| F44 | Cost per unit: per license total cost, seats, cost per seat, cost per unit; cost per department | UC06 | A | Manager |
+| F45 | Monthly plan variance with year-to-date total and the licenses that explain it | UC06 | B | Manager |
+| F46 | Analysis by license, software, category, provider, license type; split by unit; two periods; export | UC06 | C | Manager |
+| F47 | Metric definitions: formula, unit, source, period rule, exclusions; available wherever the metric appears | UC06 | D | Manager |
 
 ### User & Organization
 
 | ID | Feature | Use case | Flow | Actors |
 |---|---|---|---|---|
-| F48 | Accounts from ILVG: one per employee with the role Employee, one-time password link by email, leavers disabled | UC08 | System | System |
-| F49 | Role and data scope per user (Manager units, Staff companies); disable and re-enable access | UC08 | Main | Admin |
-| F50 | Roles with their users | UC08 | A | Admin |
-| F51 | Permissions per role and feature, read or write, changed with a reason | UC08 | B | Admin |
-| F52 | Organization hierarchy, Manager assignment, corrections, inactive units, unmatched codes | UC09 | Main | Admin |
+| F48 | Accounts from ILVG: one per employee with the role Employee, one-time password link by email, leavers disabled | UC07 | System | System |
+| F49 | Role and data scope per user (Manager units, Staff companies); disable and re-enable access | UC07 | Main | Admin |
+| F50 | Roles with their users | UC07 | A | Admin |
+| F51 | Permissions per role and feature, read or write, changed with a reason | UC07 | B | Admin |
+| F52 | Organization hierarchy, Manager assignment, corrections, inactive units, unmatched codes | UC08 | Main | Admin |
 
 ### Connection Management
 
 | ID | Feature | Use case | Flow | Actors |
 |---|---|---|---|---|
-| F53 | Connector overview: number of companies, providers, licenses, and sync issues | UC10 | Main | Staff |
-| F54 | Connectors per company, provider, and license with coverage, API contact, created, last sync, status; search, filters (company, provider, status), order | UC10 | Main | Staff |
-| F55 | Create a connector: company, provider, API contact and email, HTTPS API URL, API key or bearer token, sync interval in hours (6 by default), at least one license; name generated; licenses `Pending` until the first sync | UC10 | A | Staff |
-| F56 | Connection test before save | UC10 | A, B | Staff |
-| F57 | Edit a connector: credential kept unless provider or authentication changes; reconfiguring sets its licenses back to `Pending` | UC10 | B | Staff |
-| F58 | Delete a connector: confirmation naming its licenses, sync stops, licenses inactive, collected data kept for past months | UC10 | B | Staff |
-| F59 | Connector details without the credential | UC10 | C | Staff |
-| F60 | Sync monitoring: runs with records received, accepted, rejected; reasons; run now, rerun a period; pause and resume, every skipped run recorded as `Paused` | UC10 | D | Staff |
+| F53 | Connector overview: number of companies, providers, licenses, and sync issues | UC09 | Main | Staff |
+| F54 | Connectors per company, provider, and license with coverage, API contact, created, last sync, status; search, filters (company, provider, status), order | UC09 | Main | Staff |
+| F55 | Create a connector: company, provider, API contact and email, HTTPS API URL, API key or bearer token, sync interval in hours (6 by default), at least one license; name generated; licenses `Pending` until the first sync | UC09 | A | Staff |
+| F56 | Connection test before save | UC09 | A, B | Staff |
+| F57 | Edit a connector: credential kept unless provider or authentication changes; reconfiguring sets its licenses back to `Pending` | UC09 | B | Staff |
+| F58 | Delete a connector: confirmation naming its licenses, sync stops, licenses inactive, collected data kept for past months | UC09 | B | Staff |
+| F59 | Connector details without the credential | UC09 | C | Staff |
+| F60 | Sync monitoring: runs with records received, accepted, rejected; reasons; run now, rerun a period; pause and resume, every skipped run recorded as `Paused` | UC09 | D | Staff |
 
 ### Self-service
 
 | ID | Feature | Use case | Flow | Actors |
 |---|---|---|---|---|
-| F61 | My licenses across all my emails | UC11 | Main | Everyone |
-| F62 | Login / logout, starting point by role | UC12 | Main | Everyone |
-| F63 | Set and reset the password with a one-time link to the account email | UC12 | A | Everyone |
+| F61 | My licenses across all my emails | UC10 | Main | Everyone |
+| F62 | Login / logout, starting point by role | UC11 | Main | Everyone |
+| F63 | Set and reset the password with a one-time link to the account email | UC11 | A | Everyone |
 
 **Count:** 63 features.

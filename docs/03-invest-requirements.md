@@ -1,6 +1,6 @@
 # INVEST Requirements & Acceptance Criteria — ELMS
 
-> Design status: TARGET (12 use cases, 46 stories, November 2026)
+> Design status: TARGET (11 use cases, 46 stories, November 2026)
 
 Each story is small enough to implement and test independently. Authentication, authorization, data scope, and error handling are acceptance constraints, not hidden features. Business rules `BR-xx` are defined in [Use cases](02-use-cases.md#business-rules). Each story implements one use case, named in the backlog, and stories are grouped by the branches of the [mind map](mindmap.png).
 
@@ -49,32 +49,32 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | **Optimization** | | | | | | |
 | US23 | UC05 | As a Manager, I want the seats bought but given to nobody and their cost so that I stop paying for them. | Waste found | US32 | M | 3 |
 | US24 | UC05 | As a Manager, I want the seats not used for 30 days and their cost so that I know whose seat to reclaim. | Waste found | US05 | M | 3 |
-| US25 | UC06 | As a Manager, I want the units that waste more than 20 % of what they buy flagged so that I see where to act first. | Prioritization | US32 | M | 2 |
-| US26 | UC06 | As a Manager, I want the units ranked by money wasted so that I start with the largest. | Prioritization | US13 | M | 3 |
-| US27 | UC06 | As a Manager, I want Plan, Used, and Wasted month by month on one scale so that I see whether waste grows. | Trend | US13, US18 | S | 3 |
-| US28 | UC06 | As a Manager, I want the units placed by spend and waste rate so that I see where high spend meets high waste. | Risk view | US13 | S | 3 |
-| US29 | UC06 | As a Manager, I want the waste of each unit in each month, as a rate or in money, so that I see when each unit wastes. | Seasonality | US13 | S | 3 |
+| US25 | UC05 | As a Manager, I want the units that waste more than 20 % of what they buy flagged so that I see where to act first. | Prioritization | US32 | M | 2 |
+| US26 | UC05 | As a Manager, I want the units ranked by money wasted so that I start with the largest. | Prioritization | US13 | M | 3 |
+| US27 | UC05 | As a Manager, I want Plan, Used, and Wasted month by month on one scale so that I see whether waste grows. | Trend | US13, US18 | S | 3 |
+| US28 | UC05 | As a Manager, I want the units placed by spend and waste rate so that I see where high spend meets high waste. | Risk view | US13 | S | 3 |
+| US29 | UC05 | As a Manager, I want the waste of each unit in each month, as a rate or in money, so that I see when each unit wastes. | Seasonality | US13 | S | 3 |
 | **Analytics** | | | | | | |
-| US30 | UC07 | As a Manager, I want a license dashboard so that counts, allocation, and expiries are seen together. | Overview | US01, US09 | S | 3 |
-| US31 | UC07 | As a Manager, I want a financial dashboard so that spending and plan are seen together. | Financial overview | US32, US33 | S | 3 |
-| US32 | UC07 | As a Manager, I want the cost of each license split over the units that hold it on the financial dashboard so that each unit carries its own cost. | Cost per unit | US20, US39 | M | 5 |
-| US33 | UC07 | As a Manager, I want the variance between plan and purchased month by month on the financial dashboard so that I see where spending leaves the plan. | Variance | US18, US20 | S | 3 |
-| US34 | UC07 | As a Manager, I want an optimization dashboard so that waste, unused and inactive seats, and flagged units are seen together. | Waste overview | US23–US25 | S | 3 |
-| US35 | UC07 | As a Manager, I want the same figures per license, software, category, provider, or license type so that I see which software wastes most. | License view | US09, US32 | S | 3 |
-| US36 | UC07 | As a Manager, I want the definition of every figure where it appears so that I read the numbers the same way as everyone. | Shared meaning | — | S | 2 |
+| US30 | UC06 | As a Manager, I want a license dashboard so that counts, allocation, and expiries are seen together. | Overview | US01, US09 | S | 3 |
+| US31 | UC06 | As a Manager, I want a financial dashboard so that spending and plan are seen together. | Financial overview | US32, US33 | S | 3 |
+| US32 | UC06 | As a Manager, I want the cost of each license split over the units that hold it on the financial dashboard so that each unit carries its own cost. | Cost per unit | US20, US39 | M | 5 |
+| US33 | UC06 | As a Manager, I want the variance between plan and purchased month by month on the financial dashboard so that I see where spending leaves the plan. | Variance | US18, US20 | S | 3 |
+| US34 | UC06 | As a Manager, I want an optimization dashboard so that waste, unused and inactive seats, and flagged units are seen together. | Waste overview | US23–US25 | S | 3 |
+| US35 | UC06 | As a Manager, I want the same figures per license, software, category, provider, or license type so that I see which software wastes most. | License view | US09, US32 | S | 3 |
+| US36 | UC06 | As a Manager, I want the definition of every figure where it appears so that I read the numbers the same way as everyone. | Shared meaning | — | S | 2 |
 | **User & Organization** | | | | | | |
-| US37 | UC08 | As an Admin, I want to give each user a role and a data scope — the units of a Manager, the companies of a Staff member — and disable or re-enable their access so that each person sees exactly what their job needs. | Access control | US46, US39 | M | 5 |
-| US38 | UC08 | As an Admin, I want to adjust which features each role may read or write so that permissions fit the group. | Permission control | US37 | M | 3 |
-| US39 | UC09 | As an Admin, I want to review the five-level organization from ILVG and assign Managers to units so that data scope follows the organization. | Organization | ILVG connector | M | 3 |
+| US37 | UC07 | As an Admin, I want to give each user a role and a data scope — the units of a Manager, the companies of a Staff member — and disable or re-enable their access so that each person sees exactly what their job needs. | Access control | US46, US39 | M | 5 |
+| US38 | UC07 | As an Admin, I want to adjust which features each role may read or write so that permissions fit the group. | Permission control | US37 | M | 3 |
+| US39 | UC08 | As an Admin, I want to review the five-level organization from ILVG and assign Managers to units so that data scope follows the organization. | Organization | ILVG connector | M | 3 |
 | **Connection Management** | | | | | | |
-| US40 | UC10 | As a Staff member, I want every connector of my companies with its licenses and sync status so that I see which data is in trouble. | Data health | US41 | M | 3 |
-| US41 | UC10 | As a Staff member, I want to connect a company's provider API with its licenses and interval so that its data flows into ELMS. | Data in | US46 | M | 5 |
-| US42 | UC10 | As a Staff member, I want to edit or delete a connector so that it follows changes at the P&L. | Data upkeep | US41 | M | 3 |
-| US43 | UC10 | As a Staff member, I want the details of a connector so that I can check its settings without editing it. | Quick check | US41 | C | 2 |
-| US44 | UC10 | As a Staff member, I want every sync run, its rejected records, reruns, and pause so that missing data is fixed instead of read as zero. | Data completeness | US41 | M | 5 |
+| US40 | UC09 | As a Staff member, I want every connector of my companies with its licenses and sync status so that I see which data is in trouble. | Data health | US41 | M | 3 |
+| US41 | UC09 | As a Staff member, I want to connect a company's provider API with its licenses and interval so that its data flows into ELMS. | Data in | US46 | M | 5 |
+| US42 | UC09 | As a Staff member, I want to edit or delete a connector so that it follows changes at the P&L. | Data upkeep | US41 | M | 3 |
+| US43 | UC09 | As a Staff member, I want the details of a connector so that I can check its settings without editing it. | Quick check | US41 | C | 2 |
+| US44 | UC09 | As a Staff member, I want every sync run, its rejected records, reruns, and pause so that missing data is fixed instead of read as zero. | Data completeness | US41 | M | 5 |
 | **Self-service** | | | | | | |
-| US45 | UC11 | As an employee, I want the licenses I hold across all my emails and whether I am recorded as using them so that I can give back what I do not need. | Self-service | US41, US46 | M | 2 |
-| US46 | UC12 | As any user, I want to log in and out and start where my role works so that only I see my data. | Protected access | Accounts from ILVG | M | 3 |
+| US45 | UC10 | As an employee, I want the licenses I hold across all my emails and whether I am recorded as using them so that I can give back what I do not need. | Self-service | US41, US46 | M | 2 |
+| US46 | UC11 | As any user, I want to log in and out and start where my role works so that only I see my data. | Protected access | Accounts from ILVG | M | 3 |
 
 **Total:** 46 stories, 159 points. Must-have: 29 stories (113 points); Should-have: 13 stories (37 points); Could-have: 4 stories (9 points). A use case is one large flow of action of one actor; its flows are split into stories, so one use case has several stories.
 
@@ -283,7 +283,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 1. Given an invoice of 100,000,000 VND for 12 months, then the accrual is 8,333,000 for 11 months and 8,337,000 for the last.
 2. Given a term starting on 16 January, then January is accrued by its days.
 3. Given Staff close October for company A, then A's October figures lose the *Provisional* mark and are never recalculated; a later change goes to the next open month. Given A is charged for a shared license and the group's October is still open, then A's October stays *Provisional* until the group closes it.
-4. Given a Manager reads the accrual of their units, when they try to close the month, then it returns `403`.
+4. Given a Manager calls the accrual API to close a month, then it returns `403`: only Staff run and close the accrual.
 
 #### AC-US21 Manage Purchases
 
@@ -463,7 +463,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 #### AC-US46 Login / Logout
 
-1. Given correct credentials, then the user starts where their role works: Manager the license list (UC01), Staff the connectors (UC10), Admin the users (UC08), Employee their own licenses (UC11).
+1. Given correct credentials, then the user starts where their role works: Manager the license list (UC01), Staff the connectors (UC09), Admin the users (UC07), Employee their own licenses (UC10).
 2. Given 5 wrong passwords in a row, then login is locked for 15 minutes and the message stays generic.
 3. Given an account whose password was never set, then login is refused until the one-time link is used.
 4. Given a function outside the role, then it returns `403`; logout ends the session.

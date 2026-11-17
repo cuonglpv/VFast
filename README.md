@@ -10,7 +10,7 @@ Requirements are derived top-down: business problem → stakeholders → goals �
 
 ![ELMS mind map](docs/mindmap.png)
 
-The map has seven branches: **License Management**, **Usage**, **Budget Management**, **Optimization**, **Analytics**, **User & Organization**, and **Connection Management**. Each leaf is a feature area of a use case — several leaves can belong to one use case: bold leaves are Must- and Should-have, plain leaves Could-have. UC11 View My Licenses and UC12 Login / Logout are self-service use cases every role has and are not on the map. Use cases are numbered in the order of the map.
+The map has seven branches: **License Management**, **Usage**, **Budget Management**, **Optimization**, **Analytics**, **User & Organization**, and **Connection Management**. Each leaf is a feature area of a use case — several leaves can belong to one use case: bold leaves are Must- and Should-have, plain leaves Could-have. UC10 View My Licenses and UC11 Login / Logout are self-service use cases every role has and are not on the map. Use cases are numbered in the order of the map.
 
 Editable source: [`docs/mindmap/vfast.xmind`](docs/mindmap/vfast.xmind) (open with XMind); `docs/mindmap.png` is exported from it.
 
@@ -49,7 +49,7 @@ There are four roles: the **Manager** uses the product, **Staff** keep it fed, t
 | ![Manager](docs/diagrams/out/uc_manager.png) | ![Staff](docs/diagrams/out/uc_staff.png) |
 | ![Admin](docs/diagrams/out/uc_admin.png) | ![Employee](docs/diagrams/out/uc_employee.png) |
 
-12 use cases, by mind-map branch. A use case is one large flow of action of one actor; its smaller branches and the cases it handles are flows and alternatives in its specification, not use cases of their own. Manager and Staff work within the units or companies assigned to them, and a Manager can be assigned to the whole group; the Admin sees no license or cost data. Analysis shows complete months only, up to the previous month.
+11 use cases, by mind-map branch. A use case is one large flow of action of one actor; its smaller branches and the cases it handles are flows and alternatives in its specification, not use cases of their own. Manager and Staff work within the units or companies assigned to them, and a Manager can be assigned to the whole group; the Admin sees no license or cost data. Analysis shows complete months only, up to the previous month.
 
 | ID | Use case | What the user can do | Actor |
 |---|---|---|---|
@@ -61,18 +61,17 @@ There are four roles: the **Manager** uses the product, **Staff** keep it fed, t
 | | **Budget Management** | | |
 | UC04 | Manage Budget Plan | Managers import the budget plan of their units from Excel and see it by month and by version; Staff import the purchases from SAP, enter those made outside it, close the monthly accrual, and keep the exchange rates | Manager, Staff |
 | | **Optimization** | | |
-| UC05 | Detect Wasted Seats | See seats bought but given to nobody, and seats not used for 30 days, with what they cost | Manager |
-| UC06 | Rank and Flag Units by Waste | See the units wasting the most money first, those wasting more than 20 % in red, and what causes it; follow Plan, Used and Wasted month by month, spot units where high spend meets high waste, and see in which months each unit wastes | Manager |
+| UC05 | Track License Waste | See seats bought but given to nobody and seats not used for 30 days with what they cost; see the units wasting the most money first, those wasting more than 20 % flagged, and what causes it; follow Plan, Used and Wasted month by month, spot units where high spend meets high waste, and see in which months each unit wastes | Manager |
 | | **Analytics** | | |
-| UC07 | View Dashboards | See licenses, spending against plan with cost per unit and variance, and waste at a glance; read the same figures per license, software, category, provider or license type; look up what each figure means | Manager |
+| UC06 | View Dashboards | See licenses, spending against plan with cost per unit and variance, and waste at a glance; read the same figures per license, software, category, provider or license type; look up what each figure means | Manager |
 | | **User & Organization** | | |
-| UC08 | Manage User Roles and Permissions | Give each user a role and a data scope, disable or re-enable access; grant or remove permissions per role | Admin |
-| UC09 | Manage Organization Hierarchy | Review the five-level hierarchy and assign Managers to units | Admin |
+| UC07 | Manage User Roles and Permissions | Give each user a role and a data scope, disable or re-enable access; grant or remove permissions per role | Admin |
+| UC08 | Manage Organization Hierarchy | Review the five-level hierarchy and assign Managers to units | Admin |
 | | **Connection Management** | | |
-| UC10 | Manage Usage Connectors | See every company's connectors, providers and licenses with their sync status; create, read, edit, and delete a connector; follow sync runs, rerun a period, pause or resume a connector | Staff |
+| UC09 | Manage Usage Connectors | See every company's connectors, providers and licenses with their sync status; create, read, edit, and delete a connector; follow sync runs, rerun a period, pause or resume a connector | Staff |
 | | **Self-service** | | |
-| UC11 | View My Licenses | See the licenses they hold and whether they use them | Everyone |
-| UC12 | Login / Logout | Sign in and out, set the password from the link of the account email | Everyone |
+| UC10 | View My Licenses | See the licenses they hold and whether they use them | Everyone |
+| UC11 | Login / Logout | Sign in and out, set the password from the link of the account email | Everyone |
 
 Role × feature matrix, business rules, system processes, and the specification of every use case: [Use cases](docs/02-use-cases.md). Features per use case: [Feature list](docs/08-feature-list.md).
 
@@ -97,11 +96,11 @@ There are four roles; each account has exactly one. Every account belongs to a r
 | Purchases from SAP: PO lines and invoices (UC04) | — | — | Import from SAP / create / edit, own companies | — |
 | Monthly accrual (UC04) | — | — | Run / close month, own companies | — |
 | Exchange rates (UC04) | — | Read | Create / edit, group level | — |
-| Wasted seats (UC05); waste ranking, flag, and analytics (UC06) | — | Read, own units | — | — |
-| Dashboards: cost per unit, plan variance, license and provider analysis, metric definitions (UC07) | — | Read, own units | — | — |
-| User roles and permissions, organization hierarchy (UC08, UC09) | Edit | — | — | — |
-| Usage connectors and sync runs (UC10) | — | — | Create / edit / delete, read / rerun / pause runs, own companies | — |
-| My licenses (UC11) | Read own | Read own | Read own | Read own |
+| License waste: wasted seats, ranking, flag, and analytics (UC05) | — | Read, own units | — | — |
+| Dashboards: cost per unit, plan variance, license and provider analysis, metric definitions (UC06) | — | Read, own units | — | — |
+| User roles and permissions, organization hierarchy (UC07, UC08) | Edit | — | — | — |
+| Usage connectors and sync runs (UC09) | — | — | Create / edit / delete, read / rerun / pause runs, own companies | — |
+| My licenses (UC10) | Read own | Read own | Read own | Read own |
 
 - The backend enforces every cell of this table and the data scope; hiding a button in the interface is not enough, and a call outside the role returns `403`.
 - ELMS never writes to a provider: "edit" here changes data in ELMS only.
@@ -126,11 +125,11 @@ The backlog contains **46 user stories (159 story points)**: 29 Must-have (113 p
 License Management     US01–US10 (UC01, UC02)         Manager (US09, US10: Staff)
 Usage                  US11–US17 (UC03)               Manager
 Budget Management      US18–US22 (UC04)               Manager (US20–US22: Staff)
-Optimization           US23–US29 (UC05, UC06)         Manager
-Analytics              US30–US36 (UC07)               Manager
-User & Organization    US37–US39 (UC08, UC09)         Admin
-Connection Management  US40–US44 (UC10)               Staff
-Self-service           US45, US46 (UC11, UC12)        Every role
+Optimization           US23–US29 (UC05)               Manager
+Analytics              US30–US36 (UC06)               Manager
+User & Organization    US37–US39 (UC07, UC08)         Admin
+Connection Management  US40–US44 (UC09)               Staff
+Self-service           US45, US46 (UC10, UC11)        Every role
 ```
 
 Backlog, per-story INVEST review, and acceptance criteria: [INVEST requirements](docs/03-invest-requirements.md).
@@ -267,7 +266,7 @@ Full trees, module table, API conventions, jobs, caching, security, and deployme
 ## Documentation
 
 - [Top-down research](docs/01-research-top-down.md) — problem, stakeholders, goals, license models, data sources, process, epics, scope, risks
-- [Use cases](docs/02-use-cases.md) — actors, role × feature matrix, business rules, system processes, 12 use cases
+- [Use cases](docs/02-use-cases.md) — actors, role × feature matrix, business rules, system processes, 11 use cases
 - [INVEST requirements](docs/03-invest-requirements.md) — 46 user stories, INVEST review, acceptance criteria
 - [Information architecture](docs/04-information-architecture-manager.md) — screen catalog, navigation by role, screen specifications, UI conventions, screen-to-API mapping
 - [Folder structure and architecture](docs/05-folder-structure.md) — solution architecture, frontend structure, backend modules and .NET folder layout, API conventions, jobs, caching, security
