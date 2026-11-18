@@ -134,60 +134,133 @@ Access                 US45 (UC11)                                              
 
 Backlog, per-story INVEST review, and acceptance criteria: [INVEST requirements](docs/03-invest-requirements.md).
 
-## 2. Database design
 
-The target schema is PostgreSQL, 40 tables in seven groups: organization and access, software catalog and licenses, collection pipeline, holders and usage, budget and expenses, optimization, audit. It follows the business model: the organization from ILVG (P&L > block > department > project, with a group row kept only as the owner of shared licenses until that owner is decided), three roles with each Staff member working for one Manager, one usage connector per company and provider, a license per connector and company mapped to the software catalog, budget versions imported from Excel, the cost of each month split into Used, Wasted, and Not evaluated, and VinSOC usage in its own table. Raw data from the sources is kept in a data lake; the collection pipeline tables hold only its metadata. Missing data is `Unknown`, never 0; history is kept as frozen daily snapshots and monthly cost allocations.
+## 2. Information Architecture, Screen Hierarchy, and UI/UX
 
-![Entity overview](docs/database/diagrams/erd_overview.png)
+The workspace is organized by role: after login each role lands on its own first screen, and the sidebar shows only the screens the role may open. Every screen follows the same states (loading, empty, `Unknown` / no data yet, error, saving, success) and shows money with the rate used; missing data is never shown as 0.
 
-Entity overview, one ERD per group, a short explanation of every table, rule-to-schema traceability, and the decisions still to confirm (D24–D53): [Database design](docs/database/README.md). Source [`elms.dbml`](docs/database/elms.dbml), reference DDL [`schema.sql`](docs/database/schema.sql), draw.io files in [`docs/database/diagrams/`](docs/database/diagrams/).
+### 2.1 Information architecture
 
-## 3. Architecture and Code Structure
+```text
+Public
+└── Login                                   SCR-LOGIN-01
 
-ELMS is designed as one monolith with Clean Architecture, deployed as two processes (API and worker) that share one PostgreSQL database, plus a data lake for raw source data. The API serves users; slow work (connector syncs at each interval, budget and expense imports, seat status, cost split, detection) runs in the worker through a PostgreSQL-backed job queue, so no Redis or message broker is required. Data from the source APIs never goes straight into the database: the worker lands it in the data lake, processes it, and only then writes the result to PostgreSQL.
+Authenticated shell (Topbar + Sidebar by role)
+├── Manager                                 lands on License List
+│   ├── License List → License details + users
+│   ├── Usage: scope, Plan / Spend / Actual, waste analysis
+│   ├── Licenses: inventory, by organization, providers, terms
+│   ├── Cloud: by unit, by infrastructure
+│   ├── Budget: import, plan, cloud budget, accrual
+│   ├── Employee usage
+│   ├── Dashboards, Analysis, Metric definitions
+│   └── every Staff screen, for their units
+├── Staff                                   lands on Connector Management
+│   ├── Connector Management → New / Edit connector
+│   ├── Sync monitoring
+│   ├── Software catalog, Shared licenses, Cloud accounts
+│   └── Expenses, Accrual, Exchange rates
+└── Admin                                   lands on Users
+    └── Users, Organization, Roles, Permissions
+```
 
-### 3.1 System context (C4 level 1)
+### 2.2 Screen hierarchy
+
+Login leads to the authenticated shell: a topbar (breadcrumb, sync status, fiscal year, session, switch account) and a sidebar whose menu depends on the role. Pages open inside the shell; create, edit, import, and drill-down open as dialogs owned by the page's feature (Quick edit budget, Import budget, New / Edit connector, License analysis, Cost records). A route outside the role is refused by the frontend guard and, behind it, by the API (`403`).
+
+The 33 screen IDs, navigation by role, screen specifications, UI conventions, and the API each screen calls: [Information architecture](docs/04-information-architecture-manager.md).
+
+### 2.3 Current UI prototype
+
+The frontend baseline is the HTML demo [`UI/VFast_UI_v90.html`](UI/VFast_UI_v90.html); open it in a browser and pick a role on the login screen.
+
+| Screen | Screen ID | Role |
+|---|---|---|
+| Login | SCR-LOGIN-01 | Every role |
+| Usage — License Cost & Efficiency Analytics | SCR-USAGE-01 | Manager |
+| License Overview, License Detail | SCR-LIC-LIST-01, SCR-LIC-DETAIL-01 | Manager |
+| Budget Plan, Import budget | SCR-BUDGET-PLAN-01, SCR-BUDGET-IMPORT-01 | Manager, Staff |
+| Cloud Usage by P&L, by infrastructure | SCR-CLOUD-PNL-01, SCR-CLOUD-INFRA-01 | Manager |
+| Connector Management, New / Edit connector | SCR-CONN-01, SCR-CONN-FORM-01 | Staff, Manager |
+| User Management | SCR-USERS-01 | Admin |
+
+## 3. C4 Architecture
+
+ELMS is designed as one monolith with Clean Architecture, deployed as two processes (API and worker) that share one PostgreSQL database, plus a data lake for raw source data. This README shows C1–C3; C4 Level 4 is in [section 6](#6-detailed-class-and-sequence-design), and the full views are in the [architecture documentation](docs/architecture/c4/README.md).
+
+### C1 — System Context
 
 ```mermaid
 flowchart TB
-    users(["Staff / Manager / Admin"])
-    elms["ELMS<br/>[Software system]<br/>Centralizes the licenses of every P&L, measures usage<br/>and waste in money, compares budget with reality"]
-    pnl["P&L license APIs<br/>[External systems]<br/>one per company and provider:<br/>licenses, terms, holders, usage"]
-    ilvg["ILVG<br/>[External system]<br/>employees, units, projects"]
-    vinsoc["VinSOC<br/>[External system]<br/>application usage on company machines"]
-    files["Budget and invoice files<br/>[Input]<br/>SAP budget export, expenses"]
+    staff(["Staff<br/>Sets up connectors, keeps the catalog,<br/>imports purchases, accrual, exchange rates"])
+    manager(["Manager<br/>One unit, a P&L or below:<br/>licenses, usage, waste, cloud, budget plan"])
+    admin(["Admin<br/>User roles and scope, organization,<br/>permissions"])
 
-    users -- "HTTPS, role-based screens" --> elms
-    elms -- "reads at each connector's interval<br/>[read-only connectors]" --> pnl
-    elms -- "reads daily [read-only]" --> ilvg
-    elms -- "reads daily [read-only]" --> vinsoc
-    files -. "Managers import the budget, Staff the expenses:<br/>preview, then confirm" .-> elms
+    elms["ELMS<br/>Enterprise License Management System<br/>[Software system]<br/>Centralizes the licenses of every P&L, measures usage<br/>and waste in money, compares budget with reality"]
+
+    pnl["P&L license APIs<br/>[External systems]<br/>one per company and provider:<br/>licenses, terms, holders, activity, usage"]
+    ilvg["ILVG<br/>[External system]<br/>employees, units, projects, transfers"]
+    vinsoc["VinSOC<br/>[External system]<br/>application usage on company machines"]
+    files["SAP files<br/>[Input]<br/>budget plan (Excel), PR, PO, and invoices (Excel)"]
+
+    staff -- "Connectors, catalog, purchases<br/>[HTTPS]" --> elms
+    manager -- "Analyses, imports the budget<br/>[HTTPS]" --> elms
+    admin -- "Manages access<br/>[HTTPS]" --> elms
+    elms -- "Reads at each connector's interval<br/>[read-only, license data contract]" --> pnl
+    elms -- "Reads daily [read-only]" --> ilvg
+    elms -- "Reads daily [read-only]" --> vinsoc
+    manager -. "Uploads budget<br/>[Excel]" .-> files
+    staff -. "Uploads SAP purchases<br/>[Excel]" .-> files
+    files -. "Preview, then confirm" .-> elms
+
+    classDef person fill:#0F67B1,stroke:#0B4F8A,color:#fff
+    classDef system fill:#1E3A5F,stroke:#0F172A,color:#fff
+    classDef external fill:#94A3B8,stroke:#475569,color:#0F172A
+    class staff,manager,admin person
+    class elms system
+    class pnl,ilvg,vinsoc,files external
 ```
 
 Three roles use ELMS; each account has exactly one. Each P&L provides an API for its own license data; ELMS reads it through one usage connector per company and provider, at each connector's interval, in the license data contract (ECS), and never changes anything at a source. Employees and units come from ILVG, application usage from VinSOC, the budget plan from an Excel export of SAP, and the cost from the invoices Staff record. Nobody enters licenses, holders, or usage by hand.
 
-### 3.2 Container view (C4 level 2)
+### C2 — Container
 
 ```mermaid
 flowchart TB
-    people(["Staff / Manager / Admin"])
-    providers["P&L license APIs, ILVG, VinSOC<br/>[External]<br/>read-only APIs"]
-    subgraph platform["ELMS [System boundary]"]
+    users(["Staff / Manager / Admin"])
+    sources["P&L license APIs, ILVG, VinSOC<br/>[External systems]<br/>read-only"]
+
+    subgraph elms["ELMS [System boundary]"]
         direction TB
-        web["Web Frontend<br/>[React + Vite SPA]"]
-        api["Elms.Api<br/>[ASP.NET Core 10]<br/>Auth, RBAC, data scope"]
-        worker["Elms.Worker<br/>[.NET Worker + Hangfire]<br/>Sync, import, seat status,<br/>cost split, detection"]
-        lake[("Data Lake<br/>[technology TBD]<br/>raw source data")]
-        db[("PostgreSQL 16<br/>processed data, raw-file metadata,<br/>queue, sessions")]
+        proxy["Reverse proxy<br/>[Nginx or Caddy]<br/>Serves the SPA, forwards /api/* (same domain, no CORS)"]
+        web["Web Frontend<br/>[React 19, Vite, TypeScript, MUI v6]<br/>License List, Usage, budget,<br/>Connector Management, administration"]
+        api["Elms.Api<br/>[ASP.NET Core 10]<br/>Authentication, RBAC, data scope,<br/>commands and queries"]
+        worker["Elms.Worker<br/>[.NET Worker Service + Hangfire server]<br/>Connector runs at each interval,<br/>contract validation, imports,<br/>seat status, cost split, detection"]
+        db[("PostgreSQL 16<br/>[Database]<br/>Business data, Hangfire job queue,<br/>server-side sessions, raw-file metadata.<br/>40 tables, 7 groups")]
+        lake[("Data Lake<br/>[technology TBD]<br/>Raw source data")]
     end
-    people --> web
-    web -- "REST / JSON, cookie session" --> api
-    api --> db
-    worker -- "1. read-only" --> providers
+
+    users -- "HTTPS" --> proxy
+    proxy -- "static files" --> web
+    web -- "REST / JSON<br/>[cookie session, CSRF token]" --> api
+    api -- "SQL (EF Core writes,<br/>Dapper reads over views)" --> db
+    api -- "enqueue jobs" --> db
+    worker -- "4. processed data, dequeue jobs" --> db
+    worker -- "1. read-only calls<br/>[HTTPS, Polly retry]" --> sources
     worker -- "2. land raw data" --> lake
     lake -- "3. read for processing" --> worker
-    worker -- "4. processed data" --> db
+
+    classDef person fill:#0F67B1,stroke:#0B4F8A,color:#fff
+    classDef container fill:#2F7FC1,stroke:#0F67B1,color:#fff
+    classDef store fill:#475569,stroke:#0F172A,color:#fff
+    classDef external fill:#94A3B8,stroke:#475569,color:#0F172A
+    class users person
+    class proxy,web,api,worker container
+    class db,lake store
+    class sources external
 ```
+
+The API serves users; slow work (connector syncs at each interval, budget and expense imports, seat status, cost split, detection) runs in the worker through a PostgreSQL-backed job queue, so no Redis or message broker is required. Data from the source APIs never goes straight into the database: the worker lands it in the data lake, processes it, and only then writes the result to PostgreSQL.
 
 | Layer | Technology |
 |---|---|
@@ -196,15 +269,112 @@ flowchart TB
 | Database | PostgreSQL 16 |
 | Raw data storage | Data lake (technology TBD) |
 
-Deeper levels in [C4](docs/architecture/c4/README.md): [components of the API, worker, modules, and frontend](docs/architecture/c4/03-component.md), [frontend pages decomposed from UI demo v90](docs/architecture/c4/04-code.md); in [arc42](docs/architecture/arc42/README.md): [the sync and daily pipeline](docs/architecture/arc42/06-runtime-view.md) and [deployment](docs/architecture/arc42/07-deployment-view.md).
+### C3 — Component
 
-### 3.3 Repository layout
+```mermaid
+flowchart TB
+    spa["Web Frontend"]
+    db[("PostgreSQL 16")]
+    lake[("Data Lake")]
+    sources["P&L APIs, ILVG, VinSOC"]
+
+    subgraph hosts["Hosts"]
+        direction LR
+        ctrl["Controllers<br/>[Elms.Api]<br/>/api/v1/module/resource"]
+        jobs["Jobs<br/>[Elms.Worker, Hangfire]<br/>SyncSchedulerJob, ConnectorRunJob,<br/>IlvgSyncJob, VinSocSyncJob, DailyPipelineJob,<br/>ImportConfirmJob, MonthCloseJob"]
+    end
+
+    subgraph app["Elms.Application"]
+        direction TB
+        pipe["Pipeline behaviours<br/>logging, validation, authorization"]
+        handlers["Command and query handlers<br/>one folder per use case"]
+        analytics["Dashboard and Usage queries<br/>read views with Dapper"]
+        ingest["Sync run steps<br/>fetch, land raw in data lake, record metadata,<br/>validate, normalize, coverage"]
+        ecsval["Contract validator<br/>JSON Schema and rules (BR-17)"]
+        ifaces["Interfaces<br/>IAppDbContext, IRawDataStore, ILicenseSource,<br/>IIlvgSource, IVinSocSource"]
+    end
+
+    subgraph domain["Elms.Domain"]
+        direction TB
+        entities["Entities and enums<br/>OrgLevel, Archetype, LicenseType,<br/>SeatStatus, ConnectorStatus"]
+        rules["Business rules<br/>SeatStatusRule, AccrualCalculator,<br/>CostAllocator, WasteFlagRule"]
+    end
+
+    subgraph infra["Elms.Infrastructure"]
+        direction TB
+        efctx["AppDbContext<br/>EF Core 10 + Npgsql, audit and scope interceptor"]
+        ecshttp["EcsClient<br/>every P&L license API"]
+        hr["IlvgClient, VinSocClient"]
+        sim["SimulatedSource<br/>mock data for a P&L without an API (BR-12)"]
+        lakestore["DataLakeStore<br/>raw file read / write"]
+    end
+
+    kernel["SharedKernel.*<br/>Domain, Application, Infrastructure, Api<br/>BaseEntity, Money, AccessScope, BaseDbContext, GlobalExceptionHandler"]
+
+    spa -- "REST / JSON" --> ctrl
+    ctrl -- "Mediator.Send" --> pipe
+    jobs -- "Mediator.Send / pipeline" --> pipe
+    jobs --> ingest
+    pipe --> handlers
+    pipe --> analytics
+    handlers --> rules
+    handlers --> entities
+    handlers --> ifaces
+    analytics --> ifaces
+    ingest --> ifaces
+    ingest --> ecsval
+    ifaces -. "implemented by" .-> efctx
+    ifaces -. "implemented by" .-> ecshttp
+    ifaces -. "implemented by" .-> hr
+    ifaces -. "implemented by" .-> sim
+    ifaces -. "implemented by" .-> lakestore
+    lakestore -- "raw files" --> lake
+    efctx -- "SQL" --> db
+    ecshttp -- "read-only HTTPS" --> sources
+    hr -- "read-only HTTPS" --> sources
+    entities -. "built on" .-> kernel
+    rules -. "built on" .-> kernel
+```
+
+The Api and the Worker are built from the same layers and run the same handlers; the eight business modules are feature folders inside each layer, kept apart by architecture tests.
+
+Complete documentation: [C4 Architecture](docs/architecture/c4/README.md) (with the [business modules](docs/architecture/c4/03-component.md#2-business-modules) and the [frontend components](docs/architecture/c4/03-component.md#3-web-frontend)) and the [arc42 Architecture Handbook](docs/architecture/arc42/README.md) ([runtime](docs/architecture/arc42/06-runtime-view.md), [deployment](docs/architecture/arc42/07-deployment-view.md), [decisions](docs/architecture/arc42/09-architecture-decisions.md)).
+
+## 4. Database Design and API Contract
+
+### 4.1 Database diagrams
+
+The target schema is PostgreSQL, 40 tables in seven groups: organization and access, software catalog and licenses, collection pipeline, holders and usage, budget and expenses, optimization, audit. It follows the business model: the organization from ILVG (P&L > block > department > project, with a group row kept only as the owner of shared licenses until that owner is decided), three roles with each Staff member working for one Manager, one usage connector per company and provider, a license per connector and company mapped to the software catalog, budget versions imported from Excel, the cost of each month split into Used, Wasted, and Not evaluated, and VinSOC usage in its own table. Raw data from the sources is kept in a data lake; the collection pipeline tables hold only its metadata. Missing data is `Unknown`, never 0; history is kept as frozen daily snapshots and monthly cost allocations.
+
+![Entity overview](docs/database/diagrams/erd_overview.png)
+
+Entity overview, one ERD per group, a short explanation of every table, rule-to-schema traceability, and the decisions still to confirm (D24–D53): [Database design](docs/database/README.md). Source [`elms.dbml`](docs/database/elms.dbml), reference DDL [`schema.sql`](docs/database/schema.sql), draw.io files in [`docs/database/diagrams/`](docs/database/diagrams/).
+
+### 4.2 API contract
+
+All endpoints are under `/api/v1/<module>/<resource>`, read the data scope from the cookie session, and return `403` outside it.
+
+```text
+REST / JSON under /api/v1, plural kebab-case resources
+Cookie session (HttpOnly) + XSRF token, no bearer token in the browser
+Lists: page, pageSize (max 100), sort, filters → { items, total }
+Errors: ProblemDetails (RFC 9457) — 400, 401, 403, 404 outside scope, 409
+Optimistic concurrency on PostgreSQL xmin
+Imports: preview, then confirm by previewKey (idempotent)
+Money as amount + currency; missing data is null with a reason, never 0
+```
+
+The OpenAPI 3 specification is not written yet; until then the contract is defined by the [API conventions](docs/05-code-structure.md#5-api-conventions) and the [screen-to-API mapping](docs/04-information-architecture-manager.md#6-screen-to-api-mapping).
+
+## 5. Frontend and Backend Code Structures
+
+### 5.1 Repository layout
 
 ```text
 VFast/
 ├─ README.md
 ├─ docs/
-│  ├─ 01 … 04               Research, use cases, INVEST, information architecture
+│  ├─ 01 … 04               Research, use cases, INVEST, IA
 │  ├─ 05-code-structure.md
 │  ├─ 06-connector-standard.md
 │  ├─ 08, 09                Feature list, data fields research
@@ -212,12 +382,15 @@ VFast/
 │  ├─ database/             elms.dbml, schema.sql, tables.md, ERDs
 │  ├─ diagrams/out/         Use case diagrams
 │  └─ mindmap/              XMind source
+├─ UI/                      HTML demos (v90 = frontend baseline)
 └─ src/
    ├─ frontend/             React SPA
    └─ backend/              .NET solution
 ```
 
-### 3.4 Frontend
+The frontend in `src/frontend` is already coded but still follows the previous layered model (`pages/`, `sections/`, `components/`) and mock data; the backend is not started. The trees below are the target.
+
+### 5.2 Target React feature structure
 
 ```text
 src/frontend/
@@ -231,9 +404,15 @@ src/frontend/
 └─ main.tsx, index.css
 ```
 
-Target structure decomposed from UI demo [`UI/VFast_UI_v90.html`](UI/VFast_UI_v90.html); organized by feature; API calls live only in `services/`, imported by feature hooks; a feature imports `services/` and `shared/`, never another feature. Flow `Page / Component → Feature Hook → Feature Service → apiClient → ASP.NET Core API`. Full tree and responsibilities: [Code structure §3](docs/05-code-structure.md#3-frontend).
+Target dependency flow:
 
-### 3.5 Backend
+```text
+Page / Component → Feature Hook → Feature Service → apiClient → ASP.NET Core API
+```
+
+Decomposed from UI demo [`UI/VFast_UI_v90.html`](UI/VFast_UI_v90.html) and organized by feature; API calls live only in `services/`, imported by feature hooks; a feature imports `services/` and `shared/`, never another feature. Full tree and responsibilities: [Code structure §3](docs/05-code-structure.md#3-frontend).
+
+### 5.3 Target ASP.NET Core Clean Architecture structure
 
 ```text
 src/backend/
@@ -247,9 +426,194 @@ src/backend/
 └─ tests/                    Unit, integration, architecture
 ```
 
-Flow `Controller → Mediator → Behaviours → Handler → Domain Rules → IAppDbContext → PostgreSQL`; the worker lands raw source data in the data lake before processing. Dependency direction: `Api / Worker → Infrastructure → Application → Domain → SharedKernel`. The eight business modules (`identity`, `organization`, `catalog`, `ingestion`, `usage`, `finance`, `optimization`, `analytics`, plus shared `audit`) are feature folders inside each layer; boundaries are enforced by architecture tests.
+Target flow:
 
-Target flow, code structure, responsibilities, module table, API conventions, jobs, caching, security, and deployment: [Code structure and architecture](docs/05-code-structure.md#4-backend). The same design as [arc42](docs/architecture/arc42/README.md), [C4](docs/architecture/c4/README.md), and [UML](docs/architecture/uml/README.md) views.
+```text
+HTTP:   Controller → Mediator → Behaviours → Handler → Domain Rules
+        → IAppDbContext → PostgreSQL
+Worker: Hangfire Job → Pipeline step → ILicenseSource → IRawDataStore
+        → Handler → IAppDbContext → PostgreSQL
+```
+
+Dependency rules:
+
+```text
+Api / Worker → Infrastructure → Application → Domain → SharedKernel
+Domain → nothing
+Application → interfaces only (IAppDbContext, IRawDataStore, ILicenseSource)
+Only Infrastructure references EF Core, Npgsql, HTTP clients, the data lake
+A module never calls another module's tables; analytics only reads
+```
+
+The eight business modules (`identity`, `organization`, `catalog`, `ingestion`, `usage`, `finance`, `optimization`, `analytics`, plus shared `audit`) are feature folders inside each layer; boundaries are enforced by NetArchTest. Full tree, responsibilities, modules, jobs, caching, security, and deployment: [Code structure §4](docs/05-code-structure.md#4-backend).
+
+## 6. Detailed Class and Sequence Design
+
+The detailed design derives from the C4 components in section 3, the database and API contract in section 4, and the target code structure in section 5. These are target views; the code may merge classes as long as the layer boundaries hold.
+
+### 6.1 C4 Level 4 — Code
+
+#### L4.1 Connector Management (`/connectors`)
+
+```mermaid
+flowchart TB
+    page["ConnectorManagementPage"]
+    metrics["ConnectorMetrics<br/><i>Companies, Providers,<br/>Licenses, Sync Issues</i>"]
+    toolbar["ConnectorToolbar<br/><i>search, P&L menu, provider,<br/>status, sort, New Connector</i>"]
+    table["ConnectorTable<br/><i>Coverage, Created, Last Sync,<br/>Status, Actions</i>"]
+    form["ConnectorFormDialog<br/><i>company & contact · API URL,<br/>auth, secret · licenses</i>"]
+
+    kpi["KpiCard"]
+    search["SearchInput, FilterSelect"]
+    dt["DataTable + Pagination"]
+    badge["StatusBadge"]
+    dlg["AppDialog"]
+    khook["useConnectors"]
+    repo["services/connector/connectorService.ts"]
+
+    page --> metrics & toolbar & table
+    toolbar --> form
+    table --> form
+    metrics --> kpi
+    toolbar --> search
+    table --> dt
+    table --> badge
+    form --> dlg
+    metrics & table & form --> khook
+    khook --> repo
+
+    classDef page fill:#0B4F8A,stroke:#0F172A,color:#fff
+    classDef sec fill:#2F7FC1,stroke:#0F67B1,color:#fff
+    classDef shared fill:#94A3B8,stroke:#475569,color:#0F172A
+    class page page
+    class metrics,toolbar,table,form,khook sec
+    class kpi,search,dt,badge,dlg,repo shared
+```
+
+The other pages (shell and routing, Usage, Budget Plan, Cloud Usage, User Management) follow the same pattern. Source: [C4 Level 4 — Code](docs/architecture/c4/04-code.md)
+
+### 6.2 Core class diagrams
+
+#### 1. Core domain
+
+```mermaid
+classDiagram
+    direction LR
+
+    class OrgUnit {
+      +id
+      +level
+      +parentId
+      +name
+    }
+    class Employee {
+      +employeeCode
+      +email
+      +orgUnitId
+    }
+    class UserAccount {
+      +employeeId
+      +roleId
+      +status
+    }
+    class Role {
+      +code
+    }
+    class Vendor
+    class SoftwareProduct {
+      +vendorId
+      +categoryId
+    }
+    class Connector {
+      +orgUnitId
+      +vendorId
+      +kind
+      +status
+      +syncIntervalHours
+      +credentialEncrypted
+    }
+    class SyncRun {
+      +status
+      +startedAt
+      +finishedAt
+    }
+    class LicensePlan {
+      +connectorId
+      +productId
+      +ownerOrgUnitId
+      +licenseType
+    }
+    class EntitlementLine {
+      +quantity
+      +termStart
+      +termEnd
+    }
+    class Subject {
+      +externalId
+      +employeeId
+    }
+    class LicenseAssignment {
+      +seatStatus
+    }
+    class UsageRecord {
+      +period
+      +value
+    }
+    class BudgetPlan {
+      +version
+      +orgUnitId
+    }
+    class BudgetPlanLine {
+      +month
+      +amount
+    }
+    class Expense {
+      +invoiceDate
+      +amount
+    }
+    class CostAllocation {
+      +used
+      +wasted
+      +notEvaluated
+    }
+
+    OrgUnit "1" o-- "*" OrgUnit : parent
+    Employee "*" --> "0..1" OrgUnit
+    UserAccount "1" --> "1" Employee
+    UserAccount "*" --> "1" Role
+    UserAccount "*" --> "*" OrgUnit : data scope
+    SoftwareProduct "*" --> "1" Vendor
+    Connector "*" --> "0..1" OrgUnit : company
+    Connector "*" --> "0..1" Vendor
+    Connector "1" *-- "*" SyncRun
+    LicensePlan "*" --> "1" Connector : reported by
+    LicensePlan "*" --> "0..1" SoftwareProduct
+    LicensePlan "*" --> "1" OrgUnit : owner
+    EntitlementLine "*" --> "1" LicensePlan
+    Expense "*" --> "0..1" EntitlementLine
+    Subject "*" --> "1" Connector
+    Subject "*" --> "0..1" Employee
+    LicenseAssignment "*" --> "1" LicensePlan
+    LicenseAssignment "*" --> "1" Subject
+    UsageRecord "*" --> "1" LicensePlan
+    BudgetPlan "1" *-- "*" BudgetPlanLine
+    BudgetPlanLine "*" --> "0..1" LicensePlan
+    CostAllocation "*" --> "1" LicensePlan
+    CostAllocation "*" --> "1" OrgUnit
+```
+
+Source: [Class diagrams](docs/architecture/uml/01-class-diagrams.md), which also hold the frontend `apiClient` and service classes.
+
+### 6.3 Sequence diagrams
+
+Four scenarios from UI demo v90, each from the page through its hook and service to the API and the database, with the `401` / `403` / `404` paths:
+
+- [Login and role routing](docs/architecture/uml/02-sequence-diagrams.md#1-login-and-role-routing)
+- [Usage for a scope](docs/architecture/uml/02-sequence-diagrams.md#2-usage-for-a-scope)
+- [Import budget plan](docs/architecture/uml/02-sequence-diagrams.md#3-import-budget-plan) — preview, then confirm by `previewKey`
+- [New connector](docs/architecture/uml/02-sequence-diagrams.md#4-new-connector)
+
+The sync and daily pipeline (connector run → data lake → validate → normalize) is in [arc42 runtime view](docs/architecture/arc42/06-runtime-view.md).
 
 ## Documentation
 
@@ -274,3 +638,29 @@ npm run dev
 ```
 
 `npm run build` and `npm run preview` also work from the repository root. The root scripts forward to `src/frontend`; the build output is `src/frontend/dist/`.
+
+## Project Progress
+
+- [x] Research the problem top-down: stakeholders, goals, license models, data sources
+- [x] Build the mind map and the feature list
+- [x] Write the 11 use cases and the role × use case matrix (Admin, Manager, Staff)
+- [x] Write 50 user stories following INVEST, with acceptance criteria
+- [x] Research a common connector standard and propose ECS v1
+- [x] Design the information architecture, screen catalog, and screen-to-API mapping
+- [x] Build the HTML UI demo (v90)
+- [x] Design the C4 System Context, Container, Component, and Code views
+- [x] Write the arc42 documentation (chapters 1–12, ADR-01 to ADR-13)
+- [x] Design the PostgreSQL schema, DBML, and ERDs (40 tables, 7 groups)
+- [x] Design the frontend code structure (by feature, axios services, config)
+- [x] Design the backend code structure (Clean Architecture, modules)
+- [x] Design class diagrams and sequence diagrams
+- [ ] Write the business rules table (`BR-xx`) in one place
+- [ ] Decide the data lake technology and add raw-file metadata to the schema
+- [ ] Decide the owner of shared licenses (D53) and confirm D24–D53
+- [ ] Write the OpenAPI 3 specification
+- [ ] Move `src/frontend` to the target feature structure
+- [ ] Build the ASP.NET Core backend: identity, organization, catalog, ingestion
+- [ ] Build the usage connectors and the daily pipeline
+- [ ] Build usage, finance, optimization, and analytics
+- [ ] Connect the frontend to the API and remove mock data
+- [ ] Write unit, integration, and architecture tests
