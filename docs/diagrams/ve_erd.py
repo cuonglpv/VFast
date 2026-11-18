@@ -29,8 +29,8 @@ GAP = 70  # khoảng trống giữa hai cột bảng
 
 LAYOUT = {
     'erd_organization': [
-        ['org_units', 'permissions'],
-        ['employees', 'user_org_units', 'role_permissions', 'roles'],
+        ['org_units', 'role_permissions'],
+        ['employees', 'user_org_units'],
         ['user_accounts', 'user_sessions'],
     ],
     'erd_license_catalog': [
@@ -52,18 +52,13 @@ LAYOUT = {
         ['accounting_periods', 'exchange_rates'],
         ['budget_plan_lines', 'cost_allocations', 'expenses'],
     ],
-    'erd_optimization': [
-        ['detection_runs'],
-        ['detection_results'],
-    ],
     'erd_audit': [
         ['audit_logs'],
-        ['data_overrides'],
     ],
 }
 TITLES = {'erd_organization': 'Organization and access', 'erd_license_catalog': 'License catalog',
           'erd_collection': 'Collection pipeline', 'erd_holders_usage': 'Holders and usage',
-          'erd_budget_cost': 'Budget, cost, and expenses', 'erd_optimization': 'Optimization', 'erd_audit': 'Audit'}
+          'erd_budget_cost': 'Budget, cost, and expenses', 'erd_audit': 'Audit'}
 
 
 def parse(path):

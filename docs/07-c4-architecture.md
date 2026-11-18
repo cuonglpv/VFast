@@ -94,7 +94,7 @@ flowchart TB
         web["Web Frontend<br/>[React 19, Vite, TypeScript, MUI v6]<br/>License List, Usage, budget,<br/>Connector Management, administration"]
         api["Elms.Api<br/>[ASP.NET Core 10]<br/>Authentication, RBAC, data scope,<br/>commands and queries"]
         worker["Elms.Worker<br/>[.NET Worker Service + Hangfire server]<br/>Connector runs at each interval,<br/>contract validation, imports,<br/>seat status, cost split, detection"]
-        db[("PostgreSQL 16<br/>[Database]<br/>Business data, Hangfire job queue,<br/>server-side sessions. 40 tables, 7 groups")]
+        db[("PostgreSQL 16<br/>[Database]<br/>Business data, Hangfire job queue,<br/>server-side sessions. 28 tables, 6 groups")]
     end
 
     users -- "HTTPS" --> proxy
@@ -286,7 +286,7 @@ Call flow: `routes → pages → sections → components → types / utils`. The
 
 ### 3.4 PostgreSQL
 
-Not drawn as components: the container is described by its seven table groups (organization and access, software catalog and licenses, collection pipeline, holders and usage, budget and expenses, optimization, audit). See [Database design](database/README.md) for the ERDs.
+Not drawn as components: the container is described by its six table groups (organization and access, software catalog and licenses, collection pipeline, holders and usage, budget and expenses, audit). See [Database design](database/README.md) for the ERDs.
 
 ## 4. Level 4 — Code
 

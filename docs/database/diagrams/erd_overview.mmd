@@ -9,9 +9,6 @@ erDiagram
     org_units |o--o{ org_units : "contains"
     org_units |o--o{ employees : "employs"
     employees ||--o| user_accounts : "logs in as"
-    roles ||--o{ user_accounts : "assigned to"
-    roles ||--o{ role_permissions : grants
-    permissions ||--o{ role_permissions : "granted by"
     user_accounts ||--o{ user_sessions : opens
     user_accounts ||--o{ user_org_units : "scoped to"
     org_units ||--o{ user_org_units : "seen by"
@@ -48,6 +45,3 @@ erDiagram
     entitlement_lines |o--o{ expenses : "paid by"
     org_units ||--o{ expenses : pays
     org_units ||--o{ accounting_periods : closes
-    detection_runs ||--o{ detection_results : produces
-    license_plans ||--o{ detection_results : "checked in"
-    org_units ||--o{ data_overrides : "corrected by"

@@ -131,11 +131,11 @@ Backlog, per-story INVEST review, and acceptance criteria: [INVEST requirements]
 
 ## 2. Database design
 
-The target schema is PostgreSQL, 40 tables in seven groups: organization and access, software catalog and licenses, collection pipeline, holders and usage, budget and expenses, optimization, audit. It follows the business model: a five-level organization from ILVG, one usage connector per company and provider, a license per connector and company mapped to the software catalog, budget versions imported from Excel, purchases (PO lines and invoices) imported from SAP, the cost of each month split into Used, Wasted, and Not evaluated, and BCA usage in its own table. Missing data is `Unknown`, never 0; history is kept as frozen daily snapshots and monthly cost allocations.
+The target schema is PostgreSQL, 28 tables in six groups: organization and access, software catalog and licenses, collection pipeline, holders and usage, budget and expenses, audit. It follows the business model: a five-level organization from ILVG, one usage connector per company and provider, a license per connector and company mapped to the software catalog, budget versions imported from Excel, purchases (PO lines and invoices) imported from SAP, the cost of each month split into Used, Wasted, and Not evaluated, and BCA usage in its own table. Missing data is `Unknown`, never 0; history is kept as daily snapshots and monthly cost allocations, frozen when the month closes.
 
 ![Entity overview](docs/database/diagrams/erd_overview.png)
 
-Entity overview, one ERD per group, a short explanation of every table, rule-to-schema traceability, and the design decisions (D1–D51): [Database design](docs/database/README.md). Source [`elms.dbml`](docs/database/elms.dbml), reference DDL [`schema.sql`](docs/database/schema.sql), draw.io files in [`docs/database/diagrams/`](docs/database/diagrams/).
+Entity overview, one ERD per group, a short explanation of every table, rule-to-schema traceability, and the design decisions (D1–D59): [Database design](docs/database/README.md). Source [`elms.dbml`](docs/database/elms.dbml), reference DDL [`schema.sql`](docs/database/schema.sql), draw.io files in [`docs/database/diagrams/`](docs/database/diagrams/).
 
 ## 3. Architecture and Folder Structures
 
