@@ -1,4 +1,4 @@
-# Data Fields Research — P&L License API, BCA, ILVG, SAP
+# Data Fields Research — P&L License API, VinSOC, ILVG, SAP
 
 > Design status: DRAFT (input for the revised mind map; not yet reflected in documents 01–06 or the database)
 >
@@ -6,13 +6,13 @@
 
 System: **Enterprise License Management System (ELMS)**, built by team VFast.
 
-This document answers one question from the revised business model: *when ELMS calls a P&L's license API, what can the response contain so that ELMS can show how licenses are used?* It also lists the fields expected from the three other sources: BCA (actual usage on company machines), ILVG (employees and organization), and SAP (monthly budget plan, and the purchases: PR, PO, invoices).
+This document answers one question from the revised business model: *when ELMS calls a P&L's license API, what can the response contain so that ELMS can show how licenses are used?* It also lists the fields expected from the three other sources: VinSOC (actual usage on company machines), ILVG (employees and organization), and SAP (monthly budget plan, and the purchases: PR, PO, invoices).
 
 ## 1. Revised data flow
 
 ```text
 P&L license API  ─┐  licenses the P&L uses, holders, usage
-BCA usage API    ─┤  actual usage per member, measured on company machines
+VinSOC usage API    ─┤  actual usage per member, measured on company machines
 ILVG employee API─┼→ ELMS connectors → actual-usage tables → waste per P&L / block / department / project
 SAP imports      ─┘  monthly budget plan; purchases (PR, PO lines, invoices)
 ```
@@ -20,7 +20,7 @@ SAP imports      ─┘  monthly budget plan; purchases (PR, PO lines, invoices)
 | Source | Owner | ELMS gets | Direction |
 |---|---|---|---|
 | P&L license API | Each P&L builds it to the ELMS contract; ELMS calls it | Every license the P&L uses, with holders and usage | ELMS → P&L, read-only |
-| BCA API | Endpoint tracking tool | Usage frequency per member; licenses found on company machines | ELMS → BCA, read-only |
+| VinSOC API | Endpoint tracking tool | Usage frequency per member; licenses found on company machines | ELMS → VinSOC, read-only |
 | ILVG API | Internal application | Employees and the unit each belongs to | ELMS → ILVG, read-only |
 | SAP | Finance | Monthly budget plan per P&L, block, project; purchases: PO lines (quantity, term) and invoices (cost) | File imports |
 
@@ -172,7 +172,7 @@ Findings that shape the contract:
 
 Not requested: purchase orders and invoices come from SAP (BR-10). Listed so the contract can add them later without a redesign: `unit_price`, `currency`, `billed_cost`, `purchase_order`, `invoice_id`, `contract_ref`, `purchase_date`, `supplier` (Snipe-IT `purchase_cost`, `order_number`, `purchase_order`, `supplier`; FOCUS `BilledCost`, `EffectiveCost`, `InvoiceId`).
 
-## 4. BCA — actual usage on company machines
+## 4. VinSOC — actual usage on company machines
 
 Fields to ask for; the real API has not been seen.
 
@@ -184,7 +184,7 @@ Fields to ask for; the real API has not been seen.
 | Usage | `period`, `last_used_at`, `launch_count`, `active_days`, `foreground_minutes` |
 | Quality | `agent_last_seen_at`, `coverage` (share of machines reporting) |
 
-If BCA hides employee identity, usage can only be joined to ILVG through a shared pseudonymous key, or reported per department instead of per person.
+If VinSOC hides employee identity, usage can only be joined to ILVG through a shared pseudonymous key, or reported per department instead of per person.
 
 ## 5. ILVG — employees and organization
 
@@ -197,7 +197,7 @@ If BCA hides employee identity, usage can only be joined to ILVG through a share
 
 ## 6. SAP — monthly budget plan and purchases
 
-Budget plan file (UC04, BR-08), imported by Managers; it has no *Shared* column:
+Budget plan file (UC05, BR-08), imported by Managers; it has no *Shared* column:
 
 | Group | Fields |
 |---|---|
@@ -206,7 +206,7 @@ Budget plan file (UC04, BR-08), imported by Managers; it has no *Shared* column:
 | Line | `license_name` or `material`, `planned_quantity`, `unit` |
 | Money | `planned_amount`, `currency` |
 
-Purchase file (UC04, BR-10), imported by Staff each month:
+Purchase file (UC05, BR-10), imported by Staff each month:
 
 | Group | Fields |
 |---|---|

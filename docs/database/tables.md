@@ -14,7 +14,7 @@ Every table of the ELMS database, what it is for, and what each of its fields me
 | `created_at`, `updated_at` | When the row was created, and when it last changed |
 | `created_by`, `paused_by`, `uploaded_by` … | The user who did it |
 | `is_active` | No longer used when "No". Rows are switched off instead of deleted, so history stays intact |
-| `source` | Where the data came from: `api` or `log` (a connector, ILVG, or BCA), `import` (a file: budget plan, or purchases from SAP), `manual` (typed by Staff: purchases made outside SAP). Licenses, holders, and usage always come from a connector |
+| `source` | Where the data came from: `api` or `log` (a connector, ILVG, or VinSOC), `import` (a file: budget plan, or purchases from SAP), `manual` (typed by Staff: purchases made outside SAP). Licenses, holders, and usage always come from a connector |
 | `sync_run_id`, `import_batch_id` | The connector run or file import that last wrote the row, so every figure can be traced back |
 | `currency` | Three-letter currency code next to an amount from outside (price, invoice, budget line), such as `USD`. Figures ELMS computes have no currency field: they are always in the reporting currency (VND) |
 
@@ -24,7 +24,7 @@ Every table of the ELMS database, what it is for, and what each of its fields me
 
 ### `org_units`: the organization tree
 
-The shape of the group in five fixed levels: **group > P&L > block > department > project**, for example the group, the P&L "VinFast", its block "Manufacturing", the department "IT", and the project "MES". Units come from ILVG. Budgets, costs, and what a Manager may see are all counted per unit, and every figure of a unit is the sum of the units under it.
+The shape of the group in five fixed levels: **group > P&L > block > department > project**, for example the group, the P&L "VinFast", its block "Manufacturing", the department "IT", and the project "MES". Units come from ILVG. The use cases stop at the P&L: the group row only owns shared licenses until their owner is decided, and nobody is assigned to it (D53). Budgets, costs, and what a Manager may see are all counted per unit, and every figure of a unit is the sum of the units under it.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -44,7 +44,7 @@ Everyone who works in the group, whether or not they log in to ELMS, loaded from
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `employee_code` | text | | ILVG employee id. Stays the same when the email changes; it joins ILVG, BCA, and the accounts at each provider |
+| `employee_code` | text | | ILVG employee id. Stays the same when the email changes; it joins ILVG, VinSOC, and the accounts at each provider |
 | `full_name` | text | Yes | Name shown on screens |
 | `email` | text | Yes | Current company email, in lowercase; also the login email |
 | `org_unit_id` | link → `org_units` | | Current unit, at any level. Empty = "Unknown unit" |
@@ -56,14 +56,14 @@ Everyone who works in the group, whether or not they log in to ELMS, loaded from
 | `import_batch_id` | link → `import_batches` | | Not used since the HR file import was retired |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
-### `roles`: the four roles
+### `roles`: the three roles
 
-Admin, Manager, Staff, and Employee. The list never changes; Admin changes the role of a person, not the list.
+Admin, Manager, and Staff. The list never changes; Admin changes the role of a person, not the list.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `code` | text | Yes | Fixed code used by the program: `ADMIN`, `MANAGER`, `STAFF`, `EMPLOYEE` |
+| `code` | text | Yes | Fixed code used by the program: `ADMIN`, `MANAGER`, `STAFF` |
 | `name` | text | Yes | Name shown on screens |
 | `description` | text | | What the role is for, shown on the roles screen |
 
@@ -97,6 +97,7 @@ The people who can log in. Each login belongs to one employee and has exactly on
 | `id` | number | Yes | Row number |
 | `employee_id` | link → `employees` | Yes | The person. One person has at most one login; the login email is their company email |
 | `role_id` | link → `roles` | Yes | Their role |
+| `manager_account_id` | link → `user_accounts` | | Staff only: the Manager this Staff member works for; they see what that Manager sees. Empty for Admin and Manager |
 | `password_hash` | text | | The password, scrambled so nobody can read it. Empty until the user sets one: they cannot log in yet |
 | `password_token_hash` | text | | The one-time link, sent by email, that a new user opens to set their password (or to reset a forgotten one), stored scrambled. Empty when no link is open |
 | `password_token_expires_at` | date-time | | When that link stops working |
@@ -104,7 +105,7 @@ The people who can log in. Each login belongs to one employee and has exactly on
 | `locked_until` | date-time | | After 5 wrong passwords in a row, login is blocked until this time (15 minutes) |
 | `last_login_at` | date-time | | Last successful login, shown in the user list |
 | `disabled_at` | date-time | | When Admin, or the ILVG sync for a leaver, disabled the login. Empty = active. A disabled login cannot sign in, and open sessions end at once |
-| `created_by` | link → `user_accounts` | | Empty: accounts are created by the ILVG sync |
+| `created_by` | link → `user_accounts` | | The Admin who gave the account; accounts are given only to ILVG employees |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
 ### `user_sessions`: who is logged in
@@ -119,15 +120,15 @@ One row per open login session. Sessions are kept on the server so that disablin
 | `created_at` | date-time | Yes | Login time |
 | `expires_at` | date-time | Yes | When the session ends on its own |
 
-### `user_org_units`: what a Manager or Staff member may see
+### `user_org_units`: what a Manager may see
 
-Which units a Manager is responsible for, and which companies a Staff member works on (formerly `manager_org_units`). A Manager can be given any unit, the whole group included, and sees it with everything under it. A Staff member is given P&Ls, or the group for group-level Staff, who see every company and keep the software catalog and the shared licenses. Admin and Employee have no rows.
+The unit a Manager is responsible for (formerly `manager_org_units`): a P&L or any unit under it, never the group; they see it with everything under it. A Staff member has no rows: they see what their Manager sees (`user_accounts.manager_account_id`). Admin has no rows.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `user_account_id` | link → `user_accounts` | Yes | The Manager or Staff member |
-| `org_unit_id` | link → `org_units` | Yes | A unit they look after (Manager) or a company they work on (Staff) |
+| `user_account_id` | link → `user_accounts` | Yes | The Manager |
+| `org_unit_id` | link → `org_units` | Yes | The unit they look after |
 
 ---
 
@@ -150,7 +151,7 @@ The providers licenses come from, such as Microsoft, Atlassian, or Adobe. A usag
 
 ### `software_categories`: catalog folders
 
-Categories and subcategories of the software catalog, kept by group-level Staff (UC02), for example "Productivity" › "Office & Collaboration". A category in use cannot be deleted.
+Categories and subcategories of the software catalog, kept by Staff (UC02), for example "Productivity" › "Office & Collaboration". A category in use cannot be deleted.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -235,7 +236,7 @@ One PO line of a license, imported each month from the SAP purchase file or type
 | `created_by` | link → `user_accounts` | | Staff who typed it; empty for imported lines |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
-The money figure "Purchased" is not this price: it is the accrued cost of the invoices (`expenses`, `cost_allocations`). The monthly cost of the License List is the accrued cost too (UC01, UC04).
+The money figure "Purchased" is not this price: it is the accrued cost of the invoices (`expenses`, `cost_allocations`). The monthly cost of the License List is the accrued cost too (UC01, UC05).
 
 ### `entitlement_allocations`: quotas per unit (retired)
 
@@ -247,16 +248,16 @@ Retired: quotas per unit are not part of the agreed use cases; the cost of a lic
 
 ### `connectors`: connections to the sources
 
-A configured, read-only connection. A **usage connector** reads one provider for one company — for example "VinFast – Microsoft Usage" — and returns its licenses, holders, and usage (UC09). ILVG (employees and units) and BCA (application usage) are connectors too, so every source is watched the same way (UC09). ELMS never changes anything at a source.
+A configured, read-only connection. A **usage connector** reads one provider for one company — for example "VinFast – Microsoft Usage" — and returns its licenses, holders, and usage (UC10). ILVG (employees and units) and VinSOC (application usage) are connectors too, so every source is watched the same way (UC10). ELMS never changes anything at a source.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `kind` | choice: `usage`, `ilvg`, `bca` | Yes | What it reads |
-| `org_unit_id` | link → `org_units` | | The company of a usage connector: a P&L, or the group for a group contract. Empty for ILVG and BCA |
+| `kind` | choice: `usage`, `ilvg`, `vinsoc` | Yes | What it reads |
+| `org_unit_id` | link → `org_units` | | The company of a usage connector: a P&L, or the group for a group contract. Empty for ILVG and VinSOC |
 | `vendor_id` | link → `vendors` | | The provider of a usage connector. One usage connector per company and provider |
 | `name` | text | Yes | Generated name, "<Company> – <Provider> Usage", unique |
-| `connector_type` | text | Yes | Which program runs it, such as `generic_rest`, `ms_graph`, `ilvg`, `bca` |
+| `connector_type` | text | Yes | Which program runs it, such as `generic_rest`, `ms_graph`, `ilvg`, `vinsoc` |
 | `api_url` | text | Yes | Full HTTPS address of the API the P&L provides for its own data, such as `https://api.company.com/v1/usage` |
 | `auth_type` | choice: `api_key`, `bearer_token` | Yes | How it signs in |
 | `credentials_ref` | text | Yes | Where the key or token is kept. The secret itself is never stored, shown, exported, or logged |
@@ -291,7 +292,7 @@ For each license: which kinds of data its connector delivers — purchases, hold
 
 ### `sync_runs`: connector runs
 
-The log of each connector run: when it ran, for which day's data, and whether it worked. It is the run table of UC09.
+The log of each connector run: when it ran, for which day's data, and whether it worked. It is the run table of UC10.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -334,7 +335,7 @@ Exactly what the vendor's API returned, before ELMS reshapes it. Kept for 180 da
 | `payload` | JSON | Yes | The data exactly as received |
 | `fetched_at` | date-time | Yes | When it was received |
 | `normalized_at` | date-time | | When ELMS processed it. Empty = not processed yet |
-| `normalize_error` | text | | Why ELMS could not use it, such as `undeclared_license` (a license the source reports but the connector does not list) or `missing_field`. Empty = used successfully. These are the rejected records Staff see in UC09 |
+| `normalize_error` | text | | Why ELMS could not use it, such as `undeclared_license` (a license the source reports but the connector does not list) or `missing_field`. Empty = used successfully. These are the rejected records Staff see in UC10 |
 
 ### `files`: uploaded files
 
@@ -354,7 +355,7 @@ Invoices typed by Staff, budget plan Excel files, and SAP purchase Excel files. 
 
 ### `import_batches`: file imports
 
-Each import of a budget plan (UC04) or of SAP purchases (UC04): who, when, which file, and how many rows. Nothing is written until the preview is checked and confirmed; one bad row rejects the whole file. A budget import has a target unit and months, and changes only the licenses in its file: in that unit and every unit under it, for those months, a license already planned is overwritten (its lines the file no longer has are removed) and a new one is added. Every other license keeps its plan. Example: the group imports a file with only GitHub rows for P&L A and P&L B; their Microsoft 365 and Jira plans do not change. A purchase import adds or updates PO lines and invoices by their SAP numbers, so the same file twice adds nothing.
+Each import of a budget plan (UC05) or of SAP purchases (UC05): who, when, which file, and how many rows. Nothing is written until the preview is checked and confirmed; one bad row rejects the whole file. A budget import has a target unit and months, and changes only the licenses in its file: in that unit and every unit under it, for those months, a license already planned is overwritten (its lines the file no longer has are removed) and a new one is added. Every other license keeps its plan. Example: the group imports a file with only GitHub rows for P&L A and P&L B; their Microsoft 365 and Jira plans do not change. A purchase import adds or updates PO lines and invoices by their SAP numbers, so the same file twice adds nothing.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -466,26 +467,26 @@ The same daily photo, per unit: how many seats are held, and in which status. Se
 | `used_qty` | quantity | | For usage-based licenses: the unit's share of consumption (tokens, requests …) |
 | `created_at` | date-time | Yes | When the photo was taken |
 
-### `employee_app_usage`: applications employees use (BCA)
+### `employee_app_usage`: applications employees use (VinSOC)
 
-What BCA reports from company machines: which application each person used, on how many days. Kept in its own table, apart from the license usage, so other services can use it later (BR-21). Only the Managers of the person's units can read it (UC03).
+What VinSOC reports from company machines: which application each person used, on how many days. Kept in its own table, apart from the license usage, so other services can use it later (BR-21). Only the Managers of the person's units can read it (UC03).
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | number | Yes | Row number |
-| `employee_id` | link → `employees` | | The person BCA reports. Empty = BCA identity not matched to an employee yet |
-| `bca_identity` | text | Yes | How BCA names the person (machine user or email), in lowercase |
-| `application_name` | text | Yes | The application as BCA names it |
+| `employee_id` | link → `employees` | | The person VinSOC reports. Empty = VinSOC identity not matched to an employee yet |
+| `vinsoc_identity` | text | Yes | How VinSOC names the person (machine user or email), in lowercase |
+| `application_name` | text | Yes | The application as VinSOC names it |
 | `active_minutes` | number | | Minutes the application was in use in the period |
 | `product_id` | link → `software_products` | | The catalog software the application maps to, set by Staff in the catalog (UC02). Empty = not mapped |
 | `period_start`, `period_end` | date | Yes | The period |
 | `days_used` | number | Yes | Days the application was used in the period |
 | `last_used_at` | date-time | | Last use |
-| `source` | choice | Yes | Always `api` (BCA) |
-| `sync_run_id` | link → `sync_runs` | Yes | BCA run that wrote it |
+| `source` | choice | Yes | Always `api` (VinSOC) |
+| `sync_run_id` | link → `sync_runs` | Yes | VinSOC run that wrote it |
 | `created_at`, `updated_at` | date-time | Yes | Created, last changed |
 
-A person whose machine does not report to BCA has no row: "Not tracked", never "not used". Until the BCA API is known, ELMS assumes that BCA reports per day the domain account of the user — which carries the ILVG employee code — and each application with its active minutes; the person is matched by employee code, otherwise by email.
+A person whose machine does not report to VinSOC has no row: "Not tracked", never "not used". Until the VinSOC API is known, ELMS assumes that VinSOC reports per day the domain account of the user — which carries the ILVG employee code — and each application with its active minutes; the person is matched by employee code, otherwise by email.
 
 ---
 
@@ -555,7 +556,7 @@ The shares of a shared license are its charge-back: each company carries the sea
 
 ### `expenses`: invoices
 
-The invoices from the SAP purchase file, each paying a PO line, and those Staff type for a purchase made outside SAP: what the bills say, on their dates, and the cost that the monthly accrual spreads (UC04). An invoice of 100 million for a 12-month term becomes 8,333,000 a month, rounded to the thousand VND, and 8,337,000 in the last month, so the months always add up to the invoice. An amount in USD is converted with the rate of the invoice date. A PO line without an invoice yet counts its seats, but its cost stays unknown.
+The invoices from the SAP purchase file, each paying a PO line, and those Staff type for a purchase made outside SAP: what the bills say, on their dates, and the cost that the monthly accrual spreads (UC05). An invoice of 100 million for a 12-month term becomes 8,333,000 a month, rounded to the thousand VND, and 8,337,000 in the last month, so the months always add up to the invoice. An amount in USD is converted with the rate of the invoice date. A PO line without an invoice yet counts its seats, but its cost stays unknown.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -578,7 +579,7 @@ The invoices from the SAP purchase file, each paying a PO line, and those Staff 
 
 ### `accounting_periods`: months of each company
 
-The months of each company (and of the group, for shared licenses) and whether each one is closed. Staff close a month after checking its accrual (UC04); otherwise it closes by itself on the 10th of the next month. Until then its figures are marked *Provisional*. A P&L month that carries the cost of a shared license stays *Provisional* until the group's month is closed too. A closed month can no longer be edited; a mistake is fixed with a correcting entry in an open month. The fiscal year is the calendar year.
+The months of each company (and of the group, for shared licenses) and whether each one is closed. Staff close a month after checking its accrual (UC05); otherwise it closes by itself on the 10th of the next month. Until then its figures are marked *Provisional*. A P&L month that carries the cost of a shared license stays *Provisional* until the group's month is closed too. A closed month can no longer be edited; a mistake is fixed with a correcting entry in an open month. The fiscal year is the calendar year.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -591,7 +592,7 @@ The months of each company (and of the group, for shared licenses) and whether e
 
 ### `exchange_rates`: currency rates
 
-The rates used to turn USD and other currencies into VND, entered by group-level Staff (UC04). A rate is valid from its date until a newer one is entered; an invoice is converted with the rate of its date.
+The rates used to turn USD and other currencies into VND, entered by Staff (UC05). A rate is valid from its date until a newer one is entered; an invoice is converted with the rate of its date.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -664,7 +665,7 @@ Who changed what, when, the old and new value, and why. Rows can only be added, 
 
 ### `data_overrides`: corrections to ILVG data
 
-When Admin corrects a value that came from ILVG, for example a unit placed under the wrong parent (UC08). The original value stays beside the correction, and the next ILVG sync does not overwrite it. Licenses, holders, and usage are never corrected in ELMS: they are corrected at the source.
+When Admin corrects a value that came from ILVG, for example a unit placed under the wrong parent (UC09). The original value stays beside the correction, and the next ILVG sync does not overwrite it. Licenses, holders, and usage are never corrected in ELMS: they are corrected at the source.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|

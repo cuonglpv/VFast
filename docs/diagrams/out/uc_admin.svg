@@ -1,16 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="663" height="458" viewBox="0 0 663 458" font-family="Liberation Sans, Arial, Helvetica, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="657" height="406" viewBox="0 0 657 406" font-family="Liberation Sans, Arial, Helvetica, sans-serif">
 <rect width="100%" height="100%" fill="#ffffff"/>
 <g transform="translate(-20.0,16.0)">
-<rect x="260.0" y="0.0" width="407.0" height="426.0" rx="0" fill="#F8FAFC" stroke="#334155" stroke-width="1.3"/><text x="463.5" y="34.1" font-size="17" fill="#0f172a" text-anchor="middle" font-weight="bold" xml:space="preserve">Enterprise License Management System</text>
-<rect x="290.0" y="70.0" width="347.0" height="154.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="463.5" y="94.3" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">User &amp; Organization</text>
-<ellipse cx="465.5" cy="134.0" rx="135.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="465.5" y="138.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Manage User Roles and Permissions</text>
+<rect x="260.0" y="0.0" width="401.0" height="374.0" rx="0" fill="#F8FAFC" stroke="#334155" stroke-width="1.3"/><text x="460.5" y="34.1" font-size="17" fill="#0f172a" text-anchor="middle" font-weight="bold" xml:space="preserve">Enterprise License Management System</text>
+<rect x="290.0" y="70.0" width="341.0" height="154.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="460.5" y="94.3" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">User &amp; Organization</text>
+<ellipse cx="462.5" cy="134.0" rx="132.5" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="462.5" y="138.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Manage User Accounts and Access</text>
 <ellipse cx="449.0" cy="186.0" rx="119.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="449.0" y="190.3" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Manage Organization Hierarchy</text>
-<rect x="290.0" y="242.0" width="347.0" height="154.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="463.5" y="266.4" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">Self-service</text>
-<ellipse cx="411.0" cy="306.0" rx="81.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="411.0" y="310.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">View My Licenses</text>
-<ellipse cx="399.0" cy="358.0" rx="69.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="399.0" y="362.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Login / Logout</text>
-<circle cx="60" cy="179.0" r="6" fill="#fff" stroke="#000" stroke-width="1.3"/><line x1="60" y1="185.0" x2="60" y2="200.0" stroke="#000" stroke-width="1.3" fill="none"/><line x1="49" y1="190.0" x2="71" y2="190.0" stroke="#000" stroke-width="1.3" fill="none"/><line x1="60" y1="200.0" x2="50" y2="213.0" stroke="#000" stroke-width="1.3" fill="none"/><line x1="60" y1="200.0" x2="70" y2="213.0" stroke="#000" stroke-width="1.3" fill="none"/><text x="60.0" y="230.3" font-size="14" fill="#000000" text-anchor="middle" font-weight="bold" xml:space="preserve">Admin</text>
-<path d="M71.0,190.0 L330.0,134.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,190.0 L330.0,186.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,190.0 L330.0,306.0" fill="none" stroke="#334155" stroke-width="1.1"/>
-<path d="M71.0,190.0 L330.0,358.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<rect x="290.0" y="242.0" width="341.0" height="102.0" rx="0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="6 4"/><text x="460.5" y="266.4" font-size="13" fill="#64748B" text-anchor="middle" font-weight="bold" xml:space="preserve">Access</text>
+<ellipse cx="399.0" cy="306.0" rx="69.0" ry="20.0" fill="#ffffff" stroke="#334155" stroke-width="1.3"/><text x="399.0" y="310.4" font-size="13" fill="#000000" text-anchor="middle" xml:space="preserve">Login / Logout</text>
+<circle cx="60" cy="153.0" r="6" fill="#fff" stroke="#000" stroke-width="1.3"/><line x1="60" y1="159.0" x2="60" y2="174.0" stroke="#000" stroke-width="1.3" fill="none"/><line x1="49" y1="164.0" x2="71" y2="164.0" stroke="#000" stroke-width="1.3" fill="none"/><line x1="60" y1="174.0" x2="50" y2="187.0" stroke="#000" stroke-width="1.3" fill="none"/><line x1="60" y1="174.0" x2="70" y2="187.0" stroke="#000" stroke-width="1.3" fill="none"/><text x="60.0" y="204.3" font-size="14" fill="#000000" text-anchor="middle" font-weight="bold" xml:space="preserve">Admin</text>
+<path d="M71.0,164.0 L330.0,134.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M71.0,164.0 L330.0,186.0" fill="none" stroke="#334155" stroke-width="1.1"/>
+<path d="M71.0,164.0 L330.0,306.0" fill="none" stroke="#334155" stroke-width="1.1"/>
 </g></svg>
