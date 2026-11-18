@@ -1,9 +1,9 @@
 """Vẽ sơ đồ use case theo actor từ bảng "Use case list" của docs/02-use-cases.md.
 
 Chạy trong thư mục docs/diagrams:  python ve_usecase.py
-Ra: out/uc_manager, uc_staff, uc_admin, uc_employee (.drawio, .png, .svg).
+Ra: out/uc_manager, uc_staff, uc_admin (.drawio, .png, .svg).
 Mỗi sơ đồ một actor, liệt kê mọi use case actor đó bắt đầu được, nhóm theo nhánh mind map.
-Cột Actors của bảng quyết định actor: "Everyone" = cả bốn; "Staff; Manager reads" = cả hai.
+Cột Actors (cột thứ tư) của bảng quyết định actor: "Staff, Manager" = cả hai.
 """
 import os
 import re
@@ -13,7 +13,7 @@ import srsdiagram as sd
 SRC = os.path.join('..', '02-use-cases.md')
 OUT = 'out'
 TITLE = 'Enterprise License Management System'
-ACTORS = [('uc_manager', 'Manager'), ('uc_staff', 'Staff'), ('uc_admin', 'Admin'), ('uc_employee', 'Employee')]
+ACTORS = [('uc_manager', 'Manager'), ('uc_staff', 'Staff'), ('uc_admin', 'Admin')]
 
 FS = sd.STYLE['uc_fs']
 TITLE_FS = sd.STYLE['uc_title_fs']
@@ -52,8 +52,6 @@ def parse():
 
 def actors_of(text):
     t = text.lower()
-    if 'everyone' in t:
-        return {'Manager', 'Staff', 'Admin', 'Employee'}
     return {a for a in ('Manager', 'Staff', 'Admin') if a.lower() in t}
 
 

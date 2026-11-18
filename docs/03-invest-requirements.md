@@ -1,8 +1,8 @@
 # INVEST Requirements & Acceptance Criteria — ELMS
 
-> Design status: TARGET (11 use cases, 46 stories, November 2026)
+> Design status: TARGET (11 use cases, 50 stories, three roles, November 2026)
 
-Each story is small enough to implement and test independently. Authentication, authorization, data scope, and error handling are acceptance constraints, not hidden features. Business rules `BR-xx` are defined in [Use cases](02-use-cases.md#business-rules). Each story implements one use case, named in the backlog, and stories are grouped by the branches of the [mind map](mindmap.png).
+Each story is small enough to implement and test independently. Authentication, authorization, data scope, and error handling are acceptance constraints, not hidden features. Business rules `BR-xx` are defined in [Use cases](02-use-cases.md). Each story implements one use case, named in the backlog, and stories are grouped by the branches of the [mind map](mindmap.png).
 
 ## INVEST checklist
 
@@ -10,9 +10,9 @@ Each story is small enough to implement and test independently. Authentication, 
 |---|---|
 | Independent | Each story produces a demonstrable outcome and lists only unavoidable prerequisites. Usage, waste, and dashboard stories run on seeded data labelled as mock (BR-12), so they do not wait for the P&L APIs. |
 | Negotiable | Layout is left to the UI design and may change; the outcome, permissions, and business rules stay fixed. |
-| Valuable | Every story names the benefit for one role: Employee, Staff, Manager, or Admin. |
+| Valuable | Every story names the benefit for one role: Staff, Manager, or Admin. A Manager can also do every Staff story in their units. |
 | Estimable | Inputs, outputs, roles, data scope, and failure outcomes are explicit; each story has a story-point estimate. |
-| Small | A use case is one large flow of one actor and is split into stories, often one per flow (the self-service stories US45 and US46 are not on the map); the largest, US18 (budget import with versions and idempotency), is 8 points, every other story is 5 or less. |
+| Small | A use case is one large flow of one actor and is split into stories, often one per flow (the login story US45 is not on the map); the largest, US18 (budget import with versions and idempotency), is 8 points, every other story is 5 or less. |
 | Testable | Every story has observable Given/When/Then criteria with concrete figures, including rules that tie figures across use cases. |
 
 ## Product backlog
@@ -28,10 +28,13 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US04 | UC01 | As a Manager, I want the license terms from the PO lines and those renewing within 30 or 60 days so that no renewal surprises us. | Renewal control | US21 | C | 2 |
 | US05 | UC01 | As a Manager, I want to see who holds a license, who uses it, and how many days so that I know whose seat to review. | People behind a license | US03 | M | 5 |
 | US06 | UC02 | As a Manager or Staff member, I want every license a P&L reports, grouped by provider, so that I can check what its connectors deliver. | Inventory check | US41 | S | 3 |
-| US07 | UC02 | As a Manager, I want the licenses of any unit, or the units of any license, so that I see where each license is used. | Two-way view | US39, US41 | S | 3 |
-| US08 | UC02 | As a Manager, I want the providers the group buys from and their licenses so that I know our dependence on each provider. | Provider view | US41 | C | 2 |
+| US07 | UC01 | As a Manager, I want the licenses of any unit, or the units of any license, so that I see where each license is used. | Two-way view | US39, US41 | S | 3 |
+| US08 | UC01 | As a Manager, I want the providers my units buy from and their licenses so that I know our dependence on each provider. | Provider view | US41 | C | 2 |
 | US09 | UC02 | As a Staff member, I want to keep the software catalog and map every license and application name to a software and category so that the same software is counted together in every company. | One vocabulary | US41 | M | 5 |
-| US10 | UC02 | As a Staff member, I want to mark a license used by two or more companies as shared so that its cost is charged back to them and its free seats stay with the group. | Fair charge-back | US41, US32 | M | 5 |
+| US10 | UC02 | As a Staff member, I want to mark a license used by two or more companies as shared so that its cost is charged back to them and its free seats stay with its owner. | Fair charge-back | US41, US32 | M | 5 |
+| US47 | UC02 | As a Staff member, I want to assign each cloud account to the unit that uses it, or share it between units, so that cloud cost lands on the right units. | Right charge | US49 | M | 3 |
+| **Cloud** | | | | | | |
+| US46 | UC04 | As a Manager, I want Plan, Spend, and Actual of the cloud services of my units by month, down to provider and service, so that I see where cloud costs run above budget or go unused. | Cloud control | US47, US48, US49 | M | 5 |
 | **Usage** | | | | | | |
 | US11 | UC03 | As a Manager, I want to choose the unit to analyse in the organization and go down and up so that every figure follows that scope. | Navigation | US39 | M | 5 |
 | US12 | UC03 | As a Manager, I want Plan, Purchased, and Used of my scope and whether it is over budget so that I see the balance at once. | Balance | US11, US18, US20 | M | 3 |
@@ -39,13 +42,15 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US14 | UC03 | As a Manager, I want each unit month by month over the year so that I see when it drifts. | Trend per unit | US13 | S | 3 |
 | US15 | UC03 | As a Manager, I want the figures of every unit below my scope and, per unit, the waste of each license by month so that I find the license behind the waste. | Root cause | US13 | M | 5 |
 | US16 | UC03 | As a Manager, I want to export the units listed so that I can share the figures. | Reporting | US15 | S | 2 |
-| US17 | UC03 | As a Manager, I want to see how often each employee uses each application, from BCA, so that I can compare use with the licenses held. | Usage evidence | US39, US09 | C | 3 |
+| US17 | UC03 | As a Manager, I want to see how often each employee uses each application, from VinSOC, so that I can compare use with the licenses held. | Usage evidence | US39, US09 | C | 3 |
 | **Budget Management** | | | | | | |
-| US18 | UC04 | As a Manager, I want to import the budget plan of my unit or any unit under it from Excel, safely and repeatably, so that the plan matches SAP. | Plan in ELMS | US39 | M | 8 |
-| US19 | UC04 | As a Manager, I want the plan by month and its earlier versions so that I see what changed. | Plan review | US18 | M | 2 |
-| US20 | UC04 | As a Staff member, I want the cost of each invoice spread over the months of its term and the month closed so that Purchased is right every month. | Monthly cost | US21, US22 | M | 5 |
-| US21 | UC04 | As a Staff member, I want to import the PR, PO, and invoices exported from SAP each month, and enter a purchase made outside SAP, so that ELMS knows how many seats were bought, for which term, and what was paid. | Quantity and cost source | US41 | M | 5 |
-| US22 | UC04 | As a Staff member, I want to enter the exchange rates from a date so that every amount is converted with the rate of its invoice date. | Correct currency | US46 | M | 2 |
+| US18 | UC05 | As a Manager, I want to import the budget plan of my unit or any unit under it from Excel, safely and repeatably, so that the plan matches SAP. | Plan in ELMS | US39 | M | 8 |
+| US19 | UC05 | As a Manager, I want the plan by month and its earlier versions so that I see what changed. | Plan review | US18 | M | 2 |
+| US20 | UC05 | As a Staff member, I want the cost of each invoice spread over the months of its term and the month closed so that Purchased is right every month. | Monthly cost | US21, US22 | M | 5 |
+| US21 | UC05 | As a Staff member, I want to import the PR, PO, and invoices exported from SAP each month, and enter a purchase made outside SAP, so that ELMS knows how many seats were bought, for which term, and what was paid. | Quantity and cost source | US41 | M | 5 |
+| US22 | UC05 | As a Staff member, I want to enter the exchange rates from a date so that every amount is converted with the rate of its invoice date. | Correct currency | US45 | M | 2 |
+| US48 | UC05 | As a Manager, I want to set the monthly cloud budget of my units so that cloud Spend has a plan to be compared with. | Cloud plan | US39 | M | 3 |
+| US50 | UC06 | As a Manager, I want the year-end forecast of Spend against plan, with the amounts falling due, so that I can act before the year ends. | Forecast | US20, US21, US46 | S | 5 |
 | **Optimization** | | | | | | |
 | US23 | UC03 | As a Manager, I want the seats bought but given to nobody and their cost so that I stop paying for them. | Waste found | US32 | M | 3 |
 | US24 | UC03 | As a Manager, I want the seats not used for 30 days and their cost so that I know whose seat to reclaim. | Waste found | US05 | M | 3 |
@@ -55,28 +60,28 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US28 | UC03 | As a Manager, I want the units placed by spend and waste rate so that I see where high spend meets high waste. | Risk view | US13 | S | 3 |
 | US29 | UC03 | As a Manager, I want the waste of each unit in each month, as a rate or in money, so that I see when each unit wastes. | Seasonality | US13 | S | 3 |
 | **Analytics** | | | | | | |
-| US30 | UC06 | As a Manager, I want a license dashboard so that counts, allocation, and expiries are seen together. | Overview | US01, US09 | S | 3 |
-| US31 | UC06 | As a Manager, I want a financial dashboard so that spending and plan are seen together. | Financial overview | US32, US33 | S | 3 |
-| US32 | UC06 | As a Manager, I want the cost of each license split over the units that hold it on the financial dashboard so that each unit carries its own cost. | Cost per unit | US20, US39 | M | 5 |
-| US33 | UC06 | As a Manager, I want the variance between plan and purchased month by month on the financial dashboard so that I see where spending leaves the plan. | Variance | US18, US20 | S | 3 |
-| US34 | UC06 | As a Manager, I want an optimization dashboard so that waste, unused and inactive seats, and flagged units are seen together. | Waste overview | US23–US25 | S | 3 |
-| US35 | UC06 | As a Manager, I want the same figures per license, software, category, provider, or license type so that I see which software wastes most. | License view | US09, US32 | S | 3 |
-| US36 | UC06 | As a Manager, I want the definition of every figure where it appears so that I read the numbers the same way as everyone. | Shared meaning | — | S | 2 |
+| US30 | UC07 | As a Manager, I want a license dashboard so that counts, allocation, and expiries are seen together. | Overview | US01, US09 | S | 3 |
+| US31 | UC07 | As a Manager, I want a financial dashboard so that spending and plan are seen together. | Financial overview | US32, US33 | S | 3 |
+| US32 | UC07 | As a Manager, I want the cost of each license split over the units that hold it on the financial dashboard so that each unit carries its own cost. | Cost per unit | US20, US39 | M | 5 |
+| US33 | UC07 | As a Manager, I want the variance between plan and purchased month by month on the financial dashboard so that I see where spending leaves the plan. | Variance | US18, US20 | S | 3 |
+| US34 | UC07 | As a Manager, I want an optimization dashboard so that waste, unused and inactive seats, and flagged units are seen together. | Waste overview | US23–US25 | S | 3 |
+| US35 | UC07 | As a Manager, I want the same figures per license, software, category, provider, or license type so that I see which software wastes most. | License view | US09, US32 | S | 3 |
+| US36 | UC07 | As a Manager, I want the definition of every figure where it appears so that I read the numbers the same way as everyone. | Shared meaning | — | S | 2 |
 | **User & Organization** | | | | | | |
-| US37 | UC07 | As an Admin, I want to give each user a role and a data scope — the units of a Manager, the companies of a Staff member — and disable or re-enable their access so that each person sees exactly what their job needs. | Access control | US46, US39 | M | 5 |
-| US38 | UC07 | As an Admin, I want to adjust which features each role may read or write so that permissions fit the group. | Permission control | US37 | M | 3 |
-| US39 | UC08 | As an Admin, I want to review the five-level organization from ILVG and assign Managers to units so that data scope follows the organization. | Organization | ILVG connector | M | 3 |
+| US37 | UC08 | As an Admin, I want to give each user a role and a data scope — the unit of a Manager, the Manager a Staff member works for — and disable or re-enable their access so that each person sees exactly what their job needs. | Access control | US45, US39 | M | 5 |
+| US38 | UC08 | As an Admin, I want to adjust which features each role may read or write so that permissions fit the organization. | Permission control | US37 | M | 3 |
+| US39 | UC09 | As an Admin, I want to review the four-level organization from ILVG — P&L, block, department, project — and assign Managers to units so that data scope follows the organization. | Organization | ILVG connector | M | 3 |
 | **Connection Management** | | | | | | |
-| US40 | UC09 | As a Staff member, I want every connector of my companies with its licenses and sync status so that I see which data is in trouble. | Data health | US41 | M | 3 |
-| US41 | UC09 | As a Staff member, I want to connect a company's provider API with its licenses and interval so that its data flows into ELMS. | Data in | US46 | M | 5 |
-| US42 | UC09 | As a Staff member, I want to edit or delete a connector so that it follows changes at the P&L. | Data upkeep | US41 | M | 3 |
-| US43 | UC09 | As a Staff member, I want the details of a connector so that I can check its settings without editing it. | Quick check | US41 | C | 2 |
-| US44 | UC09 | As a Staff member, I want every sync run, its rejected records, reruns, and pause so that missing data is fixed instead of read as zero. | Data completeness | US41 | M | 5 |
-| **Self-service** | | | | | | |
-| US45 | UC10 | As an employee, I want the licenses I hold across all my emails and whether I am recorded as using them so that I can give back what I do not need. | Self-service | US41, US46 | M | 2 |
-| US46 | UC11 | As any user, I want to log in and out and start where my role works so that only I see my data. | Protected access | Accounts from ILVG | M | 3 |
+| US40 | UC10 | As a Staff member, I want every connector of the companies in my scope with its licenses and sync status so that I see which data is in trouble. | Data health | US41 | M | 3 |
+| US41 | UC10 | As a Staff member, I want to connect a company's provider API with its licenses and interval so that its data flows into ELMS. | Data in | US45 | M | 5 |
+| US42 | UC10 | As a Staff member, I want to edit or delete a connector so that it follows changes at the P&L. | Data upkeep | US41 | M | 3 |
+| US43 | UC10 | As a Staff member, I want the details of a connector so that I can check its settings without editing it. | Quick check | US41 | C | 2 |
+| US44 | UC10 | As a Staff member, I want every sync run, its rejected records, reruns, and pause so that missing data is fixed instead of read as zero. | Data completeness | US41 | M | 5 |
+| US49 | UC10 | As a Staff member, I want to connect each cloud provider through its API, or upload its billing file when there is none, so that cloud cost and usage flow into ELMS. | Cloud data in | US45 | M | 5 |
+| **Access** | | | | | | |
+| US45 | UC11 | As any user, I want to log in and out and start where my role works so that only I see my data. | Protected access | Accounts for ILVG employees | M | 3 |
 
-**Total:** 46 stories, 159 points. Must-have: 29 stories (113 points); Should-have: 13 stories (37 points); Could-have: 4 stories (9 points). A use case is one large flow of action of one actor; its flows are split into stories, so one use case has several stories.
+**Total:** 50 stories, 178 points. Must-have: 32 stories (127 points); Should-have: 14 stories (42 points); Could-have: 4 stories (9 points). Story numbers are kept stable, so they are not in branch order; US46–US50 were added for the cloud and forecast flows. A use case is one large flow of action of one actor; its flows are split into stories, so one use case has several stories.
 
 ## Per-story INVEST review
 
@@ -84,7 +89,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 
 | Story | I | N | V | E | S | T | Notes |
 |---|---|---|---|---|---|---|---|
-| US01 | PASS | PASS | PASS | PASS | PASS | PASS | Monthly cost = accrued cost of the current month (UC04); expiry buckets BR-30; allocation BR-31. |
+| US01 | PASS | PASS | PASS | PASS | PASS | PASS | Monthly cost = accrued cost of the current month (UC05); expiry buckets BR-30; allocation BR-31. |
 | US02 | PASS | PASS | PASS | PASS | PASS | PASS | Testable with a fixed "today". |
 | US03 | PASS | PASS | PASS | PASS | PASS | PASS | Unknown start date rule BR-30. |
 | US04 | PASS | PASS | PASS | PASS | PASS | PASS | Read-only; terms from the PO lines (BR-10); "—" when SAP does not give a field. Could-have. |
@@ -100,7 +105,7 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US14 | PASS | PASS | PASS | PASS | PASS | PASS | Efficiency = Used ÷ Purchased. |
 | US15 | PASS | PASS | PASS | PASS | PASS | PASS | Waste per license as a rate or in money; rows add up (BR-19). |
 | US16 | PASS | PASS | PASS | PASS | PASS | PASS | File equals the units listed. |
-| US17 | PASS | PASS | PASS | PASS | PASS | PASS | BCA fields assumed (UC03). Could-have. |
+| US17 | PASS | PASS | PASS | PASS | PASS | PASS | VinSOC fields assumed (UC03). Could-have. |
 | US18 | PASS | PASS | PASS | PASS | PASS | PASS | Largest story (8): per-license replacement in the target subtree BR-08, idempotency BR-33. Splits into: template and preview, confirm with versions, idempotency and concurrency. |
 | US19 | PASS | PASS | PASS | PASS | PASS | PASS | Read-only; versions from US18. |
 | US20 | PASS | PASS | PASS | PASS | PASS | PASS | Rounding to the thousand VND BR-23; closed months frozen. |
@@ -120,16 +125,20 @@ Priority uses MoSCoW (`M` must, `S` should, `C` could). Story points use the Fib
 | US34 | PASS | PASS | PASS | PASS | PASS | PASS | Figures tie to US23–US25. |
 | US35 | PASS | PASS | PASS | PASS | PASS | PASS | Dimensions fixed (BR-35). |
 | US36 | PASS | PASS | PASS | PASS | PASS | PASS | One definition per metric (BR-27). |
-| US37 | PASS | PASS | PASS | PASS | PASS | PASS | Accounts come from ILVG (BR-15); last Admin protected (BR-15); Manager units and Staff companies (BR-14). |
-| US38 | PASS | PASS | PASS | PASS | PASS | PASS | Guard rails: Admin permissions and Employee access to others cannot be changed. |
-| US39 | PASS | PASS | PASS | PASS | PASS | PASS | Five fixed levels (BR-19); corrections kept beside ILVG values. |
+| US37 | PASS | PASS | PASS | PASS | PASS | PASS | Accounts for ILVG employees only (BR-15); last Admin protected (BR-15); Manager unit and Staff's Manager (BR-14). |
+| US38 | PASS | PASS | PASS | PASS | PASS | PASS | Guard rails: Admin permissions cannot be removed; Staff cannot be given analysis or dashboards. |
+| US39 | PASS | PASS | PASS | PASS | PASS | PASS | Four fixed levels, P&L the highest (BR-19); corrections kept beside ILVG values. |
 | US40 | PASS | PASS | PASS | PASS | PASS | PASS | Statuses BR-29; Paused is not a sync issue. |
 | US41 | PASS | PASS | PASS | PASS | PASS | PASS | Test before save, write-only credential (BR-18). |
 | US42 | PASS | PASS | PASS | PASS | PASS | PASS | Reconfiguration resets to Pending (BR-29); delete keeps data. |
 | US43 | PASS | PASS | PASS | PASS | PASS | PASS | Never shows the credential. Could-have. |
 | US44 | PASS | PASS | PASS | PASS | PASS | PASS | Failed or paused run stays `Unknown` (BR-04, BR-17); reruns idempotent (BR-33). |
-| US45 | PASS | PASS | PASS | PASS | PASS | PASS | Own data only, across all emails (BR-25); no cost. |
-| US46 | PASS | PASS | PASS | PASS | PASS | PASS | Lockout and cookie rules BR-16. |
+| US45 | PASS | PASS | PASS | PASS | PASS | PASS | Lockout and cookie rules BR-16. |
+| US46 | PASS | PASS | PASS | PASS | PASS | PASS | Plan, Spend, Actual of cloud; no waste figure computed; Unknown never 0 (BR-04). How cloud Actual is measured is still open. |
+| US47 | PASS | PASS | PASS | PASS | PASS | PASS | Unassigned accounts stay under *Unallocated* of the P&L; splits add up to the account cost. |
+| US48 | PASS | PASS | PASS | PASS | PASS | PASS | Month without a budget is "Not planned", never 0. |
+| US49 | PASS | PASS | PASS | PASS | PASS | PASS | Read-only credential (BR-18); billing file import idempotent (BR-33). |
+| US50 | PASS | PASS | PASS | PASS | PASS | PASS | Always labelled as forecast, never as actual. |
 
 ## Acceptance criteria
 
@@ -177,7 +186,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 1. Given a P&L with licenses from 3 providers, then the licenses are grouped by provider with Purchased, Assigned, Used, cost, status, and data date.
 2. Given a P&L whose connectors never had a successful run, then the inventory says "No data yet", not an empty list.
-3. Given a Staff member of company A, when they choose company B, then it returns `403`.
+3. Given a Staff member working for the Manager of P&L A, when they choose P&L B, then it returns `403`.
 
 #### AC-US07 View Licenses by Organization
 
@@ -193,29 +202,47 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 #### AC-US09 Manage Software Catalog
 
-1. Given group-level Staff create "Microsoft 365" in *Productivity › Office & Collaboration*, then it can be chosen when mapping a name.
+1. Given Staff create "Microsoft 365" in *Productivity › Office & Collaboration*, then it can be chosen when mapping a name.
 2. Given "M365 E3" from company A and "Microsoft 365 E3" from company B mapped to Microsoft 365, then the License Dashboard counts both under one software and one category.
 3. Given a new license name arrives from a sync, then it is "Not mapped" and grouped under *Uncategorized* until mapped.
 4. Given a software with mapped licenses, when it is deleted, then it is refused; merging it into another moves its mappings and is recorded with old and new value.
-5. Given the BCA application "Microsoft Word" mapped to Microsoft 365, then employee usage (UC03) matches its users with the Microsoft 365 holders.
-6. Given a Staff member of company A, when they map a name only company B reports, then it returns `403`.
+5. Given the VinSOC application "Microsoft Word" mapped to Microsoft 365, then employee usage (UC03) matches its users with the Microsoft 365 holders.
+6. Given a Staff member working for the Manager of P&L A, when they map a name only P&L B reports, then it returns `403`.
 
 #### AC-US10 Manage Shared Licenses
 
+Who owns a shared license is still to be decided, as there is no level above the P&L; these criteria assume an owner P&L chosen by Staff.
+
 1. Given GitHub reported by company A's connector with holders in P&L A and P&L B, then it is listed as *Possibly shared* and nothing changes until Staff confirm.
-2. Given Staff confirm, then the owner becomes the group; with 1,000 seats at 100,000 VND, A holding 500 and B 300, A is charged 50 million, B 30 million, and 20 million of the 200 free seats stays in *Unallocated* of the group.
+2. Given Staff confirm with P&L A as owner, then with 1,000 seats at 100,000 VND, A holding 500 and B 300, A is charged 50 million, B 30 million, and 20 million of the 200 free seats stays in *Unallocated* of A.
 3. Given the same license reported by two connectors, then it is listed "Also reported by <company>"; after Staff pick one source, it is counted once.
 4. Given Staff unmark a shared license, then its owner goes back to the P&L of its connector.
 5. Given a Manager of P&L A, then they see A's share only.
-6. Given GitHub of P&L A marked shared in June with January–May closed, then January–May stay with A and June onward goes to the group; A's invoices still name A as the company that paid.
+6. Given GitHub of P&L A marked shared in June with P&L B as owner and January–May closed, then January–May stay with A and June onward goes to B; A's invoices still name A as the company that paid.
+
+#### AC-US47 Assign Cloud Accounts
+
+1. Given AWS account 1111 assigned to project P1, then its monthly cost is carried by P1 and every unit above it.
+2. Given an account shared 60 % and 40 % between blocks A1 and A2, then a month of 100 million is carried as 60 and 40 million.
+3. Given an account assigned to no unit, then it is listed under *Not assigned* with its cost, which stays under *Unallocated* of its P&L.
+4. Given a Staff member working for the Manager of P&L A, when they assign an account to a unit of P&L B, then it returns `403`.
+
+### Cloud
+
+#### AC-US46 Track Cloud Costs and Usage
+
+1. Given the cloud accounts of block A1 with Plan 200 million, Spend 230 million, and Actual 180 million in October, then the three amounts are shown, Spend is 30 million over plan, and no waste figure is computed.
+2. Given block A1 opened, then the same figures are shown for each unit below, then for each provider and service.
+3. Given a month whose provider data is missing, then its figures read `Unknown`, never 0; the current month is *Provisional*.
+4. Given a Staff member calling the cloud analysis API, then it returns `403`.
 
 ### Usage
 
 #### AC-US11 Navigate Organization Scope
 
-1. Given a Manager of the group, when the usage analysis opens, then the scope is the group and the units below are its P&Ls.
-2. Given a Manager of P&L A and P&L B only, then the start lists A and B; requesting the group returns `403`.
-3. Given block A1 chosen, then every figure is recomputed for A1, the path reads Group › A › A1, and a shared link opens the same scope.
+1. Given a Manager of P&L A, when the usage analysis opens, then the scope is A and the units below are its blocks.
+2. Given a Manager of P&L A, when P&L B is requested, then it returns `403`; there is no scope above a P&L.
+3. Given block A1 chosen, then every figure is recomputed for A1, the path reads A › A1, and a shared link opens the same scope.
 4. Given the search "vin", then the matching units are found with the path to each.
 5. Given a P&L with unassigned seats, then *Unallocated* appears among its units.
 
@@ -224,12 +251,12 @@ Format: **Given** context, **When** action, **Then** observable result.
 1. Given year to date Plan 1,000, Purchased 1,100, and Used 800 million, then these amounts are shown, the scope is over budget by 100 million, and 73 % of Purchased is used.
 2. Given a scope without a plan, then Plan is "Not planned" and no over or under budget is stated.
 3. Given a month whose Purchased is Unknown, then the figure shows `Unknown`, never 0.
-4. Given P&L A charged 50 million for a license planned only at the group, then that cost shows "Planned at Tập đoàn" and is left out of A's budget comparison (BR-34).
+4. Given P&L A charged 50 million for a shared license planned only by its owner P&L B, then that cost shows "Planned at B" and is left out of A's budget comparison (BR-34).
 
 #### AC-US13 Compare Subordinate Units
 
 1. Given today is 15 Nov 2026, then YTD covers January to October and November is not offered.
-2. Given 31 P&Ls, then they are compared sorted by waste, high to low.
+2. Given 31 units below the scope, then they are compared sorted by waste, high to low.
 3. Given a unit and period, then its figure card shows Plan, Purchased with its % of plan, and Used and Wasted with their % of purchased.
 4. Given the currency switched to VND, then USD amounts are converted with the rate of their invoice date and the rate is shown.
 5. Given the search "vin", then 5 of 31 units are shown, and the same search applies to the units below and the waste analysis.
@@ -242,21 +269,21 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 #### AC-US15 View Units Below the Scope
 
-1. Given the group scope, then each unit shows rank, Plan, Purchased, Used, Wasted, utilization, and variance, stated as over or under plan.
+1. Given the scope P&L A, then each unit below shows rank, Plan, Purchased, Used, Wasted, utilization, and variance, stated as over or under plan.
 2. Given a project scope, then the units below are its licenses.
 3. Given P&L A opened, then the waste of each of its licenses by month is shown; choosing money instead of rate changes it and the waste per unit (US29) together.
 4. Given a shared license, then A shows A's share marked shared, and the license rows add up to A.
 
 #### AC-US16 Export Usage Report
 
-1. Given the group scope, year 2026, mode YTD, then the file names the scope, the year, and the period, opens in Excel with Vietnamese text intact, and holds every unit listed after search and order.
+1. Given the scope P&L A, year 2026, mode YTD, then the file names the scope, the year, and the period, opens in Excel with Vietnamese text intact, and holds every unit listed after search and order.
 2. Given the file opened, then its figures equal the units listed.
 3. Given the licenses of a unit opened, then their rows are written under their unit.
 
 #### AC-US17 Track Employee Usage
 
-1. Given BCA reports An using Microsoft Word on 18 days of the period, then An is listed with the unit, the application, 18 days used, and the last use.
-2. Given an employee whose machine does not report to BCA, then they show "Not tracked", never "not used".
+1. Given VinSOC reports An using Microsoft Word on 18 days of the period, then An is listed with the unit, the application, 18 days used, and the last use.
+2. Given an employee whose machine does not report to VinSOC, then they show "Not tracked", never "not used".
 3. Given an application in use that maps to a software with no license reported for the P&L, then it is listed as "No license reported".
 4. Given a Manager of block A1, then only A1 employees are listed; Staff and Admin calling the API get `403`.
 
@@ -269,8 +296,8 @@ Format: **Given** context, **When** action, **Then** observable result.
 3. Given the confirm sent twice, or again after a time-out, then exactly one version exists.
 4. Given the Manager of block A1 previewed a file with M365 E3 and the Manager of P&L A confirmed since an import that changed M365 E3 lines of A1, when A1's confirm is sent, then it is refused: "The plan changed since your preview"; the same holds the other way round, when A1 imported while A's file was in preview. Given A's import touched only Jira, then A1's confirm goes through.
 5. Given a row for a unit outside the target, or a project code not in the hierarchy, then the row is rejected with its reason and the file is not imported until it is fixed or the row is left out.
-6. Given GitHub marked shared and the Manager of the group plans it with rows P&L A 50 million and P&L B 40 million, then each row plans that P&L's share, each P&L's Plan includes its row, and the other licenses of A and B keep their plan; the Manager of P&L A can later change A's row.
-7. Given P&L B has its own "Microsoft 365 E3" and a share of the group's shared "Microsoft 365 E3", then a row "Microsoft 365 E3" for B is rejected as matching two licenses; given Staff record "Microsoft 365 E3 B" as the SAP name of B's own license, then "Microsoft 365 E3" maps to the shared license and "Microsoft 365 E3 B" to B's own, and both can be planned for the same unit and month.
+6. Given GitHub marked shared with P&L B as owner and its plan has rows P&L A 50 million and P&L B 40 million, then each row plans that P&L's share, each P&L's Plan includes its row, and the other licenses of A and B keep their plan; the Manager of P&L A can later change A's row.
+7. Given P&L B has its own "Microsoft 365 E3" and a share of a shared "Microsoft 365 E3" owned by P&L A, then a row "Microsoft 365 E3" for B is rejected as matching two licenses; given Staff record "Microsoft 365 E3 B" as the SAP name of B's own license, then "Microsoft 365 E3" maps to the shared license and "Microsoft 365 E3 B" to B's own, and both can be planned for the same unit and month.
 
 #### AC-US19 View Monthly Budget Plan
 
@@ -282,8 +309,8 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 1. Given an invoice of 100,000,000 VND for 12 months, then the accrual is 8,333,000 for 11 months and 8,337,000 for the last.
 2. Given a term starting on 16 January, then January is accrued by its days.
-3. Given Staff close October for company A, then A's October figures lose the *Provisional* mark and are never recalculated; a later change goes to the next open month. Given A is charged for a shared license and the group's October is still open, then A's October stays *Provisional* until the group closes it.
-4. Given a Manager calls the accrual API to close a month, then it returns `403`: only Staff run and close the accrual.
+3. Given Staff close October for company A, then A's October figures lose the *Provisional* mark and are never recalculated; a later change goes to the next open month. Given A is charged for a shared license owned by B and B's October is still open, then A's October stays *Provisional* until B closes it.
+4. Given the Manager of P&L A closes October for A, then it is closed as when Staff do it; given an Admin calls the accrual API, then it returns `403`.
 
 #### AC-US21 Manage Purchases
 
@@ -300,6 +327,18 @@ Format: **Given** context, **When** action, **Then** observable result.
 2. Given a rate of 0 or less, then it is refused.
 3. Given a rate used by a closed month, when corrected, then closed months keep the old rate and open months use the new one.
 4. Given an invoice in a currency without a rate for its date, then its VND figure is `Unknown` and the amount is shown in its own currency, never added.
+
+#### AC-US48 Set Cloud Budget
+
+1. Given the Manager of block A1 sets 200 million a month for 2027, then the cloud Plan of A1 is 200 million each month and adds up into P&L A.
+2. Given a month without a cloud budget, then its cloud Plan reads "Not planned", never 0.
+3. Given a Staff member setting a cloud budget, then it returns `403`.
+
+#### AC-US50 Forecast Spending
+
+1. Given November 2026, Spend January–October of 9 billion and a Plan of 12 billion for the year, then the year-end forecast is shown against the plan, stated as over or under and by how much.
+2. Given a license renewing in December at 500 million, then it is listed among the amounts falling due with its expected value.
+3. Given any forecast figure, then it is labelled as a forecast and never shown as actual.
 
 ### Optimization
 
@@ -324,7 +363,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 #### AC-US26 Rank Units by Waste
 
-1. Given 31 P&Ls, then the 10 wasting most come first, and all 31 on request.
+1. Given 31 units below the scope, then the 10 wasting most come first, and all 31 on request.
 2. Given a unit with Wasted 25 of Purchased 100, then its waste rate is 25 %.
 3. Given the ranking asked for, then the scope becomes the Manager's highest unit, sorted by waste.
 
@@ -395,8 +434,8 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 #### AC-US37 Manage User Roles and Scope
 
-1. Given an ILVG employee, then they already have an account with the role Employee, and no account can be created by hand.
-2. Given a Staff account given companies A and B, then that user sees the data of A and B only.
+1. Given an ILVG employee, when Admin gives them an account with the role Manager or Staff, then the account is linked to the employee; an account for someone not in ILVG cannot be created.
+2. Given a Staff member working for the Manager of block A1, then they see the data of A1 and the units under it only.
 3. Given a user's role changed, then their sessions end and the next login uses the new role and scope.
 4. Given a Manager without a managed unit, then a warning says they will see no data.
 5. Given an account disabled, then its open sessions end at once; disabling or changing the role of the last active Admin is refused.
@@ -406,11 +445,11 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 1. Given a permission removed from Staff with a reason, then the change is recorded and Staff calling that API get `403`.
 2. Given an attempt to remove the permission Admin needs to manage permissions, then it is refused.
-3. Given an attempt to let Employee read another person's usage, then it is refused.
+3. Given an attempt to give Staff a read permission on the waste analysis or the dashboards, then it is refused.
 
 #### AC-US39 Manage Organization Hierarchy
 
-1. Given the ILVG sync, then the hierarchy shows group > P&L > block > department > project with codes; a Manager assigned to the group sees the whole group.
+1. Given the ILVG sync, then the hierarchy shows P&L > block > department > project with codes; no unit sits above a P&L, and no Manager can be assigned above a P&L.
 2. Given a block placed under another block, then it is refused; given Admin corrects a unit ILVG placed wrongly with a reason, then the ILVG value is kept beside it and the next sync does not overwrite it.
 3. Given a code in the budget file or a connector that matches no unit, then it is listed as "Unmatched".
 4. Given a unit with members or a current plan, when Admin marks it inactive, then it is refused.
@@ -422,7 +461,7 @@ Format: **Given** context, **When** action, **Then** observable result.
 
 1. Given 10 licenses `Active`, 2 `Delayed`, 1 `Failed`, and 3 `Paused`, then the number of sync issues is 3.
 2. Given the search "contoso.com", then companies, connectors, and licenses whose contact email matches are found.
-3. Given a Staff member of company A, then only A's connectors are listed.
+3. Given a Staff member working for the Manager of P&L A, then only A's connectors are listed.
 
 #### AC-US41 Create Usage Connector
 
@@ -453,17 +492,17 @@ Format: **Given** context, **When** action, **Then** observable result.
 5. Given a 6-hour interval and a last success 9 hours ago, then the licenses show `Delayed`.
 6. Given a `Partial` run in which "M365 E3" failed with `permission_denied` and "Visio" was complete, then M365 E3 shows `Failed` and Visio `Active`.
 
-### Self-service
+#### AC-US49 Connect Cloud Provider
 
-#### AC-US45 View My Licenses
+1. Given AWS connected through its API with a read-only credential, then the monthly cost and usage of each account and service arrive at the sync interval; the credential is never returned (BR-18).
+2. Given a provider without an API, when its billing file for October is uploaded, then October's cost is imported; the same file uploaded again changes nothing (BR-33).
+3. Given a failed sync, then nothing is written and the figures stay `Unknown` (BR-04).
 
-1. Given An holds a seat on an@a.com and another on an@b.com, then both are listed.
-2. Given a seat `Inactive`, then it carries a note that it may be reviewed; given `Not monitored`, then it reads "Not tracked".
-3. Given another user's license requested through the API, then it returns `404`; no price or cost is shown.
+### Access
 
-#### AC-US46 Login / Logout
+#### AC-US45 Login / Logout
 
-1. Given correct credentials, then the user starts where their role works: Manager the license list (UC01), Staff the connectors (UC09), Admin the users (UC07), Employee their own licenses (UC10).
+1. Given correct credentials, then the user starts where their role works: Manager the license list (UC01), Staff the connectors (UC10), Admin the users (UC08).
 2. Given 5 wrong passwords in a row, then login is locked for 15 minutes and the message stays generic.
 3. Given an account whose password was never set, then login is refused until the one-time link is used.
 4. Given a function outside the role, then it returns `403`; logout ends the session.

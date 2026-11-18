@@ -4,11 +4,11 @@
 >
 > Implementation status: NOT STARTED
 >
-> **Written before the P&L API business model.** Since then each P&L provides the API behind its connectors, one usage connector per company and provider, and Connector Management is UC09 of [Use cases](02-use-cases.md); the use cases *Manage License Entitlements* and *Map Connector Data* named below no longer exist. ECS remains the proposed shape of the license data contract (BR-17) those APIs answer in.
+> **Written before the P&L API business model.** Since then each P&L provides the API behind its connectors, one usage connector per company and provider, and Connector Management is UC10 of [Use cases](02-use-cases.md); the use cases *Manage License Entitlements* and *Map Connector Data* named below no longer exist. ECS remains the proposed shape of the license data contract (BR-17) those APIs answer in.
 
 System: **Enterprise License Management System (ELMS)**, built by team VFast.
 
-This document answers one question: *can ELMS define one standard that every connector delivers license data in, and require providers to return data in that standard?* It reviews the standards that already exist, what the main providers actually expose, and proposes the **ELMS Connector Standard (ECS) v1**, how connectors fit in the product (set up when a license is added, *Manage License Entitlements*; mapped in *Map Connector Data*; watched in UC09), and a rollout plan.
+This document answers one question: *can ELMS define one standard that every connector delivers license data in, and require providers to return data in that standard?* It reviews the standards that already exist, what the main providers actually expose, and proposes the **ELMS Connector Standard (ECS) v1**, how connectors fit in the product (set up when a license is added, *Manage License Entitlements*; mapped in *Map Connector Data*; watched in UC10), and a rollout plan.
 
 ## 1. Summary
 
@@ -18,13 +18,13 @@ This document answers one question: *can ELMS define one standard that every con
 | Can every provider be required to return data in it? | **No, not every provider.** Microsoft, Google, Adobe, OpenAI, Anthropic, and AWS will not implement a customer's private format. ELMS can require it only where it has leverage: in-house applications, resellers and CSP partners, local vendors (through a contract clause), and license servers that run inside the company. |
 | How do the big providers fit then? | ELMS writes an **adapter** that reads the provider's own API and outputs ECS. From the pipeline's point of view an adapter and a provider that speaks ECS are the same thing. |
 | Should we invent the fields? | **No.** ECS is a *profile* of existing standards: FOCUS for cost and usage, SCIM 2.0 for people, ISO/IEC 19770-3 and -4 for entitlements and usage measurement. A provider already exporting FOCUS (AWS, Azure, Google Cloud) is half-way there. |
-| What changes in the product? | Staff set up a connector when they add a license (*Manage License Entitlements*): choose or create the connection, test it, pick the provider plan. A sixth mind-map branch, **Connector Management**, has two use cases: Map Connector Data and Monitor Data Synchronization (UC09). Two new business rules (BR-17, BR-18). |
+| What changes in the product? | Staff set up a connector when they add a license (*Manage License Entitlements*): choose or create the connection, test it, pick the provider plan. A sixth mind-map branch, **Connector Management**, has two use cases: Map Connector Data and Monitor Data Synchronization (UC10). Two new business rules (BR-17, BR-18). |
 
 ## 2. Starting point
 
 The design already has the pieces a standard plugs into:
 
-- Connectors are plugins behind one interface, `IProviderConnector`: `fetchEntitlements`, `fetchAssignments`, `fetchActivity`, `fetchUsage(period)`, `fetchCost(period)`. An unsupported method returns `NotSupported`, never an empty list ([Folder structure](05-folder-structure.md)).
+- Connectors are plugins behind one interface, `IProviderConnector`: `fetchEntitlements`, `fetchAssignments`, `fetchActivity`, `fetchUsage(period)`, `fetchCost(period)`. An unsupported method returns `NotSupported`, never an empty list ([Code structure](05-code-structure.md)).
 - The pipeline stores raw payloads before normalizing (A2), is idempotent (A3), and never turns missing data into zero (A4) ([Research](01-research-top-down.md#5-process-to-be)).
 - The schema has `connectors`, `plan_data_sources` (one primary source per plan and kind of data, BR-12), `sync_runs`, `collection_coverage`, and `raw_records` ([Tables](database/tables.md#3-collection-pipeline)).
 
@@ -68,7 +68,7 @@ Two conclusions from the table:
 | Floating engineering software (FlexNet-style license servers) | License file | — | Server log or status command (sessions, denials) | None | Adapter or agent inside the company; Concurrent archetype |
 | In-house applications, local vendors, resellers | Their own data | Their own data | Their own data | Invoices | **Native ECS** — this is where the standard can be required |
 
-Points to check before each adapter is built (from [Research §4.4](01-research-top-down.md#44-data-collection-feasibility)): admin permissions needed, report delay, history limits, anonymized reports, rate limits, and beta status (the Anthropic analytics API is beta and the older endpoints are marked legacy).
+Points to check before each adapter is built (from [Research §4.4](01-research-top-down.md#44-data-sources-and-feasibility)): admin permissions needed, report delay, history limits, anonymized reports, rate limits, and beta status (the Anthropic analytics API is beta and the older endpoints are marked legacy).
 
 ### 3.3 How license-management products handle this
 
@@ -183,7 +183,7 @@ Every response or file carries an envelope, so ELMS can tell "the provider says 
 
 ### 4.5 File transport
 
-One dataset per file, JSON Lines (one record per line) or CSV with the same field names, plus a `manifest.json` with `ecs_version`, `dataset`, `data_date`, `completeness`, `record_count`, and `sha256` of each file. A FOCUS CSV export is accepted as a `costs` file without renaming columns. In v1, files are uploaded in UC09; an SFTP drop folder is a later option.
+One dataset per file, JSON Lines (one record per line) or CSV with the same field names, plus a `manifest.json` with `ecs_version`, `dataset`, `data_date`, `completeness`, `record_count`, and `sha256` of each file. A FOCUS CSV export is accepted as a `costs` file without renaming columns. In v1, files are uploaded in UC10; an SFTP drop folder is a later option.
 
 ### 4.6 Datasets per archetype
 
@@ -196,11 +196,11 @@ What ELMS needs from a provider depends on the archetype of the license, not on 
 | Metered | `entitlements`, `usage` (`consumption`) | Consumption against quota and budget |
 | Capacity | `entitlements`, `usage` (`deployed_units`) | Deployed against purchased; overuse (out of scope) |
 
-`costs` is optional for every archetype. Most SaaS APIs (Microsoft Graph, Google, Adobe) do not return it; where a provider has it (FOCUS exports, OpenAI, Anthropic), it is collected for information only. Since 16 Nov 2026 the purchased quantity, the terms, and the cost that ELMS counts come from the PO lines and invoices in SAP (UC04, BR-10), not from the `entitlements` or `costs` datasets. A dataset the provider lacks is `Not supported`; the license then has less data (for example seats stay `Not monitored` without `activity`), never wrong data.
+`costs` is optional for every archetype. Most SaaS APIs (Microsoft Graph, Google, Adobe) do not return it; where a provider has it (FOCUS exports, OpenAI, Anthropic), it is collected for information only. Since 16 Nov 2026 the purchased quantity, the terms, and the cost that ELMS counts come from the PO lines and invoices in SAP (UC05, BR-10), not from the `entitlements` or `costs` datasets. A dataset the provider lacks is `Not supported`; the license then has less data (for example seats stay `Not monitored` without `activity`), never wrong data.
 
 ### 4.7 Validation
 
-The validator runs on every sync. Errors reject the record or the run; warnings are kept and shown in UC09.
+The validator runs on every sync. Errors reject the record or the run; warnings are kept and shown in UC10.
 
 | Check | Severity |
 |---|---|
@@ -224,7 +224,7 @@ Rejected records keep the reason in `raw_records.normalize_error`, as the schema
 ### 4.9 Security and personal data
 
 - Read-only access only (BR-01, A8): `ecs.read` scope, no write endpoint exists in the standard.
-- Credentials are written once and never shown again; they are encrypted with Data Protection and only the worker can decrypt them ([Folder structure](05-folder-structure.md)).
+- Credentials are written once and never shown again; they are encrypted with Data Protection and only the worker can decrypt them ([Code structure](05-code-structure.md)).
 - Data minimization: `subjects` carry only the identifiers needed to match employees (email, name, external id). No HR attributes beyond that.
 - Per-user activity is personal data. Before onboarding, confirm with legal how Vietnam's personal data protection rules (Decree 13/2023/ND-CP and the Personal Data Protection Law in force from 1 January 2026) apply to collecting it from providers.
 
@@ -239,9 +239,9 @@ The mind map branch **Connector Management** has one group, Sync & Data Quality,
 | Leaf | Use case | Actor |
 |---|---|---|
 | Data Source Mapping | Map Connector Data (no longer a use case) | Staff |
-| Sync Monitoring | UC09 Manage Data Connectors (sync monitoring) | Staff |
+| Sync Monitoring | UC10 Manage Data Connectors (sync monitoring) | Staff |
 
-The provider plan chosen when a license is added (*Manage License Entitlements*) shows in *Map Connector Data* as linked; *Map Connector Data* is where Staff link plans that appear later at the provider, fix a wrong link, and switch the primary source. Full specification: [Use cases](02-use-cases.md#connector-management).
+The provider plan chosen when a license is added (*Manage License Entitlements*) shows in *Map Connector Data* as linked; *Map Connector Data* is where Staff link plans that appear later at the provider, fix a wrong link, and switch the primary source. Full specification: [Use cases](02-use-cases.md#what-each-use-case-covers).
 
 ### 5.2 Who does what
 
@@ -249,11 +249,11 @@ The provider plan chosen when a license is added (*Manage License Entitlements*)
 |---|---|---|
 | Set up a connector, test it, choose the provider plan and the primary source | Staff, in *Manage License Entitlements* | Done while adding the license; needs the catalog and entitlements, which Admin cannot see (BR-14) |
 | Link provider plans that appear later, fix a wrong link, switch the primary source | Staff, in *Map Connector Data* | Needs the catalog, like *Manage License Entitlements* (BR-14) |
-| Watch runs, rerun, pause, replace credentials, upload ECS files, review rejected records | Staff, in UC09 | Staff own data correctness |
+| Watch runs, rerun, pause, replace credentials, upload ECS files, review rejected records | Staff, in UC10 | Staff own data correctness |
 
 ### 5.3 New business rules
 
-BR-17 (every connector delivers ECS; the validator checks every run) and BR-18 (a connector is saved only after a test connection with read-only credentials; credentials are write-only; Admin sees status only) are in [Use cases](02-use-cases.md#business-rules).
+BR-17 (every connector delivers ECS; the validator checks every run) and BR-18 (a connector is saved only after a test connection with read-only credentials; credentials are write-only; Admin sees status only) are in [Use cases](02-use-cases.md).
 
 ### 5.4 Impact on the database (proposed, not yet applied to `elms.dbml`)
 
@@ -261,8 +261,8 @@ BR-17 (every connector delivers ECS; the validator checks every run) and BR-18 (
 |---|---|
 | `connectors.delivery` (`native`, `adapter`, `file`), `connectors.ecs_version` | What the connector is and which ECS version it speaks |
 | `connectors.capabilities` (JSON from `/capabilities`) | Datasets, granularity, history depth, delay, read at the connection test |
-| `connectors.paused_at` (already in the schema) | Pause and resume (UC09); no status lifecycle without a conformance step |
-| `sync_runs.trigger` gains `upload` | ECS file runs from UC09 |
+| `connectors.paused_at` (already in the schema) | Pause and resume (UC10); no status lifecycle without a conformance step |
+| `sync_runs.trigger` gains `upload` | ECS file runs from UC10 |
 | `plan_data_sources.external_ref` reused for the provider plan linked in *Manage License Entitlements* and *Map Connector Data* | No new table needed |
 | `usage_metric` unchanged | ECS uses the schema's metric names (§4.2) |
 
@@ -301,7 +301,7 @@ The connector and sync stories (US40–US44) in the [INVEST backlog](03-invest-r
 | Providers refuse to implement ECS | The adapter and file paths need nothing from the provider; ECS is required only where ELMS has leverage |
 | ECS grows into its own large standard | Reuse FOCUS, SCIM, 19770 names; add a field only with a use case that needs it |
 | Provider APIs change or go beta (for example Anthropic's analytics API) | Adapters are isolated; the validator catches shape changes; the run fails visibly instead of writing zeros |
-| A provider sends wrong but well-formed data | Staff correct with overrides (BR-12); coverage per plan and rejected records shown in UC09 |
+| A provider sends wrong but well-formed data | Staff correct with overrides (BR-12); coverage per plan and rejected records shown in UC10 |
 | Staff handle provider credentials | Read-only scope only (BR-01); write-only after saving (BR-18); every change audited without the secret (BR-13) |
 | Personal data collected without a legal basis | Data minimization; legal review before onboarding (§4.9) |
 | Admin sees license data through connector screens | Admin sees status, counts, error codes only; record contents are Staff-only (BR-14) |
@@ -316,4 +316,4 @@ The connector and sync stories (US40–US44) in the [INVEST backlog](03-invest-r
 - OpenAI — [Costs API](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/usage/methods/costs), [Usage and Cost API cookbook](https://developers.openai.com/cookbook/examples/completions_usage_api)
 - Anthropic — [Usage and Cost API (legacy) and the Usage and Cost Analytics API](https://platform.claude.com/docs/en/manage-claude/usage-cost-api)
 
-**Related:** [Research](01-research-top-down.md) · [Use cases](02-use-cases.md) · [INVEST requirements](03-invest-requirements.md) · [Folder structure](05-folder-structure.md) · [Database design](database/README.md)
+**Related:** [Research](01-research-top-down.md) · [Use cases](02-use-cases.md) · [INVEST requirements](03-invest-requirements.md) · [Code structure](05-code-structure.md) · [Database design](database/README.md)
